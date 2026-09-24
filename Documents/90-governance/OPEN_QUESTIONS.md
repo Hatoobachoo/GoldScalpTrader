@@ -1,7 +1,7 @@
 # GoldScalpTrader — Open Questions and Closure Plan
 
-**Status:** POST-AUDIT-1 QUESTION REGISTER — ARCHITECTURE QUESTIONS CLOSED, CALIBRATION/IMPLEMENTATION/EXTERNAL PROOF REMAIN
-**Version:** 1.0-post-fresh-zero
+**Status:** POST-AUDIT-1 QUESTION REGISTER — ARCHITECTURE CLOSED, CALIBRATION/IMPLEMENTATION/EXTERNAL PROOF REMAIN
+**Version:** 1.1-cache-aware-news
 **Authority:** Unresolved implementation choices, numerical calibration, external proof and deliberate V1 deferrals.
 
 ## 1. Classification
@@ -16,7 +16,7 @@ DEFERRED V1
 
 A closed architecture question may still have calibratable numbers. Coding may not guess unresolved implementation/calibration/external items.
 
-## 2. CLOSED ARCHITECTURE — Audit 1
+## 2. CLOSED ARCHITECTURE — Audit 1 + post-audit sync
 
 ### OQ-001 — Final timeframe authority — CLOSED
 
@@ -33,7 +33,7 @@ Promoting M1/tick-history authority later requires a governed design change.
 
 ### OQ-002 — Strategy-family decomposition — CLOSED
 
-Retain six independent starting families. Manage overlap with explicit correlation/event-lineage bounding rather than merging distinct hypotheses prematurely.
+Retain six independent families. Manage overlap with explicit correlation/event-lineage bounding rather than merging distinct hypotheses prematurely.
 
 ### OQ-003 — `OPEN + News UNKNOWN` policy — CLOSED
 
@@ -41,22 +41,11 @@ News UNKNOWN blocks **new entries** in V1. It does not rename itself CLEAR and d
 
 ### OQ-004 — Structural R / cost-room architecture — CLOSED
 
-TradePlan must preserve both:
-
-```text
-gross structural quality
-+ explicit cost-adjusted executable-room diagnostics
-```
-
-Final broker submission separately rechecks current quote/spread/drift. Exact numerical floors remain calibration.
+TradePlan preserves gross structural quality plus explicit cost-adjusted executable-room diagnostics. Exact numerical floors remain calibration.
 
 ### OQ-005 — Risk-policy shape — CLOSED
 
-V1 uses one explicit `STANDARD` production risk policy rather than automatic SMALL/MEDIUM/NORMAL equity tiers.
-
-Account size still affects actual risk through equity, structural stop, tick value and broker minimum/step volume.
-
-Any future aggressive small-account experiment is explicit/research-governed, disabled by default and never auto-selected. Historical 8%/16% values are not active V1 policy.
+V1 uses one explicit `STANDARD` production risk policy rather than automatic SMALL/MEDIUM/NORMAL equity tiers. Any future aggressive small-account experiment is explicit/research-governed, disabled by default and never auto-selected. Historical 8%/16% values are not active V1 policy.
 
 ### OQ-006 — Runtime mode scope — CLOSED
 
@@ -76,8 +65,6 @@ Logical independence is architectural. Physical worker concurrency is optional/p
 
 ### OQ-009 — Development/source backup — CLOSED
 
-Normal workflow:
-
 ```text
 major remote bulk commit
 → operator git pull --ff-only
@@ -86,6 +73,23 @@ major remote bulk commit
 ```
 
 No runtime Git operation. Git bundle is optional advanced/manual tooling only.
+
+### OQ-010 — News API/provider outage and cache semantics — CLOSED
+
+A temporary provider/API refresh failure does **not** automatically make News UNKNOWN if a previously accepted last-known-good calendar still passes its original scope/schema/coverage/TTL/integrity checks.
+
+Rules:
+
+```text
+refresh fails + valid LKG cache
+→ keep cached accepted event truth
+→ provider may be DEGRADED
+→ no TTL/timestamp rewriting
+
+refresh fails + no valid current cache
+→ NEWS_SAFETY_UNKNOWN
+→ V1 new-entry BLOCK / LIMITED
+```
 
 ## 3. IMPLEMENTATION CHOICES
 
@@ -115,7 +119,11 @@ Choose SQLite backup API/export method, manifest/checksum format, catalog naming
 
 ### OQ-026 — Local source ZIP helper
 
-Decide whether to provide a repository script/PowerShell helper. Default archive must exclude `.env`, credentials, virtualenvs, logs, runtime DB/checkpoints and nested backup folders. Including `.git` is not required because the pulled local clone already preserves history.
+Decide whether to provide a repository script/PowerShell helper. Default archive excludes `.env`, credentials, virtualenvs, logs, runtime DB/checkpoints and nested backup folders. Including `.git` is not required because the pulled local clone already preserves history.
+
+### OQ-027 — News last-known-good cache implementation
+
+Choose smallest local cache format/path, atomic replacement method, integrity marker and restart loading path. Implementation must preserve original fetch/as-of/coverage/valid-until values and never extend validity on refresh failure.
 
 ## 4. CALIBRATE IN RESEARCH
 
@@ -181,37 +189,37 @@ Rolling checkpoint interval, hourly/daily/milestone retention, disk-space thresh
 
 ### OQ-055 — Aggressive risk experiment
 
-Whether an explicit disabled-by-default aggressive small-account research profile should exist at all; if studied, values require separate stress/holdout/DEMO evidence. Historical 8%/16% is only legacy context, not a seed that must be preserved.
+Whether an explicit disabled-by-default aggressive small-account research profile should exist at all; historical 8%/16% remains legacy context only.
+
+### OQ-056 — News cache TTL / refresh cadence
+
+Calibrate the bounded validity TTL, proactive refresh interval, retry/backoff behaviour and current-coverage rule. Swing's 1800-second provider TTL is reference evidence only, not automatically frozen for scalping.
 
 ## 5. EXTERNAL PROOF
 
 ### OQ-070 — Exness symbol facts
-
 Verify intended account XAUUSDm digits/point/tick size/tick value/min/max/step/stops/freeze/filling/margin behaviour.
 
 ### OQ-071 — Broker schedule
-
 Verify current normal daily/weekend session hours, DST handling and special-holiday behaviour.
 
 ### OQ-072 — Execution metadata
-
 Verify AutoTrading/trade API/account/symbol permission surfaces and actual `order_check`/retcode semantics.
 
 ### OQ-073 — Spread/slippage/latency
-
 Observe real DEMO distributions across sessions/news/reopen conditions.
 
 ### OQ-074 — Connected lifecycle
-
 Natural governed OPEN/MODIFY/CLOSE, broker SL/TP, exact known manual close and restart/reconciliation.
 
 ### OQ-075 — Fresh-machine recovery
-
 Prove local recovery package → new DB/path → fresh broker reconciliation/controller → READY without duplicate exposure.
 
 ### OQ-076 — Actual learning
-
 Verify exact-close queue/receipt and exactly-once MAIN_DEMO observation from real broker history.
+
+### OQ-077 — News provider/cache behaviour
+Verify chosen zero-cost provider failure modes, cache survival across temporary outage, expiry handling, current-week/coverage validation and realistic refresh behaviour on the intended Windows runtime.
 
 ## 6. DEFERRED V1
 

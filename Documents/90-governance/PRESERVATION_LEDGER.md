@@ -1,107 +1,136 @@
 # GoldScalpTrader — Documentation Preservation Ledger
 
-**Status:** DRAFT PRESERVATION LEDGER — PRE-CHALLENGE
-**Version:** 0.1-reference-meaning-preservation
-**Authority:** Proof that useful GoldSwingTraderAI design meaning is preserved, adapted or explicitly excluded in GoldScalpTrader canonical `Documents/`.
+**Status:** POST-AUDIT-1 PRESERVATION LEDGER — ACTIVE
+**Version:** 1.0-explicit-preservation
+**Authority:** Proof that useful GoldSwingTraderAI design meaning is preserved, adapted, recalibrated or explicitly excluded in GoldScalpTrader canonical `Documents/`.
 
 ## 1. Purpose
 
-GoldScalpTrader is intentionally derived from the architecture/governance system of GoldSwingTraderAI while changing trading personality to scalping.
+GoldScalpTrader intentionally reuses the engineering/governance spine of GoldSwingTraderAI while changing trading horizon and several policies for scalping.
 
 Preservation means:
 
 ```text
-preserve useful rationale / authority boundaries
-adapt trading-timeframe/geometry/risk semantics for scalping
-explicitly remove irrelevant/undesired reference behaviour
-keep current truth reconstructable from GoldScalpTrader Documents/
+preserve useful rationale / safety / authority boundaries
+adapt timeframe/geometry/risk/news/management semantics for scalping
+explicitly remove undesired reference behaviour
+record every material reference delta durably
 ```
 
-It does **not** mean copying every numerical threshold or historical implementation result.
+It does not mean copying every threshold, runtime feature or historical result.
 
-## 2. Major preservation map
+## 2. Preserved reference meaning
 
-| Reference subject | GoldScalpTrader canonical destination | Preservation/adaptation |
+| Reference subject | GoldScalpTrader destination | Current verdict |
 |---|---|---|
-| product vision / non-goals | `00-foundation/PROJECT_VISION.md` | swing personality replaced by scalp personality |
-| system invariants | `00-foundation/SYSTEM_CONTRACT.md` | safety/chronology/lifecycle preserved |
-| staged parallel + serial authority | `ARCHITECTURE.md`, `TRADING_FLOOR_ARCHITECTURE.md` | preserved |
-| build dependency order | `BUILD_PHASES.md` | preserved/adapted to docs-first challenge |
-| MT5 read boundary/history | `10-market-intelligence/MARKET_DATA_AND_HISTORY.md` | preserved + stronger freshness/cost context |
-| candle/structure | `CANDLE_STRUCTURE.md` | preserved causal knowledge time |
-| technical/liquidity/indicators/session/news | corresponding `10-*` docs | preserved; scalp freshness/path emphasis |
-| six-family floor | `20-trading-decisions/STRATEGY_FLOOR.md` | starting decomposition preserved, challengeable |
-| BUY/SELL fusion | `SCORING_AND_DECISION_FUSION.md` | preserved |
-| Opportunity/timing | `ENTRY_TIMING.md` | preserved + stronger event freshness/chase handling |
-| structural TradePlan | `TRADE_PLAN.md` | preserved; R/target policy recalibrated |
-| breakout/reversal geometry extensions | two geometry docs | preserved/adapted to scalp M5 event boundaries |
-| Trade Manager | `TRADE_MANAGER_AND_EXIT.md` | preserved + time/efficiency scalp exit |
-| monetary risk | `RISK_CONTRACT.md` | architecture preserved; reference percentages not frozen |
-| manual/broker activity | `BROKER_ACTIVITY_AND_MANUAL_TRADES.md` | preserved |
-| session/news/risk state | `SESSION_AND_RISK_STATE_MACHINE.md` | preserved; News UNKNOWN policy reopened |
-| provider contract | `SESSION_NEWS_PROVIDER_CONTRACT.md` | preserved |
-| one-shot execution/reconciliation | `EXECUTION_AND_BROKER_SAFETY.md` | preserved + scalp friction/latency |
-| persistence/recovery | `PERSISTENCE_RESTART_AND_RECOVERY.md` | preserved; remote auto-push removed |
-| learning/research/discovery/promotion | all `40-*` docs | preserved + scalp cost/duration evidence |
-| operator dashboards | all `50-*` docs | preserved + scalp facts |
-| coding/testing/audits | all `60-*` docs | preserved; audits truthful NOT RUN initially |
-| governance | all `90-*` docs | preserved/adapted |
+| product governance / non-goals | `00-foundation/*` | preserved, scalp personality substituted |
+| one MT5 read boundary | `ARCHITECTURE.md`, `MARKET_DATA_AND_HISTORY.md` | KEEP |
+| immutable shared snapshot | architecture/data docs | KEEP |
+| causal completed-candle chronology | Candle/Structure + research docs | KEEP |
+| staged specialist intelligence | Trading Floor / Intelligence docs | KEEP |
+| BUY/SELL independent theses + Red Team | Strategy/Fusion docs | KEEP |
+| persistent Opportunity vs timing | `ENTRY_TIMING.md` | KEEP + stronger freshness |
+| structural TradePlan before Risk | `TRADE_PLAN.md`, `RISK_CONTRACT.md` | KEEP |
+| one-shot Intent / sole writer / reconcile | execution docs | KEEP |
+| controller/single-writer safety | execution/recovery docs | KEEP |
+| ManagedTrade / verified close | Trade Manager / persistence | KEEP |
+| learning/research isolation | `40-research-learning/*` | KEEP |
+| read-only dashboards | `50-operator/*` | KEEP |
+| documentation/code/test governance | `60-*`, `90-*` | KEEP |
 
-## 3. Explicitly not inherited as frozen truth
+## 3. Preserved only as mechanism, not as numbers
 
-The following reference details are deliberately **not** copied as final scalp truth before challenge/evidence:
+The following reference mechanisms remain while exact values are reopened:
 
-- swing-oriented H4/H1/M15/M5 hierarchy exactly as-is;
-- M1 diagnostic-only as immutable rule;
-- 1.20R Primary target floor;
-- aggressive SMALL-account risk percentages;
-- exact daily-loss/cooldown thresholds;
-- `OPEN + News UNKNOWN → PASS` as automatic scalp policy;
-- exact pre-close/reopen timings;
-- default runner behaviour;
-- historical zero-trade audit findings;
-- reference source/test PASS claims.
+- event/news blackout + post-event warmup;
+- PRE_CLOSE no-entry then flatten sequence;
+- reopen warmup/clean-bar concept;
+- cooldown and same-episode re-entry controls;
+- gross structural quality thresholding;
+- spread/drift/execution-friction checks;
+- provider/cache TTL;
+- Risk preferred/hard-ceiling/daily-loss values.
 
-These are DRAFT/CALIBRATE/EXTERNAL items in GoldScalpTrader.
+Exact values remain calibration/external proof, not inherited truth.
 
-## 4. Explicitly removed reference behaviour
+## 4. Explicit reference policy changes
 
-### Runtime graceful-shutdown Git publication
+See `DOCUMENTATION_COMPARISON.md` for the full detailed table. Major accepted changes include:
 
-GoldSwingTraderAI's runtime automatic Git commit/push/archive publication is **not** part of GoldScalpTrader.
+- H1 broad / M15 opportunity / M5 setup-timing-management; H4 optional;
+- M1 stays diagnostic/research-only after explicit challenge;
+- six strategy families retained but correlation/event-lineage bounding strengthened;
+- Swing 1.20R floor removed as inherited scalp policy;
+- automatic SMALL/MEDIUM/NORMAL risk tiers removed in favor of one STANDARD policy;
+- Swing risk percentages are not active scalp production values;
+- `OPEN + News UNKNOWN → PASS` changed to conservative new-entry block;
+- temporary News provider failure may reuse still-valid last-known-good cache;
+- expired/invalid/no cache → News UNKNOWN → new-entry block;
+- Runner becomes exceptional;
+- time/efficiency becomes first-class EXIT evidence;
+- physical concurrency becomes optional/profiling-driven;
+- READINESS/DRY_RUN → controlled DEMO, REAL deferred V1;
+- runtime Git publication removed;
+- local pull/ZIP development-backup workflow added.
 
-Replacement:
+## 5. Explicitly removed reference behaviour
+
+### Trading-runtime Git publication
+
+GoldSwingTraderAI runtime repository publication is not part of GoldScalpTrader.
+
+GoldScalpTrader runtime durability is:
 
 ```text
-rolling local StateStore/checkpoints
-+ final verified local graceful-shutdown checkpoint
-+ deliberate portable recovery package
-+ optional deliberate local source Git bundle
+transactional local StateStore
+→ rolling verified local checkpoints
+→ final graceful-shutdown local checkpoint
+→ optional portable runtime recovery package
 ```
 
-Trading runtime has no Git credential/push authority.
+Development source durability is separate:
 
-## 5. New/stronger scalp emphasis
+```text
+major coherent remote commit
+→ user git pull --ff-only
+→ local clone with full Git history
+→ optional secret-clean ZIP milestone copy
+```
 
-GoldScalpTrader strengthens or adds first-class design treatment for:
+No trading-runtime GitHub credentials or automatic push/pull.
 
-- trigger/event freshness;
+## 6. New / stronger scalp surfaces
+
+GoldScalpTrader explicitly elevates:
+
+- event/trigger age and distance travelled;
 - target-room transaction-cost context;
+- Signal Price / Entry Reference / Executable Quote / Fill separation;
 - spread/slippage/drift/processing latency;
 - short-horizon hold/time efficiency;
-- min-lot affordability separation from strategy quality;
+- accidental swing-conversion prevention;
+- min-lot affordability frequency;
 - cost-aware replay/stress;
-- failed-scap-to-accidental-swing prevention;
-- local independent backup/recovery.
+- News provider last-known-good cache integrity;
+- local source/runtime recovery separation.
 
-## 6. Historical/reference evidence boundary
+## 7. Historical audit evidence boundary
 
-GoldSwingTraderAI audits/results are design lessons, not GoldScalpTrader evidence.
+GoldSwingTraderAI audit findings remain valuable lessons—especially stale event reuse, live geometry, blocker-vs-Gate truth, reconciliation and documentation sync—but they do not count as GoldScalpTrader PASS evidence.
 
-A reference defect may motivate a preventive contract/test, but GoldScalpTrader audits remain `NOT RUN` until its own source/runtime evidence exists.
+GoldScalpTrader Audit 1 is its own fresh-zero architecture review. Later Audits 2–7 require Scalp source/runtime evidence when their stage is reached.
 
-## 7. Freeze requirement
+## 8. Preservation completion state
 
-Before implementation freeze, `AUDIT_1_FRESH_DESIGN_REVIEW.md` must challenge every preserved/adapted item and record KEEP/CHANGE/REMOVE/ADD/CALIBRATE/EXTERNAL verdicts.
+Fresh-Zero Audit 1 has challenged the major inherited architecture. The remaining pre-implementation work is documentation metadata/cross-link normalization and implementation-choice/calibration/external-proof classification, not another blind reference copy.
 
-This ledger then updates to reflect final accepted preservation decisions.
+Any future change that materially diverges from the reference or from this ledger must update:
+
+```text
+owning topic contract
+DESIGN_DECISIONS
+OPEN_QUESTIONS where applicable
+DOCUMENTATION_COMPARISON
+this PRESERVATION_LEDGER
+operator/engineering consequences
+```

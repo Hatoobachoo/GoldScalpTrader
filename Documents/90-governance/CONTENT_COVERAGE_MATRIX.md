@@ -1,16 +1,16 @@
 # GoldScalpTrader — Documentation Content Coverage Matrix
 
-**Status:** DRAFT PRESERVATION INVENTORY — PRE-CHALLENGE
-**Version:** 0.1-scalp-coverage
+**Status:** POST-AUDIT-1 FREEZE-PREPARATION COVERAGE MAP — STRUCTURAL COVERAGE VERIFIED
+**Version:** 1.0-cache-aware-coverage
 **Authority:** Proof that the canonical manual covers the intended design, implementation, proof and operator surface.
 
 ## 1. Purpose
 
 This is a loss-prevention/navigation map.
 
-Every substantive subject has a canonical destination, intended implementation owner and proof route. A row is complete only when the destination explains purpose through evidence/failure boundary.
+Every substantive subject has a canonical destination, intended implementation owner and proof route. A row is structurally covered only when the destination exists and explains purpose through evidence/failure boundary.
 
-This matrix is not a substitute for semantic audit.
+This matrix is not a substitute for semantic/documentation audit.
 
 ## 2. Coverage matrix
 
@@ -27,7 +27,8 @@ This matrix is not a substitute for semantic audit.
 | liquidity/SMC | `LIQUIDITY_AND_SMC.md` | intelligence/liquidity | causal liquidity tests |
 | EMA/RSI/ATR/volatility | `INDICATORS_AND_VOLATILITY.md` | intelligence/indicators | chronological quant tests |
 | soft sessions | `SESSION_CONTEXT.md` | intelligence/session | DST/range replay tests |
-| news/macro intelligence | `FUNDAMENTAL_AND_NEWS.md` | intelligence/news | provider/event tests |
+| news/macro intelligence | `FUNDAMENTAL_AND_NEWS.md` | intelligence/news | provider/event/cache tests |
+| News LKG cache / provider failure | `FUNDAMENTAL_AND_NEWS.md`, `SESSION_NEWS_PROVIDER_CONTRACT.md` | app/session_news + intelligence/news | cache TTL/scope/coverage/no-laundering/restart tests |
 | strategy families | `20-trading-decisions/STRATEGY_FLOOR.md` | strategies | family tests/replay |
 | BUY/SELL fusion | `SCORING_AND_DECISION_FUSION.md` | decisions/fusion | fusion/conflict tests |
 | Opportunity/timing/freshness | `ENTRY_TIMING.md` | decisions/opportunity,timing | lifecycle/freshness tests |
@@ -37,9 +38,9 @@ This matrix is not a substitute for semantic audit.
 | open-trade management | `TRADE_MANAGER_AND_EXIT.md` | management | manager/execution tests |
 | monetary risk | `30-risk-execution/RISK_CONTRACT.md` | risk | lot/min-lot/margin/risk-day tests |
 | manual/external activity | `BROKER_ACTIVITY_AND_MANUAL_TRADES.md` | market_data/activity | activity/accounting tests |
-| hard state composition | `SESSION_AND_RISK_STATE_MACHINE.md` | risk/permissions | permission tests |
+| hard state composition | `SESSION_AND_RISK_STATE_MACHINE.md` | risk/permissions | permission + cache-aware News matrix tests |
 | persistence/recovery/local backup | `PERSISTENCE_RESTART_AND_RECOVERY.md` | persistence/app recovery | checkpoint/restore drills |
-| provider acquisition | `SESSION_NEWS_PROVIDER_CONTRACT.md` | app/session_news | provider tests |
+| provider acquisition/cache | `SESSION_NEWS_PROVIDER_CONTRACT.md` | app/session_news | provider/cache/retry/expiry tests |
 | broker-write safety | `EXECUTION_AND_BROKER_SAFETY.md` | execution | one-shot/reconcile/controller + DEMO |
 | learning boundaries | `40-research-learning/LEARNING_AND_AI_BOUNDARIES.md` | research | learning/governance tests |
 | chronological research | `RESEARCH_AND_VALIDATION.md` | research/replay | replay/holdout/stress evidence |
@@ -48,7 +49,7 @@ This matrix is not a substitute for semantic audit.
 | promotion | `GOVERNED_EXPERIMENTS_AND_PROMOTION.md` | research/promotion | stage/evidence tests |
 | discovery | `GOVERNED_STRATEGY_DISCOVERY.md` | research/discovery | candidate tests |
 | invention | `AUTONOMOUS_STRATEGY_INVENTION.md` | research/invention | primitive/complexity tests |
-| primary dashboard | `50-operator/DASHBOARD_AND_UX.md` | app/operator | dashboard authority tests |
+| primary dashboard | `50-operator/DASHBOARD_AND_UX.md` | app/operator | dashboard authority + provider/cache truth tests |
 | graphical dashboard | `GRAPHICAL_DASHBOARD.md` | graphical_dashboard/operator | local/read-only tests |
 | live terminal extension | `LIVE_DASHBOARD_CONTRACT.md` | operator | width/pulse/Gate truth tests |
 | file/test map | `60-engineering/FILE_AND_TEST_CATALOG.md` | whole repo | tree audit |
@@ -70,7 +71,7 @@ This matrix is not a substitute for semantic audit.
 | documentation method | `DOCUMENTATION_STANDARD.md` | whole repo | documentation audit |
 | preservation | `PRESERVATION_LEDGER.md` | governance | reference comparison |
 | documentation audit | `DOCUMENTATION_AUDIT.md` | governance | reconstructability review |
-| reference comparison | `DOCUMENTATION_COMPARISON.md` | governance | preserved/change map |
+| explicit Swing→Scalp delta | `DOCUMENTATION_COMPARISON.md` | governance | reference change audit |
 | legacy topology | `LEGACY_DOCS_RETIREMENT.md` | governance | one-authority review |
 | full subject coverage | this file | governance | semantic audit |
 | developer navigation | `CODER_GUIDE.md` | whole repo | build handoff review |
@@ -93,15 +94,25 @@ The manual explicitly covers:
 - min-lot affordability;
 - same-episode re-arm;
 - cost-aware replay;
+- cache-aware News provider failure without timestamp laundering;
+- conservative News UNKNOWN new-entry policy after cache expiry;
 - local-only runtime backup;
-- no shutdown Git auto-push.
+- low-GitHub development pull/ZIP backup;
+- no runtime Git publication;
+- explicit Swing→Scalp change ledger.
 
-## 4. Final completeness rule
+## 4. Current completeness state
 
-Before documentation freeze:
+Verified now:
 
-1. actual canonical tree must match the expected 64-file inventory;
-2. every matrix row must have a real canonical destination;
-3. fresh-zero Audit 1 must classify all major architecture choices;
-4. open questions must be resolved or explicitly CALIBRATE/EXTERNAL/DEFERRED;
-5. Documentation Audit must verify reconstructability without chat history.
+1. canonical tree has the expected 64-file inventory;
+2. each major subject has a canonical destination;
+3. Fresh-Zero Audit 1 classified the major architecture choices;
+4. architecture questions are closed or remaining work is classified implementation/calibration/external/deferred;
+5. explicit reference delta is durable in `DOCUMENTATION_COMPARISON.md`.
+
+Still required before final documentation freeze:
+
+- normalize legacy pre-challenge metadata/statuses in untouched documents;
+- finish semantic/cross-link reconstructability scan;
+- close `DOCUMENTATION_AUDIT.md` only when those checks are clean.

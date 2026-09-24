@@ -1,8 +1,8 @@
 # GoldScalpTrader — Dashboard and UX Contract
 
 **Status:** FROZEN V1 OPERATOR ARCHITECTURE — IMPLEMENTATION / CONNECTED PRESENTATION PROOF PENDING
-**Version:** 1.0-truthful-scalp-operator
-**Authority:** Operator visibility, typed dashboard mapping, primary terminal presentation, session/News truth, verified performance provenance and read-only controls.
+**Version:** 1.1-cache-aware-operator
+**Authority:** Operator visibility, typed dashboard mapping, primary terminal presentation, session/News/provider/cache truth, verified performance provenance and read-only controls.
 
 ## 1. Purpose
 
@@ -10,15 +10,16 @@ Within seconds the operator should understand:
 
 1. XAUUSDm feed/market health and current SELL/BUY;
 2. Soft Session, Hard Market State and News State;
-3. H1/M15/M5 market picture plus optional H4 and diagnostic M1;
-4. current BUY/SELL/Floor decision and why;
-5. Opportunity/timing/event freshness;
-6. actual TradePlan geometry, gross/cost-adjusted room and current executable quote;
-7. leading family/correlation/debate;
-8. STANDARD Risk/capacity/daily state;
-9. upstream blocker versus actual central Gate;
-10. ManagedTrade/Trade Manager state;
-11. verified learning/research/local-backup health.
+3. News provider health/source and whether a last-known-good cache is currently carrying accepted truth;
+4. H1/M15/M5 market picture plus optional H4 and diagnostic M1;
+5. current BUY/SELL/Floor decision and why;
+6. Opportunity/timing/event freshness;
+7. actual TradePlan geometry, gross/cost-adjusted room and current executable quote;
+8. leading family/correlation/debate;
+9. STANDARD Risk/capacity/daily state;
+10. upstream blocker versus actual central Gate;
+11. ManagedTrade/Trade Manager state;
+12. verified learning/research/local-backup health.
 
 Dashboard is presentation, not a second trading engine.
 
@@ -26,40 +27,61 @@ Dashboard is presentation, not a second trading engine.
 
 ```text
 market/intelligence/strategy/decision/TradePlan/Risk/execution/learning facts
++ session/news provider/cache facts
 + durable state/backup health
 → authoritative DashboardData / presentation DTO
 → terminal renderer
 → optional atomic read-only browser snapshot
 ```
 
-Presentation explains already-owned facts and never recalculates permission.
+Presentation explains already-owned facts and never recalculates permission or cache validity.
 
 ## 3. Display pulse versus decision cadence
 
-A fast display pulse may refresh PKT clock, Bid/Ask, spread, quote age, M5 countdown and already-owned broker facts without rerunning families, timing, TradePlan, Risk or Intent.
+A fast display pulse may refresh PKT clock, Bid/Ask, spread, quote age, M5 countdown, provider/cache age and already-owned broker facts without rerunning families, timing, TradePlan, Risk or Intent.
 
 Production bar-based setup/timing remains completed M5. M1 is diagnostic/research only.
 
-## 4. Session / News presentation
+## 4. Session / News / provider presentation
 
 Show separately:
 
 ```text
-Soft Session   ASIA / LONDON / NEW YORK / OVERLAP / OFF HOURS
-Hard Market    OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN
-News           CLEAR / BLACKOUT / UNKNOWN / POST_NEWS_WARMUP
+Soft Session      ASIA / LONDON / NEW YORK / OVERLAP / OFF HOURS
+Hard Market       OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN
+News              CLEAR / BLACKOUT / UNKNOWN / POST_NEWS_WARMUP
+Provider Health   VERIFIED / DEGRADED / STALE / UNAVAILABLE / UNKNOWN
+Provider Source   LIVE / FILE / LAST-KNOWN-GOOD CACHE where known
 Entry Permission  ALLOW / BLOCK / UNKNOWN as owned downstream
 ```
 
-Frozen V1 new-entry semantics:
+Frozen V1 semantics:
 
 ```text
-OPEN + CLEAR    → may proceed to remaining authorities
-OPEN + BLACKOUT → BLOCK
-OPEN + UNKNOWN  → BLOCK / LIMITED
+OPEN + accepted CLEAR from fresh source
+→ may proceed to remaining authorities
+
+OPEN + accepted CLEAR/BLACKOUT from still-valid LKG cache
+→ use owning News state
+→ Provider Health may be DEGRADED
+
+OPEN + NEWS_SAFETY_UNKNOWN because no valid current source/cache exists
+→ BLOCK / LIMITED for new entry
 ```
 
-Renderer never infers this independently; it displays owning permission facts. News UNKNOWN never appears as CLEAR. Existing management/protection/mandatory CLOSE remains action-sensitive.
+A refresh/API error is **not itself** News UNKNOWN. Renderer must display the owning provider/cache validity result rather than infer from network error text.
+
+News UNKNOWN never appears as CLEAR. A stale/expired cache never appears as valid merely because it was the last successful fetch. Existing management/protection/mandatory CLOSE remains action-sensitive.
+
+Useful provider fields when authoritative:
+
+```text
+last successful refresh
+last refresh error
+cache age
+cache valid-until / coverage window
+next accepted event + countdown
+```
 
 ## 5. Primary visual hierarchy
 
@@ -67,6 +89,9 @@ Renderer never infers this independently; it displays owning permission facts. N
 HEADER
   product / mode / PKT / Market / Session / News / Gate
   XAU SELL / BUY / spread / quote age / M5 countdown / Today P&L
+
+NEWS / PROVIDER
+  provider health / source / last success / cache age-validity / next event
 
 MARKET PICTURE
   H1 / M15 / M5
@@ -113,6 +138,10 @@ TradePlan DEGRADED/INVALID
 Risk BLOCK/UNKNOWN before Gate
 → Current Blocker: Risk
 → Gate: NOT EVALUATED
+
+News UNKNOWN owner blocks before Gate composition completes
+→ Current Blocker: News/Permission owner as applicable
+→ do not fabricate Gate BLOCKED if Gate never evaluated
 
 central Gate actually BLOCKS
 → Current Blocker: Execution Gate
@@ -173,4 +202,4 @@ src/gold_scalp_trader/app/loop.py
 
 ## 15. Planned proof
 
-Tests cover blocker-vs-Gate truth, width/fallback, presentation pulse without new decisions, frozen session/News truth, no-plan geometry, verified performance provenance, PKT/M5 countdown, M1 non-authority, STANDARD Risk mapping, open-trade mapping and read-only authority.
+Tests cover blocker-vs-Gate truth, width/fallback, presentation pulse without new decisions, fresh-provider versus valid-cache versus true-UNKNOWN rendering, no timestamp/validity inference in presentation, no-plan geometry, verified performance provenance, PKT/M5 countdown, M1 non-authority, STANDARD Risk mapping, open-trade mapping and read-only authority.

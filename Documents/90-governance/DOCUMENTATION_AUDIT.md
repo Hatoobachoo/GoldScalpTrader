@@ -1,30 +1,18 @@
 # GoldScalpTrader — Documentation Audit
 
-**Status:** DRAFT AUDIT PROTOCOL — NOT RUN
-**Version:** 0.1-canonical-manual-review
-**Authority:** Structural and expert-level review of the canonical `Documents/` manual.
+**Status:** ACTIVE FREEZE-PREPARATION AUDIT — STRUCTURAL INVENTORY VERIFIED, SEMANTIC/METADATA NORMALIZATION IN PROGRESS
+**Version:** 0.2-post-audit1-doc-review
+**Authority:** Structural and expert-level review of the canonical `Documents/` manual before implementation freeze.
 
 ## 1. Audit purpose
 
-This audit checks whether the manual is complete as a documentation system and whether a capable developer/AI can understand and continue the project without prior chat history.
+This audit checks whether the manual is complete as a documentation system and whether a capable developer/AI can reconstruct the project without prior chat history.
 
 It does not claim implementation, DEMO certification or profitability.
 
-## 2. Audit protects
+## 2. Structural inventory — VERIFIED
 
-1. useful reference meaning is preserved/adapted or explicitly rejected;
-2. every intended implementation/test area has a navigation/proof destination;
-3. diagrams/links/metadata are structurally usable;
-4. deterministic software evidence is distinct from broker/calibration proof;
-5. `Documents/` is reconstructable as durable manual;
-6. operator wording reflects real authority;
-7. no runtime Git auto-push appears accidentally;
-8. local backup/recovery design is consistently represented;
-9. no reference Swing threshold is presented as frozen scalp truth without decision/evidence.
-
-## 3. Structural inventory
-
-Expected reference-equivalent canonical inventory:
+The current canonical repository preserves the reference-equivalent inventory:
 
 ```text
 Top level                  7
@@ -36,77 +24,130 @@ Top level                  7
 50-operator                3
 60-engineering            14
 90-governance              8
-TOTAL                      64
+TOTAL                      64 Markdown documents
 ```
 
-The audit compares actual filenames/folders against this inventory.
+The canonical tree contains all corresponding document destinations required by the GoldSwingTraderAI preservation model.
 
-## 4. Metadata review
+## 3. Fresh-zero prerequisite — VERIFIED
 
-Every substantive document should carry:
+`AUDIT_1_FRESH_DESIGN_REVIEW.md` has been run and major architecture choices have been classified. The project is no longer in a pre-challenge architecture state.
+
+Audit 1 explicitly resolved:
+
+- timeframe authority;
+- six-family decomposition;
+- M1 production role;
+- gross + cost-aware geometry;
+- STANDARD risk-policy shape;
+- News UNKNOWN new-entry policy;
+- runtime mode scope;
+- time-efficiency management semantics;
+- logical versus physical parallelism;
+- development/source backup workflow.
+
+## 4. Semantic findings discovered during this audit
+
+### Finding A — News provider failure semantics needed refinement
+
+Problem found:
 
 ```text
-Status
-Version
-Authority
+provider/API failure
+→ previously implied immediate NEWS_UNKNOWN
 ```
 
-DRAFT/NOT RUN/CALIBRATION/EXTERNAL wording must match actual evidence state.
+That would make a temporary external API outage an unnecessary entry kill-switch even when a still-valid accepted calendar already existed.
 
-## 5. Semantic review
+Correction:
 
-Read every file end-to-end and check:
+```text
+refresh failure + valid last-known-good scoped cache
+→ use cached accepted event truth
+→ provider health may be DEGRADED
+
+refresh failure + expired/invalid/no cache
+→ NEWS_SAFETY_UNKNOWN
+→ V1 new-entry BLOCK / LIMITED
+```
+
+No cache timestamp/TTL laundering is permitted.
+
+Affected contracts/governance/operator summaries are synchronized in the same packet.
+
+### Finding B — Reference comparison/preservation documents were stale
+
+`DOCUMENTATION_COMPARISON.md` and `PRESERVATION_LEDGER.md` still described several decisions as pre-challenge/open even though Audit 1 had closed them.
+
+Correction: both are converted into post-Audit-1 explicit records, including a permanent Swing→Scalp delta table.
+
+### Finding C — Metadata normalization is not yet complete
+
+Some topic documents that were not materially rewritten during Audit 1 may still carry legacy `DRAFT PRE-CHALLENGE` metadata even when their architecture was preserved by Audit 1.
+
+Do **not** mark the documentation audit complete until every substantive document's Status/Version/Authority accurately reflects its current evidence state.
+
+## 5. Semantic review checklist
+
+The audit checks:
 
 - one owner per behaviour;
-- no contradictory timeframe roles;
-- no contradictory News UNKNOWN policy;
-- no contradictory risk/R/target thresholds;
-- parallel/serial architecture consistent;
-- persistence/local backup consistent;
+- consistent H1/M15/M5/H4/M1 roles;
+- consistent provider-cache/News UNKNOWN policy;
+- consistent STANDARD risk policy and no active legacy tier leakage;
+- no inherited 1.20R scalp requirement;
+- logical-parallel/serial-authority architecture consistency;
+- no trading-runtime Git publication path;
+- source backup separated from runtime recovery;
 - learning/research authority constrained;
-- dashboard blocker/Gate truth consistent;
-- module/test maps align with contracts;
-- top-level manuals summarize rather than override.
+- dashboard blocker vs actual Gate truth;
+- module/test maps aligned with topic contracts;
+- top-level manuals summarize rather than override topic owners.
 
 ## 6. Reconstructability test
 
-A new developer/AI with no chat history should be able to answer:
+A new developer/AI with no chat history must be able to answer from `Documents/` alone:
 
-- what the bot is trying to do;
-- what it must not do;
-- exact reading order;
-- which decisions remain open;
-- which work can be parallel;
-- where authority becomes serial;
-- how broker state is read/written/reconciled;
-- how local recovery works;
-- how learning/research is governed;
-- where code/tests will belong;
-- what evidence is still pending.
+- what the bot is and is not;
+- exact timeframe roles;
+- six strategy families and correlation rule;
+- Opportunity/timing/freshness semantics;
+- structural versus monetary Risk boundary;
+- News provider/cache/UNKNOWN behaviour;
+- execution authority/order/reconciliation lifecycle;
+- open-trade management/EXIT semantics;
+- runtime and source backup methods;
+- which values remain calibration/external proof;
+- what explicitly changed from GoldSwingTraderAI;
+- implementation dependency order.
 
-If not, documentation is incomplete.
+The explicit reference delta now lives in `DOCUMENTATION_COMPARISON.md`.
 
-## 7. Link/path/source truth
+## 7. Evidence truth
 
-Verify references point to current canonical filenames.
+Planned source/test paths remain planned until created. Later audit documents must not cite nonexistent PASS results.
 
-Planned source/test paths are labelled planned until they exist. Audit/test documents must not cite nonexistent PASS results.
-
-## 8. Reference-comparison review
-
-Use `DOCUMENTATION_COMPARISON.md`, `PRESERVATION_LEDGER.md` and `CONTENT_COVERAGE_MATRIX.md` to confirm no meaningful GoldSwingTraderAI design surface was silently lost.
-
-A change from reference must be explicit and justified, especially:
-
-- scalping timeframe/personality;
-- cost/freshness/time management;
-- risk thresholds;
-- News UNKNOWN policy;
-- shutdown/local backup design.
-
-## 9. Current state
+Current evidence classification remains:
 
 ```text
-AUDIT RESULT: NOT RUN
-Reason: the canonical scalp manual is still being completed and will undergo fresh-zero challenge before this structural audit is closed.
+architecture decision         available
+implementation proof          not yet available
+replay/calibration evidence   pending
+connected Exness proof        pending
+DEMO execution proof          pending
+profitability claim           none
 ```
+
+## 8. Current audit result
+
+```text
+STRUCTURAL INVENTORY          PASS
+FRESH-ZERO AUDIT PREREQUISITE PASS
+EXPLICIT REFERENCE DELTA      PASS after current sync packet
+NEWS CACHE SEMANTIC GAP       FIXED in current sync packet
+FULL 64-DOC METADATA NORMALIZATION  IN PROGRESS
+FULL RECONSTRUCTABILITY SIGN-OFF     NOT YET FINAL
+DOCUMENTATION FREEZE                NOT YET DECLARED COMPLETE
+```
+
+Implementation must not outrun the remaining metadata/cross-link normalization.

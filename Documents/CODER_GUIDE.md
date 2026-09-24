@@ -1,7 +1,7 @@
 # GoldScalpTrader — Coder Guide
 
-**Status:** POST-AUDIT-1 DEVELOPER MANUAL — CORE ARCHITECTURE SYNCHRONIZED, IMPLEMENTATION NOT STARTED
-**Version:** 1.0-fresh-zero-handoff
+**Status:** POST-AUDIT-1 DEVELOPER MANUAL — FREEZE-PREPARATION, IMPLEMENTATION NOT STARTED
+**Version:** 1.1-cache-aware-handoff
 **Authority:** Developer navigation, phase boundaries, source/test ownership, implementation traces and completion evidence.
 
 ## 1. Read before code
@@ -11,14 +11,15 @@ GoldScalpTrader is documentation-first. Topic contracts own behaviour; this guid
 Current sequence:
 
 ```text
-64-file canonical manual        COMPLETE
-Fresh-Zero Audit 1              COMPLETE
-Affected-graph synchronization  CURRENT / verify before implementation
-Freeze accepted contracts       after contradiction scan
-Implementation                  NOT STARTED
+64-file canonical manual           COMPLETE
+Fresh-Zero Audit 1                 COMPLETE
+Core affected-graph sync           COMPLETE
+Documentation metadata/cross-links CURRENT
+Final documentation freeze         PENDING audit closure
+Implementation                     NOT STARTED
 ```
 
-The old Python scaffold is provisional safety seed, not the final architecture.
+The old Python scaffold is provisional safety seed, not final architecture.
 
 ## 2. Authority reading order
 
@@ -31,6 +32,8 @@ The old Python scaffold is provisional safety seed, not the final architecture.
 7. Module Structure + File/Test Catalog;
 8. Documentation Standard;
 9. current source/tests/diff/evidence.
+
+For reference changes also read `90-governance/DOCUMENTATION_COMPARISON.md`.
 
 Repair contradictions before coding.
 
@@ -59,7 +62,7 @@ one normalized MT5 read boundary
 → local checkpoint/recovery
 ```
 
-> Logical parallel analysis, serial financial/broker authority.
+Logical parallel analysis, serial financial/broker authority.
 
 ## 4. Frozen V1 timeframe authority
 
@@ -102,7 +105,7 @@ Verified close precedes learning; restore precedes broker reconciliation; broker
 3   Intelligence
 4   Strategy / decision floor
 5   TradePlan + STANDARD monetary Risk
-6   Session/news + persistence/recovery
+6   Session/news provider/cache + persistence/recovery
 7   Execution/controller/reconciliation
 8   Trade Manager + close recovery
 9   Operator dashboards
@@ -147,9 +150,43 @@ Keep distinct gross structural geometry, Approved Entry Reference, current Bid/A
 
 Use one STANDARD policy. If theoretical volume is below broker minimum, evaluate actual minimum volume against structural stop and hard ceiling. Never tighten stop to make 0.01 fit.
 
-### News UNKNOWN
+### News provider / last-known-good cache
 
-Blocks V1 new entry. Management remains action-sensitive.
+Keep these separate:
+
+```text
+provider refresh health
+accepted event truth
+hard News permission
+```
+
+Canonical flow:
+
+```text
+live/file refresh succeeds
+→ validate schema/scope/coverage/TTL
+→ normalize event facts
+→ atomically update accepted LKG cache
+
+refresh fails
++ existing LKG cache still valid under ORIGINAL timestamps/coverage/TTL
+→ use cached accepted event truth
+→ provider may be DEGRADED
+
+refresh fails
++ cache expired/invalid/missing
+→ NEWS_SAFETY_UNKNOWN
+→ V1 new-entry BLOCK / LIMITED
+```
+
+Never rewrite `fetched_at`, `as_of`, coverage or `valid_until` merely because acquisition failed. Cache existence alone is not validity.
+
+Ownership:
+
+- `app/session_news.py`: provider/cache transport, atomic replacement, scope/schema/TTL/coverage/integrity;
+- `intelligence/news.py`: normalized event/tier facts;
+- `risk/permissions.py`: CLEAR/BLACKOUT/UNKNOWN permission semantics;
+- dashboard: display only, no cache validation authority.
 
 ### Time efficiency
 
@@ -157,19 +194,33 @@ No separate TIME_EXIT action; calibrated time weakness is an `EXIT` reason.
 
 ## 9. Pure function rule
 
-Prefer pure deterministic functions for indicator/structure/technical/liquidity derivation, family evaluation, fusion, TradePlan, already-known-fact monetary sizing and replay metrics.
+Prefer pure deterministic functions for indicator/structure/technical/liquidity derivation, event normalization, family evaluation, fusion, TradePlan, already-known-fact monetary sizing and replay metrics.
 
-Use stateful classes only for real resources/lifecycle such as MT5, StateStore, controller, Intent, recovery/runtime loop and Trade Manager.
+Use stateful components only for real resources/lifecycle such as MT5, provider/cache I/O, StateStore, controller, Intent, recovery/runtime loop and Trade Manager.
 
-## 10. UNKNOWN / corrupt / ambiguous
+## 10. UNKNOWN / corrupt / ambiguous examples
 
 ```text
-positions_get == []   → verified zero
-positions_get == None → unavailable, not zero
-News unavailable      → UNKNOWN, new-entry BLOCK
-future candle time    → CORRUPT
-unknown equity        → Risk UNKNOWN
-ambiguous send        → reconcile, never blind resend
+positions_get == []
+→ verified zero
+
+positions_get == None
+→ unavailable, not zero
+
+News refresh failed + valid LKG cache
+→ NOT automatically UNKNOWN; use accepted cached truth, provider may be DEGRADED
+
+News refresh failed + expired/invalid/no cache
+→ NEWS_SAFETY_UNKNOWN; new-entry BLOCK / LIMITED
+
+future candle/provider fetch time
+→ CORRUPT / reject
+
+unknown equity
+→ Risk UNKNOWN
+
+ambiguous broker send
+→ reconcile, never blind resend
 ```
 
 ## 11. Execution boundary
@@ -189,6 +240,8 @@ transactional StateStore
 
 No runtime Git commit/push/pull.
 
+Provider/cache files are current safety context and must be revalidated after restart; a restored cache never grants broker authority by itself.
+
 ## 13. Development/source backup
 
 Normal operator workflow after a major coherent bulk:
@@ -206,11 +259,13 @@ Do not create noisy micro-commit/pull cycles when one coherent bulk is safer. Gi
 
 Research may replay, measure, discover and propose. It cannot call writer, self-promote, mutate production dynamically, remove hard safety, convert counterfactual R into actual P/L or reuse final holdout during tuning.
 
-Scalp research explicitly preserves costs, latency, duration and minimum-lot affordability.
+Scalp research explicitly preserves costs, latency, duration, minimum-lot affordability and causal provider/cache truth.
 
 ## 15. Feature packet before coding
 
 For each material feature define purpose, one authority, typed inputs/freshness, output/state, logical parallel vs ordered work, failure semantics, persistence, tests, operator view, research effect, release proof and full affected documentation graph.
+
+For provider/cache features include acquisition failure, last-known-good reuse, expiry, restart, scope/schema mismatch and no-timestamp-laundering cases.
 
 ## 16. Test failure loop
 
@@ -247,7 +302,7 @@ Known ManagedTrade disappearance needs exact close proof before clearing/learnin
 ```text
 inspect main HEAD
 → read Documents/README
-→ Documentation Standard + Preservation Ledger
+→ Documentation Standard + Preservation Ledger + explicit Comparison
 → System Contract + Architecture
 → relevant topic + Decisions/Open Questions
 → Module Structure + File/Test Catalog
@@ -277,4 +332,4 @@ Do not claim these pass before actually run on exact revision/environment.
 
 ## 21. Next implementation dependency
 
-After the post-Audit-1 contradiction/reconstructability scan closes, implementation begins with packaging/config/domain/read-only market truth. It does **not** begin with MT5 order execution.
+Implementation begins only after `DOCUMENTATION_AUDIT.md` closes the freeze-preparation metadata/cross-link scan. First dependency is packaging/config/domain/read-only market truth, not MT5 order execution.

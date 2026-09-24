@@ -1,14 +1,14 @@
 # GoldScalpTrader — Final Build / Replication Prompt
 
 **Status:** POST-AUDIT-1 IMPLEMENTATION / REPLICATION BRIEF — IMPLEMENTATION NOT STARTED
-**Version:** 1.0-fresh-zero-handoff
+**Version:** 1.1-cache-aware-handoff
 **Authority:** Whole-project handoff for a capable coding AI/developer with no chat history. Topic contracts always override this summary.
 
 ## 1. Mission
 
 Build/verify/reconstruct **GoldScalpTrader**, a local Exness MT5 XAUUSD/XAUUSDm selective scalping system.
 
-It is an institutional-style governed multi-desk system, not a simple EMA bot and not HFT.
+It is a governed multi-desk system, not a simple EMA bot and not HFT.
 
 Canonical path:
 
@@ -98,17 +98,30 @@ Minimum-lot affordability uses actual broker facts. Do not tighten SL to make 0.
 
 Historical aggressive 8%/16% values are not active. Any later aggressive experiment is explicit, disabled by default and research-governed.
 
-## 8. Session / News
+## 8. Session / News / provider outage
 
 For new entry:
 
 ```text
-OPEN + NEWS_CLEAR    → may continue
-OPEN + NEWS_BLACKOUT → BLOCK
-OPEN + NEWS_UNKNOWN  → BLOCK / LIMITED
+OPEN + accepted NEWS_CLEAR    → may continue
+OPEN + accepted NEWS_BLACKOUT → BLOCK
+OPEN + NEWS_SAFETY_UNKNOWN   → BLOCK / LIMITED
 ```
 
-Existing management/protection/mandatory CLOSE remains action-sensitive. UNKNOWN never becomes CLEAR.
+Provider refresh failure is not automatically NEWS_UNKNOWN:
+
+```text
+refresh fails + valid last-known-good calendar
+→ retain accepted cached event truth
+→ provider health may be DEGRADED
+→ do not block merely because the newest refresh failed
+
+refresh fails + expired/invalid/no cache
+→ NEWS_SAFETY_UNKNOWN
+→ new-entry block
+```
+
+Last-known-good cache must preserve original fetch/as-of/coverage/valid-until timestamps. Never extend validity on failure. Existing management/protection/mandatory CLOSE remains action-sensitive.
 
 ## 9. Execution scope
 
@@ -171,7 +184,7 @@ Replay is chronological/no-lookahead and scalp research explicitly models costs,
 
 Terminal dashboard is primary read-only operator surface; optional localhost graphical dashboard is secondary/read-only. Presentation cannot recalculate authority.
 
-Show upstream blocker separately from actual Gate state.
+Show upstream blocker separately from actual Gate state. Show News provider health/source/cache age separately from News permission where implemented.
 
 ## 16. Engineering rules
 
@@ -179,10 +192,18 @@ Prefer smallest clear typed/auditable production code; MetaTrader5 calls stay at
 
 Every material change updates full affected Documents/source/tests/operator/research/release graph.
 
-## 17. Evidence boundary
+## 17. Explicit reference delta
 
-Never confuse frozen design, calibrated values, deterministic tests, replay, connected MT5 reads, controlled DEMO lifecycle, live learning, fresh-machine recovery and profitability.
+Before changing inherited behaviour, read:
 
-## 18. Current next step
+`90-governance/DOCUMENTATION_COMPARISON.md`
 
-Post-Audit-1 contradiction scan/freeze must be clean. Then implementation starts with packaging/config/domain/read-only MT5 market truth — not order execution.
+It is the permanent explicit GoldSwingTraderAI → GoldScalpTrader difference ledger. Preserve those differences unless a new governed decision supersedes them.
+
+## 18. Evidence boundary
+
+Never confuse frozen design, calibrated values, deterministic tests, replay, connected MT5 reads, News-provider/cache evidence, controlled DEMO lifecycle, live learning, fresh-machine recovery and profitability.
+
+## 19. Current next step
+
+Documentation Audit is normalizing remaining metadata/cross-links after Audit 1. Implementation begins only after that freeze-preparation scan is clean, starting with packaging/config/domain/read-only MT5 market truth — not order execution.

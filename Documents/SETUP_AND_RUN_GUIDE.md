@@ -1,12 +1,12 @@
 # GoldScalpTrader — Setup and Run Guide
 
 **Status:** POST-AUDIT-1 OPERATOR TARGET — IMPLEMENTATION PENDING
-**Version:** 1.0-local-pull-zip
-**Authority:** Intended installation, configuration, runtime modes, shutdown, local source/runtime backup, restore/migration and operator commands.
+**Version:** 1.1-cache-aware-local-pull-zip
+**Authority:** Intended installation, configuration, runtime modes, News provider/cache operation, shutdown, local source/runtime backup, restore/migration and operator commands.
 
 ## 1. Current truth
 
-The canonical architecture has completed Fresh-Zero Audit 1. The final package/runtime described here is still **not yet implemented or proven runnable**. Commands become proof only after implementation and exact-version verification.
+Fresh-Zero Audit 1 is complete. The final package/runtime described here is still not yet implemented or proven runnable. Commands become proof only after implementation and exact-version verification.
 
 ## 2. Intended V1 modes
 
@@ -29,15 +29,13 @@ M1   diagnostic/research only
 quote current executable Bid/Ask/spread/drift/health
 ```
 
-M1 must not appear in operator wording as hidden production trigger authority.
-
 ## 4. Intended prerequisites after implementation
 
 - Windows + MetaTrader 5;
 - intended Exness account/server for selected mode;
 - supported Python version verified against current MetaTrader5 package;
 - local repository checkout;
-- disk space for local state/backups;
+- disk space for local state/backups and News cache;
 - network for MT5 and approved optional News source, not for safe local shutdown;
 - real `.env`/machine credentials kept local and uncommitted.
 
@@ -55,11 +53,11 @@ python -m pip install -e ".[dev,mt5]"
 Copy-Item .env.example .env
 ```
 
-Current repository packaging is still provisional until implementation phase fixes `pyproject.toml`/src launch design. Do not claim this command is already proven.
+Current repository packaging is still provisional until implementation phase fixes `pyproject.toml`/src launch design.
 
 ## 6. Configuration families
 
-Expected configuration covers runtime mode, preferred/resolved Gold symbol, allowed account/server identity, magic/comment/deviation policy, state/backup paths, News/session provider, controller settings, STANDARD risk policy version, log level and manual daily-loss reset disabled by default.
+Expected configuration covers runtime mode, preferred/resolved Gold symbol, allowed account/server identity, magic/comment/deviation policy, state/backup paths, News/session provider, News cache path/TTL/refresh cadence, controller settings, STANDARD risk policy version, log level and manual daily-loss reset disabled by default.
 
 Hard trading thresholds come from frozen/versioned policy, not dashboard toggles.
 
@@ -73,17 +71,34 @@ A small account still receives truthful min-lot evaluation from actual equity/ti
 
 Historical aggressive 8%/16% values are not active policy. Any future aggressive experiment remains explicit and disabled by default.
 
-## 8. News operator truth
+## 8. News operator truth / API outage
 
 For new entry:
 
 ```text
-OPEN + News CLEAR    → may proceed to other authorities
-OPEN + News BLACKOUT → BLOCK
-OPEN + News UNKNOWN  → BLOCK / LIMITED
+OPEN + accepted News CLEAR    → may proceed to other authorities
+OPEN + accepted News BLACKOUT → BLOCK
+OPEN + NEWS_SAFETY_UNKNOWN   → BLOCK / LIMITED
 ```
 
-Existing-position protection/mandatory CLOSE is action-sensitive. Never display UNKNOWN as CLEAR.
+Temporary provider/API failure semantics:
+
+```text
+refresh fails + valid last-known-good cache
+→ keep cached event truth
+→ provider health may show DEGRADED
+→ no unnecessary entry block solely because refresh failed
+
+refresh fails + expired/invalid/no cache
+→ NEWS_SAFETY_UNKNOWN
+→ new entry blocked
+```
+
+The cache must keep its original fetch/as-of/coverage/valid-until timestamps. A failed refresh never makes old data look fresh.
+
+Operator/dashboard should show provider source, health, last successful refresh, cache age/valid-until and current News state separately where implemented.
+
+Existing-position protection/mandatory CLOSE remains action-sensitive.
 
 ## 9. READINESS
 
@@ -94,6 +109,7 @@ initialize MT5 read boundary
 → verify account/server/symbol
 → read SymbolSpec / Bid/Ask / positions
 → verify completed H1/M15/M5 data (+ optional H4, diagnostic M1 if enabled)
+→ read/revalidate session/news provider and LKG cache
 → report data/session/news/recovery/controller readiness
 ```
 
@@ -124,7 +140,7 @@ MT5 initialize
 → StateStore integrity
 → risk-day/cash-flow reconciliation
 → controller lease/epoch
-→ Session/News
+→ Session/News provider + cache validation
 → startup recovery/reconciliation
 → READY / RECONCILING / BLOCKED
 → governed M5/event loop
@@ -132,7 +148,7 @@ MT5 initialize
 
 ## 12. Dashboard sizing / authority
 
-Intended primary terminal can use narrow/wide read-only renderers plus safe fallback. Presentation never changes trading logic.
+Intended primary terminal uses read-only renderers plus safe fallback. Presentation never changes trading logic.
 
 Troubleshooting distinguishes upstream TradePlan/Risk stop from actual central Gate BLOCK.
 
@@ -157,19 +173,18 @@ There is deliberately no Git fetch/add/commit/push in runtime shutdown.
 
 Do not pull after every tiny patch.
 
-After a major coherent documentation/code bulk, ChatGPT will provide one checkpoint commit. On your Windows local clone run:
+After a major coherent documentation/code bulk, use the checkpoint commit supplied by ChatGPT and run:
 
 ```powershell
+cd "D:\Trading Bot\GoldScalpTrader"
 git pull --ff-only
 ```
 
-That single pull gives the local clone the latest files **and full Git history**.
-
-This is the normal source/development backup workflow and minimizes GitHub operations.
+That single pull updates the local clone and preserves full Git history.
 
 ## 15. Optional local ZIP after pull
 
-For another offline copy, a later helper may create a ZIP such as:
+For another offline copy, a helper may later create:
 
 ```text
 GoldScalpTrader_backup_<date>_<short-commit>.zip
@@ -177,9 +192,7 @@ GoldScalpTrader_backup_<date>_<short-commit>.zip
 
 Default archive excludes `.env`, credentials/private keys, virtualenvs, caches, logs, runtime databases/checkpoints and nested backup folders.
 
-Including `.git` inside ZIP is not needed by default because the working clone already has history. An advanced manual Git bundle can be offered separately if ever wanted.
-
-ZIP is preferred over RAR for the default workflow because Windows supports ZIP natively.
+ZIP is preferred over RAR for default Windows-native workflow.
 
 ## 16. Runtime backup root
 
@@ -217,6 +230,12 @@ python scripts/verify_documents_manual.py .
 
 GitHub Actions are not required.
 
-## 19. Proof boundary
+## 19. Explicit Swing → Scalp differences
 
-A future clean install/launch is proven only on the exact implemented revision/environment. Deterministic software proof, connected MT5 readiness, governed DEMO lifecycle, live learning, local restore and future strategy performance are separate evidence classes.
+For the permanent exact list read:
+
+`Documents/90-governance/DOCUMENTATION_COMPARISON.md`
+
+## 20. Proof boundary
+
+A future clean install/launch is proven only on the exact implemented revision/environment. Deterministic software proof, connected MT5 readiness, News-provider/cache proof, governed DEMO lifecycle, live learning, local restore and future strategy performance are separate evidence classes.

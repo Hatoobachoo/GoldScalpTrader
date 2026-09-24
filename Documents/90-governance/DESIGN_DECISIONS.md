@@ -1,7 +1,7 @@
 # GoldScalpTrader — Design Decision Ledger
 
 **Status:** POST-AUDIT-1 DECISION LEDGER — ARCHITECTURE DECISIONS ACTIVE
-**Version:** 1.0-fresh-zero-decisions
+**Version:** 1.1-cache-resilient-news
 **Authority:** Durable project decisions, supersession and rationale. Topic contracts own exact behaviour.
 
 ## 1. Status vocabulary
@@ -101,6 +101,7 @@ DEFERRED     deliberately outside current V1
 | DEC-103 | `Session OPEN + News UNKNOWN` blocks **new entry** in V1 while management/protection/mandatory CLOSE remain action-sensitive | conservative scalp exposure to immediate event risk | ACTIVE |
 | DEC-104 | PRE_CLOSE two-stage mechanism retained; exact times recalibrate | safe flattening without copying Swing minutes | CALIBRATE |
 | DEC-105 | Reopen warmup retained; exact clean-bar requirements recalibrate | first quote is not normalized market proof | CALIBRATE |
+| DEC-106 | A temporary News API/provider refresh failure may reuse last-known-good event truth only while original scope/schema/coverage/TTL remain valid; failure never refreshes timestamps, and expired/invalid cache becomes News UNKNOWN | avoid needless provider kill-switch without accepting stale safety truth | ACTIVE |
 
 ## 8. Execution / lifecycle
 
@@ -156,12 +157,12 @@ DEFERRED     deliberately outside current V1
 
 ## 12. Freeze rule
 
-Audit 1 has resolved the fresh-zero architecture questions. Topic contracts affected by these decisions must be synchronized before implementation begins.
+Audit 1 has resolved the fresh-zero architecture questions. Topic contracts affected by these decisions must remain synchronized before implementation begins.
 
-After synchronization, architecture can be FROZEN while:
+Architecture may be FROZEN while:
 
 - numeric thresholds remain `CALIBRATION PENDING`;
-- broker/platform behaviours remain `EXTERNAL PROOF PENDING`;
-- implementation/test evidence remains not-yet-run until the exact code exists.
+- broker/platform/provider behaviours remain `EXTERNAL PROOF PENDING`;
+- implementation/test evidence remains not-yet-run until exact code exists.
 
 No decision in this ledger is a profitability guarantee.

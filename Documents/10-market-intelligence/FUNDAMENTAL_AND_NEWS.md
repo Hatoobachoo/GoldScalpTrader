@@ -1,66 +1,71 @@
 # GoldScalpTrader — Fundamental and News Intelligence
 
-**Status:** DRAFT PRE-CHALLENGE INTELLIGENCE CONTRACT
-**Version:** 0.1-scalp-news
-**Authority:** Gold/USD macro context, scheduled-event facts, provider health, event windows, post-event stabilization and news-safety input semantics.
+**Status:** FROZEN V1 NEWS INTELLIGENCE ARCHITECTURE — EVENT MAPPING/WINDOW CALIBRATION PENDING
+**Version:** 1.0-cache-resilient-news
+**Authority:** Gold/USD macro context, scheduled-event facts, provider health/freshness, last-known-good calendar semantics, blackout inputs and post-event stabilization.
 
 ## 1. Purpose
 
-News/fundamental information enters the system through distinct meanings:
+News/fundamental information enters through three distinct meanings:
 
-1. factual scheduled-event data;
+1. factual scheduled-event truth;
 2. optional soft macro interpretation;
-3. known event-blackout safety.
+3. known event-blackout safety input.
 
-The first two are intelligence. Hard entry blocking for known event windows belongs to the permission state machine. Provider code never places an order and missing data never becomes fake `NEWS_CLEAR`.
+Provider code never places an order. Missing data never becomes fake `NEWS_CLEAR`.
 
 ## 2. Authority split
 
 | Information | Owner | May influence | Must never do |
 |---|---|---|---|
-| USD/rates/yields/Fed/inflation/risk context | intelligence | explanation/bounded support | override contrary price structure alone |
+| USD/rates/yields/Fed/inflation/risk context | intelligence | explanation/bounded support | override price structure alone |
 | Scheduled event fact | intelligence/news | tier/window/research | place trade |
-| Provider freshness/scope | provider + normalizer | NEWS_UNKNOWN/degraded truth | silently mean “no news” |
+| Provider freshness/scope/cache validity | provider + normalizer | CLEAR/BLACKOUT/UNKNOWN truth | silently mean “no news” |
 | Broker session/reopen | session/permissions | hard market state | be inferred from missing event data |
 | Known event blackout | risk/permissions | hard new-entry block | bypass event mapping/versioning |
-| Final execution permission | central gate | allow/block action | bypass identity/risk/controller/execution checks |
+| Final execution permission | central Gate | allow/block action | bypass identity/risk/controller/execution checks |
 
-## 3. Independent session and news truth
+## 3. Frozen V1 News safety rule
 
-Session and News must remain separate sub-authorities.
-
-Examples:
+Session and News remain separate sub-authorities.
 
 ```text
-Market CLOSED + News UNKNOWN
-→ new entry blocked because market is CLOSED
+Market CLOSED + News unavailable
+→ new entry blocked by Market state
 
-Market OPEN + News UNKNOWN
-→ analytical floor may continue
-→ final treatment of new entry follows the approved news-unknown policy
+Market OPEN + fresh provider/calendar truth
+→ classify CLEAR / BLACKOUT / POST_NEWS_WARMUP
 
-Market OPEN + News BLACKOUT
-→ analysis may continue
-→ new broker entry blocked for the known window
+Market OPEN + provider/API fetch failure
++ last-known-good scoped calendar still valid inside approved TTL/coverage window
+→ continue using that exact cached event truth
+→ provider health may be DEGRADED
+→ do NOT manufacture NEWS_UNKNOWN merely because the latest refresh failed
+
+Market OPEN + provider/API fetch failure
++ no valid last-known-good cache, or cache expired/stale/scope-invalid/current-week-invalid
+→ NEWS_SAFETY_UNKNOWN
+→ V1 new-entry BLOCK / LIMITED
 ```
 
-The baseline inherits the reference principle that provider degradation stays visible and does not erase independently known market-session truth.
+A cache may preserve already-verified event truth; it may never refresh its own timestamp or pretend stale data is current.
 
 ## 4. Provider topology
 
-The project should support a normalized provider boundary rather than embedding provider-specific semantics into strategies.
+The runtime uses a normalized provider boundary rather than embedding provider-specific semantics inside strategies.
 
-Possible sources include:
+Candidate zero-cost inputs include:
 
-- operator-supplied scoped local JSON/calendar data;
-- a zero-cost/best-effort public calendar adapter if approved;
-- later optional source adapters that do not introduce required paid dependencies.
+- approved local scoped JSON/calendar snapshot;
+- bounded best-effort public economic-calendar adapter;
+- last-known-good normalized cache from a previously successful current-coverage fetch;
+- later optional adapters that do not become mandatory paid dependencies.
 
-No provider credential is stored in the repository.
+Provider credentials never enter the repository or normal backup artifacts.
 
-## 5. Input normalization
+## 5. Event normalization
 
-A scheduled event fact should preserve:
+A scheduled event fact preserves at least:
 
 ```text
 provider_event_id
@@ -71,17 +76,38 @@ impact/tier
 provider identity/health
 fetched_at_utc
 as_of_utc
-freshness TTL
-mapping version
+freshness TTL / valid-until semantics
+coverage window
+mapping/schema version
+source = LIVE_FETCH | LOCAL_FILE | LAST_KNOWN_GOOD_CACHE
 ```
 
-Timestamps are timezone-aware UTC and event IDs are stable enough for deduplication.
+Timestamps are timezone-aware UTC. Stable IDs support deduplication.
 
-Malformed, stale or unsupported provider data remains explicit UNKNOWN/DEGRADED truth.
+Malformed, future-dated, stale, unsupported or wrong-scope data is not accepted as current event truth.
 
-## 6. Event tiers
+## 6. Last-known-good cache contract
 
-The initial architecture retains three conceptual classes:
+The cache exists to avoid making a temporary API/network failure a needless trading kill-switch while preserving conservative stale-data safety.
+
+A cached calendar is usable only when all applicable checks pass:
+
+- it came from a previously accepted provider response/file;
+- schema/mapping version is accepted;
+- intended runtime scope matches;
+- fetch/as-of time is causal and not future-dated;
+- current calendar coverage is still valid for the decision time;
+- configured TTL/valid-until boundary has not expired;
+- payload integrity is intact;
+- no later positively known invalidation/holiday/schedule fact supersedes it.
+
+A failed refresh does **not** rewrite `fetched_at_utc`, `as_of_utc`, coverage or event times.
+
+When validity expires, the cache becomes stale context only and V1 News state becomes UNKNOWN unless another accepted source provides current truth.
+
+## 7. Event tiers
+
+The architecture retains conceptual tiers such as:
 
 ```text
 TIER_1  critical Gold/USD shock risk
@@ -89,93 +115,74 @@ TIER_2  high-impact USD risk
 TIER_3  contextual event
 ```
 
-Examples may include Fed decisions/speeches, CPI, NFP, PCE, GDP, PPI, ISM, retail sales and labour releases.
+Exact title/category mapping remains versioned and calibration/governance controlled. Free-text matching cannot silently create a new hard rule.
 
-Exact mapping is versioned and challengeable. Free-text matching must not quietly create undocumented hard rules.
+## 8. Blackout and post-news windows
 
-## 7. Blackout windows are not frozen yet
+The Swing reference mechanism is preserved, but exact durations are not copied as scalp truth.
 
-The Swing reference used defined Tier-1/Tier-2 before/after windows. GoldScalpTrader will preserve the mechanism but **not blindly freeze the same durations**.
-
-Scalping is more sensitive to spread, slippage and immediate post-release dislocation, so blackout/warmup duration requires dedicated replay plus connected DEMO evidence.
-
-The policy contract must eventually define:
+Scalping is more sensitive to spread/slippage/immediate dislocation. Final policy calibrates:
 
 ```text
 pre_event_blackout
 post_event_blackout
 post_news_warmup
-required clean completed bars and/or stable spread condition
+clean completed-M5 requirement
+spread/quote/volatility normalization
 ```
 
-Until frozen, these are open calibration/policy items.
-
-## 8. Post-news stabilization
-
-A scheduled event ending does not prove that execution conditions normalized.
-
-The final design may require some combination of:
-
-- elapsed post-event time;
-- at least one clean completed M5 bar;
-- spread returning below an approved threshold;
-- quote freshness;
-- absence of dislocated volatility;
-- fresh non-chased structural opportunity.
-
-No single criterion is assumed final before challenge.
+A scheduled event ending does not itself prove execution normalized.
 
 ## 9. Optional macro context
 
-Optional macro inputs may later include DXY/USD direction, yields/rate expectations, Fed policy, inflation/labour/growth and reliable risk/geopolitical context.
+DXY/USD direction, yields/rate expectations, Fed policy, inflation/labour/growth and reliable risk/geopolitical context remain optional soft evidence with source/time/TTL/confidence/counter-evidence.
 
-These remain soft evidence with source/fetch time/TTL/confidence and counter-evidence. They cannot create broker authority or reverse clear price structure by themselves.
+They cannot create broker authority or reverse clear price structure alone.
 
-The initial project must not depend on a commercial macro API.
+V1 does not require a paid macro API.
 
 ## 10. Unscheduled shocks
 
-Calendar truth is incomplete by nature. Unscheduled moves still have to be handled through independent market/execution safety:
+Calendar truth is inherently incomplete. Independent market/execution safety still handles:
 
 - abrupt spread expansion;
 - quote gaps;
 - extreme velocity/dislocation;
 - stale feed;
-- executable drift;
+- excessive executable drift;
 - broker rejection/requote behaviour.
 
-News intelligence must not pretend to provide complete breaking-news awareness.
+News intelligence never claims complete breaking-news awareness.
 
 ## 11. Existing positions
 
-A known news blackout primarily blocks new entries. It does not automatically force-close every existing managed trade.
+Known blackout or News UNKNOWN primarily affects **new entries/re-entries**.
 
-Trade Manager and hard market/session safety own protective management/exit policy. PRE_CLOSE or other hard safety may independently require flattening.
-
-News UNKNOWN must never block necessary risk-reducing management solely because an optional provider is degraded.
+Existing verified bot trade protection, governed MODIFY and necessary risk-reducing CLOSE remain action-sensitive. News-provider failure alone must not trap unwanted exposure.
 
 ## 12. Restart/replay
 
-Restart refreshes current provider facts and cannot reuse expired `NEWS_CLEAR` beyond its TTL.
+Restart revalidates any cached provider data against current time, scope, schema and coverage. An old cache does not become fresh because the process restarted.
 
-Historical replay may only use event/provider facts knowable at the simulated timestamp. Later calendar revisions cannot leak backward.
+Replay may use only event/provider/cache truth knowable at the simulated timestamp. Later calendar revisions must not leak backward.
 
-Any research claim involving news must state provider coverage and UNKNOWN periods.
+## 13. Dashboard / diagnostics
 
-## 13. Dashboard/research visibility
-
-Operator view should expose separately:
+Show separately where useful:
 
 ```text
-Market State      OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN
-News State        CLEAR / BLACKOUT / UNKNOWN / POST_NEWS_WARMUP
-Provider          identity + health + freshness
-Next Event        title + tier + countdown
-Reason            stable explicit reason
-Entry Permission  ALLOW / BLOCK / UNKNOWN from owning authority
+Market State
+News State
+Provider identity + health
+Source LIVE / FILE / LKG CACHE
+Last successful refresh
+Cache age / valid-until
+Next accepted event + tier + countdown
+Refresh error if present
+Entry Permission from owning authority
 ```
 
-Research stores event IDs/windows, mapping version, provider health, as-of/fetch timestamps and whether the event affected hard permission or only soft context.
+`DEGRADED + VALID CACHE` is different from `NEWS_UNKNOWN`.
 
 ## 14. Planned implementation ownership
 
@@ -188,20 +195,14 @@ src/gold_scalp_trader/intelligence/snapshot.py
 
 ## 15. Planned proof
 
-Tests must cover event normalization/deduplication, TTL/freshness, tier mapping, overlapping windows, independent session/news truth, provider failure without fake CLEAR, known blackout hard block, restart expiry and replay no-lookahead.
+Tests must cover normalization/deduplication, TTL/coverage, accepted last-known-good reuse after refresh failure, no timestamp laundering, cache expiry → UNKNOWN, scope/schema mismatch rejection, known blackout preservation, restart revalidation and replay no-lookahead.
 
-Actual provider reliability, broker holiday schedules and real-event execution conditions remain external/calibration evidence.
+Provider reliability and real-event execution remain external/calibration evidence.
 
 ## 16. Explicit non-goals
 
-This desk must not place orders, claim complete real-time breaking-news coverage, make macro opinion a hard directional rule, convert provider failure to CLEAR, fabricate broker OPEN/CLOSED or force-close merely because an event is scheduled.
+This layer must not place orders, claim complete real-time news coverage, convert provider failure to CLEAR, extend cache validity by rewriting timestamps, use wrong-scope cache, fabricate broker OPEN/CLOSED or force-close merely because an event is scheduled.
 
-## 17. Pre-challenge questions
+## 17. Calibration pending
 
-- exact Tier-1/Tier-2 event mappings;
-- pre/post blackout durations for scalping;
-- spread/volatility stabilization requirements;
-- how News UNKNOWN affects new entries in V1;
-- whether any public provider is reliable enough for default use;
-- historical news dataset strategy for replay;
-- whether optional macro context earns measurable out-of-sample value.
+Exact Tier mappings, provider/cache TTL, proactive refresh cadence, pre/post blackout duration, post-news normalization and default zero-cost provider selection remain evidence/configuration questions.

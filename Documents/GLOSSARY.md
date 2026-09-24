@@ -1,7 +1,7 @@
 # GoldScalpTrader — Shared Glossary
 
 **Status:** FROZEN V1 REFERENCE — CALIBRATION / EXTERNAL PROOF TERMS REMAIN CLASSIFIED
-**Version:** 1.0-post-fresh-zero-terms
+**Version:** 1.1-cache-aware-terms
 **Authority:** Plain-language vocabulary shared by the canonical `Documents/` manual.
 
 ## 1. Core architecture
@@ -67,7 +67,20 @@
 | Cost-dominated setup | Structural room is insufficient relative to transaction costs under owning policy. |
 | Price drift | Movement between Approved Entry Reference and current executable quote/fill. |
 
-## 5. Risk / permission
+## 5. News / provider vocabulary
+
+| Term | Canonical meaning |
+|---|---|
+| News CLEAR | Accepted current event-safety truth with no configured blackout/warmup. Source may be fresh provider/file or still-valid LKG cache. |
+| News BLACKOUT | Positively known configured high-impact event window; hard new-entry block. |
+| News UNKNOWN / NEWS_SAFETY_UNKNOWN | Current News safety cannot be proved because no accepted fresh source or valid LKG cache exists; V1 blocks new entry while management remains action-sensitive. |
+| Provider Health | Condition of the acquisition source such as VERIFIED, DEGRADED, STALE, UNAVAILABLE or UNKNOWN; not identical to News truth. |
+| Last-known-good (LKG) News cache | Previously accepted normalized calendar reused only while original scope/schema/coverage/TTL/integrity remain valid. |
+| Cache timestamp laundering | Prohibited act of rewriting old fetch/as-of/valid-until values so stale cached News appears fresh. |
+| Provider DEGRADED + valid cache | Latest refresh may have failed, but accepted cached event truth is still within its original validity; does not itself mean News UNKNOWN. |
+| Cache expiry | Original TTL/coverage boundary has passed; cache becomes stale context only and cannot support News CLEAR. |
+
+## 6. Risk / permission
 
 | Term | Canonical meaning |
 |---|---|
@@ -78,13 +91,11 @@
 | Structural stop | Thesis invalidation price; never altered merely to make volume affordable. |
 | Original R | Initial structural risk preserved for later evaluation. |
 | UNKNOWN | Required truth cannot be proved; never equivalent to PASS/CLEAR/zero. |
-| News UNKNOWN | News-safety truth cannot be established; V1 blocks **new entry**, while management remains action-sensitive. |
-| News BLACKOUT | Positively known configured high-impact window; hard new-entry block. |
 | Current Blocker | Actual owning stage currently preventing progress. |
 | Gate NOT EVALUATED | Candidate stopped upstream before central Gate ran. |
 | Gate BLOCKED | Central Gate actually evaluated and returned BLOCK. |
 
-## 6. Execution / ownership
+## 7. Execution / ownership
 
 | Term | Canonical meaning |
 |---|---|
@@ -95,7 +106,7 @@
 | External/manual exposure | Broker Gold exposure not proven bot-owned; never silently adopted. |
 | Verified close | Exact known-trade broker lineage/outcome proven sufficiently for accounting/learning. |
 
-## 7. Runtime modes
+## 8. Runtime modes
 
 | Term | Canonical meaning |
 |---|---|
@@ -105,7 +116,7 @@
 | REAL | Deferred V1; requires separate future governance. |
 | STANDBY | Same-scope cross-machine role intentionally unsupported in local-state V1. |
 
-## 8. Backup / recovery
+## 9. Backup / recovery
 
 | Term | Canonical meaning |
 |---|---|
@@ -118,7 +129,7 @@
 | Sequential handoff | Move one account/symbol scope between machines without simultaneous writers. |
 | Same-scope split brain | Two independent active writers/state histories for same scope; prohibited in V1. |
 
-## 9. Learning / research
+## 10. Learning / research
 
 | Term | Canonical meaning |
 |---|---|
@@ -131,7 +142,7 @@
 | Shadow | Forward hypothetical evaluation with zero broker authority. |
 | DEMO Canary | Governed candidate evaluated through normal DEMO safety gates. |
 
-## 10. Evidence/status
+## 11. Evidence/status
 
 | Term | Canonical meaning |
 |---|---|
@@ -145,4 +156,4 @@
 | Affected graph | Full docs/source/tests/operator/research/release surface made stale by a material change. |
 | Fresh-zero challenge | Audit asking what would be kept/changed/removed/added if designed today from zero. |
 
-GoldSwingTraderAI remains preservation/reference material; current GoldScalpTrader topic contracts and active Design Decisions are authority.
+GoldSwingTraderAI remains preservation/reference material; current GoldScalpTrader topic contracts and active Design Decisions are authority. Explicit reference differences are recorded in `90-governance/DOCUMENTATION_COMPARISON.md`.

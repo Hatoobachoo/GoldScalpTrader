@@ -1,14 +1,14 @@
 # GoldScalpTrader — User Manual
 
 **Status:** POST-AUDIT-1 USER GUIDE — IMPLEMENTATION PENDING
-**Version:** 1.0-fresh-zero-user
+**Version:** 1.1-cache-aware-news-user
 **Authority:** Human-facing intended operation and interpretation; topic contracts own trading behaviour.
 
 ## 1. What the bot is intended to do
 
 GoldScalpTrader is a local Exness MT5 XAUUSD/XAUUSDm system for selective short-duration Gold scalps. It is a governed multi-desk system, not a simple EMA cross bot and not HFT.
 
-Current architecture is frozen after Fresh-Zero Audit 1, but final runtime/broker-write implementation is not yet claimed complete.
+Fresh-Zero Audit 1 is complete. Final runtime/broker-write implementation is not yet claimed complete.
 
 ## 2. Frozen trading personality
 
@@ -21,7 +21,7 @@ M1   diagnostic/research only
 quote current executable Bid/Ask/spread/drift/health
 ```
 
-It prefers fresh, cost-aware, clearly invalidatable scalps and refuses late/stale/cost-dominated setups.
+The system prefers fresh, cost-aware, clearly invalidatable scalps and refuses late/stale/cost-dominated setups.
 
 ## 3. Intended future workflow
 
@@ -68,7 +68,7 @@ All six do not need to agree. Correlated evidence from the same event is not cou
 
 ## 6. Opportunity / freshness
 
-A strong idea can wait for efficient entry. Outcomes include WAIT, ENTER, MISSED and INVALID. Terminal setup does not reset on next poll; re-arm needs a genuinely fresh causal event.
+A strong idea can wait for efficient entry. Outcomes include WAIT, ENTER, MISSED and INVALID. Terminal setup does not reset on the next poll; re-arm needs a genuinely fresh causal event.
 
 M1 cannot independently create a V1 production entry.
 
@@ -76,7 +76,7 @@ M1 cannot independently create a V1 production entry.
 
 TradePlan creates structural Entry Reference, invalidation/SL, Primary/optional Expansion/exceptional Runner objectives and original R before money sizing.
 
-It also retains current known cost-adjusted room. Swing's old 1.20R floor is not automatically used; exact scalp thresholds remain calibration pending.
+It also retains cost-adjusted room. Swing's old 1.20R floor is not automatically used; exact scalp thresholds remain calibration pending.
 
 Structural stop is never tightened just to make minimum lot fit.
 
@@ -97,17 +97,32 @@ Current 0.50% scaffold is provisional. Historical 8%/16% aggressive values are n
 
 No martingale, grid rescue or averaging down. One independent Gold risk position per scope.
 
-## 9. Session / News
+## 9. Session / News and API failure
 
 For new entry:
 
 ```text
-OPEN + CLEAR    → may proceed
-OPEN + BLACKOUT → BLOCK
-OPEN + UNKNOWN  → BLOCK / LIMITED
+OPEN + current News CLEAR    → may proceed
+OPEN + current News BLACKOUT → BLOCK
+OPEN + NEWS_SAFETY_UNKNOWN  → BLOCK / LIMITED
 ```
 
-UNKNOWN is never shown as CLEAR. Existing-position protection/mandatory CLOSE remains action-sensitive.
+A temporary API/provider error does **not** automatically mean UNKNOWN:
+
+```text
+API refresh fails
++ last successful calendar is still valid inside its original scope/coverage/TTL
+→ use that cached accepted calendar
+→ provider can show DEGRADED
+→ trade is not blocked merely because this one refresh failed
+
+API refresh fails
++ cache expired/invalid/missing
+→ NEWS_SAFETY_UNKNOWN
+→ new entry blocked
+```
+
+The bot never changes an old cache timestamp just to keep trading. Existing-position protection/mandatory CLOSE remains action-sensitive.
 
 ## 10. Management
 
@@ -148,14 +163,22 @@ git pull --ff-only
 
 Your local clone then contains the latest project and full Git history. Optionally create a secret-clean Windows ZIP after important milestones for another offline copy. No need to pull after every tiny patch.
 
-## 15. DRY_RUN meaning
+## 15. Exact Swing → Scalp differences
+
+The permanent detailed record is:
+
+`Documents/90-governance/DOCUMENTATION_COMPARISON.md`
+
+It records the explicit timeframe, risk, News, R, management, concurrency, runtime mode and backup changes from GoldSwingTraderAI.
+
+## 16. DRY_RUN meaning
 
 DRY_RUN may exercise market→decision→TradePlan→Risk→Gate diagnostics but sends no irreversible broker order and cannot prove fills/slippage/reconciliation/profitability.
 
-## 16. Troubleshooting
+## 17. Troubleshooting
 
-If waiting, read Current Blocker, Gate separately, human explanation and health/logs. Do not weaken safety merely to force a trade, delete state to reset locks or run a same-scope second writer.
+If waiting, read Current Blocker, Gate separately, human explanation, News provider/cache state and health/logs. Do not weaken safety merely to force a trade, delete state to reset locks or run a same-scope second writer.
 
-## 17. Current proof boundary
+## 18. Current proof boundary
 
-Architecture Audit 1 is complete. Final package/runtime/tests/DEMO execution/learning/local recovery are still implementation or external evidence work. No profitability claim exists.
+Architecture Audit 1 is complete. Documentation freeze preparation is still normalizing metadata/cross-links. Final package/runtime/tests/DEMO execution/learning/local recovery remain implementation or external evidence work. No profitability claim exists.
