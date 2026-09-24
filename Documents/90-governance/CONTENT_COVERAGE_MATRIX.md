@@ -1,14 +1,14 @@
 # GoldScalpTrader — Documentation Content Coverage Matrix
 
-**Status:** POST-AUDIT-1 FREEZE-PREPARATION COVERAGE MAP — STRUCTURAL + PRESERVATION COVERAGE VERIFIED
-**Version:** 1.1-preservation-first-coverage
+**Status:** FINAL DOCUMENTATION REVIEW READY — STRUCTURAL / PRESERVATION / RECONSTRUCTABILITY COVERAGE VERIFIED
+**Version:** 1.2-final-coverage-pass
 **Authority:** Proof that the canonical manual covers intended design, preserved reference features/defaults, scalp-specific deltas, implementation ownership, proof and operator surfaces.
 
 ## 1. Purpose
 
-This is a loss-prevention/navigation map, not a substitute for semantic audit.
+This is a loss-prevention/navigation map. Every substantive subject must have a canonical destination, intended implementation owner and proof route. Inherited behaviour must be classifiable as preserved, genuine scalp-specific, operator-directed or defect-corrected.
 
-Every substantive subject must have a canonical destination, intended implementation owner and proof route. Inherited behaviour must also be classifiable as preserved, genuine scalp-specific, operator-directed or defect-corrected.
+This matrix proves documentation coverage only; it does not claim code/test/DEMO evidence.
 
 ## 2. Core coverage matrix
 
@@ -40,12 +40,12 @@ Every substantive subject must have a canonical destination, intended implementa
 | manual/external activity / cash flow | `BROKER_ACTIVITY_AND_MANUAL_TRADES.md` | market_data/activity | activity/accounting tests |
 | PRE_CLOSE/reopen + permission composition | `SESSION_AND_RISK_STATE_MACHINE.md` | risk/permissions | state-machine tests + connected schedule |
 | persistence/restart/local recovery | `PERSISTENCE_RESTART_AND_RECOVERY.md` | persistence/app recovery | checkpoint/restore drills |
+| learning/recovery multi-machine | `LEARNING_BACKUP_AND_MULTI_MACHINE.md` | persistence/research | full-state handoff tests |
 | no-runtime-Git + source pull/ZIP workflow | persistence/learning-backup/setup guides | persistence/scripts/operator | source/runtime separation review |
 | broker-write safety + future REAL gate | `EXECUTION_AND_BROKER_SAFETY.md` | execution | one-shot/reconcile/DEMO/release |
 | learning boundaries | `40-research-learning/LEARNING_AND_AI_BOUNDARIES.md` | research | learning/governance tests |
 | chronological research | `RESEARCH_AND_VALIDATION.md` | research/replay | replay/holdout/stress |
 | actual DEMO learning | `LIVE_DEMO_LEARNING_PIPELINE.md` | research/live_learning | exact-close exactly-once DEMO |
-| learning backup/machines | `LEARNING_BACKUP_AND_MULTI_MACHINE.md` | persistence/research | recovery/handoff |
 | promotion | `GOVERNED_EXPERIMENTS_AND_PROMOTION.md` | research/promotion | stage/evidence tests |
 | discovery | `GOVERNED_STRATEGY_DISCOVERY.md` | research/discovery | candidate/preservation tests |
 | invention | `AUTONOMOUS_STRATEGY_INVENTION.md` | research/invention | primitive/complexity tests |
@@ -83,25 +83,15 @@ Every substantive subject must have a canonical destination, intended implementa
 
 ## 3. Genuine scalp-specific coverage
 
-The manual explicitly covers:
-
-- H1/M15/M5 scalp hierarchy with H4 optional and M1 diagnostic only;
-- event/trigger freshness and anti-chase;
-- gross + cost-adjusted target room;
-- no automatic inherited 1.20R hard scalp floor;
-- spread/slippage/drift/latency observability;
-- News UNKNOWN new-entry block with valid-LKG-cache resilience;
-- exceptional Runner;
-- time/efficiency EXIT;
-- cost/latency/duration/capture research.
+The manual explicitly covers H1/M15/M5 hierarchy with H4 optional and M1 diagnostic only; event/trigger freshness/anti-chase; gross plus cost-adjusted room; no automatic inherited 1.20R hard scalp floor; spread/slippage/drift/latency observability; News UNKNOWN block + valid LKG cache resilience; exceptional Runner; time/efficiency EXIT; and cost/latency/duration/capture research.
 
 ## 4. Preserved reference-default coverage
 
-The manual also explicitly preserves:
+Explicitly preserved:
 
 - SMALL/MEDIUM/NORMAL Risk profiles and canonical bands;
 - disabled-by-default aggressive small-account operational option;
-- 8% maximum SL-risk ceiling as ceiling, not target;
+- 8% max SL-risk ceiling as ceiling, not target;
 - 16% aggregate/daily aggressive ceilings;
 - disabled-by-default manual daily-loss reset capability;
 - one genuinely fresh same-episode re-entry;
@@ -115,32 +105,27 @@ The manual also explicitly preserves:
 - optional broker-valid partial management;
 - future governed REAL capability and separate release gate.
 
-## 5. Operator-directed non-scalp differences
+## 5. Operator-directed differences
 
-Coverage exists for:
+Coverage exists for no trading-runtime Git operation; coherent remote commit → `git pull --ff-only` → optional clean ZIP source workflow; and local/network-independent runtime-state backup.
 
-- no trading-runtime Git operation;
-- development backup through coherent remote commit → `git pull --ff-only` → optional clean ZIP;
-- runtime-state backup independently local/network-free.
+## 6. Final documentation-only coverage result
 
-## 6. Current completeness state
+Verified:
 
-Verified in the current freeze-preparation work:
+1. canonical 64-file topology and category counts are present;
+2. each major subject has a canonical destination/owner/proof route;
+3. preservation-first correction is propagated across foundation, intelligence, decisions, Risk/execution/recovery, learning/research, operator and engineering governance;
+4. Audits 2–7 are protocols and remain NOT RUN;
+5. targeted contradiction searches found no remaining old `DRAFT PRE-CHALLENGE`, `STANDARD Risk`, `physical concurrency is optional`, M1-promotion or `REAL outside/deferred` policy phrase in the current reviewed state; search-index results were treated only as supplemental to direct owner review;
+6. direct high-risk owner checks found TradePlan and learning/source-backup semantics consistent;
+7. final scan corrected one formatting defect in Project Vision and made full learning-backup Risk profile/overlay identity explicit;
+8. no blocking documentation architecture contradiction remains in the documentation-only review.
 
-1. 64-file canonical inventory exists;
-2. every major subject has a destination/owner/proof route;
-3. Audit 1 is preservation-first corrected;
-4. Foundation, Market Intelligence, Trading Decisions, Risk/Execution, Research/Learning, Operator and core Engineering governance have been semantically normalized in the reviewed packets;
-5. Audits 2–7 are protocols only and remain NOT RUN until their evidence stage;
-6. explicit reference delta/preservation records are durable;
-7. non-scalp preserved defaults are no longer intentionally classified as generic scalp calibration.
+Still pending before documentation freeze:
 
-Still required before final documentation freeze:
+- operator discussion and decisions on the remaining **genuinely scalp-specific** deltas/calibration questions;
+- any resulting affected-graph edits;
+- formal freeze declaration.
 
-- final manual-wide contradiction/cross-link/reconstructability pass;
-- verify no stale metadata/reference survives in any untouched summary/template;
-- update `DOCUMENTATION_AUDIT.md` with that final result;
-- present remaining genuine scalp-specific deltas/calibration questions to the operator;
-- obtain final documentation decisions before implementation.
-
-Structural coverage is verified; final semantic freeze is **not yet declared complete**.
+Automated Documents verification is future implementation tooling/evidence; this documentation-only review does not claim code/test proof.

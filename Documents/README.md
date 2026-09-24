@@ -1,7 +1,7 @@
 # GoldScalpTrader — Canonical Documentation Manual
 
-**Status:** AUDIT 1 COMPLETE — PRESERVATION-FIRST CORRECTION / FREEZE PREPARATION
-**Version:** 1.2-preservation-first
+**Status:** FINAL DOCUMENTATION REVIEW READY — OPERATOR SCALP-DELTA DISCUSSION PENDING; IMPLEMENTATION NOT STARTED
+**Version:** 1.3-final-reconstructability-pass
 **Authority:** Entry point, reading order, document ownership and design-before-code boundary.
 
 ## 1. What this manual is
@@ -10,35 +10,31 @@
 
 GoldScalpTrader is the scalping-specialized sibling of GoldSwingTraderAI. The reference project's feature set, engineering boundaries, safety model, learning/recovery system and governance remain the default baseline.
 
-The governing preservation rule is:
+Governing preservation rule:
 
 > **Keep the GoldSwingTraderAI feature/default unless a direct scalping requirement, an explicit operator instruction, or a separately proven reference defect justifies changing it.**
 
-A simpler implementation is not, by itself, permission to remove an inherited feature.
+A simpler implementation is not permission to remove an inherited feature. If a possible difference is uncertain, preserve the reference behaviour and discuss it during final documentation review.
 
-If it is unclear whether a proposed difference is genuinely scalp-specific, preserve the reference behaviour now and discuss the possible change during final documentation review.
-
-## 2. Project method
+## 2. Project method / current stage
 
 ```text
-complete canonical draft manual
-→ Fresh-Zero Audit 1                         COMPLETE
-→ preservation-first correction              CURRENT / core decisions corrected
-→ synchronize complete affected graph
-→ metadata/cross-link Documentation Audit
-→ final operator discussion of true scalp deltas
-→ freeze accepted architecture contracts
-→ implement from contracts
-→ verify Documents → Code → Tests/Evidence
-→ connected DEMO/recovery proof
-→ future governed REAL only after its own gate
+64-file canonical manual                         COMPLETE
+Fresh-Zero Audit 1                              COMPLETE
+preservation-first correction                    COMPLETE
+semantic / metadata normalization               COMPLETE for documentation-only review
+manual-wide contradiction / reconstructability  COMPLETE for documentation-only review
+operator discussion of genuine scalp deltas      NEXT
+final documentation freeze                       PENDING that discussion
+implementation                                   NOT STARTED
+Documents → Code → Tests/Evidence audit          FUTURE
+connected DEMO / recovery proof                  FUTURE
+future governed REAL                             only after separate gate
 ```
 
 Code must not outrun the canonical manual.
 
 ## 3. Canonical inventory
-
-Reference-equivalent inventory remains:
 
 ```text
 Top level                  7
@@ -113,7 +109,7 @@ one MT5 read boundary
 
 Financial/broker authority remains serial even when analytical work is bounded-parallel.
 
-## 6. Scalp-specific timeframe roles
+## 6. Frozen scalp timeframe roles
 
 ```text
 H1   broad soft regime / major directional-volatility context
@@ -124,11 +120,7 @@ M1   diagnostic/research only
 quote current executable Bid/Ask/spread/drift/health only
 ```
 
-This is a genuine scalp-horizon change from the Swing hierarchy.
-
-## 7. Strategy floor
-
-Retained reference families:
+## 7. Preserved strategy floor
 
 ```text
 Trend Pullback Continuation
@@ -139,25 +131,15 @@ Failed Breakout Reversal
 Compression Expansion
 ```
 
-Correlation/event-lineage control prevents one market episode being counted repeatedly as independent confirmation.
+Correlation/event-lineage control prevents one episode being counted repeatedly as independent confirmation.
 
-## 8. Scalp geometry / freshness changes
+## 8. Genuine scalp geometry / freshness changes
 
-GoldScalpTrader explicitly strengthens:
+GoldScalpTrader strengthens event/trigger age, chase distance, stale-for-entry classification, Approved Entry Reference versus live quote, gross plus cost-adjusted room, spread/slippage/drift/latency observability and short-horizon time efficiency.
 
-- event/trigger age;
-- late-entry/chase distance;
-- stale-for-entry classification;
-- Approved Entry Reference versus fresh executable quote;
-- gross structural room plus cost-adjusted room;
-- spread/slippage/drift/latency observability;
-- short-horizon time efficiency.
-
-Swing's 1.20R Primary floor is not automatically imposed as the hard scalp floor. Exact scalp gross/net/cost thresholds remain calibration evidence questions.
+Swing's 1.20R Primary floor is not automatically imposed as the hard scalp floor. Exact scalp gross/net/cost thresholds remain evidence/calibration questions.
 
 ## 9. Preserved Risk architecture
-
-Automatic reference profiles remain active:
 
 ```text
 SMALL   positive DayStartEquity < $300
@@ -171,11 +153,9 @@ NORMAL  >= $1,000
 | MEDIUM | 2.0%–3.0% | >3.0%–4.5% | 5% | 9% |
 | NORMAL | 1.0%–2.0% | >2.0%–3.5% | 4% | 7% |
 
-The current 0.50% Python scaffold is not canonical policy.
+The provisional 0.50% Python scaffold is not canonical policy.
 
-### 9.1 Aggressive small-account option
-
-Preserved operator-requested feature:
+### Aggressive small-account option
 
 ```text
 disabled by default
@@ -185,35 +165,21 @@ eligibility baseline: positive DayStartEquity < $1,000
 16% = daily loss ceiling
 ```
 
-All structural/session/news/execution safeguards remain. It never auto-enables merely from equity.
+It never auto-enables merely from equity. Manual daily-loss reset capability is preserved but disabled by default.
 
-Manual daily-loss reset capability is preserved but disabled by default.
-
-Reference cooldown/re-entry baseline is preserved: one genuinely fresh same-episode re-entry; three consecutive closed bot losses trigger at least 30 minutes global cooldown plus freshness/health release conditions.
+Preserved cooldown/re-entry baseline: one genuinely fresh same-episode re-entry; three consecutive closed bot losses trigger at least 30 minutes global cooldown plus required fresh/healthy release conditions.
 
 ## 10. Session / News
 
-Scalp-specific new-entry semantics:
-
 ```text
-OPEN + accepted News CLEAR    → may proceed to remaining authorities
-OPEN + accepted News BLACKOUT → BLOCK
-OPEN + true NEWS_SAFETY_UNKNOWN → new-entry BLOCK / LIMITED
+OPEN + accepted News CLEAR       → may proceed to remaining authorities
+OPEN + accepted News BLACKOUT    → BLOCK
+OPEN + true NEWS_SAFETY_UNKNOWN  → new-entry BLOCK / LIMITED
 ```
 
-Temporary provider refresh failure does not automatically create UNKNOWN:
+Temporary provider refresh failure may reuse still-valid accepted LKG cache under its original scope/schema/coverage/TTL. Failure never rewrites timestamps or extends TTL.
 
-```text
-refresh fails + still-valid accepted LKG cache
-→ use cached truth
-→ provider may be DEGRADED
-→ do not rewrite original timestamps/TTL
-
-refresh fails + expired/invalid/no cache
-→ NEWS_SAFETY_UNKNOWN
-```
-
-Preserved baseline defaults until a direct justified change/external broker fact supersedes them:
+Preserved baselines:
 
 ```text
 Provider TTL        1800 seconds
@@ -223,7 +189,7 @@ Daily reopen        1 clean completed M5
 Weekend reopen      2 clean completed M5 + gap assessment
 ```
 
-Current broker schedule remains external proof.
+Current broker schedule/holiday truth remains external proof.
 
 ## 11. Execution capability progression
 
@@ -233,9 +199,9 @@ READINESS / DRY_RUN
 → future governed REAL capability
 ```
 
-REAL is **preserved as a future feature**, but disabled/unavailable until DEMO evidence, release gates and explicit operator approval satisfy its separate policy. There is no hidden REAL shortcut.
+REAL is preserved as a future feature but disabled/unavailable until DEMO evidence, release gates and explicit operator approval satisfy its separate policy.
 
-## 12. Trade management
+## 12. Management
 
 Actions remain:
 
@@ -247,17 +213,11 @@ RUNNER
 EXIT
 ```
 
-Scalp-specific changes:
-
-- Runner is exceptional rather than default continuation;
-- time/efficiency weakness is a first-class `EXIT` reason;
-- broker-valid partial management remains an optional capability where volume is divisible, but correctness at 0.01 never depends on partial close.
+Scalp-specific changes: Runner is exceptional and time/efficiency weakness is first-class EXIT evidence. Broker-valid partial management remains an optional preserved capability where volume is divisible; minimum-lot correctness never depends on it.
 
 ## 13. GitHub / backup — explicit operator changes
 
 GitHub is source control/remote source backup only. Trading runtime has no GitHub credential and performs no Git commit/push/pull.
-
-Development workflow:
 
 ```text
 one coherent remote bulk commit
@@ -268,18 +228,9 @@ one coherent remote bulk commit
 
 Runtime-state backup remains local/network-independent.
 
-## 14. Permanent Swing → Scalp delta record
+## 14. Permanent reference-delta record
 
-Read:
-
-`90-governance/DOCUMENTATION_COMPARISON.md`
-
-That file explicitly separates:
-
-- preserved reference behaviour;
-- genuine scalp-specific changes;
-- explicit operator-directed changes;
-- earlier unintended simplifications that have been restored.
+`90-governance/DOCUMENTATION_COMPARISON.md` separates preserved reference behaviour, genuine scalp-specific changes, explicit operator-directed changes and earlier unintended simplifications that were restored.
 
 ## 15. Evidence boundary
 
@@ -300,8 +251,8 @@ EXTERNAL PROOF PENDING
 
 No documented policy or green deterministic suite proves profitability.
 
-## 16. Current stage
+## 16. Final documentation review boundary
 
-The preservation-first semantic correction is being synchronized across the affected manual. Metadata/cross-link normalization still follows before final documentation freeze.
+The documentation-only semantic/reconstructability pass found no remaining blocking architecture contradiction after the preservation-first normalization packets. An automated code-era Documents verifier still remains future implementation evidence.
 
-At the **final documentation-section review**, only the remaining genuinely scalp-specific differences/thresholds will be discussed with the operator before implementation begins.
+The next step is **not coding**. The next step is to present the remaining genuinely scalp-specific differences/calibration choices to the operator, resolve them, update affected owners if needed and only then declare documentation freeze.

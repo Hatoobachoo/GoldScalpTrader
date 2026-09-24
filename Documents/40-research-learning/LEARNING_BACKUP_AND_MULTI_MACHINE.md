@@ -1,18 +1,18 @@
 # GoldScalpTrader — Learning Backup and Multi-Machine Contract
 
 **Status:** FROZEN V1 LOCAL RECOVERY / SOURCE-BACKUP ARCHITECTURE — RETENTION / EXTERNAL RESTORE PROOF PENDING
-**Version:** 1.0-local-first-no-runtime-git
-**Authority:** Durable runtime/learning backup, local recovery packages, development/source backup workflow, closure receipts, laptop handoff and per-scope multi-machine boundary.
+**Version:** 1.1-profiled-risk-local-first
+**Authority:** Durable runtime/learning backup, preserved Risk identity, local recovery packages, development/source backup workflow, closure receipts, laptop handoff and per-scope multi-machine boundary.
 
 ## 1. Purpose
 
-GoldScalpTrader must not lose runtime lifecycle, risk history, broker-operation lineage, pending/completed learning, discovery or promotion state across restart or machine migration.
+GoldScalpTrader must not lose runtime lifecycle, Risk-day/profile state, broker-operation lineage, pending/completed learning, discovery or promotion state across restart or machine migration.
 
-Separately, development/source work should be easy to keep locally with **minimal GitHub usage**.
+Separately, development/source work should remain easy to keep locally with minimal GitHub usage.
 
 ## 2. Hard runtime rule
 
-The trading runtime has:
+Trading runtime has:
 
 ```text
 NO automatic Git commit
@@ -21,35 +21,40 @@ NO automatic Git pull/fetch requirement
 NO GitHub credential dependency
 ```
 
-Graceful shutdown remains safe when GitHub/network is unavailable after broker authority is released.
+Graceful shutdown remains safe when GitHub/network is unavailable.
 
 ## 3. Runtime backup layers
 
 ```text
-live/research producers
-→ integrity-protected transactional StateStore
+transactional StateStore
 → rolling local full checkpoints
 → graceful-shutdown final verified local checkpoint
 → optional focused learning artifact
 → portable runtime recovery package for deliberate handoff
 ```
 
-Full checkpoint/recovery package is the runtime recovery authority. Focused learning exports are not complete machine recovery.
+Full checkpoint/recovery package is runtime recovery authority. Focused learning export alone is not full-machine recovery.
 
 ## 4. Full checkpoint completeness
 
 Preserve all required durable namespaces, including where present:
 
-- risk-day/cash-flow/loss-lock/reset/cooldown;
+- Risk-day ID / DayStartEquity;
+- fixed `SMALL / MEDIUM / NORMAL` profile identity;
+- `AGGRESSIVE_SMALL_ACCOUNT` enabled/disabled state + policy identity;
+- Account Safety P/L / cash-flow baseline / loss lock;
+- governed reset count/state;
+- consecutive-loss counter / cooldown / same-episode re-entry state;
 - Opportunity/Episode/TradePlan;
 - ExecutionIntent lifecycle;
-- ManagedTrade;
+- ManagedTrade, objective stage and remaining volume;
+- verified partial-management lineage where applicable;
 - closed-trade learning queue + closure receipt;
 - StrategyMemory observations/summaries;
 - research episode journal;
 - candidate/discovery/promotion/rollback state;
 - configuration/policy/schema identities;
-- other canonical durable namespaces.
+- every other canonical durable namespace.
 
 Do not rebuild a “full” backup from a convenient subset.
 
@@ -67,11 +72,11 @@ credential-bearing remote URL
 real .env secrets
 ```
 
-Secret/integrity scan must fail closed before an artifact is called portable/shareable.
+Secret/integrity scan fails closed before an artifact is called portable/shareable.
 
 ## 6. Runtime backup root
 
-Conceptual default outside repository:
+Conceptual root outside repository:
 
 ```text
 C:\GoldScalpTrader_Backups\runtime\
@@ -80,27 +85,25 @@ C:\GoldScalpTrader_Backups\recovery-packages\
 C:\GoldScalpTrader_Backups\source-zips\
 ```
 
-Path is configurable. Optional second physical HDD/SSD/USB copy can improve device-failure resilience.
+Path is configurable. Optional second physical HDD/SSD/USB can improve device-failure resilience.
 
-## 7. Development/source backup — operator-preferred normal workflow
+## 7. Development/source backup — operator-preferred workflow
 
-After a **major coherent documentation/code bulk**, normal workflow is:
+After a major coherent documentation/code bulk:
 
 ```text
 one remote fast-forward commit
-→ operator runs: git pull --ff-only
-→ local working clone now contains latest project + complete Git history
+→ operator runs git pull --ff-only
+→ local working clone contains latest project + complete Git history
 ```
 
-This local clone is the primary development/source backup.
-
-Do **not** ask the operator to pull after every tiny patch. Consolidate coherent bulks where safe.
+The local clone is primary development/source backup. Do not require a pull after every tiny patch.
 
 ## 8. Optional source ZIP
 
-After an important milestone, an optional Windows-friendly ZIP may be created locally for an extra offline snapshot.
+An important milestone may create a Windows-friendly secret-clean ZIP.
 
-Default ZIP content should include current source/documents/config samples/tests/scripts while excluding secrets and machine/runtime noise such as:
+Default archive includes current source/Documents/config samples/tests/scripts while excluding:
 
 ```text
 .env / secret files
@@ -112,26 +115,26 @@ nested backup directories
 credentials/private keys
 ```
 
-Including `.git` inside ZIP is unnecessary by default because the pulled local clone already preserves full history. If the operator wants a history-bearing offline archive, an advanced/manual Git bundle can be created separately.
+Including `.git` inside ZIP is unnecessary by default because the pulled clone already preserves history.
 
 ## 9. Git bundle boundary
 
-Git bundle is optional advanced/manual source-history backup, not normal trading-runtime behaviour and not required after every bulk.
-
-The project may later provide an explicit operator helper, but the runtime itself never invokes it.
+A history-bearing Git bundle is optional advanced/manual backup only. It is not required after every bulk and trading runtime never invokes it.
 
 ## 10. Focused learning package
 
-May contain StrategyMemory, pending learning queue, episode journal, candidate/discovery/promotion records and evidence/config fingerprints. It is not a substitute for full checkpoint because lifecycle-only risk/Intent/receipt state may be required for safe recovery.
+May contain StrategyMemory, pending learning queue, episode journal, candidate/discovery/promotion records and evidence/config fingerprints.
+
+It is not a substitute for full checkpoint because lifecycle/Risk/Intent/receipt state may be required for safe recovery.
 
 ## 11. Closure receipt / learning queue
 
 ```text
-closed_trade_learning_queue     → pending post-close learning
-managed_trade_closure_receipt   → durable proof managed lifecycle ended
+closed_trade_learning_queue   → pending post-close learning
+managed_trade_closure_receipt → durable proof managed lifecycle ended
 ```
 
-Queue may disappear after successful exactly-once ingestion. Closure receipt remains lifecycle proof. Full backup preserves both.
+Queue may disappear after successful exactly-once ingestion. Closure receipt remains lifecycle proof. Full backup preserves both while applicable.
 
 ## 12. Production learning ownership
 
@@ -157,22 +160,23 @@ Laptop A PRIMARY
 → configure credentials separately
 → connect intended account/symbol
 → fresh broker positions/deals/quote/identity
-→ reconcile lifecycle/risk/learning
+→ reconcile lifecycle/Risk/learning
+→ verify fixed risk-day profile/aggressive-overlay state
 → acquire controller
 → READY only after all authorities pass
 ```
 
-If old machine status is uncertain, new machine remains blocked until single-writer safety can be established.
+If old-machine writer status is uncertain, new machine remains blocked until single-writer safety is established.
 
 ## 15. Learning durability path
 
 ```text
 verified OPEN
-→ ManagedTrade freezes learning identity
+→ ManagedTrade freezes learning + Risk-policy identity
 → verified close mechanism
 → learning queue + closure receipt
 → causal outcome
-→ exactly one production StrategyMemory observation
+→ exactly one MAIN_DEMO StrategyMemory observation
 → queue consumed after durable save
 → rolling/full local backup preserves state
 ```
@@ -189,10 +193,11 @@ No repository mutation is part of this path.
 | incomplete exit evidence | recovery/queue pending |
 | verified checkpoint unavailable | no guessed restore |
 | secret detected | package/source ZIP fails shareable check |
-| backup destination collision | no destructive overwrite |
+| backup collision | no destructive overwrite |
 | backup disk unavailable/full | explicit failure; preserve last good state |
-| abrupt machine loss | final shutdown backup not guaranteed; rely on transactional state + rolling checkpoints |
+| abrupt machine loss | final shutdown backup not guaranteed; transactional state + rolling checkpoints remain crash boundary |
 | same-scope second writer | block |
+| restored aggressive mode inconsistent with config/eligibility | recovery/Risk validation blocks affected new entry |
 
 ## 17. Planned implementation ownership
 
@@ -208,14 +213,16 @@ src/gold_scalp_trader/execution/controller.py
 src/gold_scalp_trader/execution/sqlite_coordination.py
 ```
 
-Optional development helper may later live under `scripts/` for safe source ZIP; it has no broker/runtime authority.
+Optional source-ZIP helper may live under `scripts/`; it has no broker/runtime authority.
 
 ## 18. Planned proof
 
-Tests prove full-state preservation, queue/receipt survival, secret exclusion, idempotency/conflict, backup integrity/catalog, same-scope single-writer, sequential handoff, no auto-merge and explicit absence of runtime Git operations.
+Tests prove full-state preservation including Risk profile/overlay/reset/cooldown/re-entry identity, queue/receipt survival, secret exclusion, idempotency/conflict, backup integrity/catalog, same-scope single-writer, sequential handoff, no auto-merge and absence of runtime Git operations.
 
 Fresh-machine connected proof separately validates real restore/reconciliation.
 
-## 19. Calibration / implementation choices pending
+## 19. Implementation/external choices pending
 
-Runtime backup cadence/retention, disk-space thresholds, optional encryption, secondary-drive copy and exact source-ZIP helper implementation remain later evidence/implementation choices.
+Runtime backup cadence/retention, disk-space thresholds, optional encryption, secondary-drive copy and exact source-ZIP helper remain later implementation/evidence choices.
+
+Source pull workflow, no-runtime-Git rule, profile/overlay durability and sequential same-scope handoff are frozen.

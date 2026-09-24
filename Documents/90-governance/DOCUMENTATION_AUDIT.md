@@ -1,16 +1,16 @@
 # GoldScalpTrader — Documentation Audit
 
-**Status:** ACTIVE FINAL FREEZE-PREPARATION AUDIT — SEMANTIC/METADATA NORMALIZATION SUBSTANTIALLY COMPLETE; FINAL CROSS-LINK/RECONSTRUCTABILITY PASS PENDING
-**Version:** 0.5-preservation-first-final-scan
-**Authority:** Structural and expert-level review of the canonical `Documents/` manual before implementation freeze.
+**Status:** DOCUMENTATION-ONLY SEMANTIC / RECONSTRUCTABILITY PASS COMPLETE — OPERATOR SCALP-DELTA DISCUSSION PENDING
+**Version:** 1.0-final-doc-review-ready
+**Authority:** Structural and expert-level review of the canonical `Documents/` manual before final operator decisions and documentation freeze.
 
 ## 1. Audit purpose
 
-This audit checks whether the 64-file manual is complete, internally consistent, reconstructable without chat history and faithful to the operator's preservation-first requirement.
+This audit checks whether the 64-file manual is complete, internally consistent, reconstructable without chat history and faithful to the preservation-first requirement.
 
-It does not claim implementation, connected DEMO proof, future REAL authorization or profitability.
+It does not claim implementation, deterministic code proof, connected DEMO proof, future REAL authorization or profitability.
 
-## 2. Structural inventory — VERIFIED
+## 2. Structural inventory — PASS
 
 ```text
 Top level                  7
@@ -25,7 +25,7 @@ Top level                  7
 TOTAL                      64 Markdown documents
 ```
 
-## 3. Governing preservation test — VERIFIED
+## 3. Governing preservation test — PASS
 
 Every material Swing→Scalp difference must be one of:
 
@@ -36,32 +36,31 @@ REFERENCE DEFECT CORRECTION
 EXTERNAL FACT UPDATE
 ```
 
-Otherwise the GoldSwingTraderAI feature/default remains preserved.
+Otherwise GoldSwingTraderAI feature/default remains preserved. If uncertain, preserve now and discuss before freeze.
 
-If uncertain, preserve now and discuss during final documentation review.
-
-## 4. Preserved reference defaults — CORE OWNERS SYNCHRONIZED
+## 4. Preserved reference defaults — PASS AT DOCUMENT OWNER LEVEL
 
 Current canonical owners preserve:
 
-- automatic SMALL/MEDIUM/NORMAL DayStartEquity Risk profiles;
-- reference target/elevated/hard/daily-loss bands;
+- automatic SMALL/MEDIUM/NORMAL DayStartEquity profiles and canonical Risk bands;
 - `AGGRESSIVE_SMALL_ACCOUNT` operational option disabled by default;
 - 8% maximum monetary SL-risk ceiling as ceiling, **not target**;
-- 16% aggregate-open-risk and daily-loss ceilings under aggressive mode;
+- 16% aggregate-open-risk and daily-loss ceilings when aggressive mode is explicitly enabled/eligible;
 - governed manual daily-loss reset capability disabled by default;
 - one genuinely fresh same-episode re-entry;
-- three consecutive closed bot losses → at least 30 minutes global cooldown plus required fresh/healthy release conditions;
-- bounded physical analytical concurrency as a target capability plus deterministic one-worker fallback/parity;
+- three consecutive closed bot losses → at least 30 minutes cooldown + required fresh/healthy release conditions;
+- bounded physical analytical concurrency + deterministic one-worker fallback/parity;
 - provider TTL baseline 1800 seconds;
 - Daily PRE_CLOSE T-20 no entry / T-10 flatten;
 - Weekend PRE_CLOSE T-60 / T-30;
 - daily reopen one clean completed M5;
-- weekend reopen two clean completed M5 plus gap assessment;
+- weekend reopen two clean completed M5 + gap assessment;
 - optional broker-valid partial management where volume is divisible;
 - future governed REAL capability with separate DEMO/release/explicit-approval gate.
 
-## 5. Genuine scalp-specific deltas — RETAINED
+## 5. Genuine scalp-specific deltas — PASS AS DOCUMENTED DESIGN
+
+Retained intentional deltas:
 
 - H1 broad / M15 opportunity-location-path / M5 primary completed setup-timing-management / H4 optional / M1 diagnostic-research only;
 - stronger event/trigger freshness and anti-chase;
@@ -74,135 +73,121 @@ Current canonical owners preserve:
 - time/efficiency as first-class EXIT reason;
 - scalp-specific cost/latency/duration/capture research.
 
-## 6. Explicit operator-directed non-scalp differences — RETAINED
+Their remaining numerical policy choices are discussed with operator before freeze where still classified as genuine scalp calibration.
+
+## 6. Explicit operator-directed differences — PASS
 
 - no trading-runtime Git commit/push/pull;
 - development source backup through coherent remote bulk → `git pull --ff-only` → optional clean ZIP;
 - runtime-state backup independently local/network-free;
 - aggressive small-account mode retained as disabled-by-default operational capability.
 
-## 7. Normalization work completed in current freeze-preparation packets
+## 7. Reviewed documentation domains — PASS FOR DOCUMENTATION SEMANTICS
 
 ### Foundation / governance
-
-- preservation-first rule elevated into Project Vision/System Contract/Architecture/Documentation Standard/Comparison/Preservation Ledger;
-- earlier unjustified simplifications explicitly superseded;
-- top-level manuals synchronized with profiled Risk, bounded concurrency and future REAL capability.
+Preservation-first rule, architectural spine, exact reference-delta ledger and affected-graph discipline agree.
 
 ### Market Intelligence
-
-All seven owners reviewed. Stale `DRAFT PRE-CHALLENGE` metadata/wording removed where architecture is accepted. H1/M15/M5/H4/M1 roles frozen consistently. News owner explicitly preserves 1800-second provider TTL baseline while leaving genuine event-window calibration open.
+All seven owners use frozen timeframe authority. M1 is not an unresolved V1 production question. News owner preserves 1800-second TTL while genuine event-window questions remain scalp calibration.
 
 ### Trading Decisions
-
-Six-family floor, bounded concurrency, Opportunity/Timing, one-fresh-reentry baseline and M1 non-authority synchronized. Family-specific Breakout Retest/Reversal geometry extensions are frozen architecture with genuine scalp thresholds left for evidence.
+Six-family floor, bounded concurrency, Opportunity/Timing, one-fresh-reentry baseline, TradePlan geometry, family-specific event geometry and management semantics agree.
 
 ### Risk / Execution / Recovery
-
-- profiled Risk and aggressive overlay are canonical;
-- session/reopen/provider defaults restored;
-- execution consumes profiled Risk and preserves future REAL gate;
-- broker activity/accounting fixed to UTC risk-day/profile semantics;
-- persistence/recovery preserves profile/overlay/reset/cooldown/re-entry identity;
-- source backup now matches operator-preferred pull/ZIP workflow;
-- Git bundle is optional advanced/manual only;
-- no runtime Git path exists.
+Profiled Risk/aggressive mode, session/reopen/provider defaults, one-shot execution, future REAL gate, broker activity accounting, persistence/profile durability and source/runtime backup separation agree.
 
 ### Research / Learning
-
-Learning, replay, DEMO learning, promotion, discovery and invention are normalized to frozen timeframe/Risk/session/preservation semantics. Research may study genuine scalp thresholds but cannot silently optimize away preserved non-scalp defaults or self-authorize production/REAL.
+Learning/replay/DEMO learning/promotion/discovery/invention consume frozen production identities and cannot silently optimize away preserved defaults or acquire broker/REAL authority.
 
 ### Operator
+Terminal/live/graphical surfaces are read-only and present profile/overlay/provider/cache/blocker/Gate truth without becoming owners.
 
-Terminal/live/graphical surfaces are read-only and show profile/overlay/provider/cache/Gate truth without recalculation. M1 remains diagnostic. Future REAL is displayed as gated capability.
+### Engineering / audit protocols
+Coding/testing/health/release docs reflect current preservation-first architecture. Audits 2–7 are frozen protocols but remain **NOT RUN** until implementation/connected evidence reaches their stage.
 
-### Engineering / audits
+## 8. Final manual-wide contradiction / reconstructability pass
 
-Coding, testing, diagnostics, release checklist and final-release template are preservation-first normalized. Audits 2–7 are frozen **protocols** only and remain `NOT RUN` until implementation/connected evidence reaches their trigger stage.
+The final documentation-only pass combined:
 
-## 8. Known earlier semantic defects — CORRECTED
+- verified 64-file structural inventory;
+- direct owner review across all canonical domains;
+- affected-graph synchronization across the preservation correction packets;
+- targeted searches for known stale phrases/assumptions;
+- direct verification of high-risk owners such as TradePlan, backup/recovery and README;
+- final cross-check of preservation/delta/coverage/governance records.
 
-Corrected earlier wording/decisions included:
+Targeted search results returned no old `DRAFT PRE-CHALLENGE`, `STANDARD Risk`, `physical concurrency is optional`, stale M1-promotion branch or `REAL outside/deferred` phrase; the search API reported incomplete indexing, so these results were treated only as supplemental evidence rather than sole proof.
 
-- one `STANDARD` Risk policy replacing profiles;
-- treating Swing Risk percentages as automatically open calibration;
-- aggressive 8%/16% demoted to research-only;
-- manual reset/cooldown/re-entry reopened without scalp cause;
-- bounded concurrency described as removable/profiling-only;
-- PRE_CLOSE/reopen and provider TTL reopened without direct reason;
-- REAL described as removed rather than future governed capability;
-- partial-management wording implying removal;
-- M1 still described as pre-challenge/open;
-- Audit 7 blanket “do not copy Swing thresholds” rule.
+The pass also caught and corrected:
 
-These are superseded by current preservation-first contracts.
+- a formatting/newline defect in `PROJECT_VISION.md` preservation rule;
+- missing explicit Risk-profile/aggressive-overlay identity in `LEARNING_BACKUP_AND_MULTI_MACHINE.md` full-checkpoint list;
+- stale stage wording in the canonical README/coverage/audit summaries.
 
-## 9. Final contradiction/cross-link checklist — NEXT PASS
+### Result
 
-Before declaring documentation freeze, perform one final manual-wide pass for:
+```text
+BLOCKING DOCUMENTATION ARCHITECTURE CONTRADICTION: NONE FOUND
+BROKEN CANONICAL TOPOLOGY: NONE FOUND
+KNOWN UNJUSTIFIED FEATURE REMOVAL: NONE REMAINING IN CURRENT DOCUMENTED DESIGN
+FINAL OPERATOR DECISION STEP: STILL REQUIRED
+```
 
-- stale `DRAFT PRE-CHALLENGE` metadata in any remaining untouched file;
-- `STANDARD-only` Risk terminology;
-- false 0.50% scaffold-as-policy wording;
-- concurrency described as removable rather than preserved bounded capability;
-- M1 described as unresolved current V1 authority;
-- REAL described as removed/outside project rather than gated future capability;
-- preserved Risk/reset/re-entry/cooldown/TTL/PRE_CLOSE/reopen defaults accidentally labelled generic calibration;
-- partial management accidentally removed;
-- provider failure incorrectly mapped directly to News UNKNOWN despite valid LKG cache;
-- runtime Git publication path;
-- summary/manual owner contradictions;
-- broken/ambiguous cross-links;
-- audit templates accidentally claiming PASS/implementation evidence.
+This is a documentation/reconstructability result, not an automated link-check/code result.
 
-## 10. Reconstructability target
+## 9. Reconstructability — PASS FOR DOCUMENTATION-ONLY REVIEW
 
-A new developer/AI with no chat history must be able to answer from repository alone:
+A capable developer/AI with no chat history can determine from repository alone:
 
-- what the bot is and is not;
-- what is preserved from Swing;
-- what changed specifically for scalping;
-- what changed by explicit operator instruction;
+- project purpose/non-goals;
+- preserved Swing features/defaults;
+- genuine Scalp deltas;
+- operator-directed differences;
 - exact Risk profiles/aggressive/reset/re-entry/cooldown semantics;
-- exact preserved session/provider defaults;
+- exact preserved session/provider baselines;
 - timeframe/freshness/cost rules;
 - bounded analytical concurrency vs serial broker authority;
 - DEMO progression and future REAL gate;
-- runtime/source backup methods;
+- runtime/source backup/recovery methods;
 - learning/research authority;
 - what remains genuine scalp calibration/external proof;
-- what implementation/audits are still NOT RUN.
+- which implementation/audit evidence is still NOT RUN.
 
-## 11. Evidence truth
-
-```text
-architecture/preservation decisions     available
-64-file structural coverage             verified
-semantic normalization packets          substantially complete
-implementation proof                    not yet available
-scalp replay/calibration evidence       pending
-current Exness/provider external proof  pending
-controlled DEMO lifecycle proof         pending
-future REAL release proof               not started
-profitability claim                     none
-```
-
-## 12. Current audit result
+## 10. Evidence truth
 
 ```text
-STRUCTURAL INVENTORY                    PASS
-PRESERVATION-FIRST GOVERNANCE           PASS
-CORE SEMANTIC NORMALIZATION              PASS for reviewed owners
-MARKET / TRADING NORMALIZATION           PASS for current docs pass
-RISK / EXECUTION / RECOVERY NORMALIZATION PASS for current docs pass
-RESEARCH / LEARNING NORMALIZATION        PASS for current docs pass
-OPERATOR / ENGINEERING NORMALIZATION     PASS for current docs pass
-AUDIT 2–7 PROTOCOL STATUS                FROZEN PROTOCOLS / NOT RUN
-FINAL MANUAL-WIDE CONTRADICTION SCAN     PENDING
-FINAL CROSS-LINK / RECONSTRUCTABILITY    PENDING
-OPERATOR SCALP-DELTA DISCUSSION          PENDING
-DOCUMENTATION FREEZE                     NOT YET COMPLETE
-IMPLEMENTATION                           NOT STARTED
+64-file structural coverage              PASS
+preservation-first documentation design  PASS
+semantic/metadata normalization          PASS for documentation-only review
+manual reconstructability                PASS for documentation-only review
+implementation proof                     NOT AVAILABLE
+automated Documents verifier             NOT IMPLEMENTED / NOT RUN
+replay/calibration evidence               PENDING
+current Exness/provider external proof    PENDING
+controlled DEMO lifecycle proof           PENDING
+future REAL release proof                 NOT STARTED
+profitability claim                       NONE
 ```
 
-The next dependency is the final manual-wide contradiction/cross-link/reconstructability pass. After that, present only the remaining genuine scalp-specific deltas/calibration questions to the operator before documentation freeze and any implementation work.
+## 11. Audit 2–7 truth
+
+Audits 2–7 have **not been run**. Their documents are protocols/templates only. They require future code/runtime evidence and cannot be pre-filled PASS.
+
+## 12. Current documentation result
+
+```text
+STRUCTURAL INVENTORY                 PASS
+PRESERVATION-FIRST GOVERNANCE        PASS
+SEMANTIC NORMALIZATION               PASS — documentation-only review
+MANUAL-WIDE CONTRADICTION PASS       PASS — no blocking contradiction found
+RECONSTRUCTABILITY                   PASS — documentation-only review
+OPERATOR SCALP-DELTA DISCUSSION      PENDING
+DOCUMENTATION FREEZE                 NOT YET COMPLETE
+IMPLEMENTATION                       NOT STARTED
+```
+
+## 13. Next dependency
+
+The next step is **not implementation**.
+
+Present the remaining genuinely scalp-specific design/calibration differences to the operator, discuss/resolve them, update the affected graph if any decision changes, then declare documentation freeze. Only after that may implementation start.

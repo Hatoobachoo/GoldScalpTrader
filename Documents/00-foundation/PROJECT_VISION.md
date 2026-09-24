@@ -1,7 +1,7 @@
 # GoldScalpTrader — Project Vision
 
 **Status:** FROZEN PRODUCT CONTRACT — PRESERVATION-FIRST CORRECTED / SCALP CALIBRATION + EXTERNAL PROOF PENDING
-**Version:** 1.1-preserved-reference-scalp-personality
+**Version:** 1.2-final-doc-scan
 **Authority:** Product purpose, preservation boundary, trading personality, success criteria and non-goals.
 
 ## 1. What we are building
@@ -16,7 +16,8 @@ The objective is to participate in repeatable, cost-justified short Gold moves w
 
 ```text
 non-scalp reference feature/default → preserve
-clear direct scalp requirement      → adapt explicitly\operator instruction                → apply explicitly
+clear direct scalp requirement      → adapt explicitly
+explicit operator instruction       → apply explicitly
 proven reference defect             → correct through governed packet
 uncertain difference                → preserve now; discuss at final documentation review
 ```
@@ -92,19 +93,7 @@ The system must:
 
 Engineering quality means deterministic behaviour for the same facts/configuration, explicit UNKNOWN/error states, no hidden writes, no duplicate submission, no silent restart reset, causal replay, synchronized Documents/source/tests and clear operator reasons.
 
-Trading quality is evaluated later with evidence, not promises. Metrics include:
-
-- expectancy / Net R after realistic costs;
-- gross vs cost-adjusted room;
-- original/realized R;
-- MAE/MFE;
-- entry/capture/exit efficiency;
-- hold duration;
-- family/session/regime attribution;
-- missed/blocked opportunity analysis;
-- late-entry avoidance;
-- spread/slippage/latency sensitivity;
-- minimum-lot affordability frequency.
+Trading quality is evaluated later with evidence, not promises. Metrics include expectancy/Net R after realistic costs, gross versus cost-adjusted room, original/realized R, MAE/MFE, entry/capture/exit efficiency, hold duration, family/session/regime attribution, missed/blocked analysis, late-entry avoidance, spread/slippage/latency sensitivity and minimum-lot affordability frequency.
 
 ## 8. Strategy floor
 
@@ -137,9 +126,9 @@ NORMAL  >= $1,000
 | MEDIUM | 2.0%–3.0% | >3.0%–4.5% | 5% | 9% |
 | NORMAL | 1.0%–2.0% | >2.0%–3.5% | 4% | 7% |
 
-The operator-requested `AGGRESSIVE_SMALL_ACCOUNT` capability is preserved but disabled by default. When explicitly enabled and eligible: 8% is the maximum monetary SL-risk ceiling per trade, **not a target**, while aggregate open-risk and daily-loss ceilings are 16%.
+The operator-requested `AGGRESSIVE_SMALL_ACCOUNT` capability is preserved but disabled by default. When explicitly enabled and eligible, 8% is the maximum monetary SL-risk ceiling per trade, **not a target**, while aggregate open-risk and daily-loss ceilings are 16%.
 
-Manual daily-loss reset capability is preserved but disabled by default. Preserved baseline also allows one genuinely fresh same-episode re-entry and applies at least 30 minutes global cooldown after three consecutive closed bot losses plus required fresh/healthy release conditions.
+Manual daily-loss reset capability is preserved but disabled by default. The preserved baseline also allows one genuinely fresh same-episode re-entry and applies at least 30 minutes global cooldown after three consecutive closed bot losses plus required fresh/healthy release conditions.
 
 The provisional 0.50% Python scaffold is not canonical production Risk policy.
 
@@ -161,31 +150,16 @@ Exact numerical thresholds for these genuine scalp surfaces remain calibration w
 
 ## 11. Hard non-goals
 
-GoldScalpTrader is not intended to:
-
-- guarantee profit, accuracy or trade frequency;
-- trade every M1/M5 fluctuation;
-- perform colocated/exchange HFT;
-- use M1/tick history as hidden production authority;
-- use martingale, uncontrolled grids or averaging-down rescue;
-- distort structural stops merely to make risk convenient;
-- convert missing required truth into PASS;
-- let learning/AI bypass hard risk/safety;
-- let dashboards place/modify orders;
-- automatically Git commit/push/pull during trading runtime;
-- depend on paid GitHub/cloud infrastructure;
-- allow same-scope active-active laptop writers under the current local-state architecture;
-- require partial-profit logic for an indivisible minimum-volume position;
-- silently remove a preserved reference feature for implementation convenience.
+GoldScalpTrader is not intended to guarantee profit/accuracy/frequency, trade every M1/M5 fluctuation, perform colocated HFT, use M1/tick history as hidden production authority, use martingale/uncontrolled grids/averaging rescue, distort structural stops for monetary convenience, convert missing truth into PASS, let learning/AI bypass hard safety, let dashboards trade, automatically Git commit/push/pull at runtime, depend on paid cloud infrastructure, permit same-scope active-active writers, require partial-profit logic for indivisible minimum volume or silently remove preserved reference features for implementation convenience.
 
 ## 12. Safety-first liveness
 
-Market closed, stale data, wide spread, News UNKNOWN, reconciliation pending, risk lock, no valid opportunity or presentation degradation are legitimate states. The process should stay alive and truthful where possible without inventing permission.
+Market closed, stale data, wide spread, News UNKNOWN, reconciliation pending, Risk lock, no valid Opportunity or presentation degradation are legitimate states. The process stays alive/truthful where possible without inventing permission.
 
-News UNKNOWN blocks **new entry** while safe management/protection/mandatory CLOSE remains action-sensitive.
+News UNKNOWN blocks new entry while safe management/protection/mandatory CLOSE remains action-sensitive.
 
 ## 13. Reference relationship
 
 GoldSwingTraderAI remains the preservation/reference baseline. The permanent exact difference record is `90-governance/DOCUMENTATION_COMPARISON.md`.
 
-Only genuine scalp-specific differences and explicit operator-directed differences remain intentional. Inheritance is not implementation proof or profitability proof.
+Only genuine scalp-specific differences and explicit operator-directed differences remain intentional. Inheritance is not implementation or profitability proof.
