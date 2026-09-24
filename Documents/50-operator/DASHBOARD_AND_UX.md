@@ -1,8 +1,8 @@
 # GoldScalpTrader — Dashboard and UX Contract
 
-**Status:** FROZEN V1 OPERATOR ARCHITECTURE — IMPLEMENTATION / CONNECTED PRESENTATION PROOF PENDING
-**Version:** 1.1-cache-aware-operator
-**Authority:** Operator visibility, typed dashboard mapping, primary terminal presentation, session/News/provider/cache truth, verified performance provenance and read-only controls.
+**Status:** FROZEN V1 OPERATOR ARCHITECTURE — PRESERVATION-FIRST CORRECTED / IMPLEMENTATION PROOF PENDING
+**Version:** 1.2-profiled-risk-cache-aware-operator
+**Authority:** Operator visibility, typed dashboard mapping, primary terminal presentation, session/News/provider/cache truth, profiled Risk visibility, verified performance provenance and read-only controls.
 
 ## 1. Purpose
 
@@ -10,35 +10,37 @@ Within seconds the operator should understand:
 
 1. XAUUSDm feed/market health and current SELL/BUY;
 2. Soft Session, Hard Market State and News State;
-3. News provider health/source and whether a last-known-good cache is currently carrying accepted truth;
+3. News provider health/source and LKG cache validity;
 4. H1/M15/M5 market picture plus optional H4 and diagnostic M1;
 5. current BUY/SELL/Floor decision and why;
 6. Opportunity/timing/event freshness;
-7. actual TradePlan geometry, gross/cost-adjusted room and current executable quote;
+7. TradePlan geometry, gross/cost-adjusted room and executable quote;
 8. leading family/correlation/debate;
-9. STANDARD Risk/capacity/daily state;
-10. upstream blocker versus actual central Gate;
-11. ManagedTrade/Trade Manager state;
-12. verified learning/research/local-backup health.
+9. current SMALL/MEDIUM/NORMAL Risk profile and actual proposal;
+10. aggressive small-account mode ENABLED/DISABLED and its ceilings when applicable;
+11. daily loss / reset / streak / cooldown / capacity;
+12. upstream blocker versus actual central Gate;
+13. ManagedTrade/Trade Manager/partial-management state;
+14. verified learning/research/local-backup health.
 
 Dashboard is presentation, not a second trading engine.
 
 ## 2. One-way architecture
 
 ```text
-market/intelligence/strategy/decision/TradePlan/Risk/execution/learning facts
+authoritative market/intelligence/decision/TradePlan/Risk/execution/learning facts
 + session/news provider/cache facts
 + durable state/backup health
-→ authoritative DashboardData / presentation DTO
+→ DashboardData / presentation DTO
 → terminal renderer
 → optional atomic read-only browser snapshot
 ```
 
-Presentation explains already-owned facts and never recalculates permission or cache validity.
+Presentation never recalculates profile, risk, cache validity, signal, permission or lifecycle state.
 
 ## 3. Display pulse versus decision cadence
 
-A fast display pulse may refresh PKT clock, Bid/Ask, spread, quote age, M5 countdown, provider/cache age and already-owned broker facts without rerunning families, timing, TradePlan, Risk or Intent.
+A fast display pulse may refresh PKT clock, Bid/Ask, spread, quote age, M5 countdown, provider/cache age and already-owned broker facts without rerunning analytical decisions.
 
 Production bar-based setup/timing remains completed M5. M1 is diagnostic/research only.
 
@@ -51,39 +53,77 @@ Soft Session      ASIA / LONDON / NEW YORK / OVERLAP / OFF HOURS
 Hard Market       OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN
 News              CLEAR / BLACKOUT / UNKNOWN / POST_NEWS_WARMUP
 Provider Health   VERIFIED / DEGRADED / STALE / UNAVAILABLE / UNKNOWN
-Provider Source   LIVE / FILE / LAST-KNOWN-GOOD CACHE where known
+Provider Source   LIVE / FILE / LKG CACHE
 Entry Permission  ALLOW / BLOCK / UNKNOWN as owned downstream
 ```
 
-Frozen V1 semantics:
-
 ```text
-OPEN + accepted CLEAR from fresh source
-→ may proceed to remaining authorities
-
-OPEN + accepted CLEAR/BLACKOUT from still-valid LKG cache
-→ use owning News state
-→ Provider Health may be DEGRADED
-
-OPEN + NEWS_SAFETY_UNKNOWN because no valid current source/cache exists
-→ BLOCK / LIMITED for new entry
+OPEN + accepted CLEAR from fresh source/cache → may proceed
+OPEN + BLACKOUT → BLOCK
+OPEN + true NEWS_SAFETY_UNKNOWN → new-entry BLOCK / LIMITED
 ```
 
-A refresh/API error is **not itself** News UNKNOWN. Renderer must display the owning provider/cache validity result rather than infer from network error text.
+A refresh/API error is not itself UNKNOWN if accepted LKG cache remains valid under original timestamps/coverage/TTL.
 
-News UNKNOWN never appears as CLEAR. A stale/expired cache never appears as valid merely because it was the last successful fetch. Existing management/protection/mandatory CLOSE remains action-sensitive.
-
-Useful provider fields when authoritative:
+## 5. Preserved session baselines shown when authoritative
 
 ```text
-last successful refresh
-last refresh error
-cache age
-cache valid-until / coverage window
-next accepted event + countdown
+Provider TTL baseline       1800s
+Daily no-entry/flatten      T-20 / T-10
+Weekend no-entry/flatten    T-60 / T-30
+Daily reopen baseline       1 clean M5
+Weekend reopen baseline     2 clean M5 + gap assessment
 ```
 
-## 5. Primary visual hierarchy
+Dashboard displays owning state and countdown; it never calculates broker schedule independently.
+
+## 6. Risk/account presentation
+
+Show current risk truth, not one generic `STANDARD` label.
+
+```text
+Profile               SMALL / MEDIUM / NORMAL
+DayStartEquity         verified value
+Normal target band     profile-owned range
+Elevated band          profile-owned range
+Hard new-entry ceiling profile-owned value
+Daily loss lock        profile-owned value
+Proposed lot/risk      when RiskEvaluation exists
+Capacity               e.g. 0/1 or 1/1
+Loss streak/cooldown   owned state
+Manual reset           DISABLED / enabled-bounded state
+```
+
+Reference profile values:
+
+| Profile | Normal | Elevated | Hard | Daily |
+|---|---:|---:|---:|---:|
+| SMALL | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
+| MEDIUM | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
+| NORMAL | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
+
+### Aggressive small-account display
+
+When explicit mode is disabled:
+
+```text
+Aggressive Small Account: DISABLED
+```
+
+When explicitly enabled and eligible:
+
+```text
+Aggressive Small Account: ENABLED
+Per-trade SL-risk ceiling: 8% MAX — NOT TARGET
+Aggregate open-risk cap:   16%
+Daily loss ceiling:        16%
+```
+
+Never imply the bot is trying to size every aggressive trade to 8%.
+
+If no TradePlan/RiskEvaluation exists, show `Risk Standby`, not Risk failure.
+
+## 7. Primary visual hierarchy
 
 ```text
 HEADER
@@ -91,47 +131,32 @@ HEADER
   XAU SELL / BUY / spread / quote age / M5 countdown / Today P&L
 
 NEWS / PROVIDER
-  provider health / source / last success / cache age-validity / next event
+  health / source / last success / cache age-validity / next event
 
 MARKET PICTURE
-  H1 / M15 / M5
-  optional H4
-  diagnostic M1 only if explicitly available
-  EMA20/EMA50 / RSI / ATR / volatility / latest event freshness
+  H1 / M15 / M5 / optional H4 / diagnostic M1
+  EMA20/EMA50 / RSI / ATR / volatility / event freshness
 
 CURRENT DECISION
   BUY thesis / SELL thesis / Floor Edge / leading family
-  correlation / Red Team / Opportunity / completed-M5 Timing / WHY
+  correlation / Red Team / Opportunity / M5 Timing / WHY
 
 TRADE PLAN
-  Approved Entry Reference / current Bid/Ask separately
+  Approved Entry Reference / current Bid/Ask
   SL / Primary / optional Expansion / exceptional Runner
-  gross structural room / cost-adjusted room / invalidation / quality
+  gross room / cost-adjusted room / invalidation / quality
 
 RISK & ACCOUNT
-  STANDARD policy / actual proposal / capacity / daily state / cooldown
+  profile / optional aggressive mode / actual proposal / capacity
+  daily loss / reset / streak / cooldown
 
 ACTIVITY / SYSTEM / EXECUTION / OPEN TRADE / LEARNING / LOCAL BACKUP
 ```
 
-Exact layout is presentation calibration; meanings are not.
-
-## 6. Responsive terminal
-
-Conceptual target:
+## 8. Current Blocker versus Gate
 
 ```text
-64–95 display cells → stacked narrow renderer
-96+ display cells    → wide renderer
-render failure       → compact safe read-only fallback
-```
-
-Presentation crash/fallback cannot stop trading or create authority.
-
-## 7. Current Blocker versus Gate
-
-```text
-TradePlan DEGRADED/INVALID
+TradePlan invalid/degraded
 → Current Blocker: TradePlan
 → Gate: NOT EVALUATED
 
@@ -139,67 +164,62 @@ Risk BLOCK/UNKNOWN before Gate
 → Current Blocker: Risk
 → Gate: NOT EVALUATED
 
-News UNKNOWN owner blocks before Gate composition completes
-→ Current Blocker: News/Permission owner as applicable
-→ do not fabricate Gate BLOCKED if Gate never evaluated
+News/Session owner blocks before central Gate
+→ show owning blocker
+→ do not fabricate Gate BLOCKED
 
 central Gate actually BLOCKS
 → Current Blocker: Execution Gate
 → Gate: BLOCKED
 ```
 
-Broad `ENTRY_BLOCKED` is not synonymous with Gate BLOCKED.
+## 9. TradePlan / freshness truth
 
-## 8. TradePlan truth
+Show only actual governed plan fields. Keep Approved Entry Reference and current executable Bid/Ask separate.
 
-Show only actual governed plan fields. If no plan exists, do not fabricate Entry/SL/targets/R as zero.
+Useful scalp facts include event age, trigger age, entry drift, spread, target-room/cost context and latency diagnostics.
 
-Keep Approved Entry Reference and current executable Bid/Ask separate. Show gross structural room and cost-adjusted room diagnostics without inventing future fill/slippage.
+## 10. Verified strategy performance
 
-## 9. Strategy performance
+Only verified actual approved-environment closed ManagedTrades count as production performance. Signal, WAIT/MISSED/BLOCK, replay/shadow/counterfactual evidence do not count as actual trades/P&L.
 
-Only verified actual approved-environment closed ManagedTrades enter production performance tables. Signal, WAIT/MISSED/BLOCK, replay, shadow or canary counterfactuals do not count as actual trades/P&L.
+Zero verified closes = `NO SAMPLE`.
 
-Zero verified closes shows `NO SAMPLE`, not fake 0% performance.
+## 11. Open ManagedTrade
 
-## 10. Spread / freshness / latency
+Show ticket/ownership, verified Entry, live executable price, original/current SL, objectives, original R/current risk, remaining volume, objective stage, any verified partial action, M5 bars/time in trade, management action/reason and Intent/reconciliation/close state.
 
-Useful display facts include current spread, approved healthy baseline if owned/known, entry drift, trigger/event age, quote age and execution latency diagnostics when available.
+Time/efficiency is an EXIT reason. Runner is exceptional.
 
-Dashboard never invents thresholds.
+## 12. Runtime capability display
 
-## 11. STANDARD Risk / account
-
-Show balance/equity where appropriate, capacity, proposed normalized lot/actual risk if RiskEvaluation exists, daily loss state/budget, streak/cooldown and external exposure warnings.
-
-There are no auto-selected SMALL/MEDIUM/NORMAL production tiers in V1.
-
-If no TradePlan/RiskEvaluation exists, show `Risk Standby`, not a risk failure.
-
-## 12. Open ManagedTrade
-
-Show ticket/ownership, verified Entry, live executable price, original/current SL, objectives, immutable original R/current open risk, current objective stage, M5 bars/time in trade, management action/reason and Intent/reconciliation/close state.
-
-Time/efficiency is an EXIT reason, not a separate dashboard authority/action.
-
-## 13. Local backup / research footer
-
-May show StrategyMemory/discovery health, last local runtime checkpoint, backup status/path shorthand and recovery state. Research recommendation is never displayed as active policy unless governed promotion has made it active.
-
-## 14. Planned ownership
+Operator mode must clearly distinguish:
 
 ```text
-src/gold_scalp_trader/app/dashboard.py
-src/gold_scalp_trader/app/live_presentation.py
-src/gold_scalp_trader/operator/presentation.py
-src/gold_scalp_trader/operator/narrow_dashboard.py
-src/gold_scalp_trader/operator/rich_dashboard.py
-src/gold_scalp_trader/operator/compact_dashboard.py
-src/gold_scalp_trader/operator/live_dashboard.py
-src/gold_scalp_trader/operator/__init__.py
-src/gold_scalp_trader/app/loop.py
+READINESS
+DRY_RUN
+DEMO PRIMARY
+REAL — future capability, disabled/unavailable until its release gate
 ```
+
+No dashboard toggle may bypass the governed REAL release path.
+
+## 13. Responsive terminal / fallback
+
+Conceptual target:
+
+```text
+64–95 cells → stacked narrow renderer
+96+ cells   → wide renderer
+render failure → compact safe read-only fallback
+```
+
+Presentation failure cannot stop trading or create authority.
+
+## 14. Local backup / research footer
+
+May show StrategyMemory/discovery health, last local runtime checkpoint, backup status/path shorthand and recovery state. Research recommendation is never active policy unless governed promotion makes it so.
 
 ## 15. Planned proof
 
-Tests cover blocker-vs-Gate truth, width/fallback, presentation pulse without new decisions, fresh-provider versus valid-cache versus true-UNKNOWN rendering, no timestamp/validity inference in presentation, no-plan geometry, verified performance provenance, PKT/M5 countdown, M1 non-authority, STANDARD Risk mapping, open-trade mapping and read-only authority.
+Tests cover blocker-vs-Gate truth, width/fallback, presentation pulse without new decisions, provider/cache states, profile/overlay Risk rendering, 8%-is-ceiling-not-target wording, reset/cooldown state, no-plan geometry, verified performance provenance, open-trade partial state and read-only authority.

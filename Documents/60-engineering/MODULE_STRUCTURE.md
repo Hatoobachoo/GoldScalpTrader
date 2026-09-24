@@ -1,7 +1,7 @@
 # GoldScalpTrader — Module Structure and File Map
 
-**Status:** FROZEN V1 MODULE MAP — IMPLEMENTATION TREE STILL PLANNED
-**Version:** 1.1-cache-aware-source-ownership
+**Status:** FROZEN V1 MODULE MAP — PRESERVATION-FIRST CORRECTED / IMPLEMENTATION TREE PLANNED
+**Version:** 1.2-profiled-risk-bounded-parallel
 **Authority:** File ownership, dependency direction and placement.
 
 ## 1. Dependency direction
@@ -9,10 +9,10 @@
 ```text
 config + domain + diagnostics + security
 → market_data
-→ intelligence — staged logically independent analytical work
-→ strategies — six independent scalp families
-→ decisions — BUY/SELL + debate + Opportunity + M5 timing + TradePlan
-→ risk — STANDARD monetary authority
+→ intelligence — staged bounded-parallel analytical work
+→ strategies — six independent family teams
+→ decisions — BUY/SELL + Opportunity + completed-M5 timing + TradePlan
+→ risk — SMALL/MEDIUM/NORMAL profile authority + optional explicit aggressive overlay
 → execution — hard authority + Gate + Intent + sole writer + reconcile
 → management
 → app composition
@@ -22,32 +22,32 @@ research/learning → downstream evidence/proposals only
 persistence → durable context/checkpoints/local runtime backup; never broker truth
 ```
 
-Physical analytical concurrency is optional/profiling-driven. TradePlan → Risk → hard authority → Gate → Intent → writer → reconciliation remains serial.
+Financial/broker authority remains serial.
 
 ## 2. Package ownership
 
 | Package | Owns | Must not own |
 |---|---|---|
-| `config` | validated settings/modes/policy IDs/provider/cache configuration | hidden policy override |
+| `config` | validated settings/modes/profile/aggressive/provider/cache policy IDs | hidden policy override |
 | `domain` | enums/IDs/typed facts | MT5 calls |
 | `diagnostics` | logs/reasons/health | trading decisions |
 | `security` | secret detection/redaction | credentials |
 | `market_data` | sole normalized MT5 read boundary/activity | raw write |
 | `intelligence` | causal descriptive evidence + normalized News facts | monetary/write authority |
-| `strategies` | six independent hypotheses/scheduler | Risk/Gate |
+| `strategies` | six independent hypotheses + bounded scheduler | Risk/Gate |
 | `decisions` | fusion/Opportunity/M5 timing/TradePlan | MT5/final permission |
-| `risk` | STANDARD affordability/risk-day/capacity/permission substates | strategy rewrite/send |
+| `risk` | profiles, aggressive overlay, affordability, risk-day/capacity/permission substates | strategy rewrite/send |
 | `execution` | Gate/checks/Intent/controller/sole writer/reconcile | strategy invention |
-| `management` | ManagedTrade decision/lifecycle | raw writer |
+| `management` | ManagedTrade decision/lifecycle + broker-valid partial-management decisions | raw writer |
 | `persistence` | typed state/checkpoint/runtime recovery package | broker truth/Git operations |
-| `app` | startup/runtime/provider/cache/composition/DTO | duplicate domain policy |
+| `app` | startup/runtime/provider/cache/composition/DTO | duplicate policy |
 | `operator` | read-only mapping/render/snapshot | authority mutation/cache validity calculation |
 | `research` | replay/learning/discovery/promotion | production broker authority |
 | `graphical_dashboard` | localhost read-only UI | MT5/trading mutation |
 
-## 3. Frozen data/timeframe owner rule
+## 3. Data/timeframe owner rule
 
-H1/M15/M5 production data and optional H4 are read through `market_data`. M1 may be acquired only for explicit diagnostics/research and cannot become hidden strategy/timing authority.
+H1/M15/M5 production data and optional H4 are read through `market_data`. M1 may be acquired only for explicit diagnostics/research.
 
 ## 4. Planned application/config
 
@@ -61,20 +61,13 @@ app/cycle.py             one governed entry/management cycle
 app/loop.py              M5/event cadence + maintenance/presentation
 app/dashboard.py         authoritative DTO mapping
 app/live_presentation.py read-only enrichment
-app/session_news.py      session/news provider + last-known-good cache boundary
-config/settings.py       READINESS/DRY_RUN/PRIMARY-DEMO + STANDARD policy + provider/cache refs
+app/session_news.py      session/news provider + LKG cache boundary
+config/settings.py       READINESS/DRY_RUN/DEMO/future-REAL refs,
+                         Risk profile + aggressive overlay refs,
+                         provider/cache baseline refs
 ```
 
-`app/session_news.py` owns provider acquisition/cache transport semantics, including:
-
-- bounded fetch/refresh;
-- accepted normalized last-known-good cache persistence/loading;
-- scope/schema/coverage/TTL/integrity validation;
-- atomic cache replacement;
-- preserving original timestamps/validity after failed refresh;
-- provider health/source reporting.
-
-It does **not** own final News permission policy. `intelligence/news.py` normalizes accepted event facts; `risk/permissions.py` owns CLEAR/BLACKOUT/UNKNOWN permission composition.
+`app/session_news.py` owns bounded fetch/refresh, accepted LKG cache persistence/loading, scope/schema/coverage/TTL/integrity validation, atomic replacement and provider health/source reporting.
 
 ## 5. Planned domain / data / intelligence
 
@@ -102,13 +95,11 @@ intelligence/news.py
 intelligence/snapshot.py
 ```
 
-`intelligence/news.py` owns event normalization/tier/window facts and consumes already-validated provider/cache inputs. It must not refresh cache TTL or perform broker permission.
-
 ## 6. Planned strategies / decisions
 
 ```text
 strategies/floor.py
-strategies/parallel.py
+strategies/parallel.py       # preserved bounded analytical concurrency
 strategies/confluence.py
 
 decisions/fusion.py
@@ -119,9 +110,7 @@ decisions/family_trade_plan.py
 decisions/trade_plan.py
 ```
 
-Frozen families: Trend Pullback, Breakout Expansion, Breakout Retest, Liquidity Sweep Reversal, Failed Breakout Reversal and Compression Expansion.
-
-Family geometry adapters can prefer exact proven event boundaries but cannot invent tighter stops or override gross/cost-room/Risk policy.
+Bounded-parallel scheduler must preserve immutable inputs, deterministic output order, bounded workers and one-worker fallback/parity.
 
 ## 7. Planned Risk / execution
 
@@ -135,15 +124,25 @@ execution/checks.py
 execution/gate.py
 execution/intent_store.py
 execution/service.py
-execution/mt5_writer.py       # sole irreversible boundary; later milestone
+execution/mt5_writer.py
 execution/reconcile.py
 execution/controller.py
 execution/sqlite_coordination.py
 ```
 
-`risk/permissions.py` consumes normalized current News state. It owns the V1 rule that true `NEWS_SAFETY_UNKNOWN` blocks new entry while valid LKG cache may preserve accepted CLEAR/BLACKOUT truth.
+Risk owner implements:
 
-No irreversible writer implementation until its deliberate DEMO milestone.
+- fixed UTC-day SMALL/MEDIUM/NORMAL profile resolution;
+- reference target/elevated/hard/daily bands;
+- explicit disabled-by-default aggressive small-account overlay;
+- 8% max SL-risk ceiling, 16% aggregate and daily ceilings when enabled;
+- min-lot actual-risk evaluation;
+- manual reset disabled by default;
+- preserved cooldown/re-entry state.
+
+`risk/permissions.py` also composes current News state and session states.
+
+No irreversible writer until controlled DEMO milestone. Future REAL capability is preserved but gated separately.
 
 ## 8. Planned management / persistence / research
 
@@ -179,9 +178,9 @@ research/invention.py
 research/promotion.py
 ```
 
-Provider cache is current safety context, not broker truth. Restart revalidates it through `app/session_news.py`; runtime recovery cannot mark an expired cache current.
+Optional partial management remains a management capability where volume is broker-valid/divisible.
 
-No runtime `shutdown_publish.py` / Git publisher is planned.
+No runtime Git publisher is planned.
 
 ## 9. Planned operator
 
@@ -199,7 +198,7 @@ graphical_dashboard/server.py
 graphical_dashboard/__main__.py
 ```
 
-Presentation displays provider health/source/cache age/validity facts received from owners and never recalculates authority.
+Presentation displays owned profile/overlay/provider/cache facts and never recalculates authority.
 
 ## 10. Planned scripts
 
@@ -209,28 +208,28 @@ scripts/acquire_mt5_dataset.py
 scripts/report_demo_learning_evidence.py
 scripts/restore_runtime_checkpoint.py
 scripts/create_local_recovery_package.py
-scripts/create_source_zip.py           # optional development helper
+scripts/create_source_zip.py
 scripts/scan_financial_secrets.py
 scripts/verify_documents_manual.py
 ```
 
-A manual Git bundle command/helper may exist later as advanced tooling, but it is not a normal runtime/source-backup dependency.
-
 ## 11. Forbidden dependency directions
 
 ```text
-strategy/intelligence worker → raw MT5 write          NO
-analytical worker → lifecycle persistence/Risk/Gate   NO
-operator/dashboard → authority recalculation           NO
-operator/dashboard → News cache TTL extension          NO
-research/learning → broker authority                   NO
-checkpoint restore → broker permission                 NO
-unknown position → empty exposure                      NO
-ambiguous broker result → blind retry                  NO
-trading runtime → Git commit/push/pull                 NO
-backup package → credentials by default                NO
-M1 diagnostic → hidden production trigger              NO
-failed News refresh → rewrite cache timestamp/TTL       NO
+strategy/intelligence worker → raw MT5 write                 NO
+analytical worker → lifecycle persistence/Risk/Gate          NO
+operator/dashboard → authority recalculation                  NO
+operator/dashboard → News cache TTL extension                 NO
+research/learning → broker authority                          NO
+unknown position → empty exposure                             NO
+ambiguous broker result → blind retry                         NO
+trading runtime → Git commit/push/pull                        NO
+backup package → credentials by default                       NO
+M1 diagnostic → hidden production trigger                     NO
+failed News refresh → rewrite cache timestamp/TTL              NO
+strategy score → select higher monetary Risk                   NO
+equity alone → silently enable aggressive mode                NO
+simple implementation preference → remove reference feature  NO
 ```
 
 ## 12. Intended runtime trace
@@ -241,20 +240,16 @@ app/main.py
 → immutable MarketSnapshot
 → startup/recovery authorities
 → app/session_news.py provider/cache validation
-→ app/cycle.py
-   → staged intelligence
-   → six family evaluations (serial or bounded-parallel)
-   → BUY/SELL + Red Team
-   → Opportunity / completed-M5 timing
-   → TradePlan gross + cost-adjusted room
-   → STANDARD Risk + cache-aware News permission
-   → hard authorities
-   → central Gate
-   → Intent → sole MT5Writer → reconciliation
-   → ManagedTrade / Trade Manager
-→ app/loop.py safe learning/local-runtime-backup/presentation
-→ graceful stop releases MT5/controller
-→ final verified local checkpoint only
+→ staged bounded-parallel intelligence/families
+→ BUY/SELL + Red Team
+→ Opportunity / completed-M5 timing
+→ TradePlan gross + cost-adjusted room
+→ profiled Risk + optional explicit overlay
+→ hard authorities
+→ central Gate
+→ Intent → sole MT5Writer → reconciliation
+→ ManagedTrade / Trade Manager
+→ learning / local runtime backup / presentation
 ```
 
 ## 13. Proof map
@@ -263,20 +258,19 @@ app/main.py
 |---|---|
 | raw reads | normalization/freshness/completed chronology |
 | intelligence | causal evidence/UNKNOWN semantics |
-| News provider/cache | accepted cache creation, atomic replace, TTL/scope/coverage, refresh failure reuse, expiry → UNKNOWN, no timestamp laundering |
-| analytical scheduling | one-worker/canonical-order parity; bounded-parallel parity if implemented |
+| analytical scheduling | bounded-parallel + one-worker parity |
 | strategies/fusion | six families, BUY/SELL, correlation control |
 | Opportunity/timing | identity, event freshness, M1 non-authority |
 | TradePlan | family geometry + gross/cost-room calculations |
-| Risk | STANDARD sizing/min-lot/hard ceiling/daily state |
-| session/news | fresh-source/cache CLEAR, BLACKOUT, true UNKNOWN matrix |
+| Risk | profile resolution/bands, aggressive overlay, min-lot, cooldown/reset/daily state |
+| provider/cache | 1800s baseline, refresh failure reuse, expiry → UNKNOWN, no timestamp laundering |
+| session/news | PRE_CLOSE/reopen + fresh/cache CLEAR/BLACKOUT/UNKNOWN matrix |
 | execution | Gate, one-shot Intent, writer/reconcile |
-| operator | upstream blocker vs actual Gate + provider/cache truth |
-| management | monotonic protection/time-efficiency EXIT/verified close |
+| operator | blocker vs Gate + profile/overlay/provider/cache truth |
+| management | protection/time-efficiency/partial handling/verified close |
 | persistence | strict restore/checkpoint/local backup |
-| learning | exact close + exactly-once observation |
-| research | no-lookahead/cost/holdout/package integrity |
+| learning/research | exactly-once/no-lookahead/cost/holdout integrity |
 
 ## 14. Synchronization rule
 
-Any added/renamed/removed source/test or proof owner updates this map and `FILE_AND_TEST_CATALOG.md` in the same affected-graph packet.
+Any source/test addition/removal/rename or proof-owner change updates this map, `FILE_AND_TEST_CATALOG.md`, owning contract and affected operator/governance surfaces in the same coherent packet.

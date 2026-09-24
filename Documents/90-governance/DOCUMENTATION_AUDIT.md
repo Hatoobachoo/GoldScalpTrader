@@ -1,18 +1,16 @@
 # GoldScalpTrader — Documentation Audit
 
-**Status:** ACTIVE FREEZE-PREPARATION AUDIT — STRUCTURAL INVENTORY VERIFIED, SEMANTIC/METADATA NORMALIZATION IN PROGRESS
-**Version:** 0.2-post-audit1-doc-review
+**Status:** ACTIVE FREEZE-PREPARATION AUDIT — PRESERVATION-FIRST SEMANTIC CORRECTION IN PROGRESS
+**Version:** 0.3-preservation-first-doc-review
 **Authority:** Structural and expert-level review of the canonical `Documents/` manual before implementation freeze.
 
 ## 1. Audit purpose
 
-This audit checks whether the manual is complete as a documentation system and whether a capable developer/AI can reconstruct the project without prior chat history.
+This audit checks whether the manual is complete, reconstructable without chat history and faithful to the operator's preservation requirement.
 
-It does not claim implementation, DEMO certification or profitability.
+It does not claim implementation, DEMO/REAL certification or profitability.
 
 ## 2. Structural inventory — VERIFIED
-
-The current canonical repository preserves the reference-equivalent inventory:
 
 ```text
 Top level                  7
@@ -27,127 +25,137 @@ Top level                  7
 TOTAL                      64 Markdown documents
 ```
 
-The canonical tree contains all corresponding document destinations required by the GoldSwingTraderAI preservation model.
+## 3. Governing preservation test
 
-## 3. Fresh-zero prerequisite — VERIFIED
-
-`AUDIT_1_FRESH_DESIGN_REVIEW.md` has been run and major architecture choices have been classified. The project is no longer in a pre-challenge architecture state.
-
-Audit 1 explicitly resolved:
-
-- timeframe authority;
-- six-family decomposition;
-- M1 production role;
-- gross + cost-aware geometry;
-- STANDARD risk-policy shape;
-- News UNKNOWN new-entry policy;
-- runtime mode scope;
-- time-efficiency management semantics;
-- logical versus physical parallelism;
-- development/source backup workflow.
-
-## 4. Semantic findings discovered during this audit
-
-### Finding A — News provider failure semantics needed refinement
-
-Problem found:
+For every material difference from GoldSwingTraderAI ask:
 
 ```text
-provider/API failure
-→ previously implied immediate NEWS_UNKNOWN
+Is it directly required by scalping?
+OR explicitly instructed by operator?
+OR a separately proven reference defect?
 ```
 
-That would make a temporary external API outage an unnecessary entry kill-switch even when a still-valid accepted calendar already existed.
+If **no**, the reference feature/default must be preserved.
 
-Correction:
+If uncertain, preserve now and list it for final documentation discussion.
+
+## 4. Fresh-zero correction finding
+
+The original Fresh-Zero Audit correctly identified many scalp-specific improvements but also simplified several **non-scalp** reference features. The operator explicitly rejected those removals.
+
+Corrective result:
+
+### Restored
+
+- automatic SMALL/MEDIUM/NORMAL DayStartEquity Risk profiles;
+- their reference target/elevated/hard/daily-loss values;
+- explicit disabled-by-default aggressive small-account operational option;
+- 8% maximum SL-risk ceiling as ceiling, not target;
+- 16% aggregate open-risk and daily-loss ceilings under aggressive mode;
+- governed manual daily-loss reset capability, disabled by default;
+- one fresh same-episode re-entry baseline;
+- three-loss / at-least-30-minute cooldown baseline + release conditions;
+- bounded physical analytical concurrency target + one-worker fallback/parity;
+- Daily PRE_CLOSE T-20/T-10;
+- Weekend PRE_CLOSE T-60/T-30;
+- daily reopen 1 clean M5;
+- weekend reopen 2 clean M5 + gap assessment;
+- 1800-second provider TTL baseline;
+- future governed REAL capability;
+- optional broker-valid partial-management capability where divisible.
+
+### Retained as genuine scalp changes
+
+- H1/M15/M5 hierarchy with H4 optional;
+- stronger event freshness/anti-chase;
+- gross + cost-adjusted room;
+- no automatic inherited 1.20R hard scalp floor;
+- stronger spread/drift/latency observability;
+- true News UNKNOWN new-entry block;
+- valid LKG News-cache resilience without timestamp laundering;
+- exceptional Runner;
+- time/efficiency EXIT reasoning;
+- scalp-specific cost/latency/duration research.
+
+## 5. Explicit operator-directed non-scalp differences
+
+These are allowed because the operator explicitly requested them:
+
+- no trading-runtime Git commit/push/pull;
+- local source backup via coherent remote bulk → `git pull --ff-only` → optional clean ZIP;
+- aggressive small-account option preserved but disabled by default.
+
+## 6. Semantic review checklist
+
+The audit now checks:
+
+- preservation-first rule visible at system and governance level;
+- consistent timeframe roles;
+- six-family preservation;
+- bounded analytical concurrency preserved;
+- profile Risk architecture consistent everywhere;
+- aggressive mode is disabled-by-default operational capability, not research-only;
+- no `STANDARD-only` leakage;
+- no false claim that 0.50% scaffold is production policy;
+- cooldown/re-entry/reset defaults aligned;
+- News cache/UNKNOWN policy aligned;
+- 1800s provider baseline aligned;
+- PRE_CLOSE/reopen defaults aligned;
+- future REAL is gated, not removed or hidden;
+- partial-management wording does not remove capability;
+- runtime Git publication remains absent;
+- dashboard blocker vs Gate truth remains correct;
+- learning/research stays downstream;
+- source/test maps match contracts.
+
+## 7. Reconstructability test
+
+A new developer/AI must be able to answer from `Documents/` alone:
+
+- what is preserved from Swing;
+- what changed specifically for scalping;
+- what changed because the operator explicitly asked;
+- exact risk profiles/bands;
+- exact aggressive-mode semantics;
+- cooldown/reset/session/reopen/provider defaults;
+- timeframe/freshness/cost rules;
+- bounded analytical concurrency vs serial broker authority;
+- DEMO progression and future REAL gate;
+- runtime/source backup methods;
+- which values still genuinely require scalp calibration or external proof.
+
+## 8. Metadata normalization finding
+
+A separate issue remains: some untouched topic documents still carry stale `DRAFT PRE-CHALLENGE` headers even though their architecture was preserved/accepted.
+
+That metadata normalization must be completed in a coherent documentation bulk before final freeze. It must not fabricate implementation/test PASS evidence.
+
+## 9. Evidence truth
+
+Current classification:
 
 ```text
-refresh failure + valid last-known-good scoped cache
-→ use cached accepted event truth
-→ provider health may be DEGRADED
-
-refresh failure + expired/invalid/no cache
-→ NEWS_SAFETY_UNKNOWN
-→ V1 new-entry BLOCK / LIMITED
+architecture/preservation decisions     available
+implementation proof                    not yet available
+scalp replay/calibration evidence       pending
+current Exness/provider external proof  pending
+controlled DEMO lifecycle proof         pending
+future REAL release proof               not started
+profitability claim                     none
 ```
 
-No cache timestamp/TTL laundering is permitted.
-
-Affected contracts/governance/operator summaries are synchronized in the same packet.
-
-### Finding B — Reference comparison/preservation documents were stale
-
-`DOCUMENTATION_COMPARISON.md` and `PRESERVATION_LEDGER.md` still described several decisions as pre-challenge/open even though Audit 1 had closed them.
-
-Correction: both are converted into post-Audit-1 explicit records, including a permanent Swing→Scalp delta table.
-
-### Finding C — Metadata normalization is not yet complete
-
-Some topic documents that were not materially rewritten during Audit 1 may still carry legacy `DRAFT PRE-CHALLENGE` metadata even when their architecture was preserved by Audit 1.
-
-Do **not** mark the documentation audit complete until every substantive document's Status/Version/Authority accurately reflects its current evidence state.
-
-## 5. Semantic review checklist
-
-The audit checks:
-
-- one owner per behaviour;
-- consistent H1/M15/M5/H4/M1 roles;
-- consistent provider-cache/News UNKNOWN policy;
-- consistent STANDARD risk policy and no active legacy tier leakage;
-- no inherited 1.20R scalp requirement;
-- logical-parallel/serial-authority architecture consistency;
-- no trading-runtime Git publication path;
-- source backup separated from runtime recovery;
-- learning/research authority constrained;
-- dashboard blocker vs actual Gate truth;
-- module/test maps aligned with topic contracts;
-- top-level manuals summarize rather than override topic owners.
-
-## 6. Reconstructability test
-
-A new developer/AI with no chat history must be able to answer from `Documents/` alone:
-
-- what the bot is and is not;
-- exact timeframe roles;
-- six strategy families and correlation rule;
-- Opportunity/timing/freshness semantics;
-- structural versus monetary Risk boundary;
-- News provider/cache/UNKNOWN behaviour;
-- execution authority/order/reconciliation lifecycle;
-- open-trade management/EXIT semantics;
-- runtime and source backup methods;
-- which values remain calibration/external proof;
-- what explicitly changed from GoldSwingTraderAI;
-- implementation dependency order.
-
-The explicit reference delta now lives in `DOCUMENTATION_COMPARISON.md`.
-
-## 7. Evidence truth
-
-Planned source/test paths remain planned until created. Later audit documents must not cite nonexistent PASS results.
-
-Current evidence classification remains:
+## 10. Current audit result
 
 ```text
-architecture decision         available
-implementation proof          not yet available
-replay/calibration evidence   pending
-connected Exness proof        pending
-DEMO execution proof          pending
-profitability claim           none
+STRUCTURAL INVENTORY                 PASS
+PRESERVATION-FIRST RULE              PASS after current correction packet
+UNJUSTIFIED FEATURE REMOVALS         CORRECTED in current packet
+GENUINE SCALP DELTA LEDGER           UPDATED in current packet
+NEWS CACHE SEMANTICS                 PASS / retained
+FULL AFFECTED-GRAPH SYNC             CURRENT
+64-DOC METADATA NORMALIZATION        STILL PENDING
+FINAL RECONSTRUCTABILITY SIGN-OFF    NOT YET FINAL
+DOCUMENTATION FREEZE                 NOT YET DECLARED COMPLETE
 ```
 
-## 8. Current audit result
-
-```text
-STRUCTURAL INVENTORY          PASS
-FRESH-ZERO AUDIT PREREQUISITE PASS
-EXPLICIT REFERENCE DELTA      PASS after current sync packet
-NEWS CACHE SEMANTIC GAP       FIXED in current sync packet
-FULL 64-DOC METADATA NORMALIZATION  IN PROGRESS
-FULL RECONSTRUCTABILITY SIGN-OFF     NOT YET FINAL
-DOCUMENTATION FREEZE                NOT YET DECLARED COMPLETE
-```
-
-Implementation must not outrun the remaining metadata/cross-link normalization.
+Implementation must not begin until affected-graph synchronization and metadata/cross-link normalization are clean, followed by the operator's final documentation discussion of the remaining genuine scalp-specific deltas.

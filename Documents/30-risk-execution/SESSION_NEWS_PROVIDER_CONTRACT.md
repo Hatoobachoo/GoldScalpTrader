@@ -1,7 +1,7 @@
 # GoldScalpTrader — Session/News Provider Contract
 
-**Status:** FROZEN V1 PROVIDER ARCHITECTURE — SOURCE/TTL CALIBRATION AND EXTERNAL PROOF PENDING
-**Version:** 1.0-last-known-good-cache
+**Status:** FROZEN V1 PROVIDER ARCHITECTURE — PRESERVED 1800s BASELINE / EXTERNAL PROVIDER PROOF PENDING
+**Version:** 1.1-lkg-cache-preserved-ttl
 **Authority:** Session/news acquisition, normalization, provider health/freshness, bounded last-known-good cache and permission inputs.
 
 ## 1. Purpose
@@ -15,24 +15,23 @@ Core invariants:
 - independently known broker/session truth remains separate from external News availability;
 - known blackout remains hard according to the state machine;
 - missing/stale News is never renamed CLEAR;
-- a temporary API/network refresh failure does not erase still-valid previously verified event truth;
-- credentials never enter repository/runtime-backup artifacts;
+- temporary API/network refresh failure does not erase still-valid previously verified event truth;
+- cache validity is never extended merely because refresh failed;
+- provider credentials never enter repository/runtime-backup artifacts;
 - final broker action still requires every other hard authority.
 
 ## 2. Provider resolution
 
-V1 architecture supports:
-
 ```text
 explicit injected provider for tests/integration
 → configured local scoped session/news snapshot file
-→ approved zero-cost/best-effort calendar adapter
-→ last-known-good normalized cache when live refresh fails and cache is still valid
+→ approved zero-cost/best-effort public calendar adapter
+→ accepted last-known-good normalized cache when live refresh fails and cache remains valid
 ```
 
 Normal Exness/XAU session truth remains a separate broker-schedule concern.
 
-A paid provider is not required for V1.
+A paid provider is not required.
 
 ## 3. Ownership
 
@@ -41,7 +40,7 @@ A paid provider is not required for V1.
 | provider resolution | app/main.py / config |
 | session/news acquisition | app/session_news.py |
 | local snapshot validation | app/session_news.py |
-| last-known-good cache validation | app/session_news.py |
+| LKG cache persistence/validation | app/session_news.py |
 | event normalization/tier mapping | intelligence/news.py |
 | hard market/pre-close/reopen permission | risk/permissions.py |
 | News CLEAR/BLACKOUT/UNKNOWN composition | risk/permissions.py |
@@ -51,13 +50,13 @@ Providers cannot call the broker writer.
 
 ## 4. Scope validation
 
-Every accepted provider snapshot/cache must match the intended runtime scope where scope applies, including account/server/resolved Gold symbol or the explicitly defined provider-global event scope.
+Every accepted provider snapshot/cache must match its intended account/server/resolved Gold symbol scope where scope applies, or the explicitly defined provider-global event scope.
 
-Wrong-scope data is rejected. It is never reused for convenience.
+Wrong-scope data is rejected.
 
 ## 5. Provider health versus usable event truth
 
-Provider health vocabulary may include:
+Provider health vocabulary:
 
 ```text
 VERIFIED
@@ -67,23 +66,33 @@ UNAVAILABLE
 UNKNOWN
 ```
 
-Provider health and current event truth are not identical.
-
-Example:
+Provider health and News truth are not identical.
 
 ```text
 latest HTTP refresh failed
-+ previous accepted calendar remains inside valid TTL/coverage
-→ Provider health = DEGRADED
-→ Event truth = usable from LAST_KNOWN_GOOD_CACHE
++ accepted cache remains valid
+→ Provider Health = DEGRADED
+→ News truth = accepted cached CLEAR/BLACKOUT/warmup state
 
-latest HTTP refresh failed
-+ cache expired/stale/invalid
-→ Provider health = UNAVAILABLE/DEGRADED
-→ Event truth = NEWS_SAFETY_UNKNOWN
+latest refresh failed
++ cache expired/invalid/missing
+→ provider unavailable/degraded
+→ NEWS_SAFETY_UNKNOWN
 ```
 
-## 6. Normalized event/cache fields
+## 6. Preserved TTL baseline
+
+GoldSwingTraderAI's reference provider TTL baseline is preserved:
+
+```text
+SESSION_NEWS_TTL_SECONDS = 1800
+```
+
+This is an initial policy/configuration baseline, not a claim that every provider must update exactly every 30 minutes forever.
+
+A later change requires a direct provider/scalp operational reason and governed documentation update.
+
+## 7. Normalized event/cache fields
 
 Preserve where applicable:
 
@@ -105,49 +114,49 @@ payload/checksum identity where useful
 
 Future fetch times or malformed timezones are rejected.
 
-An empty event list means “no relevant events” only when a fresh accepted provider positively supplied that result for the current coverage window.
+An empty event list means “no relevant events” only when a valid accepted provider positively supplied that result for the current coverage window.
 
-## 7. Last-known-good cache rules
+## 8. LKG cache rules
 
-A successful accepted calendar may be cached locally for bounded reuse.
+A successful accepted calendar may be cached locally.
 
-The cache is usable after a refresh/API failure only if:
+It is usable after refresh failure only if:
 
 1. original provider result was valid;
 2. schema/mapping version remains accepted;
 3. scope remains correct;
-4. current decision time lies inside accepted coverage;
-5. TTL/valid-until has not expired;
+4. current time lies inside accepted coverage;
+5. original 1800-second/default configured TTL or valid-until has not expired;
 6. payload integrity is intact;
 7. no later positively known invalidating fact supersedes it.
 
-On refresh failure:
+On failure:
 
 ```text
-keep prior valid cache unchanged
+keep prior accepted cache unchanged
 record refresh failure separately
 never rewrite fetched_at/as_of/valid_until
 never extend TTL because the API failed
 ```
 
-When cache validity expires, it becomes stale diagnostic/research context only and cannot support NEWS_CLEAR.
+Expired cache becomes stale diagnostic/research context only.
 
-## 8. Atomic local snapshot/cache publication
+## 9. Atomic publication
 
 Any external/local producer should:
 
 1. acquire/validate data;
-2. build a complete schema-versioned object;
-3. write a same-directory temporary UTF-8 file;
-4. flush/close it;
-5. atomically replace the live accepted file/cache only after validation;
-6. leave the last accepted file untouched on acquisition failure;
-7. never rewrite old timestamps merely to look fresh;
-8. keep credentials outside the file/repository.
+2. build complete schema-versioned object;
+3. write same-directory temporary UTF-8 file;
+4. flush/close;
+5. atomically replace accepted file/cache only after validation;
+6. leave last accepted file untouched on acquisition failure;
+7. never rewrite old timestamps to look fresh;
+8. keep credentials outside file/repository.
 
-## 9. Bounded network behaviour
+## 10. Bounded network behaviour
 
-An approved zero-cost public calendar adapter uses defensive network behaviour:
+Approved public adapter uses:
 
 - HTTPS;
 - bounded timeout;
@@ -157,70 +166,77 @@ An approved zero-cost public calendar adapter uses defensive network behaviour:
 - current-coverage validation;
 - stable event IDs;
 - bounded cache;
-- at most a small documented retry for specific stale-edge cases;
+- at most small documented retry for specific stale-edge cases;
 - no aggressive polling/retry loop.
 
-Repeated failure does not trigger high-frequency retries.
-
-## 10. Session versus News failure semantics
+## 11. Session versus News failure semantics
 
 ```text
-known Market CLOSED + calendar refresh failure
+known Market CLOSED + calendar failure
 → Market CLOSED preserved
-→ cached News may remain usable or become UNKNOWN independently
-→ new entry remains BLOCKED by market state
+→ cached News may independently remain usable or become UNKNOWN
+→ entry blocked by market state
 
-known Market OPEN + calendar refresh failure + valid cache
+known Market OPEN + refresh failure + valid cache
 → Market OPEN preserved
-→ use cached accepted CLEAR/BLACKOUT/post-event truth
-→ provider health DEGRADED may be visible
+→ accepted cached News truth used
+→ Provider Health may be DEGRADED
 
-known Market OPEN + calendar refresh failure + invalid/expired cache
+known Market OPEN + refresh failure + invalid/expired/no cache
 → Market OPEN preserved
 → NEWS_SAFETY_UNKNOWN
-→ V1 new-entry BLOCK / LIMITED
+→ scalp new-entry BLOCK / LIMITED
 
-known blackout in valid cache/current provider truth
+known blackout in accepted fresh/cache truth
 → BLACKOUT preserved
 ```
 
 Provider failure never erases independent session truth.
 
-## 11. Holiday / special hours
+## 12. Preserved normal session safety baseline
 
-A positively known holiday/special context that may alter XAU hours prevents blind normal-schedule assumptions unless exact altered broker hours are known.
+The provider/permission layer preserves these reference policy inputs unless current broker truth or a later specifically justified change supersedes them:
 
-A missing calendar alone does not prove a holiday.
+```text
+Daily PRE_CLOSE     T-20 no new entry / T-10 mandatory flatten
+Weekend PRE_CLOSE   T-60 no new entry / T-30 mandatory flatten
+Daily reopen        1 clean completed M5
+Weekend reopen      2 clean completed M5 + gap assessment
+```
 
-## 12. Restart/recovery
+Normal Exness Gold schedule hours/DST/special holidays are external broker facts and must be verified during connected proof.
+
+If exact altered holiday hours are unknown, session authority becomes UNKNOWN rather than inventing hours.
+
+## 13. Restart/recovery
 
 On restart:
 
 - provider/session data is re-read/re-fetched where configured;
-- existing last-known-good cache is revalidated from original timestamps/coverage;
-- stale cache cannot become current CLEAR merely because it exists;
+- existing LKG cache is revalidated from original timestamps/coverage;
+- stale cache cannot become current merely because it exists;
 - broker exposure is reconciled separately.
 
-## 13. Research/replay
+## 14. Research/replay
 
 Record provider identity/health, source type, cache age/coverage, known blackout, UNKNOWN intervals and live/replay coverage differences.
 
 Historical replay may use only event/cache truth causally available at the simulated time.
 
-## 14. Failure matrix
+## 15. Failure matrix
 
-| Condition | News/provider result |
+| Condition | Result |
 |---|---|
-| current valid live/file calendar | current accepted event truth |
-| refresh fails + valid LKG cache | use cache; provider degraded |
+| current valid live/file calendar | accepted current event truth |
+| refresh fails + valid LKG cache | use cache; provider DEGRADED |
 | refresh fails + expired/invalid cache | NEWS UNKNOWN |
-| known blackout in accepted current/cache truth | BLACKOUT |
-| file missing/invalid/scope mismatch with no valid fallback | UNKNOWN |
+| known blackout in accepted truth | BLACKOUT |
+| file invalid/scope mismatch + no fallback | UNKNOWN |
 | future fetch time | reject |
 | session schedule ambiguous | Session UNKNOWN independently |
 | known altered holiday, no exact hours | Session UNKNOWN independently |
 
-## 15. Dashboard
+## 16. Dashboard
 
 Show separately where practical:
 
@@ -236,9 +252,9 @@ News State
 next accepted event/countdown
 ```
 
-`DEGRADED` must not render as `VERIFIED`; valid cached truth must not render as UNKNOWN merely because the most recent refresh failed.
+Valid cached truth must not render UNKNOWN merely because newest refresh failed.
 
-## 16. Planned implementation ownership
+## 17. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/app/session_news.py
@@ -246,12 +262,8 @@ src/gold_scalp_trader/intelligence/news.py
 src/gold_scalp_trader/risk/permissions.py
 ```
 
-## 17. Planned proof
+## 18. Planned proof
 
-Tests must cover provider resolution, schema/scope/TTL, atomic publication, live-success cache creation, refresh failure with still-valid cache, cache expiry → UNKNOWN, no timestamp laundering, known blackout preservation, restart revalidation, bounded retry and secret exclusion.
+Tests cover provider resolution, 1800-second baseline/config override semantics, schema/scope/TTL, atomic publication, live-success cache creation, refresh failure with valid cache, cache expiry → UNKNOWN, no timestamp laundering, known blackout preservation, restart revalidation, bounded retry and secret exclusion.
 
-Connected evidence separately validates real provider reliability and broker schedule behaviour.
-
-## 18. Calibration / implementation choices pending
-
-Exact provider selection, cache persistence format/path, cache TTL/refresh cadence, holiday workflow, event-tier mapping and any optional commercial adapter remain configuration/calibration choices. The architectural fallback semantics above are frozen.
+Connected evidence separately validates real provider reliability and current broker schedule behaviour.

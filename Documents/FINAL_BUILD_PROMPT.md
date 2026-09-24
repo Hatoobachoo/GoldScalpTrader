@@ -1,28 +1,29 @@
 # GoldScalpTrader — Final Build / Replication Prompt
 
-**Status:** POST-AUDIT-1 IMPLEMENTATION / REPLICATION BRIEF — IMPLEMENTATION NOT STARTED
-**Version:** 1.1-cache-aware-handoff
+**Status:** POST-AUDIT-1 IMPLEMENTATION / REPLICATION BRIEF — PRESERVATION-FIRST CORRECTED, IMPLEMENTATION NOT STARTED
+**Version:** 1.2-preserved-feature-handoff
 **Authority:** Whole-project handoff for a capable coding AI/developer with no chat history. Topic contracts always override this summary.
 
 ## 1. Mission
 
 Build/verify/reconstruct **GoldScalpTrader**, a local Exness MT5 XAUUSD/XAUUSDm selective scalping system.
 
-It is a governed multi-desk system, not a simple EMA bot and not HFT.
+GoldSwingTraderAI is the default feature/default baseline. Change inherited behaviour only for a direct scalp requirement, explicit operator instruction or separately proven reference defect. If uncertain, preserve it and surface the question during final documentation review.
 
-Canonical path:
+## 2. Canonical path
 
 ```text
 one MT5 read boundary
 → immutable MarketSnapshot
-→ causal independent intelligence
+→ staged bounded-parallel causal intelligence
 → six independent scalp families
 → BUY / SELL fusion + Red Team
 → persistent Opportunity
 → completed-M5 Entry Timing + event freshness
 → family-aware structural TradePlan
 → gross + cost-adjusted room
-→ STANDARD monetary Risk
+→ SMALL/MEDIUM/NORMAL monetary Risk
+   + optional explicit disabled-by-default aggressive overlay
 → hard session/news/system/account/controller authorities
 → central Gate
 → durable one-shot Intent
@@ -35,15 +36,15 @@ one MT5 read boundary
 → local recovery
 ```
 
-Logical parallel analysis, serial financial/broker authority.
+Bounded-parallel analysis; serial financial/broker authority.
 
-## 2. Authority order
+## 3. Authority order
 
-`SYSTEM_CONTRACT` → owning topic contract → active `DESIGN_DECISIONS` / remaining `OPEN_QUESTIONS` → Architecture/Trading Floor → Coding/Module/File-Test maps → operator/testing/recovery guides → this prompt.
+`SYSTEM_CONTRACT` → owning topic contract → active `DESIGN_DECISIONS` / `OPEN_QUESTIONS` → `DOCUMENTATION_COMPARISON` / `PRESERVATION_LEDGER` for inherited behaviour → Architecture/Trading Floor → engineering/operator guides → this prompt.
 
-If canonical documents conflict, stop affected coding and repair the graph.
+Repair contradictions before coding.
 
-## 3. Frozen timeframe roles
+## 4. Scalp timeframe roles
 
 ```text
 H1   broad soft regime
@@ -54,9 +55,7 @@ M1   diagnostic/research only
 quote current executable condition
 ```
 
-M1/tick history has no hidden V1 production trigger authority.
-
-## 4. Frozen six families
+## 5. Preserved strategy families
 
 ```text
 Trend Pullback Continuation
@@ -69,65 +68,110 @@ Compression Expansion
 
 Keep attribution and correlation/event-lineage control. No unanimity/filter soup.
 
-## 5. Opportunity / timing
+## 6. Opportunity / scalp freshness
 
-Persistent Opportunity identity is distinct from current timing. M5 timing can WAIT/ENTER/MISSED/INVALID. Re-arm requires a genuinely fresh causal event. Event age/chase distance are first-class; exact thresholds calibrate later.
+Persistent Opportunity identity is distinct from current timing. M5 timing can WAIT/ENTER/MISSED/INVALID. Re-arm requires genuinely fresh causal evidence.
 
-## 6. TradePlan / costs
+Scalp-specific first-class facts include event age, distance travelled, chase/extension and current executable drift.
+
+## 7. TradePlan / costs
 
 Keep separate Signal Price, Approved Entry Reference, fresh Executable Quote and Actual Fill.
 
-TradePlan owns family-aware structural invalidation, SL, objectives, original R, gross structural quality and current known cost-adjusted room. It never sizes lots or moves structure to fit an account.
+TradePlan owns family-aware structural invalidation, SL, objectives, original R, gross structural quality and current known cost-adjusted room. It never sizes lots or moves structure to fit account policy.
 
-Old Swing 1.20R is not active policy; exact gross/net thresholds are calibration pending.
+Swing 1.20R is **not automatically the hard scalp floor**. Exact scalp gross/net/cost thresholds remain evidence questions.
 
-## 7. STANDARD monetary Risk
+## 8. Preserved monetary Risk
 
-V1 has one production Risk policy, not automatic equity tiers.
+Resolve fixed UTC-day profile:
 
 ```text
-TradePlan
-→ theoretical volume
-→ broker min/step/max normalization
-→ actual all-in risk at executable normalized volume
-→ hard ceiling/margin/exposure/daily/cooldown/re-entry checks
-→ PASS / BLOCK / UNKNOWN
+SMALL   positive DayStartEquity < $300
+MEDIUM  $300–$999.99
+NORMAL  >= $1,000
 ```
 
-Minimum-lot affordability uses actual broker facts. Do not tighten SL to make 0.01 fit.
+| Profile | Normal / target | Elevated | Hard ceiling | Daily lock |
+|---|---:|---:|---:|---:|
+| SMALL | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
+| MEDIUM | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
+| NORMAL | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
 
-Historical aggressive 8%/16% values are not active. Any later aggressive experiment is explicit, disabled by default and research-governed.
+Minimum-lot affordability uses actual broker facts. Never tighten structural SL merely to make 0.01 fit.
 
-## 8. Session / News / provider outage
+The provisional 0.50% scaffold does not supersede canonical Risk policy.
 
-For new entry:
+### 8.1 Aggressive small-account option
+
+Preserve as an operational capability, disabled by default:
+
+```text
+eligible baseline: positive DayStartEquity < $1,000
+8%  max monetary SL-risk ceiling per new trade — NOT TARGET
+16% max aggregate open risk
+16% daily loss ceiling
+```
+
+Never auto-enable from balance/equity alone. All structural/session/news/execution safeguards remain.
+
+### 8.2 Reset / cooldown / re-entry
+
+- governed manual daily-loss reset feature preserved but disabled by default;
+- one genuinely fresh same-episode re-entry baseline preserved;
+- three consecutive closed bot losses trigger at least 30 minutes global cooldown plus fresh/healthy release conditions.
+
+## 9. Session / News
 
 ```text
 OPEN + accepted NEWS_CLEAR    → may continue
 OPEN + accepted NEWS_BLACKOUT → BLOCK
-OPEN + NEWS_SAFETY_UNKNOWN   → BLOCK / LIMITED
+OPEN + true NEWS_UNKNOWN      → new-entry BLOCK / LIMITED
 ```
 
-Provider refresh failure is not automatically NEWS_UNKNOWN:
+Provider refresh failure:
 
 ```text
-refresh fails + valid last-known-good calendar
-→ retain accepted cached event truth
-→ provider health may be DEGRADED
-→ do not block merely because the newest refresh failed
+refresh fails + valid LKG calendar
+→ retain accepted cached truth
+→ provider may be DEGRADED
+→ do not extend timestamps/TTL
 
-refresh fails + expired/invalid/no cache
-→ NEWS_SAFETY_UNKNOWN
-→ new-entry block
+refresh fails + invalid/expired/no cache
+→ NEWS_UNKNOWN
 ```
 
-Last-known-good cache must preserve original fetch/as-of/coverage/valid-until timestamps. Never extend validity on failure. Existing management/protection/mandatory CLOSE remains action-sensitive.
+Preserved baselines:
 
-## 9. Execution scope
+```text
+Provider TTL 1800s
+Daily PRE_CLOSE T-20 / T-10
+Weekend PRE_CLOSE T-60 / T-30
+Daily reopen 1 clean M5
+Weekend reopen 2 clean M5 + gap assessment
+```
 
-READINESS/DRY_RUN first. Controlled DEMO writer only after implementation/deterministic proof. REAL is outside V1 and requires separate governance.
+Current broker schedule/holiday facts still require external proof.
 
-When writer exists:
+## 10. Bounded analytical concurrency
+
+Preserve bounded physical concurrency for dependency-independent desks/families.
+
+Require immutable inputs, bounded workers, deterministic canonical output order, no lifecycle/broker mutation, explicit failure/degradation and semantic parity with a deterministic one-worker fallback.
+
+Do not remove concurrency merely because a serial implementation is simpler.
+
+## 11. Execution capability progression
+
+```text
+READINESS / DRY_RUN
+→ controlled DEMO writer after deterministic proof
+→ future governed REAL capability
+```
+
+REAL is preserved but disabled/unavailable until its separate DEMO evidence, release gates and explicit operator approval are satisfied.
+
+When a writer exists:
 
 ```text
 TradePlan/Risk/hard authorities
@@ -142,15 +186,22 @@ TradePlan/Risk/hard authorities
 
 Ambiguous acknowledgement never gets blind retry.
 
-## 10. Trade Manager
+## 12. Trade Manager
 
-Actions are HOLD/PROTECT/TRAIL/RUNNER/EXIT. Time/efficiency weakness is an EXIT reason, not separate action. Protection only tightens earned causal structure; Runner is exceptional with fresh continuation/new objective.
+Actions remain HOLD/PROTECT/TRAIL/RUNNER/EXIT.
 
-## 11. Persistence / ownership
+Scalp-specific changes:
 
-Use strict local transactional state. Restart is not fresh risk day. Unknown exposure is never zero. Current broker truth outranks restored context. Manual/foreign positions are never silently adopted.
+- time/efficiency weakness can produce EXIT;
+- Runner is exceptional and needs fresh continuation/new objective.
 
-## 12. Runtime backup
+Preserve optional broker-valid partial management where volume is divisible. Correctness at 0.01 must not depend on partial close.
+
+## 13. Persistence / ownership
+
+Use strict local transactional state. Restart is not a fresh risk day. Unknown exposure is never zero. Current broker truth outranks restored context. Manual/foreign positions are never silently adopted.
+
+## 14. Runtime backup
 
 ```text
 transactional StateStore
@@ -161,49 +212,51 @@ transactional StateStore
 
 No runtime Git commit/push/pull or GitHub credential dependency.
 
-## 13. Development/source backup
-
-After major coherent bulk:
+## 15. Development/source backup
 
 ```text
-one remote fast-forward commit
+one remote coherent commit
 → operator git pull --ff-only
 → local clone = latest source + full Git history
-→ optional secret-clean ZIP milestone snapshot
+→ optional secret-clean ZIP milestone copy
 ```
 
-Git bundle is optional advanced/manual only.
+This is operator-directed, not a scalp-derived change.
 
-## 14. Learning / research
+## 16. Learning / research
 
 Learning is downstream. Actual/counterfactual/system-fault evidence stay distinct. Candidate invention is declarative, cannot self-promote and cannot bypass hard safety.
 
-Replay is chronological/no-lookahead and scalp research explicitly models costs, latency, duration and min-lot affordability.
+Scalp research explicitly models costs, latency, duration, freshness and min-lot affordability.
 
-## 15. Dashboards
+## 17. Dashboards
 
-Terminal dashboard is primary read-only operator surface; optional localhost graphical dashboard is secondary/read-only. Presentation cannot recalculate authority.
+Terminal dashboard is primary read-only operator surface; optional localhost graphical dashboard is secondary/read-only.
 
-Show upstream blocker separately from actual Gate state. Show News provider health/source/cache age separately from News permission where implemented.
+Show current Risk profile/overlay, provider/cache truth and upstream blocker separately from actual Gate state. Presentation cannot recalculate authority.
 
-## 16. Engineering rules
+## 18. Explicit reference delta
 
-Prefer smallest clear typed/auditable production code; MetaTrader5 calls stay at adapter/writer boundaries; logical analytical independence does not require physical concurrency; one-worker semantics are canonical and any worker pool must prove parity.
-
-Every material change updates full affected Documents/source/tests/operator/research/release graph.
-
-## 17. Explicit reference delta
-
-Before changing inherited behaviour, read:
+Before changing any inherited behaviour, read:
 
 `90-governance/DOCUMENTATION_COMPARISON.md`
 
-It is the permanent explicit GoldSwingTraderAI → GoldScalpTrader difference ledger. Preserve those differences unless a new governed decision supersedes them.
+That is the permanent GoldSwingTraderAI → GoldScalpTrader delta ledger and explicitly lists earlier unintended simplifications that have been restored.
 
-## 18. Evidence boundary
+## 19. Evidence boundary
 
-Never confuse frozen design, calibrated values, deterministic tests, replay, connected MT5 reads, News-provider/cache evidence, controlled DEMO lifecycle, live learning, fresh-machine recovery and profitability.
+Never confuse:
 
-## 19. Current next step
+- preserved reference default;
+- scalp-specific documented change;
+- deterministic tests;
+- replay/calibration;
+- connected MT5 reads;
+- controlled DEMO lifecycle;
+- local recovery;
+- future REAL release;
+- profitability.
 
-Documentation Audit is normalizing remaining metadata/cross-links after Audit 1. Implementation begins only after that freeze-preparation scan is clean, starting with packaging/config/domain/read-only MT5 market truth — not order execution.
+## 20. Current next step
+
+Complete affected-graph synchronization and metadata/cross-link Documentation Audit. Then conduct the operator's final discussion of the remaining **genuinely scalp-specific** deltas/thresholds. Only after that documentation freeze does implementation begin with packaging/config/domain/read-only market truth—not broker execution.

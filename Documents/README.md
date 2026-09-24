@@ -1,36 +1,44 @@
 # GoldScalpTrader — Canonical Documentation Manual
 
-**Status:** AUDIT 1 COMPLETE — DOCUMENTATION FREEZE-PREPARATION / METADATA NORMALIZATION
-**Version:** 1.1-cache-resilient-freeze-prep
+**Status:** AUDIT 1 COMPLETE — PRESERVATION-FIRST CORRECTION / FREEZE PREPARATION
+**Version:** 1.2-preservation-first
 **Authority:** Entry point, reading order, document ownership and design-before-code boundary.
 
 ## 1. What this manual is
 
-`Documents/` is the only current design, implementation and verification authority for GoldScalpTrader.
+`Documents/` is the sole current design, implementation and verification authority for GoldScalpTrader.
 
-GoldScalpTrader is the scalping-specialized sibling of GoldSwingTraderAI. The reference project's engineering system, authority separation, documentation discipline, recovery philosophy, learning boundaries, audit model and parallel/serial architecture are preserved where Fresh-Zero Audit 1 found them sound. Trading personality, time horizons, cost sensitivity and several policies are scalp-specific.
+GoldScalpTrader is the scalping-specialized sibling of GoldSwingTraderAI. The reference project's feature set, engineering boundaries, safety model, learning/recovery system and governance remain the default baseline.
 
-No implementation convenience, chat memory, dashboard label, test fixture or reference threshold may silently redefine a current contract.
+The governing preservation rule is:
+
+> **Keep the GoldSwingTraderAI feature/default unless a direct scalping requirement, an explicit operator instruction, or a separately proven reference defect justifies changing it.**
+
+A simpler implementation is not, by itself, permission to remove an inherited feature.
+
+If it is unclear whether a proposed difference is genuinely scalp-specific, preserve the reference behaviour now and discuss the possible change during final documentation review.
 
 ## 2. Project method
 
 ```text
 complete canonical draft manual
-→ Audit 1 fresh-zero challenge                 COMPLETE
-→ synchronize affected graph                   COMPLETE for core Audit-1 decisions
-→ documentation semantic/metadata audit         CURRENT
+→ Fresh-Zero Audit 1                         COMPLETE
+→ preservation-first correction              CURRENT / core decisions corrected
+→ synchronize complete affected graph
+→ metadata/cross-link Documentation Audit
+→ final operator discussion of true scalp deltas
 → freeze accepted architecture contracts
 → implement from contracts
 → verify Documents → Code → Tests/Evidence
 → connected DEMO/recovery proof
-→ keep Documents synchronized with every material change
+→ future governed REAL only after its own gate
 ```
 
 Code must not outrun the canonical manual.
 
 ## 3. Canonical inventory
 
-Reference-equivalent inventory is preserved:
+Reference-equivalent inventory remains:
 
 ```text
 Top level                  7
@@ -47,7 +55,7 @@ TOTAL                      64
 
 ## 4. Canonical reading order
 
-1. `README.md` and `GLOSSARY.md`;
+1. `README.md` + `GLOSSARY.md`;
 2. `00-foundation/PROJECT_VISION.md`;
 3. `00-foundation/SYSTEM_CONTRACT.md`;
 4. `00-foundation/ARCHITECTURE.md`;
@@ -58,7 +66,7 @@ TOTAL                      64
 9. all `30-risk-execution/` contracts;
 10. all `40-research-learning/` contracts;
 11. all `50-operator/` contracts;
-12. `60-engineering/*` engineering/testing/audit files;
+12. `60-engineering/*`;
 13. all `90-governance/` files;
 14. `CODER_GUIDE.md`;
 15. `PROJECT_BUILD_AND_RECOVERY_GUIDE.md`;
@@ -66,21 +74,32 @@ TOTAL                      64
 17. `USER_MANUAL.md`;
 18. `FINAL_BUILD_PROMPT.md`.
 
-When documents conflict, system-wide invariant → topic owner → active Design Decision → Open Question classification → Architecture → engineering/documentation guides.
+Conflict order:
 
-## 5. Frozen V1 architectural spine
+```text
+SYSTEM_CONTRACT
+→ owning topic contract
+→ active DESIGN_DECISIONS
+→ OPEN_QUESTIONS / preserved-default register
+→ Architecture / Trading Floor
+→ engineering/operator summaries
+```
+
+## 5. Preserved architectural spine
 
 ```text
 one MT5 read boundary
 → immutable MarketSnapshot
-→ causal independent market intelligence
-→ six independent scalp strategy-family hypotheses
+→ causal market intelligence
+→ bounded-parallel independent analytical desks/families
+→ six independent strategy-family hypotheses
 → independent BUY / SELL fusion + Red Team
 → persistent Opportunity
 → completed-M5 Entry Timing + event freshness
 → family-aware structural TradePlan
 → gross + cost-adjusted room truth
-→ independent STANDARD monetary Risk
+→ profiled monetary Risk (SMALL / MEDIUM / NORMAL)
+   + optional explicit disabled-by-default aggressive small-account overlay
 → hard session/news/system/account/controller authorities
 → central ExecutionPermissionGate
 → durable one-shot ExecutionIntent
@@ -92,9 +111,9 @@ one MT5 read boundary
 → local backup/recovery
 ```
 
-Analysis is logically parallel where dependencies allow. Actual concurrent workers are optional/profiling-driven. Money, broker authority, durable Intent, writer calls and reconciliation remain serial.
+Financial/broker authority remains serial even when analytical work is bounded-parallel.
 
-## 6. Frozen V1 timeframe roles
+## 6. Scalp-specific timeframe roles
 
 ```text
 H1   broad soft regime / major directional-volatility context
@@ -105,11 +124,11 @@ M1   diagnostic/research only
 quote current executable Bid/Ask/spread/drift/health only
 ```
 
-M1 is not a hidden production trigger timeframe in V1.
+This is a genuine scalp-horizon change from the Swing hierarchy.
 
-## 7. Six-family floor
+## 7. Strategy floor
 
-Retained after fresh-zero review:
+Retained reference families:
 
 ```text
 Trend Pullback Continuation
@@ -120,65 +139,105 @@ Failed Breakout Reversal
 Compression Expansion
 ```
 
-Family overlap is handled with correlation/event-lineage bounding, not unanimity or duplicate confirmation counting.
+Correlation/event-lineage control prevents one market episode being counted repeatedly as independent confirmation.
 
-## 8. Cost-aware scalp geometry
+## 8. Scalp geometry / freshness changes
 
-TradePlan preserves:
+GoldScalpTrader explicitly strengthens:
+
+- event/trigger age;
+- late-entry/chase distance;
+- stale-for-entry classification;
+- Approved Entry Reference versus fresh executable quote;
+- gross structural room plus cost-adjusted room;
+- spread/slippage/drift/latency observability;
+- short-horizon time efficiency.
+
+Swing's 1.20R Primary floor is not automatically imposed as the hard scalp floor. Exact scalp gross/net/cost thresholds remain calibration evidence questions.
+
+## 9. Preserved Risk architecture
+
+Automatic reference profiles remain active:
 
 ```text
-gross structural geometry
-+ current known transaction-cost context
-+ cost-adjusted remaining room
+SMALL   positive DayStartEquity < $300
+MEDIUM  $300–$999.99
+NORMAL  >= $1,000
 ```
 
-Execution separately rechecks fresh executable quote/spread/drift before send. Costs are never double counted and stop/target are never moved to manufacture acceptable R.
+| Profile | Normal / target | Elevated | Hard ceiling | Daily loss lock |
+|---|---:|---:|---:|---:|
+| SMALL | 3.0%–4.5% | >4.5%–6.5% | 7% | 12% |
+| MEDIUM | 2.0%–3.0% | >3.0%–4.5% | 5% | 9% |
+| NORMAL | 1.0%–2.0% | >2.0%–3.5% | 4% | 7% |
 
-Swing's 1.20R floor is not active scalp policy. Exact gross/net thresholds remain calibration pending.
+The current 0.50% Python scaffold is not canonical policy.
 
-## 9. Risk architecture
+### 9.1 Aggressive small-account option
 
-V1 uses one explicit `STANDARD` production risk policy rather than automatic SMALL/MEDIUM/NORMAL equity tiers.
-
-Actual account size still matters through verified equity, structural stop, tick value and broker minimum/step volume.
-
-Historical aggressive 8%/16% small-account values are not active V1 policy. Any future aggressive experiment is explicit, research-governed and disabled by default.
-
-## 10. Session / News V1 rule
+Preserved operator-requested feature:
 
 ```text
-Session OPEN + accepted current News CLEAR    → may proceed to other authorities
-Session OPEN + accepted current News BLACKOUT → hard new-entry BLOCK
-Session OPEN + NEWS_SAFETY_UNKNOWN            → new-entry BLOCK / LIMITED
+disabled by default
+eligibility baseline: positive DayStartEquity < $1,000
+8%  = maximum monetary SL-risk ceiling per trade, NOT target
+16% = maximum aggregate open risk
+16% = daily loss ceiling
 ```
 
-Important provider-failure refinement:
+All structural/session/news/execution safeguards remain. It never auto-enables merely from equity.
+
+Manual daily-loss reset capability is preserved but disabled by default.
+
+Reference cooldown/re-entry baseline is preserved: one genuinely fresh same-episode re-entry; three consecutive closed bot losses trigger at least 30 minutes global cooldown plus freshness/health release conditions.
+
+## 10. Session / News
+
+Scalp-specific new-entry semantics:
 
 ```text
-latest News API/provider refresh fails
-+ last-known-good calendar still passes original scope/schema/coverage/TTL
-→ keep using that accepted cached event truth
-→ provider may show DEGRADED
+OPEN + accepted News CLEAR    → may proceed to remaining authorities
+OPEN + accepted News BLACKOUT → BLOCK
+OPEN + true NEWS_SAFETY_UNKNOWN → new-entry BLOCK / LIMITED
+```
 
-latest refresh fails
-+ cache expired/invalid/missing
+Temporary provider refresh failure does not automatically create UNKNOWN:
+
+```text
+refresh fails + still-valid accepted LKG cache
+→ use cached truth
+→ provider may be DEGRADED
+→ do not rewrite original timestamps/TTL
+
+refresh fails + expired/invalid/no cache
 → NEWS_SAFETY_UNKNOWN
-→ new-entry BLOCK / LIMITED
 ```
 
-A refresh failure never refreshes cache timestamps/TTL. UNKNOWN never becomes CLEAR by assumption. Existing-position management/protection/mandatory CLOSE remains action-sensitive.
+Preserved baseline defaults until a direct justified change/external broker fact supersedes them:
 
-## 11. Execution scope
+```text
+Provider TTL        1800 seconds
+Daily PRE_CLOSE     T-20 no entry / T-10 mandatory flatten
+Weekend PRE_CLOSE   T-60 no entry / T-30 mandatory flatten
+Daily reopen        1 clean completed M5
+Weekend reopen      2 clean completed M5 + gap assessment
+```
+
+Current broker schedule remains external proof.
+
+## 11. Execution capability progression
 
 ```text
 READINESS / DRY_RUN
-→ controlled governed DEMO writer after implementation + deterministic proof
-REAL → outside V1; separate future governance decision
+→ controlled governed DEMO writer
+→ future governed REAL capability
 ```
 
-One-shot Intent, sole writer and reconciliation remain non-negotiable.
+REAL is **preserved as a future feature**, but disabled/unavailable until DEMO evidence, release gates and explicit operator approval satisfy its separate policy. There is no hidden REAL shortcut.
 
-## 12. Management scope
+## 12. Trade management
+
+Actions remain:
 
 ```text
 HOLD
@@ -188,56 +247,61 @@ RUNNER
 EXIT
 ```
 
-Time/efficiency is a first-class `EXIT` reason, not a separate TIME_EXIT action. Runner is exceptional rather than default scalp behaviour.
+Scalp-specific changes:
 
-## 13. GitHub / zero-cost boundary
+- Runner is exceptional rather than default continuation;
+- time/efficiency weakness is a first-class `EXIT` reason;
+- broker-valid partial management remains an optional capability where volume is divisible, but correctness at 0.01 never depends on partial close.
 
-GitHub is deliberate source control/remote source backup only.
+## 13. GitHub / backup — explicit operator changes
 
-No required GitHub Actions, Codespaces, LFS, paid Marketplace services, paid cloud compute or paid external APIs.
+GitHub is source control/remote source backup only. Trading runtime has no GitHub credential and performs no Git commit/push/pull.
 
-The trading runtime has no GitHub credential or automatic publication authority.
-
-## 14. Local development backup
-
-Normal low-GitHub-use workflow after a major bulk:
+Development workflow:
 
 ```text
-one coherent remote commit
+one coherent remote bulk commit
 → operator git pull --ff-only
 → local clone contains latest source + full Git history
-→ optional secret-clean local ZIP snapshot
+→ optional secret-clean ZIP milestone copy
 ```
 
-Runtime state backup is separate from source backup and remains local/network-independent.
+Runtime-state backup remains local/network-independent.
 
-## 15. Explicit Swing → Scalp changes
+## 14. Permanent Swing → Scalp delta record
 
-The permanent exact delta ledger is:
+Read:
 
 `90-governance/DOCUMENTATION_COMPARISON.md`
 
-It records each major KEEP / CHANGE / REMOVE / ADD / CALIBRATE / DEFER decision so reference differences never depend on remembered chat context.
+That file explicitly separates:
 
-## 16. Evidence boundary
+- preserved reference behaviour;
+- genuine scalp-specific changes;
+- explicit operator-directed changes;
+- earlier unintended simplifications that have been restored.
+
+## 15. Evidence boundary
 
 Keep separate:
 
 ```text
 FROZEN DOCUMENTED ARCHITECTURE
-CALIBRATION PENDING NUMBERS
+PRESERVED REFERENCE DEFAULT
+SCALP CALIBRATION PENDING
 DETERMINISTIC SOFTWARE PROOF
 REPLAY / RESEARCH EVIDENCE
 CONNECTED READ-ONLY PROOF
 CONNECTED DEMO LIFECYCLE PROOF
+FUTURE REAL RELEASE PROOF
 LOCAL RECOVERY PROOF
 EXTERNAL PROOF PENDING
 ```
 
-No green deterministic suite proves future profitability.
+No documented policy or green deterministic suite proves profitability.
 
-## 17. Current status / next dependency
+## 16. Current stage
 
-Fresh-Zero Audit 1 is complete. Core Audit-1 contracts are synchronized. Documentation Audit has verified the 64-file inventory and is now normalizing remaining metadata/cross-links before final documentation freeze.
+The preservation-first semantic correction is being synchronized across the affected manual. Metadata/cross-link normalization still follows before final documentation freeze.
 
-Implementation must not start until that freeze-preparation audit is clean.
+At the **final documentation-section review**, only the remaining genuinely scalp-specific differences/thresholds will be discussed with the operator before implementation begins.

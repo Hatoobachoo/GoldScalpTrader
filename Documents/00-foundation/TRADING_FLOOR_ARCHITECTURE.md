@@ -1,8 +1,8 @@
 # GoldScalpTrader — Trading Floor Architecture
 
-**Status:** FROZEN V1 ARCHITECTURE — CALIBRATION PENDING
-**Version:** 1.0-six-family-logical-floor
-**Authority:** Specialist-team ownership, logical analytical parallelism, Opportunity capture, correlation control and hard-authority boundaries.
+**Status:** FROZEN V1 ARCHITECTURE — PRESERVATION-FIRST CORRECTION / SCALP CALIBRATION PENDING
+**Version:** 1.1-preserved-bounded-parallel-floor
+**Authority:** Specialist-team ownership, bounded analytical parallelism, Opportunity capture, correlation control and hard-authority boundaries.
 
 ## 1. Why a trading floor
 
@@ -13,17 +13,16 @@ Each specialist desk asks one bounded question, publishes typed evidence and has
 Objectives:
 
 1. build evidence-rich, internally challenged scalp theses;
-2. preserve Opportunity Recall so valid Gold moves are not discarded merely because optional evidence is neutral/unavailable.
+2. preserve Opportunity Recall so valid Gold moves are not discarded merely because optional evidence is neutral/unavailable;
+3. preserve the reference bounded-parallel analytical capability while keeping broker authority serial.
 
 Soft analytical evidence and hard financial/broker authority remain separate.
 
-## 2. Opportunity-first, not frequency-first
+## 2. Preservation rule
 
-- optional disagreement stays score/conflict/debate;
-- one strong attributable family may lead with others neutral;
-- required safety failures remain hard BLOCK/UNKNOWN;
-- stale/cost-dominated opportunities become WAIT/MISSED instead of chase;
-- frequency is an evidence outcome, never a safety override.
+The six-family floor, BUY/SELL debate, Red Team, staged desk design and bounded concurrency remain reference features.
+
+Only scalp-specific timing/freshness/cost semantics are changed. Simplifying a reference feature because a serial implementation is easier is not permitted.
 
 ## 3. Shared immutable truth
 
@@ -31,7 +30,7 @@ All analytical desks consume one normalized immutable MarketSnapshot plus declar
 
 Current quote/tick facts enter through normalized market-data boundaries and carry timestamps; they do not become retroactive structural evidence.
 
-## 4. Frozen staged floor
+## 4. Staged floor
 
 ### Stage A — Core intelligence
 
@@ -49,18 +48,16 @@ Current quote/tick facts enter through normalized market-data boundaries and car
 
 ### Stage C — Six strategy-family teams
 
-Audit 1 freezes:
+1. **Trend Pullback Continuation**
+2. **Breakout Expansion**
+3. **Breakout Retest Continuation**
+4. **Liquidity Sweep Reversal**
+5. **Failed Breakout Reversal**
+6. **Compression Expansion**
 
-1. **Trend Pullback Continuation** — controlled retracement then short-horizon directional resumption.
-2. **Breakout Expansion** — fresh accepted break releasing expansion without late chase.
-3. **Breakout Retest Continuation** — meaningful break holds on a fresh executable retest.
-4. **Liquidity Sweep Reversal** — pre-existing pool is taken/rejected with reclaim/shift.
-5. **Failed Breakout Reversal** — attempted acceptance fails and opposing response forms.
-6. **Compression Expansion** — causal compressed range releases with directional evidence.
+Range mean-reversion is not added as a seventh production family without a separate governed decision.
 
-Range mean-reversion is not a seventh V1 production family; it may be researched later. Generic “Momentum Expansion” is represented through Breakout/Compression narratives rather than an overlapping family.
-
-## 5. Frozen timeframe roles
+## 5. Scalp timeframe roles
 
 ```text
 H1   broad soft regime
@@ -77,7 +74,7 @@ No family may hide M1 production authority.
 
 A family owns one hypothesis, uses shared evidence, publishes attributable BUY/SELL/neutral cases and never owns Risk/Gate/controller/order sending.
 
-Several families can describe the same episode. Event lineage/correlation control must prevent one sweep/failed-break/reclaim sequence from being counted as several independent confirmations.
+Several families can describe the same episode. Event lineage/correlation control prevents one sweep/failed-break/reclaim sequence from being counted as several independent confirmations.
 
 ## 7. BUY / SELL teams
 
@@ -87,27 +84,11 @@ The directional floor exposes leading BUY/SELL families, supporting/conflicting 
 
 ## 8. Red Team / Debate
 
-Challenges include:
-
-- late/extended move;
-- stale event;
-- weak target room;
-- probe versus accepted break;
-- hostile volatility/momentum;
-- spread/cost burden;
-- correlated support;
-- opposing thesis;
-- unavailable optional evidence.
+Challenges include late/extended move, stale event, weak target room, probe versus accepted break, hostile volatility/momentum, spread/cost burden, correlated support, opposing thesis and unavailable optional evidence.
 
 Red Team is analytical challenge, not broker permission.
 
-## 9. Floor Manager
-
-Produces an auditable DecisionBoard/Opportunity handoff such as BUY_LEADS, SELL_LEADS, CONFLICTED, WAIT or NO_QUALIFIED_OPPORTUNITY.
-
-It does not set monetary risk or grant final permission.
-
-## 10. Opportunity / timing boundary
+## 9. Opportunity / timing boundary
 
 Opportunity asks:
 
@@ -117,24 +98,26 @@ Entry Timing asks:
 
 > Is the current completed-M5 moment fresh and efficient enough to act?
 
-Timing guards chase distance, event age, drift, spread/cost context, remaining room and duplicate-entry/re-arm semantics. M1 remains diagnostic only.
+Scalp-specific timing guards chase distance, event age, drift, spread/cost context, remaining room and duplicate-entry/re-arm semantics.
 
-## 11. Logical parallelism / physical concurrency
+## 10. Preserved bounded analytical concurrency
 
-All six families and dependency-independent desks are **logically independent**.
+Dependency-independent desks and the six family evaluations retain bounded physical concurrency as a target feature.
 
-Physical concurrent workers are optional/profiling-driven. Requirements if used:
+Requirements:
 
-- immutable common input;
+- immutable common inputs;
+- dependency-aware stages;
 - bounded workers;
 - deterministic canonical result order;
-- one-worker semantic parity;
-- visible worker failure/degradation;
-- no persistence/Risk/Gate/broker writes inside analytical workers.
+- visible worker errors/degradation;
+- no persistence/Risk/Gate/broker writes in analytical workers;
+- deterministic one-worker fallback;
+- parity proof between bounded-parallel and one-worker paths.
 
-Concurrency is an optimization, not an authority.
+Worker count may be tuned after profiling; that is not permission to delete the concurrency feature.
 
-## 12. Hard-authority handoff
+## 11. Hard-authority handoff
 
 ```text
 DecisionBoard
@@ -142,7 +125,8 @@ DecisionBoard
 → completed-M5 Entry Timing
 → TradePlan gross + cost-adjusted room
 ---------------- analytical/geometry boundary ----------------
-→ STANDARD monetary Risk
+→ SMALL/MEDIUM/NORMAL monetary Risk
+   + optional explicit aggressive overlay
 → hard permission authorities
 → central Gate
 → Intent
@@ -150,14 +134,20 @@ DecisionBoard
 → reconciliation
 ```
 
-This serial financial/broker spine is non-negotiable without a governed architecture change.
+## 12. Risk interaction
+
+The Trading Floor does not pick account Risk policy.
+
+Risk independently resolves the fixed DayStartEquity profile and any explicitly enabled eligible aggressive overlay. Family score/recent wins cannot increase monetary Risk.
 
 ## 13. Dashboard / research
 
-Dashboard shows desk/family/debate/Opportunity/timing facts but recalculates no hidden signal/permission.
+Dashboard shows desk/family/debate/Opportunity/timing facts but recalculates no hidden signal/permission/policy.
 
-Family attribution survives through trade/close/learning so research can compare narratives and correlation without reconstructing ownership from P/L.
+Family attribution survives trade/close/learning so research can compare narratives and correlation without reconstructing ownership from P/L.
 
-## 14. Calibration pending
+## 14. Scalp calibration pending
 
-Family scores/weights, correlation caps, Opportunity thresholds, session conditioning, event freshness and cost/freshness analytical penalties require chronological replay/stress/holdout and connected evidence.
+Family scores/weights, correlation caps, Opportunity thresholds, event freshness, chase distance and cost/freshness analytical penalties require chronological replay/stress/holdout and connected evidence.
+
+Non-scalp reference floor features are preserved and are not automatically reopened.

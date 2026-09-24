@@ -1,16 +1,16 @@
 # GoldScalpTrader — User Manual
 
-**Status:** POST-AUDIT-1 USER GUIDE — IMPLEMENTATION PENDING
-**Version:** 1.1-cache-aware-news-user
+**Status:** POST-AUDIT-1 USER GUIDE — PRESERVATION-FIRST CORRECTED / IMPLEMENTATION PENDING
+**Version:** 1.2-preserved-risk-features-user
 **Authority:** Human-facing intended operation and interpretation; topic contracts own trading behaviour.
 
 ## 1. What the bot is intended to do
 
 GoldScalpTrader is a local Exness MT5 XAUUSD/XAUUSDm system for selective short-duration Gold scalps. It is a governed multi-desk system, not a simple EMA cross bot and not HFT.
 
-Fresh-Zero Audit 1 is complete. Final runtime/broker-write implementation is not yet claimed complete.
+GoldSwingTraderAI remains the default feature/default baseline. Only direct scalp-specific differences or explicit operator-directed changes are allowed before final documentation review.
 
-## 2. Frozen trading personality
+## 2. Scalp trading personality
 
 ```text
 H1   broad soft regime
@@ -21,31 +21,20 @@ M1   diagnostic/research only
 quote current executable Bid/Ask/spread/drift/health
 ```
 
-The system prefers fresh, cost-aware, clearly invalidatable scalps and refuses late/stale/cost-dominated setups.
+The system prefers fresh, cost-aware, clearly invalidatable scalps and refuses late/stale/cost-dominated entries.
 
-## 3. Intended future workflow
-
-1. Open MT5/connect intended account/server.
-2. Start READINESS/DRY_RUN first.
-3. Verify account/symbol/data/recovery truth.
-4. Read Current Blocker and Gate separately.
-5. Let governed analysis/management run.
-6. Use controlled DEMO PRIMARY only after that implementation milestone is proven.
-7. Stop with governed shutdown; local runtime checkpoint occurs after broker/controller authority is safely released.
-
-REAL mode is not a V1 shortcut.
-
-## 4. Decision path
+## 3. Decision path
 
 ```text
 MarketSnapshot
-→ Intelligence
+→ bounded-parallel Intelligence
 → six strategy families
 → BUY/SELL + Red Team
 → persistent Opportunity
 → completed-M5 Entry Timing
 → TradePlan gross + cost-adjusted room
-→ STANDARD monetary Risk
+→ SMALL/MEDIUM/NORMAL monetary Risk
+   + optional explicit aggressive overlay
 → Session/News/account/exposure/controller
 → central Gate
 → one-shot Intent
@@ -55,7 +44,7 @@ MarketSnapshot
 
 A candidate can stop before Gate; `ENTRY_BLOCKED` does not automatically mean Gate BLOCKED.
 
-## 5. Six strategy families
+## 4. Six strategy families
 
 1. Trend Pullback Continuation
 2. Breakout Expansion
@@ -64,83 +53,148 @@ A candidate can stop before Gate; `ENTRY_BLOCKED` does not automatically mean Ga
 5. Failed Breakout Reversal
 6. Compression Expansion
 
-All six do not need to agree. Correlated evidence from the same event is not counted repeatedly as independent confirmation.
+These reference families are preserved. Correlated evidence from one event is not repeatedly counted as independent certainty.
 
-## 6. Opportunity / freshness
+## 5. Opportunity / freshness
 
-A strong idea can wait for efficient entry. Outcomes include WAIT, ENTER, MISSED and INVALID. Terminal setup does not reset on the next poll; re-arm needs a genuinely fresh causal event.
+A strong idea can WAIT for an efficient entry. Terminal setup does not reset merely on the next poll; re-arm needs genuinely fresh causal evidence.
 
-M1 cannot independently create a V1 production entry.
+M1 cannot independently create a production entry.
 
-## 7. TradePlan / costs
+## 6. TradePlan / costs
 
-TradePlan creates structural Entry Reference, invalidation/SL, Primary/optional Expansion/exceptional Runner objectives and original R before money sizing.
+TradePlan creates structural Entry Reference, invalidation/SL, Primary/optional Expansion/Runner objectives and original R before money sizing.
 
-It also retains cost-adjusted room. Swing's old 1.20R floor is not automatically used; exact scalp thresholds remain calibration pending.
+Scalp adds explicit cost-adjusted room and stronger entry-drift/freshness checks.
 
-Structural stop is never tightened just to make minimum lot fit.
+Swing's 1.20R floor is not automatically used as the hard scalp entry floor; exact scalp target-quality thresholds remain evidence questions.
 
-## 8. Risk / small account
+Structural stop is never tightened to make minimum lot fit.
 
-V1 uses one `STANDARD` production Risk policy, not automatic SMALL/MEDIUM/NORMAL balance tiers.
+## 7. Preserved account Risk profiles
+
+```text
+SMALL   positive DayStartEquity < $300
+MEDIUM  $300–$999.99
+NORMAL  >= $1,000
+```
+
+| Profile | Normal / target | Elevated | Hard ceiling | Daily loss lock |
+|---|---:|---:|---:|---:|
+| SMALL | 3.0%–4.5% | >4.5%–6.5% | 7% | 12% |
+| MEDIUM | 2.0%–3.0% | >3.0%–4.5% | 5% | 9% |
+| NORMAL | 1.0%–2.0% | >2.0%–3.5% | 4% | 7% |
+
+Profile is fixed from DayStartEquity for the UTC risk day.
 
 If theoretical lot is below broker minimum:
 
 ```text
 evaluate actual broker minimum volume
 → calculate actual risk at structural stop
-→ PASS only inside hard STANDARD policy
+→ PASS only if active policy permits
 → otherwise BLOCK current TradePlan
 ```
 
-Current 0.50% scaffold is provisional. Historical 8%/16% aggressive values are not active V1 policy. Any future aggressive experiment is explicit and disabled by default.
+## 8. Aggressive small-account mode
 
-No martingale, grid rescue or averaging down. One independent Gold risk position per scope.
+This feature is **preserved** and **disabled by default**.
 
-## 9. Session / News and API failure
+When explicitly enabled for eligible sub-$1,000 operation:
+
+```text
+8%  = MAXIMUM monetary SL-risk ceiling per trade
+      NOT a target
+16% = maximum aggregate open risk
+16% = daily loss ceiling
+```
+
+It never automatically enables merely because the account is small. All normal structural, session, News, exposure, controller, Gate and execution safeguards remain active.
+
+## 9. Daily lock / reset / cooldown
+
+Manual daily-loss reset capability is preserved but disabled by default.
+
+Preserved baseline:
+
+- one genuinely fresh same-episode re-entry can be allowed;
+- if it also loses, that episode locks;
+- three consecutive closed bot losses trigger at least 30 minutes global cooldown;
+- fresh/healthy release conditions must also pass.
+
+Restart does not clear these states.
+
+## 10. Session / News and API failure
 
 For new entry:
 
 ```text
 OPEN + current News CLEAR    → may proceed
 OPEN + current News BLACKOUT → BLOCK
-OPEN + NEWS_SAFETY_UNKNOWN  → BLOCK / LIMITED
+OPEN + true NEWS_UNKNOWN     → BLOCK / LIMITED
 ```
 
-A temporary API/provider error does **not** automatically mean UNKNOWN:
+Temporary provider/API error:
 
 ```text
-API refresh fails
-+ last successful calendar is still valid inside its original scope/coverage/TTL
-→ use that cached accepted calendar
-→ provider can show DEGRADED
-→ trade is not blocked merely because this one refresh failed
+refresh fails + still-valid last-known-good cache
+→ use cached accepted calendar
+→ provider may show DEGRADED
 
-API refresh fails
-+ cache expired/invalid/missing
+refresh fails + expired/invalid/no cache
 → NEWS_SAFETY_UNKNOWN
 → new entry blocked
 ```
 
-The bot never changes an old cache timestamp just to keep trading. Existing-position protection/mandatory CLOSE remains action-sensitive.
+The bot never rewrites an old cache timestamp/TTL just to keep trading.
 
-## 10. Management
+Preserved baselines:
+
+```text
+Provider TTL 1800 seconds
+Daily T-20 no entry / T-10 flatten
+Weekend T-60 no entry / T-30 flatten
+Daily reopen 1 clean completed M5
+Weekend reopen 2 clean completed M5 + gap assessment
+```
+
+Current broker schedule still needs connected verification.
+
+## 11. Management
 
 ```text
 HOLD | PROTECT | TRAIL | RUNNER | EXIT
 ```
 
-Time/efficiency failure is an EXIT reason so a failed scalp does not quietly become a swing. Runner is exceptional and needs fresh continuation/new objective.
+Scalp-specific differences:
 
-## 11. Manual/external trades
+- time/efficiency failure can cause EXIT;
+- Runner is exceptional and needs fresh continuation/new objective.
 
-Unknown manual/foreign Gold exposure is never adopted and can block new entry. A human close of an already-known bot ManagedTrade can complete lifecycle only after exact broker proof, with close-origin attribution preserved.
+Optional partial management remains supported where current volume is broker-valid/divisible. A 0.01 position is not required to partial-close for the system to work correctly.
 
-## 12. Multi-laptop rule
+## 12. Manual/external trades
 
-Different independent account/symbol scopes may run separately. Same-scope simultaneous PRIMARY writers are unsupported. Same-scope movement is sequential stop/checkpoint/transfer/restore/reconcile/controller acquisition.
+Unknown manual/foreign Gold exposure is never adopted and can block new entry. A human close of a known bot ManagedTrade can complete lifecycle only after exact broker proof with correct close-origin attribution.
 
-## 13. Runtime local backup
+## 13. Bounded analytical concurrency
+
+Independent desks/families retain bounded-parallel execution as a planned feature. A deterministic one-worker fallback must produce semantically identical outputs.
+
+Money/broker authority stays serial.
+
+## 14. Runtime capability stages
+
+```text
+READINESS
+DRY_RUN
+controlled DEMO PRIMARY
+future governed REAL
+```
+
+REAL is preserved as a future capability but cannot be enabled until its separate DEMO/release/explicit-approval gate is satisfied.
+
+## 15. Runtime local backup
 
 No automatic GitHub push on shutdown.
 
@@ -151,34 +205,31 @@ transactional local state
 → optional portable runtime recovery package
 ```
 
-Secrets are excluded.
+## 16. Development/source backup
 
-## 14. Development/source backup
-
-After a **major coherent bulk**, one pull is enough:
+After a major coherent bulk:
 
 ```powershell
 git pull --ff-only
 ```
 
-Your local clone then contains the latest project and full Git history. Optionally create a secret-clean Windows ZIP after important milestones for another offline copy. No need to pull after every tiny patch.
+One pull updates the local clone and full Git history. Optional secret-clean ZIP can provide another offline copy.
 
-## 15. Exact Swing → Scalp differences
+## 17. Exact Swing → Scalp differences
 
-The permanent detailed record is:
+Read:
 
 `Documents/90-governance/DOCUMENTATION_COMPARISON.md`
 
-It records the explicit timeframe, risk, News, R, management, concurrency, runtime mode and backup changes from GoldSwingTraderAI.
+It now records:
 
-## 16. DRY_RUN meaning
-
-DRY_RUN may exercise market→decision→TradePlan→Risk→Gate diagnostics but sends no irreversible broker order and cannot prove fills/slippage/reconciliation/profitability.
-
-## 17. Troubleshooting
-
-If waiting, read Current Blocker, Gate separately, human explanation, News provider/cache state and health/logs. Do not weaken safety merely to force a trade, delete state to reset locks or run a same-scope second writer.
+- genuine scalp-specific changes;
+- explicit operator-directed changes;
+- preserved Swing features/defaults;
+- earlier unintended removals that have been restored.
 
 ## 18. Current proof boundary
 
-Architecture Audit 1 is complete. Documentation freeze preparation is still normalizing metadata/cross-links. Final package/runtime/tests/DEMO execution/learning/local recovery remain implementation or external evidence work. No profitability claim exists.
+Documentation is still in freeze preparation. Final package/runtime/tests/DEMO execution/learning/local recovery/current broker proof are not yet claimed complete. No profitability claim exists.
+
+Before implementation, the remaining genuinely scalp-specific differences will be discussed with the operator during final documentation review.

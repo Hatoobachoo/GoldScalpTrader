@@ -1,14 +1,14 @@
 # GoldScalpTrader — Session, News and Risk State Machine
 
-**Status:** FROZEN V1 PERMISSION ARCHITECTURE — TIMING/TTL CALIBRATION AND EXTERNAL SCHEDULE PROOF PENDING
-**Version:** 1.1-cache-aware-news-safety
-**Authority:** Market schedule states, News-safety states, cache-aware provider semantics, monetary-risk/system states, action-sensitive permission composition and transitions.
+**Status:** FROZEN V1 PERMISSION ARCHITECTURE — PRESERVED SESSION/RISK DEFAULTS + SCALP NEWS POLICY
+**Version:** 1.2-preserved-session-risk-cache-aware
+**Authority:** Market schedule states, News-safety states, cache-aware provider semantics, profiled monetary-risk/system states, action-sensitive permission composition and transitions.
 
 ## 1. Purpose
 
 This contract defines how independent hard authorities become safe new-entry permission and how existing-position management behaves while entry is blocked.
 
-Market/session truth and News truth remain separate.
+Market/session truth, News truth and monetary Risk remain separate owners.
 
 ## 2. Market states
 
@@ -20,9 +20,32 @@ REOPEN_WARMUP
 SESSION_UNKNOWN
 ```
 
-Only verified OPEN can permit consideration of a new entry. Exact pre-close/reopen timing remains calibration/external proof.
+Only verified OPEN can permit new-entry consideration. `SESSION_UNKNOWN` fails closed.
 
-`SESSION_UNKNOWN` fails closed for new entry; no schedule is invented.
+Preserved policy baselines:
+
+```text
+Daily close cycle:
+  T-20 minutes → no new entry
+  T-10 minutes → mandatory flatten
+
+Weekend close cycle:
+  T-60 minutes → no new entry
+  T-30 minutes → mandatory flatten
+
+Daily reopen:
+  verified OPEN
+  + 1 clean completed M5
+  + execution/recovery normal
+
+Weekend reopen:
+  verified OPEN
+  + 2 clean completed M5
+  + weekend gap assessment
+  + execution/recovery normal
+```
+
+These defaults are preserved because removing them was not scalp-required. Actual current broker schedule/DST/holiday facts still require external proof.
 
 ## 3. News states
 
@@ -34,64 +57,52 @@ POST_NEWS_WARMUP
 ```
 
 ### NEWS_CLEAR
-
-Accepted event truth is current and no configured blackout/warmup is active.
-
-Current accepted truth may come from a fresh live/file provider or from a **last-known-good cache that still passes its original scope/schema/coverage/TTL rules**.
-
-A provider refresh error may make provider health DEGRADED without changing News truth to UNKNOWN while that accepted cache remains valid.
+Accepted event truth is current and no configured blackout/warmup applies. Source can be fresh provider/file or still-valid accepted last-known-good cache.
 
 ### NEWS_BLACKOUT
-
-Known high-impact configured event window; hard new-entry/re-entry block. A valid cached event can preserve a known blackout across a temporary provider refresh outage.
+Known configured high-impact event window; hard new-entry/re-entry block.
 
 ### NEWS_SAFETY_UNKNOWN
+Current News safety cannot be proved because no accepted current source/cache exists.
 
-News becomes UNKNOWN when current event safety cannot be proved, for example:
-
-- provider/API unavailable and no valid accepted cache exists;
-- cache TTL/coverage expired;
-- cache is malformed/corrupt;
-- schema/mapping version is unsupported;
-- scope is wrong;
-- timestamps are invalid/future-dated;
-- provider truth is otherwise untrustworthy.
-
-Audit 1 + cache-resilience refinement freezes V1 treatment:
+Scalp-specific policy:
 
 ```text
 Session OPEN + NEWS_SAFETY_UNKNOWN
 → new-entry BLOCK / LIMITED
 ```
 
-UNKNOWN is never relabelled CLEAR.
-
-Existing verified bot position management, protection and mandatory risk-reducing CLOSE continue under action-specific authorities; News UNKNOWN alone must not trap risk.
+Existing verified bot-position management/protection/mandatory risk-reducing CLOSE remains action-sensitive.
 
 ### POST_NEWS_WARMUP
-
-After known event/dislocation, new entries can remain blocked until calibrated clean-bar/spread/market normalization conditions return.
+Known event/dislocation can hold new entries until the configured stabilization conditions are satisfied.
 
 ## 4. Provider failure versus News UNKNOWN
 
-These are deliberately not identical:
-
 ```text
 latest provider/API refresh failed
-+ last-known-good calendar still valid
++ LKG calendar still valid under original scope/schema/coverage/TTL/integrity
 → provider DEGRADED
 → use accepted cached News truth
-→ no unnecessary new-entry block merely because refresh failed
+→ do not block merely because refresh failed
 
-latest provider/API refresh failed
+refresh failed
 + no valid current cache
 → NEWS_SAFETY_UNKNOWN
-→ V1 new-entry BLOCK / LIMITED
+→ new-entry BLOCK / LIMITED
 ```
 
-A failed refresh never extends cache TTL or rewrites old timestamps.
+Failed refresh never rewrites old timestamps or extends TTL.
 
-## 5. Risk states
+Preserved provider TTL baseline:
+
+```text
+1800 seconds
+```
+
+A later change needs a direct provider/scalp reason.
+
+## 5. Risk states and profiles
 
 ```text
 NORMAL
@@ -100,9 +111,39 @@ COOLDOWN
 RISK_UNKNOWN
 ```
 
-NORMAL cannot override another hard authority. LOSS_LOCKED/COOLDOWN/RISK_UNKNOWN block new entry while safe management continues according to action-specific rules.
+Risk profile is resolved from positive DayStartEquity at UTC risk-day boundary and fixed for the day:
 
-## 6. System / lifecycle states
+```text
+SMALL   < $300
+MEDIUM  $300–$999.99
+NORMAL  >= $1,000
+```
+
+Profile target/elevated/hard/daily values are owned by `RISK_CONTRACT.md`.
+
+Explicit `AGGRESSIVE_SMALL_ACCOUNT` overlay is preserved but disabled by default. When explicitly enabled and eligible:
+
+```text
+8% max monetary SL risk per trade — not target
+16% max aggregate open risk
+16% daily loss ceiling
+```
+
+`LOSS_LOCKED`, `COOLDOWN` and `RISK_UNKNOWN` block new exposure while safe management continues.
+
+## 6. Preserved cooldown / reset semantics
+
+Baseline:
+
+- one ordinary losing trade does not create global cooldown;
+- one genuinely fresh same-episode re-entry may be allowed;
+- if that re-entry loses, the episode locks;
+- three consecutive closed bot losses trigger at least 30 minutes global cooldown;
+- release also requires fresh/healthy conditions defined in the Risk contract.
+
+Governed manual daily-loss reset capability remains present but disabled by default.
+
+## 7. System / lifecycle states
 
 ```text
 HEALTHY
@@ -115,12 +156,12 @@ Hard unresolved examples include account/server/symbol mismatch, stale/corrupt r
 
 `RECONCILING` is not flat exposure.
 
-## 7. New-entry composition
+## 8. New-entry composition
 
 ```text
 MarketPermission
 + NewsPermission
-+ STANDARD RiskPermission
++ profiled RiskPermission / optional explicit overlay
 + Data / quote freshness
 + Account/server/symbol identity
 + Position ownership/capacity
@@ -132,19 +173,21 @@ MarketPermission
 
 The Gate consumes owner results; it does not duplicate their logic.
 
-## 8. V1 News matrix
+## 9. Entry matrix
 
-| Market | News/current provider truth | New entry |
+| Market | News | New entry |
 |---|---|---|
 | OPEN | CLEAR from fresh source | may proceed to remaining authorities |
-| OPEN | CLEAR from still-valid LKG cache | may proceed; provider may show DEGRADED |
-| OPEN | BLACKOUT from fresh source or valid cache | BLOCK |
-| OPEN | UNKNOWN because no valid current truth | BLOCK / LIMITED |
+| OPEN | CLEAR from valid LKG cache | may proceed; provider may be DEGRADED |
+| OPEN | BLACKOUT | BLOCK |
+| OPEN | UNKNOWN | BLOCK / LIMITED |
 | OPEN | POST_NEWS_WARMUP | BLOCK until release conditions |
-| PRE_CLOSE/CLOSED/WARMUP | any | BLOCK |
+| PRE_CLOSE/CLOSED/REOPEN_WARMUP | any | BLOCK |
 | SESSION_UNKNOWN | any | UNKNOWN / fail closed |
 
-## 9. Action-sensitive management
+Risk/profile/overlay and every other hard authority must also pass.
+
+## 10. Action-sensitive management
 
 Conditions that block OPEN must not mechanically trap unwanted exposure.
 
@@ -154,45 +197,30 @@ Examples:
 - mandatory CLOSE still needs identity/controller/fresh quote/broker permission/Intent/reconciliation but elevated spread may be diagnostic rather than veto;
 - News UNKNOWN/BLACKOUT blocks new entry but does not automatically block protection/close;
 - loss lock blocks new exposure, not safe management;
-- MODIFY can have stricter cost/drift checks than mandatory CLOSE.
+- MODIFY can have stricter friction checks than mandatory CLOSE.
 
-## 10. PRE_CLOSE / reopen mechanism
+## 11. Controller / machine boundary
 
-Preserve the two-stage architecture:
+One active PRIMARY writer per account/symbol scope. Same-scope simultaneous active writers are unsupported without a future deliberate shared-fencing design.
 
-```text
-no-new-entry cutoff
-→ later mandatory flatten cutoff while market still tradeable
-```
+## 12. Persistence / restart
 
-Exact daily/weekend minutes are not copied from Swing and require broker schedule plus scalp hold-duration evidence.
+Persist risk-day profile/overlay identity, lock/reset/cooldown/episode state, unresolved Intents, ManagedTrade, controller lineage and relevant permission transitions.
 
-Reopen retains a warmup mechanism requiring verified OPEN, fresh data, normalized execution conditions, no unresolved recovery issue and calibrated clean completed-M5 evidence. Exact counts remain calibration/external proof.
+Restart revalidates session/news/cache from original timestamps/coverage and never makes stale cache fresh.
 
-## 11. Holiday / special schedule uncertainty
-
-If current altered broker schedule cannot be verified, session remains UNKNOWN. Missing public News alone is not proof of holiday/closure.
-
-## 12. Controller / machine boundary
-
-One active PRIMARY writer per account/symbol scope. Same-scope simultaneous active writers are unsupported. Sequential handoff requires old stop → checkpoint/package → restore → fresh broker reconciliation → controller acquisition.
-
-## 13. Persistence / restart
-
-Persist risk-day/lock/cooldown/episode state, unresolved Intents, ManagedTrade, controller lineage and relevant permission transitions through their owners.
-
-Restart revalidates current session/news provider/cache state from original timestamps/coverage and cannot make stale cache fresh.
-
-## 14. Dashboard
+## 13. Dashboard
 
 Display independently:
 
 ```text
 Market State
 News State
-Provider Health / Source
-Last successful News refresh / cache age where useful
-Risk State
+Provider Health / Source / cache age
+Risk Profile SMALL / MEDIUM / NORMAL
+Aggressive mode ENABLED / DISABLED
+actual proposed risk / active ceilings
+Risk State / cooldown / reset
 System/Recovery State
 Controller State
 Entry Permission
@@ -202,22 +230,32 @@ primary/secondary blocker
 
 An upstream TradePlan/Risk stop is not automatically a central Gate failure.
 
-## 15. Planned implementation ownership
+## 14. Planned ownership
 
 ```text
 src/gold_scalp_trader/risk/permissions.py
+src/gold_scalp_trader/risk/engine.py
+src/gold_scalp_trader/risk/state.py
 src/gold_scalp_trader/app/session_news.py
 src/gold_scalp_trader/execution/checks.py
 src/gold_scalp_trader/execution/gate.py
-src/gold_scalp_trader/execution/service.py
 ```
 
-## 16. Planned proof
+## 15. Planned proof
 
-Tests cover market-state transitions, fresh-source/cache CLEAR, valid-cache survival after provider failure, cache expiry → UNKNOWN, BLACKOUT preservation, STANDARD risk composition, action-sensitive CLOSE, restart revalidation, controller/reconciliation blocks and truthful blocker-vs-Gate presentation.
+Tests cover:
 
-Connected proof separately verifies actual Exness schedule/reopen/close and provider behaviour.
+- profile resolution and fixed-risk-day identity;
+- normal/aggressive loss-lock composition;
+- preserved cooldown/re-entry/reset defaults;
+- market PRE_CLOSE/reopen transitions;
+- fresh-source/cache CLEAR;
+- valid-cache survival after provider failure;
+- cache expiry → UNKNOWN;
+- BLACKOUT preservation;
+- action-sensitive CLOSE;
+- restart persistence;
+- controller/reconciliation blocks;
+- truthful blocker-vs-Gate presentation.
 
-## 17. Calibration pending
-
-News provider/cache TTL and refresh cadence, blackout/post-event windows, PRE_CLOSE minutes, reopen clean-bar counts, holiday schedule source, spread rules for MODIFY/CLOSE and cooldown release requirements remain evidence questions.
+Connected proof separately verifies actual current Exness schedule/reopen/close/provider behaviour.
