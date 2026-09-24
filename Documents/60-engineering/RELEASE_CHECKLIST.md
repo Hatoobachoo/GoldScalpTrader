@@ -1,26 +1,24 @@
 # GoldScalpTrader — Release Checklist
 
-**Status:** DRAFT PRE-CHALLENGE RELEASE GATE
-**Version:** 0.1-scalp-release-gate
-**Authority:** Ordered release preparation, module/feature verification, evidence classification and sign-off.
+**Status:** FROZEN V1 RELEASE GATE — NOT RUN
+**Version:** 1.0-preservation-first-release-gate
+**Authority:** Ordered release preparation, module/feature verification, preserved-policy verification, evidence classification and sign-off.
 
 ## 1. Evidence rule
 
-This is a gate, not a progress diary.
-
-Classify every applicable item as:
+Classify every applicable item:
 
 ```text
 PASS
 FAIL
 BLOCKED
 EXTERNAL PROOF PENDING
-CALIBRATION PENDING
+SCALP CALIBRATION PENDING
 NOT RUN
 NOT APPLICABLE
 ```
 
-Attach exact revision/environment evidence. Green tests are not connected-broker certification or profitability proof.
+Attach exact revision/environment evidence. Green deterministic tests are not connected-broker certification, REAL authorization or profitability proof.
 
 ## 2. Release order
 
@@ -30,177 +28,211 @@ canonical Documents challenged + frozen
 → code quality + deterministic suites
 → connected read-only readiness
 → natural governed DEMO lifecycle
-→ verified actual learning
+→ verified actual DEMO learning
 → local backup/restore/recovery drill
-→ final scoped audit/sign-off
+→ scoped DEMO release audit/sign-off
+→ separate future REAL release process if ever pursued
 ```
 
 ## 3. Build identity
 
-- [ ] exact revision;
+- [ ] exact Git revision;
 - [ ] OS/Python/dependency identity;
 - [ ] policy/state-schema identity;
 - [ ] redacted DEMO account/server/symbol scope;
 - [ ] evidence package/reviewer;
-- [ ] local backup/recovery-package identity where relevant.
+- [ ] local backup/recovery-package identity.
 
 ## 4. Canonical documentation gate
 
-- [ ] `Documents/` is sole active documentation authority.
-- [ ] All reference-equivalent canonical filenames exist or explicit governed exception exists.
-- [ ] Every substantive doc has Status/Version/Authority.
-- [ ] System Contract/topic contracts/Architecture/Coder Guide/Module Structure/File-Test Catalog agree.
-- [ ] final timeframe roles are consistent.
-- [ ] final News-UNKNOWN policy is consistent.
-- [ ] upstream Plan/Risk blocker is not called central Gate BLOCK.
-- [ ] local backup/no-runtime-Git-push boundary is consistent everywhere.
-- [ ] one PRIMARY per same account/symbol scope is explicit.
-- [ ] canonical Documents verifier passes once implemented.
+- [ ] `Documents/` sole active authority;
+- [ ] all 64 canonical filenames present;
+- [ ] Status/Version/Authority current;
+- [ ] preservation-first rule consistent;
+- [ ] System Contract/topic owners/Architecture/Coder Guide/Module/Catalog agree;
+- [ ] frozen H1/M15/M5/H4/M1 roles consistent;
+- [ ] six families consistent;
+- [ ] bounded analytical concurrency + one-worker parity consistent;
+- [ ] SMALL/MEDIUM/NORMAL Risk profiles/bands consistent;
+- [ ] aggressive 8%/16% option preserved and disabled by default;
+- [ ] manual reset/re-entry/cooldown defaults consistent;
+- [ ] 1800s provider TTL and PRE_CLOSE/reopen baselines consistent;
+- [ ] true News UNKNOWN policy consistent;
+- [ ] future REAL described as gated capability, not removed or silently enabled;
+- [ ] upstream blocker not mislabeled Gate BLOCK;
+- [ ] no runtime Git publication path;
+- [ ] one PRIMARY per same account/symbol scope explicit;
+- [ ] Documents verifier passes once implemented.
 
 ## 5. Module/feature traversal
 
-For every meaningful module/feature:
+For every meaningful component:
 
-- [ ] purpose + forbidden ownership identified;
-- [ ] canonical behaviour owner identified;
+- [ ] purpose / forbidden ownership;
+- [ ] canonical behavior owner;
+- [ ] preservation/delta classification where inherited;
 - [ ] implementation inspected;
-- [ ] focused tests/evidence identified;
-- [ ] UNKNOWN/stale/corrupt/failure semantics checked;
-- [ ] restart/persistence/idempotency checked where relevant;
-- [ ] dashboard/research impact checked;
+- [ ] focused tests/evidence;
+- [ ] UNKNOWN/stale/corrupt/failure semantics;
+- [ ] restart/persistence/idempotency;
+- [ ] dashboard/research effect;
 - [ ] external/calibration evidence separated;
-- [ ] explicit status recorded.
+- [ ] explicit verdict.
 
 ## 6. Code/dependency/security gate
 
-- [ ] editable/install/run path works on intended Windows/Python environment;
-- [ ] lint/static/compile checks pass;
-- [ ] full Pytest passes;
-- [ ] Documents verifier passes;
-- [ ] financial-secret scan passes;
+- [ ] intended Windows install/run path works;
+- [ ] lint/static/compile pass;
+- [ ] full Pytest pass;
+- [ ] Documents verifier pass;
+- [ ] secret scan pass;
 - [ ] no raw broker write outside sole writer;
-- [ ] no analytical/operator/research path grants broker authority;
-- [ ] bounded parallel work preserves serial parity/order;
-- [ ] secondary UI failure cannot stop/authorize trading;
-- [ ] runtime has no Git commit/push authority;
+- [ ] no analytical/operator/research broker authority;
+- [ ] bounded analytical concurrency and deterministic one-worker parity pass;
+- [ ] secondary UI cannot stop/authorize trading;
+- [ ] no runtime Git operation;
 - [ ] backups contain no secrets.
 
 ## 7. Market / chronology / intelligence
 
-- [ ] final timeframe roles are implemented exactly;
-- [ ] completed-candle/knowledge-time semantics pass;
+- [ ] frozen timeframe roles implemented exactly;
+- [ ] completed-candle/knowledge-time semantics;
 - [ ] stale/sparse/corrupt/future facts explicit;
-- [ ] expected broker closure gaps not misclassified;
+- [ ] closure gaps handled correctly;
 - [ ] event freshness retained;
-- [ ] optional confluence is not hidden veto;
-- [ ] serial/bounded-parallel parity passes;
-- [ ] cost/spread facts are descriptive until owning contract applies them.
+- [ ] consumed/stale geometry not reused incorrectly;
+- [ ] optional confluence not hidden veto;
+- [ ] bounded-parallel parity;
+- [ ] cost/spread facts stay with owning authority.
 
 ## 8. Strategy / timing / TradePlan / Risk
 
-- [ ] final family architecture passes;
-- [ ] BUY/SELL independent;
-- [ ] Opportunity persists independently from executable timing;
-- [ ] WAIT/MISSED/INVALID/re-arm semantics pass;
-- [ ] family-aware invalidation passes;
-- [ ] TradePlan precedes monetary Risk;
-- [ ] final structural-R/cost-room policy passes;
+- [ ] six preserved families;
+- [ ] independent BUY/SELL + Red Team;
+- [ ] Opportunity separate from timing;
+- [ ] WAIT/MISSED/INVALID/fresh re-arm;
+- [ ] one genuinely fresh same-episode re-entry baseline;
+- [ ] family-aware invalidation;
+- [ ] TradePlan before Risk;
+- [ ] gross + cost-adjusted room;
+- [ ] no automatic Swing 1.20R hard scalp floor;
 - [ ] original R immutable;
-- [ ] min-lot/dynamic sizing/actual all-in risk pass;
-- [ ] final profile/daily-loss/cooldown/re-entry rules pass;
-- [ ] structural SL never tightened merely to fit account/lot.
+- [ ] DayStartEquity profile selection fixed for UTC risk day;
+- [ ] SMALL 3–4.5 / 6.5 / 7 / 12 semantics;
+- [ ] MEDIUM 2–3 / 4.5 / 5 / 9 semantics;
+- [ ] NORMAL 1–2 / 3.5 / 4 / 7 semantics;
+- [ ] aggressive mode default disabled;
+- [ ] when enabled 8% is max SL-risk ceiling **not target**, 16% aggregate/daily;
+- [ ] manual reset default disabled;
+- [ ] 3-loss / at-least-30-minute cooldown + release conditions;
+- [ ] min-lot/dynamic sizing/actual risk;
+- [ ] structural SL never changed merely to fit account/lot.
 
 ## 9. Session / News
 
-- [ ] verified Exness XAU normal schedule + pre-close/reopen policy tested;
-- [ ] final `OPEN + News UNKNOWN` policy tested exactly;
+- [ ] current Exness XAU schedule externally verified;
+- [ ] provider TTL baseline 1800s implemented/versioned;
+- [ ] Daily PRE_CLOSE T-20/T-10;
+- [ ] Weekend PRE_CLOSE T-60/T-30;
+- [ ] daily reopen 1 clean M5;
+- [ ] weekend reopen 2 clean M5 + gap assessment;
+- [ ] true `OPEN + News UNKNOWN` new-entry block/limited;
+- [ ] valid LKG survives temporary refresh failure without timestamp laundering;
+- [ ] expired/invalid/no cache becomes UNKNOWN;
 - [ ] known blackout blocks new entry;
-- [ ] CLOSED/PRE_CLOSE/WARMUP/session UNKNOWN remain hard as frozen;
-- [ ] altered holiday ambiguity remains fail-safe;
-- [ ] missing News never displays CLEAR;
-- [ ] provider availability is not confused with market-session truth.
+- [ ] holiday ambiguity fail-safe;
+- [ ] provider health not confused with market-session truth.
 
 ## 10. Execution / controller / recovery
 
-- [ ] write-capable mode guard + intended identity pass;
-- [ ] native account/terminal/symbol permissions checked;
-- [ ] central Gate reached only after upstream Plan/Risk readiness;
-- [ ] one-shot Intent/persist-before-send/no blind retry pass;
-- [ ] ambiguous acknowledgement reconciles without duplicate;
-- [ ] local controller stale-holder denial passes;
-- [ ] unknown/foreign Gold exposure not adopted;
-- [ ] missing known ManagedTrade requires exact close proof;
-- [ ] MODIFY/CLOSE uses same governed execution spine;
-- [ ] action-sensitive mandatory CLOSE policy proven.
+- [ ] READINESS/DRY_RUN/DEMO capability guards;
+- [ ] account/server/symbol and native permissions;
+- [ ] central Gate only after upstream Plan/Risk readiness;
+- [ ] one-shot Intent/persist-before-send/no blind retry;
+- [ ] fresh quote/spread/drift/trigger-age checks;
+- [ ] ambiguous ack reconciles without duplicate;
+- [ ] controller stale-holder denial;
+- [ ] foreign exposure not adopted;
+- [ ] exact known-trade close proof;
+- [ ] MODIFY/CLOSE/partial-close reconciliation where applicable;
+- [ ] action-sensitive mandatory CLOSE;
+- [ ] future REAL remains unavailable until separate release/explicit approval.
 
 ## 11. Operator/dashboard
 
 - [ ] dashboard visible in closed/stale/warming/reconciling states;
-- [ ] live feed distinct from trade readiness;
-- [ ] narrow/wide/fallback paths proven;
+- [ ] feed distinct from trade readiness;
+- [ ] profile/overlay/reset/cooldown displayed truthfully;
+- [ ] 8% shown as ceiling not target;
+- [ ] narrow/wide/fallback paths;
 - [ ] upstream block → Gate NOT EVALUATED;
-- [ ] actual Gate BLOCK named correctly;
-- [ ] News UNKNOWN visible truthfully;
+- [ ] actual Gate BLOCK correct;
+- [ ] News/provider/cache truth;
 - [ ] graphical dashboard localhost/read-only/no controls;
-- [ ] production performance only from verified actual closes;
-- [ ] scalp event age/cost/drift facts are presentation only.
+- [ ] verified performance only;
+- [ ] scalp event age/cost/drift presentation-only.
 
 ## 12. Learning / research
 
-- [ ] verified OPEN freezes learning identity/original R;
-- [ ] close queue/receipt/order pass;
-- [ ] exactly-once actual DEMO observation;
+- [ ] verified OPEN freezes family/policy/profile/overlay/original-R identity;
+- [ ] queue/receipt ordering;
+- [ ] exactly-once MAIN_DEMO observation;
 - [ ] causal MFE/MAE boundaries;
-- [ ] replay/validation/holdout/shadow/canary/actual evidence distinct;
+- [ ] actual/replay/holdout/shadow/canary evidence separated;
+- [ ] preserved Risk/session defaults replayed accurately;
 - [ ] cost/latency/hold-time research retained;
-- [ ] discovery cannot self-promote/write broker;
-- [ ] broader historical calibration remains evidence, not assumed edge.
+- [ ] discovery/invention preservation classification;
+- [ ] no self-promotion/broker authority;
+- [ ] future REAL not granted by research/promotion.
 
-## 13. Local backup / restore / machine movement
+## 13. Local backup / machine movement
 
-- [ ] full checkpoint schema/hash/manifest verified;
-- [ ] all durable namespaces included;
-- [ ] active SQLite backed up consistently;
-- [ ] automatic backup root outside repo;
-- [ ] credentials/real `.env` excluded;
-- [ ] graceful PRIMARY releases authority before final local checkpoint;
-- [ ] no runtime Git commit/push path;
-- [ ] local Git bundle creation is deliberate milestone action only;
+- [ ] full checkpoint schema/hash/manifest;
+- [ ] all durable namespaces;
+- [ ] consistent SQLite backup;
+- [ ] root outside repo;
+- [ ] credentials excluded;
+- [ ] shutdown releases authority before final local checkpoint;
+- [ ] no runtime Git path;
+- [ ] development backup = coherent remote commit → `git pull --ff-only` → optional clean ZIP;
 - [ ] recovery package verifies before restore;
-- [ ] restore goes to new DB/path;
-- [ ] fresh broker reconciliation/controller authority precede writes;
-- [ ] same-scope laptop movement sequential only;
-- [ ] second physical-drive option tested if part of deployment.
+- [ ] restore into new DB/path;
+- [ ] fresh broker reconcile/controller before writes;
+- [ ] same-scope laptop movement sequential only.
 
 ## 14. Connected DEMO proof
 
-- [ ] intended DEMO account/server/symbol and healthy data retained as evidence;
-- [ ] natural qualified candidate reaches Plan/Risk/Gate without safety bypass;
-- [ ] governed OPEN broker verified;
-- [ ] MODIFY/SL/TP broker verified;
-- [ ] governed CLOSE verified;
-- [ ] SL/TP/exact known manual close recovery verified;
-- [ ] actual learning appears exactly once;
-- [ ] restart/reconciliation does not duplicate exposure;
-- [ ] pre-close/reopen observed;
-- [ ] graceful local backup and deliberate independent restore drill retained.
+- [ ] intended DEMO scope/readiness evidence;
+- [ ] natural qualified candidate reaches Plan/profiled-Risk/Gate without bypass;
+- [ ] governed OPEN;
+- [ ] MODIFY/SL/TP;
+- [ ] governed CLOSE;
+- [ ] broker-side SL/TP/manual-close recovery;
+- [ ] actual learning exactly once;
+- [ ] restart/reconcile no duplicate;
+- [ ] pre-close/reopen observations;
+- [ ] local backup + independent restore drill.
 
-## 15. External/calibration items
+## 15. Genuine scalp calibration / external items
 
-Keep pending until real evidence exists:
+Keep pending only where evidence is actually needed, including:
 
-- final risk/structural-R/cost/freshness thresholds;
-- broader XAU regime-diverse history;
-- special holiday schedule;
-- real spread/slippage/latency distributions;
+- gross/cost-adjusted scalp room thresholds;
+- event freshness/chase limits;
+- spread/slippage/drift/latency thresholds;
+- News blackout/post-event scalp windows if change from preserved mechanism is justified;
+- hold-time/Runner/management thresholds;
+- strategy weights/samples;
+- broader regime-diverse XAU history;
+- special holiday/current broker schedule;
+- real execution distributions;
 - connected DEMO lifecycle;
-- fresh-machine recovery;
-- any future simultaneous same-scope failover.
+- fresh-machine recovery.
+
+Do **not** relabel frozen timeframe authority or preserved Risk/session defaults as calibration merely because code is not written yet.
 
 ## 16. Sign-off rule
 
-Release evidence identifies exact revision and scope.
+Release evidence identifies exact revision/scope. Use scoped claims such as `software verified`, `connected DEMO OPEN verified`, `DEMO lifecycle verified`, `local restore verified`.
 
-Use scoped claims such as `software verified`, `connected DEMO OPEN verified`, or `local restore verified`.
-
-Never infer profitability, REAL authorization or unperformed connected proof from deterministic PASS.
+Never infer profitability, REAL authorization or unperformed external proof from deterministic PASS.

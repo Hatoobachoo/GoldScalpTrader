@@ -1,192 +1,175 @@
 # GoldScalpTrader — Secondary Graphical Dashboard
 
-**Status:** DRAFT PRE-CHALLENGE SECONDARY READ-ONLY INTERFACE
-**Version:** 0.1-scalp-normalized-snapshot
-**Authority:** Optional local visual monitoring only. No strategy, risk, controller, lifecycle or broker-write authority.
+**Status:** FROZEN V1 SECONDARY READ-ONLY INTERFACE — IMPLEMENTATION / PRESENTATION PROOF PENDING
+**Version:** 1.0-profiled-risk-normalized-snapshot
+**Authority:** Optional local visual monitoring only. No strategy, Risk, controller, lifecycle or broker-write authority.
 
 ## 1. Purpose
 
-The graphical dashboard is a separate browser-based visual monitor for GoldScalpTrader.
+The graphical dashboard is an optional browser-based local monitor. The primary terminal remains the operational console; browser availability is never a trading-liveness dependency.
 
-The primary terminal remains the operational console. The browser is optional and must never become a dependency of trading liveness.
-
-One screen may expose live Gold state, recent real completed candles, current decision, TradePlan, family evidence, risk/activity and system state without introducing a second trading engine.
+It may expose live Gold state, recent real completed candles, current decision, TradePlan, family evidence, account/Risk and system state without introducing a second trading engine.
 
 ## 2. Architecture
 
 ```text
 GoldScalpTrader PRIMARY process
- market / intelligence / strategies / decisions / risk / execution / manager
-                         |
-                         | authoritative presentation DTO
-                         v
+market / intelligence / strategies / decisions / Risk / execution / manager
+                         ↓
+             authoritative presentation DTO
+                         ↓
               operator/presentation.py
-            truthful read-only normalization
-                         |
-                         | atomic presentation-only snapshot
-                         v
-              .state/dashboard_snapshot.json
-                         |
-                         | read-only
-                         v
-              localhost secondary server
-                         |
-                         v
+                         ↓
+          atomic read-only dashboard snapshot
+                         ↓
+               localhost-only server
+                         ↓
                  127.0.0.1:<port>
 ```
 
-The primary process never waits for the browser/server.
+Primary never waits for browser/server.
 
 ## 3. Snapshot contract
 
-The same presentation normalization used by the primary terminal should feed the graphical snapshot so the two views cannot contradict each other about blocker stage, Gate state, session/news truth or strategy-performance provenance.
+Use the same presentation normalization as terminal so views cannot contradict blocker/Gate, session/News, Risk-profile/overlay or performance provenance.
 
-The snapshot may contain:
+Snapshot may contain:
 
-- symbol/mode/runtime role/risk profile;
-- hard market state + soft session;
-- live Bid/Ask, spread, quote age, M5 countdown;
-- H1/M15/M5 structure and enabled optional H4/M1 context;
-- EMA/RSI/ATR/volatility/event-freshness summaries;
-- bounded recent **real completed M5 candles** from authoritative MarketSnapshot;
-- BUY/SELL thesis scores, Opportunity, timing, leading family and reason;
-- compact six-family current analytical rows where useful;
-- already-built TradePlan Entry/SL/Primary/Expansion/R/cost context;
-- risk/account/activity/system/controller/recovery facts;
-- truthful Gate state plus upstream blocker explanation;
-- verified actual DEMO performance only;
-- recent verified closes when available;
-- open ManagedTrade facts;
+- symbol/capability stage/runtime role;
+- SMALL/MEDIUM/NORMAL Risk profile + actual proposal;
+- aggressive-small-account mode ENABLED/DISABLED and active ceilings when applicable;
+- hard Market State + soft Session;
+- News provider/cache truth;
+- Bid/Ask/spread/quote age/M5 countdown;
+- H1/M15/M5 structure + optional H4 and clearly labelled diagnostic M1;
+- EMA/RSI/ATR/volatility/event freshness;
+- bounded recent real completed M5 candles;
+- BUY/SELL theses, Opportunity, timing, leading family/reason;
+- six-family analytical rows where useful;
+- governed TradePlan geometry + gross/cost-adjusted room;
+- account/activity/controller/recovery facts;
+- truthful Gate/upstream blocker;
+- verified actual DEMO performance/recent closes;
+- open ManagedTrade including remaining volume/verified partial-management state;
 - learning/discovery/local-backup health.
 
-Missing facts display as `—`, waiting, standby or no sample. No fabricated candles/performance/permissions.
+Missing facts show waiting/standby/`—`/NO SAMPLE. No fabricated candles, Risk, performance, geometry or permissions.
 
-No broker password, token, secret or authority-bearing credential enters the snapshot.
+No secret enters snapshot.
 
-## 4. Atomic publication
+## 4. Atomic publication / crash isolation
 
-Snapshot publication writes a temporary sibling file then atomically replaces the live snapshot.
+Write temporary sibling then atomically replace live snapshot. Reader sees complete previous or next frame.
 
-A browser reader sees either a previous complete frame or the next complete frame—not a deliberately partial JSON write.
-
-Snapshot serialization/publication failure is presentation-only and cannot stop strategy/risk/execution.
-
-## 5. Crash isolation
+Snapshot/browser/server failure is presentation-only:
 
 ```text
-snapshot failure
-→ primary terminal continues
+secondary UI failure
+→ PRIMARY + terminal continue
 → trading authorities unchanged
-
-browser/server crash or Ctrl+C
-→ PRIMARY continues
-→ terminal continues
 ```
 
-There are no browser-side BUY/SELL/MODIFY/CLOSE controls.
+No browser BUY/SELL/MODIFY/CLOSE controls exist.
 
-## 6. Secondary server boundary
+## 5. Server boundary
 
-Draft implementation rules:
-
-- fixed bind `127.0.0.1`;
-- configurable local port with safe default;
-- no public/network bind option in V1;
-- no MT5 import in secondary server;
-- no strategy/risk/controller/execution owners imported;
-- GET/HEAD only for useful interface operations;
-- state-changing HTTP methods rejected;
+- bind `127.0.0.1` only;
+- configurable safe local port;
+- no public/network bind option in current V1;
+- no raw MT5 import;
+- no strategy/Risk/controller/execution owners imported;
+- GET/HEAD only as needed;
+- state-changing methods rejected;
 - launch/close independently.
 
-## 7. Truthful liveness
+## 6. Truthful liveness
 
-The browser may poll the presentation snapshot approximately once per second.
-
-LIVE status is based on **primary snapshot age**, not the fact that the web server is running.
-
-Exact stale threshold remains operator calibration, but semantics are:
+Browser may poll snapshot at a presentation cadence such as ~1 second. LIVE depends on **primary snapshot age**, not web-server process existence.
 
 ```text
-fresh primary snapshot → LIVE
-old snapshot           → BOT OFFLINE / SNAPSHOT STALE
-missing/corrupt        → unavailable/waiting overlay
+fresh snapshot   → LIVE
+old snapshot     → BOT OFFLINE / SNAPSHOT STALE
+missing/corrupt  → unavailable/waiting
 ```
+
+Exact UI stale threshold is implementation/operator calibration, not trading authority.
+
+## 7. Frozen timeframe presentation
+
+```text
+H1   broad soft context
+M15  opportunity/location/path
+M5   primary completed setup/timing/management
+H4   optional major context
+M1   diagnostic/research only
+```
+
+M1 chart/details may be omitted for clutter, but if shown they must be labelled diagnostic and cannot imply production authority.
 
 ## 8. Visual hierarchy
 
-Draft hierarchy:
+Conceptual layout:
 
 ```text
 MASTHEAD
-  GoldScalpTrader / PKT clock / mode / PRIMARY
-
-TOP MARKET STRIP
-  XAUUSDm / Market / Session / Bid / Ask / Spread / M5 / Feed / Bot State
-
-PRIMARY FLOOR
-  Market Analysis | completed-M5 chart | Current Decision | TradePlan
-
-EVIDENCE FLOOR
-  Session & News | Strategy Board | Open Trade
-
-ACCOUNT FLOOR
-  Account & Risk | Trading Activity | Recent Verified Closes
-
-SYSTEM FLOOR
-  Execution & Controller | Learning & Discovery | Data/Recovery/Local Backup
+TOP MARKET / SESSION / NEWS STRIP
+PRIMARY FLOOR — market picture / completed-M5 chart / decision / TradePlan
+RISK FLOOR — profile / overlay / proposed risk / daily state / cooldown
+EVIDENCE FLOOR — strategy / open trade
+ACCOUNT FLOOR — activity / verified closes
+SYSTEM FLOOR — execution / controller / learning / recovery / local backup
 ```
 
-The chart renders real completed candles carried by the snapshot. It never calls MT5 or recalculates signals.
+Exact layout remains presentation calibration.
 
-## 9. Strategy and performance truth
+## 9. Risk truth
 
-Current family scores are analytical evidence only.
+Never collapse canonical Risk into a generic `STANDARD` label.
 
-Historical Trades/Wins/Net R come only from verified actual production/DEMO closed samples of the approved environment.
+If aggressive mode enabled, explicitly show:
 
-Zero samples remain visibly unsampled.
+```text
+8%  MAX SL-risk ceiling — NOT TARGET
+16% aggregate open-risk cap
+16% daily-loss ceiling
+```
+
+If disabled, say `DISABLED`.
 
 ## 10. Decision / blocker / Gate semantics
 
-The browser preserves the exact same distinction as the terminal:
-
 ```text
-TradePlan/Risk stopped candidate upstream
-→ Current Blocker = owning upstream layer
+TradePlan/Risk/session owner stops upstream
+→ Current Blocker = owning layer
 → Gate NOT EVALUATED / WAIT
 
-actual Gate BLOCK
+actual central Gate BLOCK
 → Current Blocker = Execution Gate
 → Gate BLOCKED
 ```
 
-`ENTRY_BLOCKED` is never blindly converted to `Gate BLOCKED`.
-
-If no TradePlan exists, the browser cannot fabricate Entry/SL/targets from a desk score.
+No plan means no fabricated Entry/SL/targets.
 
 ## 11. Scalp-specific visuals
 
-Useful additional visuals may include:
+May show event/trigger age, approved reference vs live quote, spread/healthy baseline, gross vs cost-adjusted room, trade age/M5 bars, latency and Opportunity/re-arm state. All are presentation of authoritative facts.
 
-- latest structural/liquidity event age;
-- spread versus healthy baseline;
-- approved entry reference versus live executable quote;
-- gross room versus cost context;
-- trade age / M5 bars;
-- latency diagnostics;
-- Opportunity lifecycle/re-arm state.
+## 12. Runtime capability display
 
-These are displays of authoritative facts, not browser-calculated trading gates.
+```text
+READINESS
+DRY_RUN
+DEMO PRIMARY
+REAL — FUTURE/GATED
+```
 
-## 12. Local security/privacy
+Browser cannot activate or bypass future REAL release gate.
 
-The server is localhost-only and snapshots contain no authority-bearing secrets.
+## 13. Local security/privacy
 
-Runtime/private account metadata should be minimized to what operator monitoring needs, especially while the source repo remains public.
+Localhost only, no authority-bearing secrets, minimal private account metadata. No cloud hosting, external analytics or paid services required.
 
-The dashboard does not require cloud hosting, external analytics or paid services.
-
-## 13. Planned implementation ownership
+## 14. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/app/live_presentation.py
@@ -197,27 +180,8 @@ src/gold_scalp_trader/graphical_dashboard/ui.py
 src/gold_scalp_trader/graphical_dashboard/__main__.py
 ```
 
-## 14. Planned proof
+## 15. Planned proof / presentation choices
 
-Tests must prove:
+Tests prove schema/mapping, completed-candle carriage, atomic publication, profile/overlay truth, blocker-vs-Gate, stale/offline status, localhost-only server, no state-changing controls, import isolation, browser failure isolation and secret exclusion.
 
-- snapshot schema and authoritative data mapping;
-- real completed-candle carriage;
-- atomic replacement;
-- upstream blocker vs Gate truth;
-- stale/offline status based on primary snapshot age;
-- localhost-only server;
-- no trade controls/state-changing endpoints;
-- no MT5/strategy/risk/execution imports in secondary boundary;
-- browser failure isolation;
-- no secrets in snapshot.
-
-## 15. Pre-challenge questions
-
-- exact chart history depth;
-- port/default launch UX;
-- stale snapshot threshold;
-- which current family details deserve screen space;
-- whether M1 micro-chart adds value or clutter;
-- how much account identity should appear visually;
-- whether the graphical dashboard should be built in V1 or after the terminal dashboard is proven.
+Chart depth, port/launch UX, snapshot stale threshold, exact family screen detail and account-identity visibility remain presentation choices. Whether secondary UI is implemented in the first code milestone or after terminal proof is a build-order choice, not feature removal.

@@ -1,89 +1,73 @@
 # GoldScalpTrader — Audit 6: Live Geometry and Entry Freshness
 
-**Status:** DRAFT CORRECTIVE AUDIT PROTOCOL — NOT RUN
-**Version:** 0.1-scalp-live-geometry-freshness
+**Status:** FROZEN CORRECTIVE AUDIT PROTOCOL — NOT RUN
+**Version:** 1.0-frozen-m1-scalp-live-geometry
 **Authority:** Review/correction of live technical-zone, liquidity, structural-level, strategy-context and executable-entry freshness defects.
 
 ## 1. Scope
 
-Run after connected observation reveals no-trade/false-ready/late-entry behaviour that may be caused by stale geometry rather than the final Gate.
+Run after connected observation reveals no-trade/false-ready/late-entry behavior that may be caused by stale geometry rather than final Gate.
 
-This audit never lowers monetary risk or structural quality merely to increase entries.
+This audit never lowers monetary Risk or structural quality merely to increase entries.
 
 ## 2. Technical-zone review
 
-For every zone near current price verify:
-
-- causal source swing/event;
-- confirmation time;
-- lifecycle state ACTIVE/WEAKENING/BROKEN/RETEST/RECLAIMED/CONSUMED/STALE;
-- whether a confirmed break incorrectly leaves old same-side support/resistance live;
-- whether a polarity-changing retest candidate is represented correctly;
-- whether target room ignores a consumed/broken obstacle.
+For every nearby zone verify causal source, confirmation time, lifecycle state, correct broken/consumed handling, reclaim/retest polarity and whether target room ignores a consumed obstacle.
 
 ## 3. Liquidity review
 
-Verify:
-
-- pool existed before interaction;
-- sweep/probe/accepted-break chronology;
-- pool lifecycle after consumption;
-- FVG third-candle knowledge time;
-- OB qualification time;
-- session/prior-range source provenance;
-- path is not crowded by already-consumed/fake pools.
+Verify pool existed before interaction, sweep/probe/accepted-break chronology, pool lifecycle, FVG third-candle knowledge time, OB qualification time, session/prior-range provenance and path free of already-consumed/fabricated pools.
 
 ## 4. Strategy-context review
 
-A FamilyReport/Opportunity must not carry stale supporting event identity indefinitely.
-
-Check:
-
-- source family remains valid;
-- event timestamps survive through Fusion/Opportunity/TradePlan;
-- same thesis does not get fresh ID on each poll;
-- MISSED/terminal identity does not re-arm without new event;
-- correlated labels do not inflate freshness/score.
+Check source family remains valid, event timestamps survive Fusion→Opportunity→TradePlan, same thesis is not given fresh ID each poll, MISSED/terminal state does not re-arm without new event and correlated labels do not inflate freshness/score.
 
 ## 5. Entry-freshness review
 
-For each analytical ENTER/WAIT/MISSED record:
+For each ENTER/WAIT/MISSED record inspect:
 
 ```text
 latest event age
 distance travelled since event
 M5 extension/momentum
-approved entry drift
+approved-entry drift
 spread/cost context
 remaining target room
 processing time
 time since plan creation/rebuild
 ```
 
-Determine whether the correct outcome should have been ENTER, WAIT, MISSED or INVALID under frozen policy.
+Determine correct outcome under owning frozen/scalp-calibrated policy.
 
-## 6. M1/tick boundary
+## 6. Frozen M1 / quote boundary
 
-If final architecture keeps M1 diagnostic-only, confirm no hidden M1 authority slipped into strategy/TradePlan.
+Current V1 is explicit:
 
-If fresh-zero audit promotes M1, confirm ownership/knowledge time/test/replay semantics are explicit rather than accidental.
+```text
+M1   diagnostic/research only
+M5   primary production setup/timing/management
+quote current executable condition only
+```
 
-Quote/tick data may determine executable condition but cannot retroactively rewrite structural history.
+Therefore audit confirms **no hidden M1 production authority** slipped into strategy/TradePlan/management.
 
-## 7. Corrective evidence
+There is no alternate “if Fresh-Zero promotes M1” branch in current V1. A future M1 promotion would require a new governed design/evidence packet before implementation.
 
-A correction needs:
+Quote/tick data may invalidate executability but cannot retroactively rewrite structural history.
 
-- exact observed incident/replay evidence;
-- documented owner mismatch/defect;
-- focused regression test;
-- replay no-lookahead test;
-- affected Documents sync;
-- no reduction in Risk/Gate safety.
+## 7. Preservation checks
 
-## 8. Current state
+A geometry/freshness correction must not silently rewrite unrelated preserved features/defaults such as monetary Risk profiles/bands, re-entry/cooldown, session/reopen/provider baselines, bounded analytical concurrency or future REAL governance.
+
+## 8. Corrective evidence
+
+Require exact incident/replay evidence, documented owner mismatch/defect, focused regression, replay no-lookahead proof, affected Documents sync and no reduction in Risk/Gate safety.
+
+## 9. Current state
 
 ```text
 AUDIT RESULT: NOT RUN
 No connected live-geometry/freshness correction has been performed yet.
 ```
+
+Protocol is frozen; result remains NOT RUN.

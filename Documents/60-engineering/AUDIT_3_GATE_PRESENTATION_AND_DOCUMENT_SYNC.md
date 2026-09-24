@@ -1,24 +1,24 @@
 # GoldScalpTrader — Audit 3 Gate Presentation and Documents Synchronization
 
-**Status:** DRAFT AUDIT PROTOCOL — NOT RUN
-**Version:** 0.1-truthful-gate-doc-sync
-**Authority:** Cross-check of execution-gate presentation, terminal sizing and complete active `Documents/` synchronization.
+**Status:** FROZEN AUDIT PROTOCOL — NOT RUN
+**Version:** 1.0-preservation-first-gate-doc-sync
+**Authority:** Cross-check of execution-gate presentation, terminal/graphical truth and complete active `Documents/` synchronization.
 
 ## 1. Purpose
 
-This audit prevents a common operator/engineering error: presenting any `ENTRY_BLOCKED` result as if the central Execution Gate itself blocked the trade.
+Prevent a common operator/engineering error: presenting any `ENTRY_BLOCKED` result as if central Execution Gate itself blocked the trade.
 
-It also verifies dashboard-width behaviour and cross-document truth after implementation changes.
+Also verify that presentation reflects preserved Risk/session/defaults and genuine scalp-specific policy without inventing or suppressing features.
 
 ## 2. Three questions
 
-For each observed blocked/waiting entry determine:
+For each blocked/waiting entry:
 
-1. Did analytical timing/TradePlan/Risk stop the candidate **before** central Gate evaluation?
-2. Did the central Gate actually evaluate and return BLOCK/UNKNOWN?
-3. Did presentation merely translate a broad runtime action incorrectly?
+1. Did analytical timing/TradePlan/Risk/session owner stop candidate **before** central Gate evaluation?
+2. Did central Gate actually evaluate and return BLOCK/UNKNOWN?
+3. Did presentation translate a broad runtime action incorrectly?
 
-## 3. Truth mapping to verify
+## 3. Truth mapping
 
 ```text
 analytical WAIT/MISSED/INVALID
@@ -32,6 +32,10 @@ Risk BLOCK/UNKNOWN before Gate
 → Current Blocker Risk
 → Gate NOT EVALUATED
 
+Session/News owner blocks upstream
+→ Current Blocker owning authority
+→ Gate NOT EVALUATED unless central Gate actually ran
+
 actual Gate BLOCK
 → Current Blocker Execution Gate
 → Gate BLOCKED
@@ -40,34 +44,36 @@ actual Gate UNKNOWN
 → Gate CHECKING/UNKNOWN
 ```
 
-## 4. Scalp-specific presentation checks
+## 4. Presentation-policy checks
 
-Verify operator surfaces do not hard-code unresolved/future policy such as:
+Operator surfaces must reflect current owners exactly:
 
-- 1.20R from reference Swing project;
-- reference risk bands;
-- Swing News-UNKNOWN adaptive-PASS rule;
-- M1 diagnostic-only if fresh-zero challenge changes it.
-
-Instead present versioned owning facts/reasons.
+- Swing 1.20R is **not** hard-coded as scalp entry floor;
+- preserved SMALL/MEDIUM/NORMAL profile bands are shown when applicable, not treated as unresolved;
+- aggressive small-account mode shows DISABLED by default; when enabled 8% is MAX ceiling not target and 16% aggregate/daily caps are explicit;
+- manual reset/re-entry/cooldown state is truthful;
+- true News UNKNOWN blocks new scalp entry while valid LKG cache remains distinct;
+- M1 is diagnostic/research only under frozen V1;
+- future REAL is shown as gated capability, not active/removed;
+- no runtime Git publication controls/path exist.
 
 ## 5. Terminal/graphical checks
 
-- narrow screen fits configured cell width;
-- wide Rich path preserves meaning;
-- fallback does not crash trader;
-- one-second pulse does not rerun trading authority;
-- browser snapshot uses same normalized blocker/Gate truth;
-- browser is localhost/read-only/no controls;
-- graphical/terminal failures do not affect broker authority.
+- narrow/wide/fallback preserve meaning;
+- fast presentation pulse does not rerun authority;
+- graphical snapshot uses same normalized blocker/Gate/Risk/provider truth;
+- browser localhost/read-only/no controls;
+- presentation failure does not affect broker authority;
+- no fabricated Entry/SL/targets/performance when source fact absent.
 
 ## 6. Document synchronization review
 
-When a Gate/presentation/permission change occurs inspect:
+For Gate/presentation/permission changes inspect:
 
 ```text
 SYSTEM_CONTRACT
 ARCHITECTURE
+RISK_CONTRACT
 SESSION_AND_RISK_STATE_MACHINE
 EXECUTION_AND_BROKER_SAFETY
 SYSTEM_HEALTH_AND_DIAGNOSTICS
@@ -79,22 +85,20 @@ FILE_AND_TEST_CATALOG
 CODER_GUIDE
 TESTING_AND_VERIFICATION
 RELEASE_CHECKLIST
-related audits/governance
+DOCUMENTATION_COMPARISON / PRESERVATION_LEDGER where inherited behavior changes
 ```
 
-Update every semantically affected file, not just the UI document.
+Update every semantically affected owner/summary.
 
 ## 7. Evidence required
 
-- focused operator/Gate tests;
-- runtime integration traces;
-- width/fallback tests;
-- document diff/affected-graph record;
-- connected screenshot evidence only for visual scanability, not authority semantics.
+Focused operator/Gate tests, runtime traces, width/fallback tests, profile/overlay/provider rendering tests, document affected-graph record and connected screenshot evidence for scanability only.
 
 ## 8. Current state
 
 ```text
 AUDIT RESULT: NOT RUN
-Reason: operator/execution implementation is not yet built from the frozen scalp manual.
+Reason: operator/execution implementation is not yet built/proven from the final frozen manual.
 ```
+
+Protocol is frozen; audit result remains NOT RUN.

@@ -1,8 +1,8 @@
 # GoldScalpTrader — Research and Validation
 
-**Status:** DRAFT PRE-CHALLENGE RESEARCH CONTRACT
-**Version:** 0.1-scalp-production-parity
-**Authority:** Chronological replay, no-lookahead validation, dataset identity, portable datasets, session-policy replay, transaction-cost stress, holdouts and evidence packages.
+**Status:** FROZEN V1 RESEARCH ARCHITECTURE — DATASET / SCALP CALIBRATION EVIDENCE PENDING
+**Version:** 1.0-production-parity-preserved-policy
+**Authority:** Chronological replay, no-lookahead validation, dataset identity, portable datasets, session/Risk-policy replay, transaction-cost stress, holdouts and evidence packages.
 
 ## 1. Purpose
 
@@ -10,7 +10,7 @@ Research tests the documented scalp system without future leakage, cherry-pickin
 
 > A positive backtest is evidence about one specified historical simulation. It is not proof of future profitability or permission to trade.
 
-Research is an offline evidence factory. It should reuse production semantics rather than become a simplified second bot.
+Research is an offline evidence factory. It reuses production semantics rather than becoming a simplified second bot.
 
 ## 2. Evidence pipeline
 
@@ -35,77 +35,78 @@ At historical time `T`:
 
 ```text
 facts knowable at T
-→ production intelligence/strategy/opportunity/timing/trade-plan state at T
-→ freeze that decision state
+→ production intelligence/strategy/opportunity/timing/TradePlan state at T
+→ freeze decision state
 → later bars may label outcome/management only
 ```
 
-Future-confirmed swings, later calendar revisions, final-candle extremes, target outcomes and post-entry regime information may not leak backward.
+Future-confirmed swings, later calendar revisions, final-candle extremes, target outcomes and post-entry regime information never leak backward. Same-bar STOP/TARGET ambiguity remains explicit rather than optimistically resolved.
 
-Same-bar STOP/TARGET ambiguity remains explicit. Research must not choose whichever result looks better.
+## 4. Frozen timeframe parity
 
-## 4. Timeframe parity
-
-Replay uses the currently frozen runtime roles. Pre-challenge baseline:
+Replay uses the current production roles exactly:
 
 ```text
-H1  broad regime
+H1  broad soft regime/context
 M15 opportunity/location/path
-M5  primary setup + entry + management timing
-M1  diagnostic unless later promoted
+M5  primary completed setup + entry timing + normal management
 H4  optional major context
+M1  diagnostic/research only
 ```
 
-If the fresh-zero challenge changes timeframe roles, replay and runtime change in the same affected-graph packet.
+These roles are no longer a pre-challenge research question. Any future production-timeframe change requires the same governed affected-graph update in runtime and replay.
 
 ## 5. Production semantics reused by replay
 
-Replay should call production intelligence, strategy, decision, Trade Plan, permission and Trade Manager components wherever interfaces permit.
+Replay preserves:
 
-It must preserve:
-
-- Opportunity identity and terminal states;
+- six production families;
+- bounded analytical scheduling semantics and deterministic one-worker parity where applicable;
+- Opportunity identity/terminal states;
 - fresh-event/re-arm rules;
+- preserved one genuinely fresh same-episode re-entry baseline;
 - one-position production capacity;
 - original-R immutability;
-- management action ordering;
-- session/news/risk policy version;
-- family-specific plan geometry;
+- management ordering and optional broker-valid partial-management semantics where modelled;
+- session/news/Risk policy identity;
+- family-specific geometry;
 - UNKNOWN/ambiguity semantics.
 
-Analytical ENTER count is not the same as actual admitted trade count.
+Analytical ENTER count is not actual admitted trade count.
 
-## 6. One-position capacity
+## 6. Preserved monetary Risk-policy parity
 
-P/L replay admits at most one active production trade per account/symbol scope in initial V1.
+Research does not replace the canonical Risk contract with one generic risk percentage.
 
-While occupied, later analytical ENTER signals are recorded as capacity-suppressed evidence and receive no overlapping production P/L.
+Historical simulation records/uses the applicable policy version including:
 
-A trade releases capacity only when the simulated close is causally established. `HORIZON_OPEN` or ambiguous close remains occupied rather than guessed flat.
+```text
+SMALL   DayStartEquity < $300
+MEDIUM  $300–$999.99
+NORMAL  >= $1,000
+```
 
-## 7. Scalping execution realism
+and the preserved target/elevated/hard/daily bands.
 
-Scalping research must explicitly model transaction costs and timing assumptions.
+If `AGGRESSIVE_SMALL_ACCOUNT` is explicitly part of a research scenario, the evidence package states that it is an **explicit disabled-by-default production capability**, with 8% maximum SL-risk ceiling (not target), 16% aggregate cap and 16% daily ceiling. Research must never silently enable it merely because simulated equity is small.
 
-Stress dimensions should include:
+Preserved manual-reset/cooldown/re-entry policy identity is also part of replay where applicable.
 
-- executable-side spread;
-- worse spread regimes;
-- adverse entry slippage;
-- signal-to-execution delay;
-- order-check/send delay assumptions;
-- stop/target execution slippage;
-- commission/fees where known;
-- modify delay/rejection;
-- quote gaps/dislocation;
-- event/news spread expansion;
-- minimum-lot granularity.
+## 7. One-position capacity
 
-Stress may worsen execution assumptions but must not rewrite structural invalidation or targets to improve results.
+P/L replay admits at most one active independently risk-bearing Gold trade per account/symbol scope under current V1. While occupied, later analytical ENTERs are recorded as capacity-suppressed evidence and receive no overlapping production P/L.
 
-## 8. Replay realism levels
+Capacity releases only after causal close. Ambiguous/HORIZON_OPEN remains occupied rather than guessed flat.
 
-Every result package declares its realism level, for example:
+## 8. Scalping execution realism
+
+Stress dimensions include executable-side spread, worse spread regimes, adverse entry/exit slippage, signal-to-execution delay, order-check/send delay assumptions, commission/fees, modify delay/rejection, gaps/dislocation, event/news spread expansion and minimum-lot granularity.
+
+Stress may worsen execution assumptions but cannot rewrite structural stop/target to improve results.
+
+## 9. Replay realism levels
+
+Declare levels such as:
 
 ```text
 BAR_CLOSE_ANALYTICAL
@@ -116,151 +117,95 @@ FORWARD_SHADOW
 CONNECTED_DEMO
 ```
 
-None is described as tick-perfect unless true tick/quote data and execution modelling actually support that claim.
+Nothing is called tick-perfect without true tick/quote data and suitable execution modelling.
 
-## 9. Historical session/news policy
+## 10. Historical session/news policy
 
-Historical session schedules are versioned inputs. Replay never guesses a broker clock from missing candles.
+Historical schedule/news inputs are versioned. Replay never guesses broker OPEN from missing candles and never treats missing historical News as CLEAR.
 
-Where verified schedule intervals exist, production market-permission rules are reused.
+Preserved policy baselines may be replayed where the dataset/source actually supports them:
 
-Outside verified schedule coverage, session-aware replay becomes UNKNOWN/error rather than inventing OPEN.
+```text
+provider TTL 1800s
+Daily PRE_CLOSE T-20/T-10
+Weekend PRE_CLOSE T-60/T-30
+Daily reopen 1 clean completed M5
+Weekend reopen 2 clean completed M5 + gap assessment
+```
 
-Historical News evidence requires declared provider/source/version and coverage. Missing historical News cannot be silently treated as CLEAR.
+If historical broker schedule coverage is unavailable, session-aware claims become UNKNOWN/limited rather than fabricated.
 
-## 10. Portable dataset contract
+## 11. Portable dataset contract
 
-A dataset bundle may contain:
+A bundle may contain:
 
 ```text
 dataset_manifest.json
-H4.csv        optional if policy uses it
+H4.csv optional
 H1.csv
 M15.csv
 M5.csv
-M1.csv        optional if supported
-optional quote/spread series when available
+M1.csv optional diagnostics/research only
+optional quote/spread series
 optional verified session/news inputs
 ```
 
-Manifest records source/version, symbol geometry, field definitions, bar counts, replay assumptions, hashes and chronology.
+Manifest records source/version, symbol geometry, field definitions, counts, assumptions, hashes and chronology. Credentials are excluded.
 
-Import verifies canonical paths, hashes/counts, chronological data and no symlink/path tricks.
+## 12. Historical spread/cost truth
 
-Credentials/account passwords are excluded.
+Current live spread is never a hidden historical fallback. If historical spread/quote data is absent, research uses an explicit declared assumption or refuses unsupported cost-sensitive claims.
 
-## 11. Historical spread and cost data
+Evidence package states whether spread is observed, broker-exported, static/median assumption or stressed variant.
 
-Current live spread must never be a hidden fallback for historical spread.
+## 13. Dataset / evidence identity
 
-If historical spread/quote data is absent, research uses an explicit declared assumption or refuses cost-sensitive claims.
+Dataset identity includes calculation-relevant candle/quote fields, symbol geometry, cost assumptions, session/news source/version, economic account context relevant to Risk/min-lot replay, timeframe counts and hashes.
 
-For scalping, evidence packages should clearly state whether spread is:
+Evidence packages are write-new/integrity checked and bind code revision, policy version, dataset hash, input fingerprint, normalized results, limitations and evidence hash.
 
-- observed per bar/tick;
-- broker-exported;
-- median/static assumption;
-- stressed variant.
-
-## 12. Dataset identity
-
-Dataset identity should include calculation-relevant:
-
-- source label/version;
-- all candle/quote fields;
-- symbol point/tick geometry;
-- spread/cost assumptions;
-- session/news source/version;
-- economic account context relevant to minimum-lot/risk replay;
-- timeframe counts and hashes.
-
-Mutable filenames alone are not identity.
-
-## 13. Immutable evidence packages
-
-Evidence packages are write-new and integrity checked.
-
-Typical package:
-
-```text
-package_manifest.json
-evidence_manifest.json
-optional references to verified dataset bundle
-```
-
-Manifest binds code revision, policy version, dataset hash, input fingerprint, normalized results, limitations and evidence hash.
-
-A package grants no production permission.
-
-## 14. Walk-forward and final holdout
-
-The required sequence is:
+## 14. Walk-forward / final holdout
 
 ```text
 DEVELOPMENT / SELECTION
 → independent validation / fixed-policy walk-forward
-→ lock one candidate semantic fingerprint
+→ semantic lock
 → one-shot FINAL HOLDOUT
 → stress
 → shadow
 → DEMO canary
 ```
 
-No utility may repeatedly consume the final holdout while tuning.
-
-A semantic change after lock creates a new candidate/version.
+Repeated tuning against final holdout destroys its claim. Semantic change after lock creates a new candidate/version.
 
 ## 15. Scalp metrics
 
-Serious research includes more than win rate:
-
-- Net R / Average R;
-- Profit Factor;
-- maximum drawdown and recovery;
-- win/loss/streak distribution;
-- MFE/MAE;
-- Entry Efficiency;
-- Capture Efficiency;
-- Premature Exit Cost / giveback;
-- hold duration / M5 bars;
-- time to first favorable/adverse excursion;
-- spread/slippage/commission burden;
-- net expectancy after costs;
-- Opportunity Recall / meaningful missed moves;
-- analytical ENTER frequency;
-- capacity-admitted trade frequency;
-- capacity-suppressed signals;
-- family/session/regime breakdown;
-- ambiguous/open coverage;
-- stress sensitivity.
-
-A higher win rate that removes most profitable opportunities is not automatically an improvement.
+Use more than win rate: Net/Avg R, Profit Factor, drawdown/recovery, streaks, MFE/MAE, Entry/Capture Efficiency, premature-exit cost/giveback, hold duration/M5 bars, time-to-excursion, transaction costs, Opportunity Recall, analytical ENTER frequency, capacity-admitted/suppressed counts, family/session/regime breakdown, ambiguity coverage and stress sensitivity.
 
 ## 16. Ablation
 
-Optional confluence such as FVG, OB, Trendline, Fibonacci, POC, M1 context or macro context must be tested by marginal-value ablation rather than accepted because it sounds sophisticated.
+Optional confluence such as FVG, OB, Trendline, Fib, POC, M1 diagnostics or macro context is tested by marginal-value ablation with identical chronology/capacity/cost assumptions.
 
-Compare base family versus base+feature with identical chronology/capacity/cost assumptions.
+M1 diagnostics may be researched, but replay does not grant M1 production authority.
 
 ## 17. Small-account research
 
-For the intended small-account context, replay should separately report:
+Report separately:
 
 - theoretical signal geometry;
+- applicable preserved Risk profile;
 - broker-minimum-volume affordability;
-- trades blocked because 0.01 lot exceeds risk policy;
-- effective actual risk after normalization;
-- how often valid scalp geometry is unusable due broker granularity.
+- plans blocked because minimum volume exceeds active policy;
+- actual normalized risk;
+- explicit aggressive-overlay scenarios only when intentionally configured.
 
 This prevents strategy quality and account affordability from being confused.
 
-## 18. Research / learning / promotion boundary
+## 18. Research / promotion boundary
 
-Research episodes distinguish actual, missed, blocked, capacity-suppressed and system-fault attribution.
+Actual, missed, blocked, capacity-suppressed and system-fault episodes remain distinct. Discovery/invention creates declarative candidates only. Promotion owns holdout/stress/shadow/canary/approval/rollback.
 
-Discovery/invention may create declarative candidates only. Promotion owns holdout/stress/shadow/canary/approval/rollback.
-
-Research never edits production strategy code or hard safety automatically.
+Research never edits production code/policy automatically or grants future REAL authority.
 
 ## 19. Planned implementation ownership
 
@@ -281,12 +226,10 @@ src/gold_scalp_trader/research/ablation.py
 
 ## 20. Planned proof
 
-Tests must cover chronological replay/no-lookahead, Opportunity identity parity, one-position capacity, management replay, ambiguity handling, historical session/news coverage, cost stress, portable dataset hashes, immutable evidence packages, fixed-policy walk-forward/holdout boundaries and small-account min-lot classification.
+Tests cover chronological/no-lookahead replay, frozen timeframe parity, preserved Risk/profile/overlay semantics, Opportunity/re-entry/capacity parity, management replay, ambiguity, historical session/news coverage, cost stress, dataset hashes, immutable evidence packages and one-shot holdout boundaries.
 
-Real regime-diverse XAU history, realistic friction calibration and replay-versus-DEMO comparison remain external/research evidence.
+## 21. Open research/calibration
 
-## 21. Non-goals / open questions
+History depth, tick/quote acquisition feasibility, walk-forward sizes, minimum samples, slippage distributions, Monte Carlo/bootstrap method, genuine scalp cost/freshness thresholds and final optional-confluence marginal value remain research questions.
 
-Research must not guess historical session/news truth, accept tampered data, hide uncertainty, allow overlapping P/L trades production would block, use current spread as hidden historical spread or claim future profitability.
-
-Open items: history depth, tick/quote acquisition feasibility, walk-forward sizes, minimum samples, slippage distributions, Monte Carlo/bootstrap method, cost thresholds and final M1/confluence retention criteria.
+Frozen timeframe authority and preserved non-scalp Risk/session defaults are not automatically reopened.

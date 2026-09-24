@@ -1,31 +1,32 @@
 # GoldScalpTrader — Testing and Verification
 
-**Status:** DRAFT PRE-CHALLENGE EVIDENCE CONTRACT
-**Version:** 0.1-scalp-evidence-ladder
-**Authority:** Test layers, bounded-parallel parity, evidence quality, deterministic proof, connected DEMO proof and release-claim boundaries.
+**Status:** FROZEN V1 EVIDENCE CONTRACT — IMPLEMENTATION / CONNECTED PROOF PENDING
+**Version:** 1.0-preservation-first-evidence-ladder
+**Authority:** Test layers, bounded-parallel parity, preserved-policy verification, deterministic proof, connected DEMO proof and release-claim boundaries.
 
 ## 1. What a passing test means
 
-A deterministic PASS proves only the exercised software contract. It does not prove MT5 connectivity, current broker conditions, future strategy edge, optimal worker count, holiday hours or profitability.
+Deterministic PASS proves only exercised software contract. It does not prove MT5 connectivity, current broker conditions, future strategy edge, optimal worker count, holiday hours, REAL authorization or profitability.
 
-Aggregate green tests are necessary, not sufficient. Final review traverses meaningful modules/features individually.
+Aggregate green tests are necessary, never sufficient.
 
 ## 2. Evidence ladder
 
 ```text
 unit / contract
-→ serial-vs-bounded-parallel analytical parity
+→ bounded-parallel vs one-worker semantic parity
 → component / integration
 → chronological replay / research
 → connected read-only observation
 → governed DEMO lifecycle
 → actual verified DEMO learning
 → local checkpoint/restore + reconciliation
-→ fresh-machine local recovery-package drill
-→ scoped release certification
+→ fresh-machine recovery-package drill
+→ scoped DEMO release certification
+→ future separate REAL release evidence if ever pursued
 ```
 
-No later rung is implied by an earlier one.
+No rung implies the next.
 
 ## 3. Claim separation
 
@@ -33,100 +34,70 @@ Keep separate:
 
 - lint/compile/tests/Documents/secret scan;
 - analytical parallel parity;
-- truthful terminal/browser presentation;
+- terminal/browser presentation;
 - connected MT5 READINESS;
 - natural Opportunity reaching Plan/Risk/Gate;
 - DEMO OPEN/MODIFY/CLOSE reconciliation;
-- exactly-once learning after verified close;
+- exactly-once learning;
 - restart/recovery;
-- final local backup creation;
-- independent local recovery-package restore;
-- strategy calibration/profitability evidence.
+- local final backup;
+- independent recovery restore;
+- strategy calibration;
+- future REAL release;
+- profitability.
 
-There is no release requirement for automatic GitHub shutdown publication because that feature is intentionally absent.
+No runtime GitHub shutdown publication exists by design.
 
-## 4. Deterministic proof groups — intended
+## 4. Deterministic proof groups
 
-### Foundation / config / security
+### Foundation/config/security
+Typed models/IDs/settings, redaction/secret scan, policy identities and preservation-first regressions.
 
-Typed models/IDs/settings, logging/redaction, secret scanner, coding-contract regressions.
+### Market/intelligence/session-news
+Read normalization, completed bars, stale/sparse/corrupt/future states, closure gaps, causal intelligence, optional-confluence boundaries, frozen timeframe roles, News/cache semantics and bounded-parallel parity.
 
-### Market / intelligence / session-news
+### Strategies/timing/TradePlan/Risk
+Prove six preserved families, independent BUY/SELL, Opportunity lifecycle, WAIT/MISSED/INVALID, event freshness/re-arm, family invalidation, gross/cost-room behavior, immutable original R, dynamic/min-lot sizing and exact canonical Risk policy.
 
-Prove read normalization, completed bars, future/stale/sparse/corrupt states, reopen gaps, activity accounting, causal intelligence, optional-confluence boundaries, session/news provider semantics and serial/parallel parity.
+Risk tests specifically cover:
 
-The final frozen News-UNKNOWN policy is tested exactly; before freeze no test may silently choose it.
+```text
+SMALL / MEDIUM / NORMAL DayStartEquity profile resolution
+reference target/elevated/hard/daily bands
+profile fixed during risk day
+AGGRESSIVE_SMALL_ACCOUNT disabled by default
+explicit eligibility/enable path
+8% is maximum SL-risk ceiling, NOT target
+16% aggregate open-risk / daily ceilings
+manual reset disabled by default
+one genuinely fresh same-episode re-entry
+three-loss / at-least-30-minute cooldown + release conditions
+```
 
-### Strategies / timing / TradePlan / Risk
+### Session / News
+Prove 1800s provider baseline/config identity, valid LKG reuse, no timestamp laundering, expiry → UNKNOWN, Daily T-20/T-10, Weekend T-60/T-30, daily one-clean-M5 reopen and weekend two-clean-M5+gap baseline semantics. Connected proof verifies actual current broker schedule/provider behavior.
 
-Prove:
+### Execution/recovery/management
+Prove capability stage/account/symbol guard, one-shot Intent, no blind retry, prechecks, sole writer, reconciliation, controller, exact close proof, action-sensitive CLOSE, monotonic management, preserved optional broker-valid partial management and scalp time-efficiency semantics.
 
-- final family set and independent BUY/SELL;
-- persistent Opportunity;
-- WAIT/MISSED/INVALID;
-- event freshness/re-arm;
-- family-specific invalidation + fallback;
-- structural targets/R policy once frozen;
-- transaction-cost diagnostics;
-- immutable original R;
-- dynamic/min-lot monetary risk;
-- risk-day/lock/cooldown/cash-flow/capacity.
+### Runtime/operator
+Prove live pulse separate from trading cadence, blocker-vs-Gate truth, Risk profile/overlay display, width/fallback, localhost graphical isolation and stale snapshot semantics.
 
-Tests must not weaken policy merely to manufacture trades.
+### Learning/research/discovery
+Prove evidence-environment separation, queue/receipt, exactly-once learning, profile/overlay identity retention, no-lookahead replay, capacity, cost stress, holdout lock, preservation classification and no self-promotion/broker authority.
 
-### Execution / recovery / management
-
-Prove mode/account/symbol guard, one-shot Intent, no blind retry, fresh prechecks, sole writer, reconciliation, local fencing, exact close proof, action-sensitive CLOSE, monotonic management and time/efficiency semantics after freeze.
-
-### Runtime / operator
-
-Prove live pulse separate from trading cadence, truthful Gate-vs-upstream blocker, width-safe terminal, fallback isolation, localhost/read-only graphical UI and stale snapshot semantics.
-
-### Learning / research / discovery
-
-Prove evidence-environment separation, queue/receipt, exactly-once learning, no-lookahead replay, capacity, cost stress, holdout lock, discovery/invention constraints and no self-promotion/broker authority.
-
-### Local backup / documentation
-
-Prove full checkpoint completeness, secret exclusion, backup catalog, restore-to-new-DB, recovery package integrity, no automatic Git push path and canonical Documents structure.
+### Local backup/documentation
+Prove complete checkpoint, secret exclusion, catalog, restore-to-new-DB, recovery-package integrity, no runtime Git operation and canonical Documents structure.
 
 ## 5. Concurrency determinism
 
-All analytical concurrency requires:
+Preserved bounded analytical concurrency requires immutable inputs, bounded workers, dependency stages, canonical output order, one-worker semantic parity, visible exceptions and zero Risk/controller/lifecycle/broker mutation from workers.
 
-- immutable inputs;
-- bounded workers;
-- dependency-respecting stages;
-- canonical output order;
-- one-worker semantic parity;
-- visible worker exceptions;
-- no broker/risk/controller/lifecycle mutation in workers.
-
-Speed gain is operational evidence, not correctness authority.
+Worker-count performance is operational evidence; concurrency semantics are architecture.
 
 ## 6. Negative/safety properties
 
-Negative tests include:
-
-- wrong account/server/symbol;
-- stale/corrupt/future data;
-- forming-candle leakage;
-- worker failure;
-- optional evidence becoming accidental hard gate;
-- minimum-lot/margin failure;
-- known news blackout;
-- final News-UNKNOWN semantics;
-- session close/unknown/warmup;
-- loss lock/cooldown;
-- duplicate/ambiguous Intent;
-- stale controller;
-- corrupt restore;
-- incomplete close evidence;
-- duplicate/conflicting learning source;
-- direct research/writer leakage;
-- secret detection;
-- backup destination/full-disk failure;
-- runtime Git push dependency appearing accidentally.
+Include wrong identity, stale/corrupt/future data, forming-bar leakage, worker failure, optional evidence becoming hard gate, min-lot/margin failure, known News blackout, true News UNKNOWN, invalid/expired cache, session close/unknown/warmup, profile/daily lock/cooldown, accidental aggressive auto-enable, duplicate/ambiguous Intent, stale controller, corrupt restore, incomplete close evidence, conflicting learning source, research/writer leakage, secret detection, backup/full-disk failure and runtime Git dependency.
 
 ## 7. Runtime/DEMO verification sequence
 
@@ -134,22 +105,22 @@ Negative tests include:
 exact verified revision
 → intended Exness DEMO identity/feed/data
 → natural Opportunity/Timing
-→ truthful Plan/Risk/Gate trace
+→ truthful TradePlan/profiled-Risk/Gate trace
 → governed OPEN
 → verified MODIFY / broker SL/TP
-→ governed CLOSE + broker-side close variants
+→ governed CLOSE + broker-side variants
 → exactly-once learning
 → restart/reconciliation
-→ graceful local final checkpoint
-→ independent recovery-package integrity/restore drill
+→ graceful local checkpoint
+→ recovery-package restore drill
 → fresh-machine/new-DB reconcile
 ```
 
-Do not force a trade or weaken rules merely to complete a checklist.
+Never weaken rules to manufacture evidence.
 
 ## 8. Verification commands
 
-Exact commands are finalized with packaging/tooling. Expected baseline includes:
+Expected after tooling exists:
 
 ```text
 pytest
@@ -160,38 +131,18 @@ financial-secret scan
 canonical Documents verifier
 ```
 
-No GitHub Actions are required by project design. Verification may run locally.
+GitHub Actions are not required; local verification is canonical.
 
 ## 9. Verification report minimum
 
-Record:
-
-- exact revision;
-- OS/Python/dependencies;
-- command/procedure;
-- result;
-- observations;
-- retained evidence;
-- what the result does **not** prove.
+Record exact revision, OS/Python/dependencies, command/procedure, result, observations, retained evidence and what the result does **not** prove.
 
 ## 10. Final audit traversal
 
-Inventory comes from `MODULE_STRUCTURE.md`, `FILE_AND_TEST_CATALOG.md` and topic contracts.
-
-Each meaningful module/feature gets explicit review of ownership, implementation, tests, failures, recovery and external/calibration evidence.
+Inventory comes from Module Structure, File/Test Catalog and topic contracts. Every meaningful module/feature receives explicit ownership/implementation/tests/failure/recovery/external-evidence review.
 
 ## 11. Completion language
 
-Use scoped statements such as:
+Use scoped claims such as `Documents frozen`, `software foundation verified`, `connected READINESS observed`, `governed DEMO OPEN verified`, `DEMO lifecycle verified`, `actual learning verified`, `local recovery verified`.
 
-```text
-Documents challenged/frozen
-software foundation verified
-connected READINESS observed
-governed DEMO OPEN verified
-DEMO lifecycle verified for [scope]
-actual learning verified
-local recovery drill verified
-```
-
-Never turn deterministic PASS into profitability, REAL authorization or unperformed external proof.
+Never turn deterministic PASS into profitability or REAL authorization.

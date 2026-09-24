@@ -1,39 +1,43 @@
 # GoldScalpTrader — Expert Coding Standard
 
-**Status:** DRAFT PRE-CHALLENGE ENGINEERING STANDARD
-**Version:** 0.1-scalp-engineering
-**Authority:** Code quality, architecture boundaries, complexity, dependencies, typing, comments, performance, errors, persistence and tests.
+**Status:** FROZEN V1 ENGINEERING STANDARD — IMPLEMENTATION EVIDENCE PENDING
+**Version:** 1.0-preservation-first-scalp-engineering
+**Authority:** Code quality, architecture boundaries, preservation discipline, bounded concurrency, dependencies, typing, errors, persistence and tests.
 
 ## 1. Engineering objective
 
-Write the smallest clear production-grade code that fully expresses the documented behaviour.
+Write the smallest clear production-grade code that **fully expresses the documented feature set**.
 
-Expert code is auditable, bounded, typed where identity matters, explicit about failure and aligned with canonical `Documents/` contracts. Architectural size is not a quality metric.
+“Smaller” does not justify removing a preserved GoldSwingTraderAI feature/default. Implementation follows current canonical Documents.
 
-## 2. Language and dependency policy
+Expert code is auditable, bounded, typed where identity matters, explicit about failure and aligned with authority boundaries.
 
-- Target a currently supported Python version compatible with MetaTrader5; exact minimum is verified before implementation freeze rather than guessed from the reference.
-- Prefer standard library unless a dependency materially reduces complexity or provides required capability.
-- Keep MetaTrader5 calls at broker adapter boundaries.
-- Rich/wcwidth, if used, are presentation-only dependencies.
-- Secondary graphical dashboard remains local/read-only.
-- Research may use heavier numerical/statistical tools only inside research boundary.
-- Dependency identity is part of release evidence.
-- No cloud service is required for runtime correctness.
+## 2. Preservation-first implementation rule
 
-## 3. Functions, classes and modules
+Before changing inherited behavior:
 
-Prefer pure functions for deterministic calculations with explicit inputs/outputs.
+```text
+direct scalp requirement?
+OR explicit operator instruction?
+OR proven reference defect?
+```
 
-Use classes when they own real state/resource/lifecycle, such as:
+If no, preserve it. If uncertain, preserve behavior and surface a documentation question rather than simplify code silently.
 
-- MT5 connection;
-- StateStore;
-- controller lease;
-- Intent lifecycle;
-- recovery;
-- Trade Manager;
-- runtime loop.
+## 3. Language / dependency policy
+
+- target a currently supported Python version compatible with MetaTrader5, verified before implementation;
+- prefer standard library unless dependency materially reduces complexity/provides required capability;
+- MetaTrader5 calls stay at read/writer adapters;
+- Rich/wcwidth presentation-only where used;
+- secondary graphical dashboard local/read-only;
+- research may use heavier numerical tools only in research boundary;
+- dependency identity is release evidence;
+- no cloud service is required for runtime correctness.
+
+## 4. Functions/classes/modules
+
+Prefer pure functions for deterministic calculations. Use classes when they own real resource/state/lifecycle such as MT5 connection, StateStore, controller, Intent, recovery, Trade Manager or runtime loop.
 
 Split by responsibility/authority, not arbitrary line count.
 
@@ -41,9 +45,9 @@ Split by responsibility/authority, not arbitrary line count.
 facts in → normalized typed contract → deterministic result/state → evidence
 ```
 
-No duplicate policy owners through convenience wrappers.
+No duplicate policy owners.
 
-## 4. Typed domain boundaries
+## 5. Typed domain boundaries
 
 Use stable enums, frozen dataclasses and typed IDs where identity mistakes are costly.
 
@@ -58,15 +62,15 @@ presence/type
 
 Missing/corrupt required truth never becomes zero, false exposure or PASS.
 
-## 5. Ownership direction
+## 6. Ownership direction
 
 | Rule | Owner |
 |---|---|
 | raw MT5 read | market_data |
 | descriptive evidence | intelligence |
-| family hypotheses | strategies |
+| family hypotheses / analytical scheduler | strategies |
 | fusion/Opportunity/timing/TradePlan | decisions |
-| affordability/risk-day | risk |
+| profile/overlay affordability/risk-day | risk |
 | final permission/Intent/reconcile/controller | execution |
 | raw irreversible broker write | execution/mt5_writer.py only |
 | ManagedTrade lifecycle | management |
@@ -75,171 +79,159 @@ Missing/corrupt required truth never becomes zero, false exposure or PASS.
 | human presentation | operator |
 | replay/learning/candidates | research/scripts |
 
-Strategies cannot import raw MetaTrader5. Dashboards cannot recalculate permission. Research cannot call writer. Persistence cannot become broker truth.
+Strategies cannot import raw MetaTrader5 writer. Dashboards cannot recalculate permission. Research cannot call writer. Persistence cannot become broker truth.
 
-## 6. Snapshot, concurrency and ordered authority
+## 7. Snapshot, bounded concurrency and ordered authority
 
 Build one verified immutable cycle snapshot and share it.
 
-Dependency-independent intelligence/family jobs may use **bounded** concurrency only where semantics remain deterministic.
+Dependency-independent intelligence/family work **preserves bounded physical concurrency as a target capability**:
+
+- immutable inputs;
+- bounded workers/resources;
+- dependency-respecting stages;
+- deterministic canonical result ordering;
+- visible worker failure;
+- zero lifecycle/Risk/Gate/broker side effects;
+- mandatory one-worker fallback with semantic parity.
+
+Worker count may be tuned after profiling; concurrency itself is not silently removed.
+
+Financial/broker spine stays serial:
 
 ```text
-bounded analysis
-→ deterministic BUY/SELL fusion
-→ Opportunity + timing
-→ structural TradePlan
-→ monetary Risk
+TradePlan
+→ SMALL/MEDIUM/NORMAL Risk + optional explicit aggressive overlay
 → hard authorities
 → Gate
 → durable Intent
+→ fresh broker checks
 → sole writer
 → reconciliation
 ```
 
-A one-worker fallback must produce the same result ordering/semantics.
+## 8. Chronology / determinism
 
-Workers cannot mutate lifecycle, size money, acquire controller authority or write to broker.
+- UTC internally; PKT only display;
+- completed-candle structural authority;
+- preserve geometry time vs knowledge/confirmation time;
+- no future-confirmed fact in live/replay decisions;
+- current M1 role is diagnostic/research only;
+- deterministic sorting/tie-breaking for tickets/events/candidates/family reports;
+- same facts/policy/clock → same analytical semantics.
 
-## 7. Chronology and determinism
+## 9. Preserved Risk implementation
 
-- UTC internally; PKT only for operator display.
-- Completed-candle authority for structural facts.
-- Preserve pivot/event geometry time versus knowledge/confirmation time.
-- No future-confirmed fact in live/replay decisions.
-- M1 role follows the final challenged contract; no hidden timeframe authority.
-- Explicit deterministic sorting/tie-breaking for tickets/events/candidates/family reports.
-- Same facts/policy/clock → same deterministic analytical result.
+Do not implement one generic `STANDARD` policy in place of canonical profiles.
 
-## 8. Safety-sensitive implementation
+Implement fixed UTC-day DayStartEquity profile:
 
-For every durable or broker action define:
+```text
+SMALL   < $300
+MEDIUM  $300–$999.99
+NORMAL  >= $1,000
+```
 
-- identity/scope;
-- legal previous states;
-- transition/event;
-- transaction boundary;
-- restart/retry semantics;
-- broker contradiction handling;
-- idempotency/fencing identity;
-- operator evidence.
+with canonical target/elevated/hard/daily bands.
 
-One Intent ID sends at most once. Ambiguous acknowledgement becomes reconciliation. Controller expiry blocks writes. Original R is immutable. Unknown exposure/P&L is not zero.
+Implement `AGGRESSIVE_SMALL_ACCOUNT` as explicit operational capability **disabled by default**:
 
-## 9. Scalping-sensitive implementation
+```text
+8% max monetary SL-risk ceiling — NOT target
+16% aggregate open-risk cap
+16% daily-loss ceiling
+```
 
-Scalp correctness additionally requires explicit treatment of:
+Never auto-enable from equity. Manual reset remains disabled by default. Preserve one fresh same-episode re-entry and three-loss / at-least-30-minute cooldown baseline unless a later governed scalp-specific change supersedes it.
 
-- quote age;
-- event/trigger age;
-- signal-to-submit drift;
-- spread and transaction-cost diagnostics;
-- analysis/order-check/order-send/reconciliation timings;
-- min-lot affordability;
-- trade-duration/time-efficiency state.
+The provisional 0.50% scaffold is not canonical policy.
 
-Do not create fake HFT guarantees. If a trigger is stale, rebuild/wait/block according to policy rather than sending late.
+## 10. Safety-sensitive implementation
 
-## 10. Error taxonomy
+For every durable/broker action define identity/scope, legal previous states, transition/event, transaction boundary, restart/retry semantics, broker contradiction handling, idempotency/fencing identity and operator evidence.
+
+One Intent sends at most once. Ambiguous acknowledgement reconciles. Controller expiry fences writes. Original R immutable. Unknown exposure/P&L never zero.
+
+## 11. Scalping-sensitive implementation
+
+Explicitly handle quote age, event/trigger age, signal-to-submit drift, spread/cost diagnostics, analysis/check/send/reconcile timings, min-lot affordability and trade-duration/time-efficiency state.
+
+No fake HFT guarantees. Stale trigger rebuilds/waits/blocks instead of late send.
+
+## 12. Session / News implementation baseline
+
+Current canonical baselines include:
+
+```text
+Provider TTL 1800s
+Daily PRE_CLOSE T-20 / T-10
+Weekend PRE_CLOSE T-60 / T-30
+Daily reopen 1 clean M5
+Weekend reopen 2 clean M5 + gap assessment
+```
+
+Current broker schedule remains external fact. News refresh failure may use valid LKG cache without timestamp laundering; expired/invalid/no cache → News UNKNOWN → new-entry block/limited.
+
+## 13. Error taxonomy
 
 | Situation | Treatment |
 |---|---|
 | invalid caller input | boundary validation failure |
 | unavailable required truth | UNKNOWN/UNAVAILABLE; fail closed where required |
-| corrupt state/data | integrity/fault result with context |
-| normal policy rejection | stable reason, not exception-driven flow |
-| ambiguous broker result | durable unresolved Intent + reconciliation |
+| corrupt state/data | integrity/fault result |
+| normal policy rejection | stable reason, not exception flow |
+| ambiguous broker result | durable unresolved Intent + reconcile |
 | programming invariant | fail loudly while preserving durable state |
 | shutdown/cancellation | stop at safe boundary + report local backup result |
 
-Catch exceptions only when adding useful context or converting to safe typed result.
+Catch exceptions only to add useful context or convert to safe typed result.
 
-Secondary presentation may isolate its own failure because it has no trading authority.
+## 14. Configuration / thresholds
 
-## 11. Configuration and thresholds
+Every threshold has one owner: frozen topic policy, calibrated versioned scalp value, validated operational setting or documented local invariant.
 
-Every threshold has one owner:
+Do not relabel preserved reference defaults as “pre-challenge” or “tunable” merely because implementation has not started.
 
-- frozen topic policy;
-- calibrated versioned research/config value;
-- validated operational setting;
-- local technical invariant with documented rationale.
+No dashboard/AI/convenience path overrides hard safety.
 
-No dashboard toggle, AI candidate or convenience path overrides hard safety.
+## 15. Persistence / idempotency
 
-Pre-challenge values are never silently treated as production constants.
+Validate SQLite/checkpoint/JSON schema/types/finite values, preserve explicit null and reject malformed required fields.
 
-## 12. Persistence and idempotency
+Portable restore is context only; fresh broker reconciliation/controller authority follows restore.
 
-SQLite/checkpoints/JSON are external boundaries. Validate schema/types/finite values, preserve explicit null and reject malformed required fields.
+Trading runtime performs **no automatic Git commit/push/pull**.
 
-Portable restore is context only, not broker permission.
+## 16. Comments / logs / secrets
 
-Fresh broker reconciliation/controller authority is required after restore.
+Comments explain chronology, one-shot write, fencing, immutable R, min-lot handling, scheduler, recovery, evidence attribution, local backup and cost/freshness rules.
 
-Trading runtime performs **no automatic Git commit/push**.
+Use concise structured redacted logs. Never log/commit broker credentials, passwords, PATs/tokens, private keys or authority-bearing URLs.
 
-## 13. Comments/docstrings
+## 17. Presentation contract
 
-Comments explain why, especially for:
-
-- chronology;
-- one-shot write;
-- fencing;
-- immutable R;
-- small-account/min-lot handling;
-- scheduler cadence;
-- strict recovery;
-- actual vs counterfactual evidence;
-- local backup safety;
-- cost/freshness rules.
-
-Core/public APIs have concise purpose/failure docstrings.
-
-## 14. Logging and secrets
-
-Use structured concise redacted logs.
-
-Never log/commit:
-
-- broker credentials;
-- passwords;
-- PATs/tokens;
-- private keys;
-- authority-bearing URLs.
-
-Secret scanning is defense-in-depth, not permission to store secrets.
-
-## 15. Presentation contract
-
-Presentation is read-only.
+Presentation is read-only:
 
 ```text
 DashboardData
 → truthful normalization
-→ width dispatcher
 → terminal renderer
 → optional atomic graphical snapshot
 ```
 
-Nominal one-second pulse may refresh quote/clock/spread/countdown but not trading authority.
+Fast display pulse may refresh quote/clock/spread/countdown without rerunning trading authority.
 
-## 16. Tests and fakes
+## 18. Tests/fakes
 
-Safety-sensitive changes normally need:
+Safety-sensitive work normally tests positive, negative/BLOCK, UNKNOWN/stale/corrupt, chronology, restart/persistence, duplicate/idempotency and cost/freshness boundaries.
 
-- positive;
-- negative/BLOCK;
-- UNKNOWN/stale/corrupt;
-- chronology;
-- restart/persistence;
-- duplicate/idempotency;
-- cost/freshness boundary cases.
+Also prove bounded-parallel ↔ one-worker parity and preserved Risk/profile/aggressive/reset/cooldown/session defaults.
 
-Fakes model real production failure modes. Never bypass gates simply to make tests easy.
+Fakes model real failure modes; never bypass gates to make tests easy.
 
-## 17. Required verification — intended
+## 19. Intended verification
 
-After packaging/tooling is implemented, verification should include equivalent checks to:
+After packaging/tooling exists:
 
 ```powershell
 python -m pytest -q
@@ -250,64 +242,27 @@ python scripts/scan_financial_secrets.py .
 python scripts/verify_documents_manual.py .
 ```
 
-Do not claim any command PASS before it is actually run on the exact revision/environment.
+Never claim PASS before running exact revision/environment.
 
-## 18. Prohibited shortcuts
+## 20. Runtime capability stages
 
-No:
+```text
+READINESS
+DRY_RUN
+controlled DEMO PRIMARY
+future governed REAL
+```
 
-- silent hard-safety fallback;
-- score bypass;
-- raw MetaTrader5 import in strategies;
-- raw broker write outside sole writer;
-- blind retry;
-- secret in source/logs/backups;
-- lookahead;
-- arbitrary generated production code;
-- martingale/uncontrolled grid/averaging rescue;
-- dashboard authority;
-- duplicate policy ownership;
-- implicit state reset;
-- undocumented dependency;
-- runtime Git commit/push.
+Future REAL capability is preserved but cannot be enabled without its separate DEMO/release/explicit-approval gate.
 
-## 19. Research/runtime separation
+## 21. Prohibited shortcuts
 
-Research may replay, measure, learn and propose. It cannot write broker, self-promote, turn counterfactual R into actual P/L or load arbitrary generated code into production.
+No silent safety fallback, score bypass, raw writer outside sole boundary, blind retry, secret leakage, lookahead, arbitrary generated production code, martingale/grid/averaging rescue, dashboard authority, duplicate policy ownership, implicit reset, undocumented dependency, runtime Git operation, equity-auto-enabling aggressive mode or convenience-based deletion of preserved feature.
 
-Production consumes compact versioned validated policy artifacts only.
+## 22. Change discipline / scope
 
-## 20. Change discipline
+Each coherent change identifies authoritative contract, preservation/delta classification, source owner, focused tests, persistence/operator/research effects and release/external evidence.
 
-A coherent change packet identifies:
+Update Module Structure, File/Test Catalog and affected Documents together.
 
-- authoritative contract;
-- source owner;
-- focused tests;
-- persistence/recovery effect;
-- operator effect;
-- research effect;
-- release/external evidence.
-
-Update `MODULE_STRUCTURE.md`, `FILE_AND_TEST_CATALOG.md` and affected docs together when ownership changes.
-
-## 21. Expert review questions
-
-Reviewer must be able to answer:
-
-- which functions are pure;
-- who owns lifecycle;
-- what is shared versus freshly reread;
-- what is workload bound;
-- what happens on UNKNOWN/ambiguity;
-- what identity prevents duplicate action;
-- what survives restart;
-- what operator sees;
-- what research may claim;
-- what requires connected proof.
-
-## 22. Scope rule
-
-V1 is not a microservice platform, generic multi-broker framework, dependency-heavy live ML stack or design-pattern showcase.
-
-Material expansion/relaxation requires Design Decision + affected-doc sync + proof.
+V1 is not a microservice platform or generic multi-broker framework, but that simplicity rule cannot be used to remove the preserved feature set.

@@ -1,37 +1,20 @@
 # GoldScalpTrader — Audit 4: Zero-Trade Geometry Review
 
-**Status:** DRAFT CORRECTIVE AUDIT PROTOCOL — NOT RUN
-**Version:** 0.1-scalp-zero-trade-geometry
-**Authority:** Evidence-driven review when a connected DEMO/DRY_RUN session produces unexpectedly few or zero executable entries.
+**Status:** FROZEN CORRECTIVE AUDIT PROTOCOL — NOT RUN
+**Version:** 1.0-preservation-first-zero-trade-geometry
+**Authority:** Evidence-driven review when connected DEMO/DRY_RUN produces unexpectedly few or zero executable entries.
 
 ## 1. Trigger
 
-Run this audit when the operator observes a meaningful active period with no trades or materially lower-than-expected qualified opportunities.
+Run when a meaningful active period has no trades or materially lower-than-expected qualified opportunities.
 
-The question is **not** “how do we force more trades?”
-
-Ask:
-
-> Did the market genuinely offer poor/expensive geometry, or did implementation fail to express the documented scalp thesis accurately?
+The question is not “how do we force more trades?” Ask whether market geometry/cost genuinely failed or implementation failed to express documented scalp thesis.
 
 ## 2. Required evidence
 
-Retain exact revision/config/scope plus:
-
-- Market/Intelligence snapshots;
-- family reports/Fusion;
-- Opportunity/Entry Timing events;
-- TradePlans and reasons;
-- Risk evaluations;
-- Gate/Intent traces where reached;
-- spread/drift/event-age context;
-- session/news state;
-- runtime event journal;
-- local checkpoint/backup identity.
+Retain exact revision/config/scope plus Market/Intelligence snapshots, family/Fusion, Opportunity/Timing, TradePlans, profiled Risk evaluations, Gate/Intent traces where reached, spread/drift/event-age, session/news/cache state, runtime journal and checkpoint identity.
 
 ## 3. Geometry classifications
-
-Classify each qualified candidate outcome:
 
 ```text
 NO_ANALYTICAL_EDGE
@@ -48,9 +31,10 @@ GATE_BLOCK
 EXECUTION_FAILURE
 VALID_NO_TRADE
 IMPLEMENTATION_DEFECT
+PRESERVATION_VIOLATION
 ```
 
-Do not collapse all outcomes into “Gate blocked.”
+Never collapse all outcomes into Gate blocked.
 
 ## 4. Review order
 
@@ -64,32 +48,42 @@ MarketSnapshot quality
 → family-specific invalidation
 → target/path/cost geometry
 → TradePlan state
-→ Risk only if Plan READY
+→ preserved Risk profile/overlay only if Plan READY
+→ hard authorities
 → Gate only if upstream ready
 ```
 
 ## 5. Scalp-specific checks
 
-Inspect whether:
+Inspect whether old events are treated as fresh, valid local M5 invalidation is ignored for overly broad structure, arbitrary tight invalidation is fabricated, spread/cost consumes room, trigger is chased, target already consumed, or time-efficiency semantics are wrong.
 
-- old events are treated as fresh;
-- valid local M5 event/retest invalidation is ignored in favor of overly broad structure;
-- arbitrary tight invalidation is fabricated to improve R;
-- cost/spread consumes too much target room;
-- M5 trigger arrives after most movement is complete;
-- min-lot affordability rather than strategy quality is the blocker;
-- time/session policy suppresses valid setups unexpectedly;
-- six-family overlap/filtering reduces Opportunity Recall.
+These are genuine scalp surfaces.
 
-## 6. Corrective rule
+## 6. Preserved-policy checks
 
-Never reduce structural/Risk/safety standards just to generate entries.
+Also verify “zero trades” is not caused by accidental removal/rewrite of non-scalp reference features/defaults:
 
-A corrective change must prove a document/code mismatch or evidence-backed design problem and update the full affected graph.
+- SMALL/MEDIUM/NORMAL Risk profiles/bands;
+- explicit disabled-by-default aggressive overlay semantics;
+- one fresh same-episode re-entry;
+- three-loss cooldown policy;
+- PRE_CLOSE/reopen baselines;
+- bounded six-family analytical floor/concurrency;
+- provider/cache policy.
 
-## 7. Current state
+A preserved hard policy may legitimately block a trade. That is not itself a defect.
+
+## 7. Corrective rule
+
+Never reduce structural/Risk/safety standards merely to generate entries.
+
+A change requires evidence of implementation/document mismatch, genuine scalp-specific design problem, explicit operator direction or proven reference defect, followed by full affected-graph sync.
+
+## 8. Current state
 
 ```text
 AUDIT RESULT: NOT RUN
-No connected zero-trade session has been audited for this project yet.
+No qualifying connected zero-trade session has been audited yet.
 ```
+
+Protocol is frozen; result remains NOT RUN.

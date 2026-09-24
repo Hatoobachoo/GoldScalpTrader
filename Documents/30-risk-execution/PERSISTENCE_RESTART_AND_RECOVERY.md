@@ -1,18 +1,20 @@
 # GoldScalpTrader — Persistence, Restart and Recovery
 
-**Status:** DRAFT PRE-CHALLENGE RECOVERY CONTRACT
-**Version:** 0.2-local-backup-no-auto-push
+**Status:** FROZEN V1 RECOVERY ARCHITECTURE — IMPLEMENTATION / CONNECTED RESTORE PROOF PENDING
+**Version:** 1.0-profiled-risk-local-recovery-no-runtime-git
 **Authority:** Durable lifecycle, strict typed state, checkpoints, rolling local backup, restore, startup reconciliation, verified-close portability, crash-safe entry-context retirement, sequential machine handoff and controller/recovery boundaries.
 
 ## 1. Purpose
 
 Restart, crash or laptop change must not erase:
 
-- Risk-day lineage;
+- UTC Risk-day lineage and fixed DayStartEquity profile identity;
+- explicit aggressive-small-account enable/policy identity;
+- daily-loss lock/reset/cooldown/re-entry state;
 - Opportunity/Episode identity;
 - TradePlan lineage;
 - ExecutionIntent state;
-- ManagedTrade context;
+- ManagedTrade context and verified partial/full-close lineage;
 - broker-close evidence;
 - pending/complete learning;
 - governed research/promotion state;
@@ -22,11 +24,9 @@ Restart, crash or laptop change must not erase:
 > Restored state is context, never current broker truth.
 > Unknown exposure is never zero.
 
-## 2. GoldScalpTrader difference from the reference project
+## 2. Explicit operator-directed Git boundary
 
-GoldSwingTraderAI included graceful-shutdown repository commit/push publication.
-
-GoldScalpTrader explicitly **does not**.
+GoldSwingTraderAI included graceful-shutdown repository publication. GoldScalpTrader explicitly does not.
 
 ```text
 graceful shutdown
@@ -40,27 +40,32 @@ graceful shutdown
 NO git add
 NO git commit
 NO git push
+NO git pull/fetch requirement
 NO GitHub credential dependency
 ```
 
-GitHub source commits occur only through deliberate development workflow, not the trading runtime.
+GitHub source changes occur only through deliberate development workflow, never trading runtime.
 
 ## 3. Truth layers
 
 | Layer | Examples | Authority |
 |---|---|---|
-| durable local context | RiskDay, Opportunity, TradePlan, Intent, ManagedTrade, learning/research | lifecycle/history |
-| portable checkpoint | complete verified records/events + manifest | transportable context |
-| local backup package | verified checkpoint + metadata/catalog/checksums | disaster recovery |
-| local Git history/bundle | source/document history | source recovery, never broker truth |
-| broker truth | account, positions, deals, quote, actual SL/TP | current exposure/outcome |
-| recovery decision | READY / RECONCILING / BLOCKED traces | continuation permission |
+| durable local context | Risk day/profile/overlay, Opportunity, Plan, Intent, ManagedTrade, learning/research | lifecycle/history |
+| verified checkpoint | complete consistent StateStore export + manifest | transportable context |
+| local recovery package | checkpoint + metadata/catalog/checksums | disaster/machine recovery |
+| local working Git clone | source/Documents/tests + full `.git` history | source recovery, never broker truth |
+| optional source ZIP | secret-clean milestone snapshot | extra offline source copy |
+| optional Git bundle | advanced/manual Git-history archive | source history only |
+| broker truth | account, positions, deals, quote, actual SL/TP | current financial/exposure truth |
+| recovery decision | READY / RECONCILING / BLOCKED | continuation permission |
 
-Neither restore nor Git history grants broker-write authority.
+No restore/source artifact grants broker-write authority.
 
-## 4. StateStore contract
+## 4. V1 StateStore architecture
 
-Initial V1 should use standard-library SQLite unless the fresh-zero audit identifies a materially better zero-cost option.
+V1 uses local transactional SQLite as the durable runtime-state architecture.
+
+Implementation choices still to prove include WAL/synchronous mode, exact schema/migration mechanism, checksums/integrity metadata and checkpoint/export implementation.
 
 Required properties:
 
@@ -69,33 +74,36 @@ Required properties:
 - finite-number checks;
 - timezone-aware UTC timestamps;
 - stable IDs;
-- SHA-256 or equivalent integrity metadata where useful;
-- WAL/synchronous durability appropriate to the final design;
+- integrity metadata where useful;
 - transactional lifecycle transitions;
 - append-only event/audit history where needed;
-- corruption/incompatibility is explicit and fail closed.
-
-Malformed state must never silently become `0`, `False`, empty exposure or PASS.
+- explicit corrupt/incompatible handling;
+- no malformed state silently becoming `0`, `False`, empty exposure or PASS.
 
 ## 5. Durable namespaces
 
-The complete StateStore should preserve, where implemented:
+Complete StateStore/checkpoint preserves where implemented:
 
-- risk-day / Account Safety P/L / cash-flow baseline / lock / reset / cooldown;
-- Opportunity and Market Episode;
+- Risk-day ID / DayStartEquity;
+- fixed `SMALL / MEDIUM / NORMAL` profile identity;
+- `AGGRESSIVE_SMALL_ACCOUNT` enabled/disabled state + policy version;
+- Account Safety P/L / cash-flow baseline;
+- loss lock / governed reset / reset count;
+- consecutive-loss counter / cooldown / same-episode re-entry state;
+- Opportunity / Market Episode;
 - TradePlan;
-- ExecutionIntent/current and history;
-- active ManagedTrade and objective stage;
+- ExecutionIntent current/history;
+- active ManagedTrade / objective stage / remaining volume;
+- verified partial-management lineage where applicable;
 - closed-trade learning queue;
-- managed-trade closure receipt;
+- ManagedTrade closure receipt;
 - StrategyMemory observations/summaries;
 - research episode journal;
-- candidate/discovery/promotion state;
-- rollback/disable/holdout evidence;
+- candidate/discovery/promotion/rollback state;
 - configuration/policy/schema identity needed to interpret records;
-- every other canonical runtime namespace.
+- every other canonical durable namespace.
 
-A backup may not silently omit a namespace merely because it is inconvenient.
+A “full” backup cannot silently omit a namespace because it is inconvenient.
 
 ## 6. Crash-safe Opportunity / TradePlan ordering
 
@@ -104,15 +112,13 @@ A TradePlan belongs to exactly one Opportunity/Episode.
 ### New episode replaces terminal analytical context
 
 ```text
-preserve old terminal event history
+preserve old terminal history
 → clear mismatched old TradePlan first
 → save new active Opportunity
-→ later save a new TradePlan only if new timing ENTERs
+→ later save new TradePlan only after valid new ENTER
 ```
 
-`Opportunity without TradePlan` can be a valid intermediate state.
-
-`TradePlan without a matching active Opportunity` is invalid/recovery-required.
+`Opportunity without TradePlan` can be valid. `TradePlan without matching active Opportunity` is recovery-invalid.
 
 ### Verified close retires entry context
 
@@ -122,39 +128,35 @@ verified close lineage durable
 → clear active Opportunity second
 ```
 
-This ordering prevents stale plan attachment after crashes.
-
 ## 7. Verified-close durability
 
-A verified managed-trade close has separate durable needs:
+Keep separate:
 
 ```text
-closed_trade_learning_queue      pending downstream work
+closed_trade_learning_queue      pending downstream learning work
 managed_trade_closure_receipt    durable proof lifecycle ended
-active ManagedTrade              current-position context
-active TradePlan/Opportunity     entry context to retire safely
+active ManagedTrade              current verified trade context
+active TradePlan/Opportunity     entry context
 ```
 
-Draft crash-safe sequence:
+Crash-safe sequence:
 
 ```text
-verified broker close
+verified full broker close
 → persist learning queue item
 → persist closure receipt
 → clear active ManagedTrade
 → retire matching TradePlan then Opportunity
-→ later reconstruct path/outcome
-→ save exactly-once learning observation
-→ remove queue item only after durable learning success
+→ later reconstruct causal outcome
+→ exactly-once StrategyMemory save
+→ remove queue only after durable learning success
 ```
 
-The closure receipt remains after queue consumption so restart can explain an old verified OPEN lifecycle.
-
-An unrelated/older receipt never clears a newer Opportunity.
+Preserved broker-valid partial management does not count as full close until complete original managed volume is reconciled closed.
 
 ## 8. Portable full checkpoint
 
-Canonical checkpoint shape may use:
+Canonical shape may use:
 
 ```text
 checkpoint_manifest.json
@@ -162,11 +164,11 @@ records.jsonl
 events.jsonl
 ```
 
-or an equivalent fully verifiable format.
+or an equivalent verifiable format.
 
 Properties:
 
-- write-new, never destructive overwrite;
+- write-new rather than destructive overwrite;
 - complete StateStore export;
 - schema/policy identity;
 - content hashes;
@@ -177,74 +179,80 @@ Properties:
 
 Restore:
 
-1. verifies manifest/schema/hashes/types;
-2. refuses unsafe in-place overwrite of an active DB;
-3. restores into a new database/path;
-4. restores lifecycle, risk, learning and research together;
-5. requires fresh broker reconciliation;
-6. grants no write authority merely because restore succeeded.
+1. verify manifest/schema/hashes/types;
+2. refuse unsafe in-place overwrite of active DB;
+3. restore into a new database/path;
+4. restore lifecycle, Risk, learning and research together;
+5. re-read current broker truth;
+6. reconcile all durable lifecycle state;
+7. acquire/verify controller authority;
+8. grant no write permission merely because restore succeeded.
 
-## 9. Local backup architecture
+## 9. Runtime backup architecture
 
-Default conceptual destination:
+Conceptual root outside repository:
 
 ```text
 C:\GoldScalpTrader_Backups\
     runtime\
-    source\
+    learning\
     recovery-packages\
+    source-zips\
 ```
 
-Actual root is configurable and should preferably sit outside the repository.
+Path is configurable.
 
-### Layer A — working local Git clone
+### Layer A — transactional live StateStore
+Primary durable local runtime state.
 
-The development machine's repository plus `.git` history is the normal local source copy.
+### Layer B — rolling verified runtime checkpoints
+Periodic/lifecycle-consistent recovery points.
 
-### Layer B — rolling runtime checkpoints
+### Layer C — final graceful-shutdown checkpoint
+Created after new work stops and broker/controller authority is safely released/quiesced as required.
 
-Consistent verified StateStore checkpoints provide crash/restart recovery.
+### Layer D — portable runtime recovery package
+Deliberate migration/disaster-recovery artifact with manifest, checkpoint identity, source revision/config fingerprints, checksums and restore instructions; secrets excluded.
 
-### Layer C — source-history bundle
+Runtime backup is independent of GitHub/network.
 
-At deliberate project milestones, an operator/development utility may create a local Git bundle or equivalent offline source-history package.
+## 10. Development/source backup — operator-preferred normal workflow
 
-This is **not** required on every bot shutdown.
+Development source backup is separate from runtime-state backup.
 
-### Layer D — portable recovery package
-
-A recovery package may combine:
-
-- verified runtime checkpoint;
-- backup manifest/catalog;
-- source revision identity;
-- optional local Git bundle reference or copy;
-- configuration template/fingerprint without secrets;
-- dependency/environment identity;
-- checksums;
-- restore instructions.
-
-It remains context, not broker authority.
-
-## 10. Backup destination safety
-
-The automatic runtime backup root should be outside the active repository to prevent:
-
-- recursive backups;
-- accidental Git staging;
-- repository bloat;
-- mixing runtime private state with public/private source history.
-
-A second HDD/SSD/USB destination may be configured for stronger physical-device failure protection.
-
-Cloud sync is not required and must not become a broker/controller coordination backend.
-
-## 11. Secret/credential exclusion
-
-Automatic backups and portable packages must not contain authority-bearing secrets such as:
+After a **major coherent documentation/code bulk**:
 
 ```text
-.env real credentials
+one remote fast-forward commit
+→ operator runs git pull --ff-only
+→ local working clone contains latest project + complete Git history
+→ optional secret-clean ZIP milestone snapshot
+```
+
+The pulled working clone is the normal source/history backup.
+
+Do not require a pull after every micro-patch.
+
+### Optional source ZIP
+
+May contain current source/Documents/config samples/tests/scripts while excluding `.env`, credentials/private keys, virtualenvs, caches, logs, runtime SQLite/checkpoints and nested backup folders.
+
+### Optional Git bundle
+
+Git bundle is **advanced/manual only** for a history-bearing offline archive. It is not a normal runtime or per-bulk dependency and is never invoked by trading runtime.
+
+## 11. Backup destination safety
+
+Automatic runtime backup root stays outside active repository to prevent recursion, accidental staging, repository bloat and mixing private runtime state with source history.
+
+Optional second HDD/SSD/USB copy may improve physical-device resilience. Cloud sync is optional archival transport only, never controller fencing or live transactional coordination.
+
+## 12. Secret/credential exclusion
+
+Automatic/shareable artifacts exclude:
+
+```text
+real .env credentials
 broker password/token
 GitHub PAT/access token
 API/client secret
@@ -254,115 +262,96 @@ SSH private key
 credential-bearing remote URL
 ```
 
-The system may preserve non-secret configuration fingerprints/templates.
+Preserve only non-secret configuration templates/fingerprints. Secret scanner fails shareable/portable publication on dangerous material.
 
-A secret scanner should fail closed on dangerous credential-shaped material before creating a supposedly shareable/portable package.
+## 13. SQLite backup rule
 
-Logs/errors should redact credential-bearing URLs or values.
+Never copy an actively-written SQLite file as arbitrary bytes and call it verified.
 
-## 12. SQLite backup rule
+Use a consistent method such as SQLite online backup API, read-consistent export/checkpoint or safely quiesced copy after writer shutdown. Exact mechanism is implementation proof.
 
-Do not copy an actively-written SQLite database as arbitrary raw bytes and call it safe.
-
-Use a consistent mechanism such as:
-
-- SQLite online backup API;
-- verified checkpoint/export from a read-consistent transaction;
-- safely quiesced copy after writer shutdown.
-
-The final implementation must document which mechanism owns each backup mode.
-
-## 13. Backup cadence
-
-Draft distinction:
+## 14. Backup cadence / retention
 
 ```text
-rolling runtime checkpoint → periodic + lifecycle milestones
-final runtime checkpoint   → graceful shutdown
-source Git bundle          → deliberate development/release milestone, not every shutdown
-portable recovery package  → deliberate operator/release/migration action
+transactional StateStore       continuous durable state
+rolling runtime checkpoint     periodic + important lifecycle milestones
+final runtime checkpoint       graceful shutdown
+source pull/local clone sync   after major coherent development bulk
+optional source ZIP            important development/release milestone
+optional Git bundle            advanced/manual milestone only
+portable recovery package      deliberate operator/release/migration action
 ```
 
-Exact interval/retention remains pre-challenge.
+Exact runtime checkpoint interval, retention counts and disk thresholds are implementation/operational choices.
 
-A power loss cannot guarantee the final graceful checkpoint, so rolling durable state/checkpoints remain the crash boundary.
+A power loss cannot guarantee final graceful checkpoint, so transactional state + rolling checkpoints remain crash boundary.
 
-## 14. Retention/catalog
+## 15. Backup catalog
 
-Backups should have stable versioned names and a catalog containing:
+Track backup ID, scope, source revision, policy/schema fingerprints, creation reason/time, checkpoint hash/counts, verification result and retention class.
 
-- backup ID;
-- scope identity;
-- source revision/policy/schema fingerprints;
-- creation reason/time;
-- checkpoint hash/counts;
-- verification result;
-- previous/parent lineage if useful;
-- retention class.
+Deletion must never remove active StateStore or last verified recovery point accidentally.
 
-Retention should be bounded and auditable. Exact number of hourly/daily/milestone packages remains an open decision.
-
-Deleting old backups must never delete the active StateStore or the last verified recovery point accidentally.
-
-## 15. Startup recovery sequence
+## 16. Startup recovery sequence
 
 ```text
 StateStore integrity
 → strict typed runtime bundle
-→ current Intent / ManagedTrade / Opportunity / TradePlan
-→ pending close queue / closure receipt
+→ current Risk-day/profile/overlay/reset/cooldown state
+→ Intent / ManagedTrade / Opportunity / TradePlan
+→ pending learning queue / closure receipt
 → connect intended MT5 account/server/symbol
 → read current positions/deals/quote/SymbolSpec
 → reconcile unresolved Intent first
-→ reconcile ManagedTrade with broker position
-→ prove exact broker-side close if known ticket disappeared
+→ reconcile ManagedTrade with broker
+→ prove exact broker close if known ticket disappeared
 → repair only exact matching stale entry context
-→ rebuild/verify Risk-day and broker-activity truth
-→ refresh session/news truth
+→ rebuild/verify broker activity + Account Safety P/L truth
+→ revalidate session/news/cache truth
 → acquire/verify controller ownership/epoch
 → all RecoveryAuthorities PASS
 → READY
 ```
 
-`app/recovery.py` performs no raw broker write.
+Recovery performs no raw broker write.
 
-## 16. Intent recovery
-
-Draft semantics:
+## 17. Intent recovery
 
 ```text
-terminal/none              → lifecycle may continue
-APPROVED before submit     → can be cancelled/reviewed safely with zero sends
-CREATED                    → review/reconcile
-SUBMITTING / ACK_UNKNOWN   → broker reconciliation only; never blind resend
+terminal/none            → lifecycle may continue
+APPROVED before submit   → cancel/review safely with zero sends
+CREATED                  → review/reconcile
+SUBMITTING / ACK_UNKNOWN → broker reconciliation only; never blind resend
 ```
 
-An uncertain previous send cannot be retried simply because the process restarted.
+Restart never grants a new send allowance to uncertain previous Intent.
 
-## 17. ManagedTrade recovery
+## 18. ManagedTrade recovery
 
-A restored ManagedTrade must match fresh broker truth by exact durable identity, symbol, direction, volume and appropriate broker-derived tolerance.
+Restored ManagedTrade must match fresh broker truth by durable identity, symbol, direction, volume and broker-tolerance rules.
 
-If the known ticket is absent:
+Known ticket absent:
 
 - reconcile unresolved Intents first;
 - query exact broker exit history;
-- require complete full-volume close proof;
-- otherwise remain RECONCILING and retain ManagedTrade context.
+- require full-volume close proof;
+- otherwise remain RECONCILING and retain context.
 
-Missing broker read is not verified flat.
+Missing broker read is never verified flat.
 
-## 18. Risk-day recovery
+## 19. Risk-day recovery
 
-A new risk-day baseline may be created only under the final Risk Contract rules and with verified current equity/cash-flow/lifecycle truth.
+Restart does not reset Risk day/profile.
 
-Restart is not a risk reset.
+New DayStartEquity/profile may be created only under `RISK_CONTRACT.md` with verified equity/cash-flow/lifecycle truth.
 
-Unknown required cash-flow truth can block new entry while a verified existing ManagedTrade remains management-capable.
+Aggressive mode does not auto-enable after restart because equity happens to be below $1,000; explicit persisted/configured enable state and eligibility must both pass.
 
-## 19. MT5 recovery truth
+Manual reset count/lock/cooldown/re-entry state survives restart.
 
-Recovery reuses the normal MT5 read boundary; it does not create a second raw client.
+## 20. MT5 recovery truth
+
+Reuse normal MT5 read boundary:
 
 ```text
 account facts
@@ -373,100 +362,73 @@ account facts
 → MT5RecoveryTruth
 ```
 
-Critical distinction:
-
 ```text
-MT5 verified empty collection → complete zero-position truth
-MT5 unavailable/None          → DATA_UNAVAILABLE
-corrupt/duplicate facts       → DATA_CORRUPT
+verified empty collection → complete zero-position truth
+MT5 unavailable/None      → DATA_UNAVAILABLE
+corrupt/duplicate facts   → DATA_CORRUPT
 ```
 
 Unavailable/corrupt never becomes empty exposure.
 
-## 20. Sequential fresh-machine handoff
-
-For the same account/symbol scope:
+## 21. Sequential fresh-machine handoff
 
 ```text
 OLD PRIMARY
 → stop new broker writes
-→ safely shut down and release authority
-→ create final verified local checkpoint/recovery package
-→ transfer package by deliberate operator method
+→ safe shutdown / release authority
+→ final verified local checkpoint/recovery package
+→ deliberate transfer
 → NEW machine restore into new DB
-→ connect intended MT5 account/symbol
+→ configure credentials separately
+→ connect intended account/symbol
 → fresh broker reconciliation
-→ validate risk/learning/lifecycle state
-→ acquire local controller ownership
-→ READY only after every authority passes
+→ validate Risk/lifecycle/learning
+→ acquire controller
+→ READY only after all authorities pass
 ```
 
-Credentials are configured separately and never transported inside the backup package by default.
+If old writer state is uncertain, new machine remains blocked until single-writer safety is established.
 
-## 21. Multi-machine scope rule
+## 22. Multi-machine scope rule
 
-Different independent account/symbol scopes may run independently with separate state/learning/controller/backup lineage.
+Different independent account/symbol scopes may run independently.
 
-For the **same scope**, two independent local databases cannot safely act as one live bot.
-
-Initial V1 therefore supports:
+Same scope:
 
 ```text
-one active PRIMARY per account/symbol scope
+one active PRIMARY
 sequential handoff only
 no active-active
 no Git/Dropbox/Drive folder as fencing backend
 ```
 
-True simultaneous failover would require certified shared atomic fencing **and** globally ordered lifecycle/learning state. It is future architecture, not current V1.
+True simultaneous failover would require a separate shared atomic-fencing/state architecture.
 
-## 22. Controller/fencing recovery
+## 23. Controller/fencing recovery
 
-A higher local fencing epoch alone is not permission.
+Higher local fencing epoch alone is not permission. Durable lifecycle + fresh broker truth + all recovery authorities must reconcile before write-capable READY. Stale holder/epoch cannot send.
 
-After any takeover-like event, durable lifecycle + fresh broker truth + all recovery authorities must reconcile before write-capable READY.
-
-Stale holder/epoch cannot send.
-
-## 23. Graceful shutdown lifecycle
-
-Human-visible shutdown sequence should eventually resemble:
+## 24. Graceful shutdown operator flow
 
 ```text
-🛑 GoldScalpTrader is closing safely...
-✅ New entry work stopped
-✅ Trading/controller authority released
-💾 Creating final verified local runtime checkpoint...
-🔐 Backup secret/integrity scan passed
-✅ Local runtime backup created: <backup-id/path>
-✅ GoldScalpTrader closed safely.
+🛑 stopping new work
+✅ resolving/persisting safe lifecycle state
+✅ releasing trading/controller authority
+💾 creating final verified local runtime checkpoint
+🔐 secret/integrity scan
+✅/❌ explicit local backup result
+✅ safe process close
 ```
 
-If final local backup fails, show explicit failure and preserve the last known verified backup/state. Do not print a false success line.
+There is deliberately no “creating Git shutdown commit” or “pushing to GitHub” step.
 
-There is deliberately no “creating Git shutdown commit” and no “pushing to GitHub” step.
+## 25. Dashboard/health visibility
 
-## 24. Dashboard/health visibility
+Expose State Integrity, active Risk profile/aggressive mode, Latest Checkpoint, Last Local Backup, Learning Evidence, current broker snapshot/exposure, Recovery reason, Intent, ManagedTrade, controller holder/epoch and backup disk/free-space warning without secrets.
 
-Expose where authoritative:
+Backup health is operational visibility, not signal quality.
 
-```text
-State Integrity
-Latest Checkpoint
-Backup Catalog / Last Local Backup
-Learning Evidence
-Live Broker Snapshot
-Open Gold Positions count / UNKNOWN
-Recovery State / reason
-Execution Intent state
-ManagedTrade state
-Controller holder/epoch
-Backup root / free-space warning without secrets
-```
-
-Backup health is operational visibility, not trading signal quality.
-
-## 25. Planned implementation ownership
+## 26. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/persistence/store.py
@@ -483,55 +445,20 @@ src/gold_scalp_trader/execution/controller.py
 src/gold_scalp_trader/execution/sqlite_coordination.py
 ```
 
-There is no runtime `shutdown_publish.py` GitHub publisher in the intended GoldScalpTrader architecture.
+No runtime Git publisher exists.
 
-## 26. Planned deterministic proof
+## 27. Planned deterministic / connected proof
 
-Tests must cover:
+Tests cover strict parsing/integrity, full namespace checkpoints, manifest/hash verification, restore-to-new-DB, secret exclusion, consistent SQLite backup, rolling/final catalog, closure-receipt crash repair, Plan/Opportunity cleanup, unresolved Intent no-resend, known-position close recovery, Risk profile/overlay/reset/cooldown persistence, controller fencing, sequential handoff, shutdown success/failure presentation, source pull/ZIP separation and absence of runtime Git operations.
 
-- strict typed parsing/integrity failure;
-- full StateStore checkpoint completeness;
-- manifest/hash verification;
-- restore-to-new-DB;
-- secret exclusion/redaction;
-- safe SQLite backup consistency;
-- rolling/final local backup catalog;
-- exact closure-receipt crash repair;
-- plan-first Opportunity cleanup;
-- unresolved Intent no-resend;
-- known-position close recovery;
-- risk-day persistence;
-- local controller fencing;
-- sequential handoff semantics;
-- graceful shutdown local-backup success/failure presentation;
-- explicit absence of runtime Git commit/push dependency.
+Connected Windows/MT5 proof validates real restart/handoff/broker continuity.
 
-Connected Windows/MT5 proof remains required for real restart/handoff/broker continuity.
+## 28. Non-goals
 
-## 27. Non-goals
+Recovery must not treat backup as current broker truth, convert unknown exposure to zero, blind-resend Intent, invent ManagedTrade, clear ownership before reconciliation, merge active same-scope stores, include credentials, require GitHub for safe shutdown or silently change preserved Risk/session policy.
 
-Recovery must not:
+## 29. Implementation / external choices pending
 
-- treat backup as current broker truth;
-- convert unknown exposure to zero;
-- blind-resend uncertain Intent;
-- invent ManagedTrade context;
-- clear ownership before reconciliation;
-- use unrelated closure receipt for cleanup;
-- merge two active same-scope production stores automatically;
-- include credentials in backup packages;
-- require GitHub/network availability for safe shutdown;
-- auto-commit/push from the trading runtime.
+SQLite WAL/synchronous/migration/checksum details, runtime checkpoint cadence/retention, backup free-space thresholds, optional encryption, second-drive UX, recovery-package exact file format and fresh-machine drill acceptance criteria remain implementation/external-proof choices.
 
-## 28. Pre-challenge questions
-
-- SQLite remains final V1 store or not;
-- checkpoint cadence;
-- retention tiers/counts;
-- backup free-space threshold;
-- second-drive replication UX;
-- portable package exact contents;
-- local Git bundle cadence;
-- encryption-at-rest option for private runtime backups without complicating recovery;
-- checksum/catalog format;
-- fresh-machine restore drill acceptance criteria.
+The source backup workflow, no-runtime-Git rule, SQLite V1 architecture, preserved Risk identity and sequential same-scope handoff are frozen.

@@ -1,21 +1,21 @@
 # GoldScalpTrader — Governed Strategy Discovery
 
-**Status:** DRAFT PRE-CHALLENGE RESEARCH CONTRACT — DISCOVERY IS NOT PRODUCTION
-**Version:** 0.1-scalp-governed-discovery
+**Status:** FROZEN V1 RESEARCH GOVERNANCE — DISCOVERY IS NOT PRODUCTION
+**Version:** 1.0-preservation-first-scalp-discovery
 **Authority:** Parameter discovery, declarative strategy-recipe discovery, candidate comparison and evidence-driven scalp-behaviour discovery.
 
 ## 1. Purpose
 
 Discovery searches for improvements while preserving production semantics, chronology, transaction-cost realism and hard safety.
 
-It proposes candidates. It does not directly change production Strategy Floor or write to a broker.
+It proposes candidates. It does not directly change the Strategy Floor, preserved Risk/session defaults or broker runtime.
 
-## 2. Discovery pipeline and liveness
+## 2. Discovery pipeline / liveness
 
 ```text
-ResearchEpisodeRecord — actual / missed / blocked / exit / fault evidence
+ResearchEpisodeRecord — actual / missed / blocked / exit / fault
 → audited primitive mapping
-→ recurring independent episode cluster
+→ recurring independent cluster
 → eligible + novel?
    yes → declarative StrategyCandidate
    no  → durable suppression/rejection reason
@@ -23,66 +23,30 @@ ResearchEpisodeRecord — actual / missed / blocked / exit / fault evidence
 → discovery health
 ```
 
-Liveness requires:
+Eligible recurring evidence must produce either candidate or explicit machine-readable suppression reason.
 
-```text
-eligible recurring evidence
-→ candidate created and registered
-OR
-→ explicit machine-readable suppression reason
-```
+## 3. Evidence feed
 
-Import success alone is not HEALTHY.
+Episodes preserve attribution for actual reconciled trades, meaningful missed moves, poor/false entries, late/chased entries, transaction-cost failure, premature/weak-capture exits, blocked/capacity-suppressed opportunities and broker/system faults.
 
-## 3. Automatic evidence feed
-
-Normal operation:
-
-```text
-replay or forward outcome
-→ ResearchEpisodeRecord
-→ durable ResearchEpisodeRepository
-→ primitive mapping
-→ recurring cluster
-→ discovery/invention cycle
-→ CandidateRegistry
-```
-
-Episodes preserve attribution:
-
-- actual reconciled trade;
-- meaningful missed move;
-- false/poor entry;
-- late/chased entry;
-- transaction-cost failure;
-- premature/weak-capture exit;
-- blocked opportunity;
-- capacity-suppressed opportunity;
-- broker/system fault.
-
-System faults are not evidence that strategy logic needs changing.
+System faults are not evidence that strategy logic should change.
 
 ## 4. Discovery levels
 
-### Level A — parameter discovery
+### Level A — bounded parameter/policy discovery
+May research genuine scalp-sensitive analytical/timing/management values such as event freshness, cost-room, chase distance, time-efficiency and optional confluence.
 
-Researches bounded analytical/timing/management parameters.
-
-It may not search or weaken hard safety such as identity, daily loss, risk ceiling, no-lookahead, one-shot send, reconciliation, controller fencing or secret handling.
+It may not silently treat preserved non-scalp defaults as ordinary tunable variables.
 
 ### Level B — strategy recipe discovery
-
-Combines approved primitives into declarative hypotheses with required behaviour, optional support, timing/freshness profile, invalidation model, target model and preferred regime/session.
+Combines approved primitives into declarative hypotheses with required behavior, optional support, timing/freshness profile, invalidation, target and preferred regime/session.
 
 ### Level C — market-behaviour discovery
+Clusters recurring independent episodes to identify behavior not represented well by current six families.
 
-Clusters recurring missed/losing/winning/late-entry/exit/regime episodes to identify behaviour not represented well by current families.
+The objective is falsifiable recurring behavior, not unlimited random combinations.
 
-The objective is falsifiable recurring behaviour, not unlimited random combinations.
-
-## 5. Primitive vocabulary
-
-The audited primitive registry initially includes the reference primitives plus scalp-specific context:
+## 5. Approved primitive vocabulary
 
 ```text
 STRUCTURE_TREND
@@ -109,87 +73,63 @@ SPREAD_COST_CONTEXT
 HOLD_TIME_EFFICIENCY
 ```
 
-Arbitrary strings, executable source and hard-safety concepts are rejected.
+Event freshness, cost context and hold-time efficiency are accepted scalp-specific primitives. Their exact thresholds remain researchable.
+
+M1 may appear as diagnostic/research data but not as hidden production primitive with broker authority.
+
+Unknown strings, executable source and hard-safety concepts are rejected.
 
 ## 6. Candidate discipline
 
-Each candidate retains:
+Each candidate retains typed identity/version/type, parent family where applicable, trigger/hypothesis, required/optional primitives, regime/session/timing/freshness profile, invalidation/target model, evidence IDs/chronology, cost assumptions, semantic fingerprint and state/rejection/suppression reason.
 
-- typed ID/version/type;
-- parent family where applicable;
-- discovery trigger/hypothesis;
-- required/optional primitive list;
-- regime/session/timing/freshness profile;
-- invalidation/target model;
-- evidence source IDs and chronology;
-- transaction-cost assumptions when relevant;
-- semantic fingerprint;
-- state/rejection/suppression reason.
+Independent Episode IDs are required; repeated observations of one episode cannot inflate evidence.
 
-Independent episode IDs are required. Repeating one source cannot inflate evidence.
+## 7. Preservation-first classification
 
-## 7. Similarity and durable memory
-
-Candidates close to an existing family are normally variants. Materially distinct repeated behaviour may qualify as a new family.
-
-Small timing/management changes are ENTRY_POLICY or EXIT_POLICY.
-
-Fingerprints and similarity suppress duplicates. Rejected candidate memory survives restart/local backup.
-
-## 8. Complexity / anti-filter-soup rule
-
-A recipe containing every available indicator/liquidity/confluence primitive is presumed overfit until strong out-of-sample evidence proves otherwise.
-
-Optional confluence can provide bounded positive support but does not automatically become mandatory.
-
-Any extra condition must justify its complexity through ablation, Opportunity Recall, cost-adjusted expectancy, drawdown and trade-frequency evidence.
-
-## 9. Hard exclusions
-
-Discovery cannot optimize away:
-
-- broker/runtime identity;
-- closed-candle chronology/no-lookahead;
-- monetary risk ceilings / daily lock;
-- one-shot submission;
-- ambiguous acknowledgement reconciliation;
-- controller fencing;
-- unknown exposure fail-safe;
-- original-R immutability;
-- secret/backup integrity;
-- broker-writer confinement.
-
-## 10. Candidate evaluation
-
-Candidate stages are owned by promotion governance, not discovery.
-
-A locked candidate whose fingerprint changes becomes a new candidate/version.
-
-Final holdout is one-shot. Explicit approval is required before a candidate can become production policy.
-
-## 11. Production boundary
-
-Discovery runs offline/research. Production runtime reads approved policy configuration only.
-
-Production never invents strategy logic inside a live broker cycle.
-
-## 12. Persistence/dashboard
-
-Restore episodes, clusters, CandidateRegistry, fingerprints, rejection memory, stage and health from verified StateStore/local checkpoint.
-
-Dashboard:
+A candidate affecting an inherited feature/default must carry one of:
 
 ```text
-DISCOVERY
-Health             IDLE / HEALTHY / DEGRADED
-Eligible Clusters  count
-Candidate Count    count
-Latest             ID • type • stage
-Suppression        explicit reason
-Broker Authority   NONE
+SCALP_SPECIFIC_CHANGE
+OPERATOR_DIRECTED_CHANGE
+REFERENCE_DEFECT_CORRECTION
 ```
 
-A healthy discovery service is not evidence that a profitable candidate exists.
+before it can enter promotion toward production. Otherwise the inherited baseline remains preserved.
+
+Examples not silently searchable away include account Risk-profile architecture/bands, manual reset default, one-fresh-reentry baseline, three-loss cooldown baseline, PRE_CLOSE/reopen defaults, one-shot Intent, reconciliation and future REAL release governance.
+
+## 8. Similarity / durable memory
+
+Candidates close to existing family are variants. Materially distinct recurring behavior may qualify as new family. Small timing/management changes are ENTRY_POLICY/EXIT_POLICY.
+
+Fingerprints and similarity suppress duplicates. Rejected-candidate memory survives restart/local backup.
+
+## 9. Complexity / anti-filter-soup rule
+
+Recipes containing every available feature are presumed overfit until ablation, Opportunity Recall, cost-adjusted expectancy, drawdown and frequency evidence justify complexity.
+
+Optional confluence remains bounded support rather than automatic mandatory checklist.
+
+## 10. Hard exclusions
+
+Discovery cannot optimize away broker/runtime identity, closed-candle/no-lookahead, required UNKNOWN handling, structural-stop integrity, one-shot submission, reconciliation, controller fencing, unknown-exposure fail-safe, original-R immutability, secret/backup integrity or sole-writer confinement.
+
+Canonical non-scalp Risk/session defaults require explicit governed reclassification before research can propose production replacement.
+
+## 11. Candidate evaluation / production boundary
+
+Promotion governance owns stages. Locked fingerprint change creates new candidate/version. Final holdout is one-shot. Explicit approval required before production policy.
+
+Production runtime reads approved policy only; it never invents strategy logic inside live broker cycle.
+
+Future REAL authority is separately gated and cannot be granted by discovery/promotion alone.
+
+## 12. Persistence / dashboard
+
+Restore episode journal, clusters, CandidateRegistry, fingerprints, rejection memory, stage and health from verified StateStore/checkpoint.
+
+Dashboard shows Discovery Health, eligible clusters, candidate count, latest ID/type/stage, suppression reason and Broker Authority `NONE`.
 
 ## 13. Planned implementation ownership
 
@@ -202,10 +142,8 @@ src/gold_scalp_trader/research/promotion.py
 
 ## 14. Planned proof
 
-Tests cover evidence feed, candidate types, primitive validation, duplicate suppression, restart memory, complexity bounds, promotion handoff and hard-safety exclusions.
+Tests cover evidence feed, candidate types, primitive validation, duplicate suppression, preservation classification, restart memory, complexity bounds, promotion handoff and hard-safety exclusions.
 
-Market quality requires chronology-safe replay, fixed-policy walk-forward, untouched holdout, stress, shadow and DEMO evidence.
+## 15. Research questions
 
-## 15. Open questions
-
-Per-trigger sample sizes, similarity/complexity limits, resource scheduling, regime/session clustering, latency/cost pattern clustering and final confluence-retention criteria remain research/calibration items.
+Per-trigger sample sizes, similarity/complexity limits, resource scheduling, regime/session clustering, latency/cost pattern clustering and optional-confluence retention remain research/calibration items. Preserved non-scalp feature/default policy is not automatically reopened.

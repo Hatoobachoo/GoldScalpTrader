@@ -1,8 +1,8 @@
 # GoldScalpTrader — Governed Experiments and Promotion
 
-**Status:** DRAFT PRE-CHALLENGE GOVERNANCE CONTRACT — NO CANDIDATE PROMOTED BY DEFAULT
-**Version:** 0.1-scalp-evidence-bound-promotion
-**Authority:** Champion/Challenger lifecycle, semantic locking, durable evidence lineage, holdout, stress, Shadow, DEMO Canary, approval and rollback.
+**Status:** FROZEN V1 PROMOTION GOVERNANCE — NO CANDIDATE PROMOTED BY DEFAULT
+**Version:** 1.0-preservation-first-evidence-bound-promotion
+**Authority:** Champion/Challenger lifecycle, semantic locking, durable evidence lineage, holdout, stress, Shadow, DEMO Canary, explicit approval and rollback.
 
 ## 1. Purpose
 
@@ -10,7 +10,7 @@ Research can discover promising scalp changes. Production policy changes only af
 
 > A candidate can recommend itself. It cannot promote itself.
 
-Hard safety is not an experiment parameter.
+Hard safety and preserved non-scalp reference defaults are not ordinary experiment parameters.
 
 ## 2. Lifecycle
 
@@ -28,183 +28,100 @@ PROPOSED
 → ROLLED_BACK / DISABLED when required
 ```
 
-A candidate may be REJECTED at appropriate pre-promotion stages.
-
-Every transition carries durable evidence rather than relying only on enum order.
+Candidate may be REJECTED before promotion. Every transition carries durable evidence.
 
 ## 3. Evidence-bound transition
 
-Each transition records:
+Record from/to stage, candidate identity, evidence ID/hash, code revision, policy/data version, actor, reason and UTC timestamp. Stage label without supporting evidence is not promotion proof.
+
+## 4. Champion / Challenger
+
+`CHAMPION` is currently approved production policy. `CHALLENGER` is a proposed improvement evaluated against Champion.
+
+Candidate types may include bounded family/parameter variant, Entry Policy, Exit/management policy and declarative new family.
+
+## 5. Preservation-first promotion rule
+
+A candidate that changes a **preserved GoldSwingTraderAI feature/default** needs more than positive research.
+
+Before promotion it must be classified as:
 
 ```text
-from_stage / to_stage
-candidate identity
-evidence_id
-evidence_sha256
-code_revision
-policy_version
-data_version
-actor
-reason
-recorded_at_utc
+genuine scalp-specific change
+OR explicit operator-directed change
+OR proven reference defect correction
 ```
 
-Stage labels without supporting evidence do not constitute promotion proof.
+and the full documentation affected graph must be updated. If that classification is not established, preserved baseline remains Champion.
 
-## 4. Champion and Challenger
+Hard account/broker safety such as identity, UNKNOWN fail-closed behavior, one-shot submission, reconciliation/controller fencing and secret handling cannot be promoted away.
 
-`CHAMPION` is currently approved production policy.
+Canonical preserved Risk/profile/session values also cannot be silently reclassified as “tunable scalp parameters.” A deliberate later change requires its own governed decision.
 
-`CHALLENGER` is a proposed improvement evaluated against Champion, not merely against zero.
+## 6. Semantic lock
 
-Candidate types may include:
+Before final holdout, candidate semantics are frozen to a durable fingerprint. Recipe/parameter/data/cost-model meaning change after lock creates a new candidate/version.
 
-- bounded parameter/family variant;
-- Entry Policy;
-- Exit/management policy;
-- declarative new family.
+## 7. One-shot final holdout
 
-Risk ceilings, daily lock, identity, reconciliation and broker safety are never challengers.
+Final holdout is consumed once by locked candidate. Repeated tuning against same holdout destroys untouched-holdout claim. Failed holdout ends that candidate version's claim.
 
-## 5. Semantic lock
+## 8. Scalping stress
 
-Before final holdout, candidate semantics are frozen to a durable fingerprint.
+A holdout-passing scalp candidate faces declared stress including wider spread, adverse slippage, execution delay/trigger aging, fees, min-lot granularity, parameter perturbation, volatility/session slices, News/dislocation where covered, missing optional confluence, frequency/sample sensitivity and chronology/data-gap checks.
 
-If recipe, parameter set, data handling, cost model or other meaning changes after lock, it becomes a new candidate/version and restarts the evidence path.
+Stress cannot rewrite structural invalidation/targets/original R or silently alter account Risk policy.
 
-## 6. One-shot final holdout
+## 9. Shadow
 
-A final holdout is consumed once by the locked candidate.
+Shadow consumes live/forward facts with zero broker authority. It records hypothetical entries/exits, missed/extra opportunities, cost-adjusted R, MAE/MFE/capture, duration, Champion disagreement and context. Shadow P/L is never broker P/L.
 
-Repeated tuning against the same holdout destroys the untouched-holdout claim.
+## 10. DEMO Canary
 
-A failed holdout ends that candidate version's holdout claim.
-
-## 7. Scalping stress
-
-A holdout-passing scalp candidate faces declared stress including:
-
-- wider spread;
-- adverse slippage;
-- execution delay/trigger aging;
-- commission/fee assumptions;
-- minimum-lot granularity;
-- parameter perturbation;
-- volatility/regime/session slices;
-- News/dislocation contexts where dataset supports them;
-- missing optional confluence;
-- trade-frequency and sample sensitivity;
-- data gaps/chronology checks.
-
-Stress cannot rewrite structural invalidation/targets/original R.
-
-Fragility may fail a candidate even when headline Net R is positive.
-
-## 8. Shadow
-
-Shadow consumes live/forward facts with zero raw broker authority.
-
-It records hypothetical:
-
-- entries/exits;
-- missed/extra opportunities;
-- cost-adjusted R;
-- MAE/MFE/capture;
-- hold duration;
-- disagreement with Champion;
-- session/regime/family differences.
-
-Shadow P/L is not broker P/L.
-
-## 9. DEMO Canary
-
-A DEMO Canary candidate still uses the ordinary governed production path:
+A DEMO Canary still uses ordinary production safety:
 
 ```text
 TradePlan
-→ Monetary Risk
+→ active preserved monetary Risk profile/optional explicit overlay
 → Session/News/system authorities
-→ DEMO identity/guard
-→ Controller/fencing
-→ Central Gate
+→ DEMO identity
+→ Controller
+→ central Gate
 → one-shot Intent / sole writer
 → reconciliation
 ```
 
 Promotion registry grants no raw broker authority.
 
-## 10. Explicit approval
+## 11. Future REAL boundary
 
-`PROMOTION_READY` is not production permission.
+Future REAL is a preserved governed capability, but a candidate reaching DEMO Canary or even promotion does **not** automatically authorize REAL execution.
 
-Promotion requires:
+REAL requires the separate runtime/release/explicit-approval gate owned by execution/release governance.
 
-- complete evidence-bound stage chain;
-- exact current semantic fingerprint;
-- explicit operator/governed approval;
-- approval evidence identity/hash/version/actor/reason;
-- known rollback target;
-- UTC approval timestamp.
+## 12. Explicit approval
 
-Missing historical evidence is never fabricated from stage labels.
+`PROMOTION_READY` is not production permission. Require complete evidence chain, exact fingerprint, explicit operator/governed approval, approval evidence identity/hash/version/actor/reason, rollback target and UTC timestamp.
 
-## 11. Rollback / disable
+Missing historical evidence is never fabricated.
 
-Rollback is durable, explicit and evidence-bound.
+## 13. Rollback / disable
 
-Safety violation can disable a candidate immediately through governed failure handling.
+Rollback is durable/evidence-bound. Safety violation can disable a candidate through governed failure handling. Performance rollback does not react blindly to one normal losing streak.
 
-Performance rollback should not react blindly to one normal losing streak. It needs documented evidence review.
+## 14. Candidate evidence packet
 
-## 12. Candidate evidence packet
+Include hypothesis/non-goals, parent/type, required/optional primitives, timing/freshness/invalidation/target model, dataset boundaries, code/policy/schema versions, Net/Avg R/PF/drawdown, admitted frequency, Opportunity Recall, Entry/Capture efficiency, duration, costs, stress robustness, complexity/ablation, limitations and reviewers.
 
-A promotion packet should include/reference:
+## 15. Persistence/local recovery
 
-- hypothesis/non-goals;
-- parent family/type;
-- required/optional primitives;
-- timing/freshness/invalidation/target model;
-- dataset/train/validation/holdout boundaries;
-- code/policy/schema versions;
-- Net/Avg R / Profit Factor / drawdown;
-- trade frequency and capacity-admitted trades;
-- Opportunity Recall/missed moves;
-- Entry/Capture efficiency and premature-exit cost;
-- hold duration;
-- spread/slippage/transaction-cost burden;
-- stress robustness;
-- complexity/ablation;
-- limitations/reviewer records.
+Candidate stage, fingerprint, holdout use, rejection, rollback and transition ledger persist in canonical StateStore/local checkpoint. Restore preserves evidence identity. No runtime GitHub push/promotion dependency.
 
-Base and base+optional-confluence metrics remain separate.
+## 16. Dashboard
 
-## 13. Persistence/local recovery
+Show Champion, Challenger, stage, fingerprint, evidence health, holdout state, stress/shadow/canary, approval/rollback and `Broker Authority NONE` unless ordinary DEMO runtime independently grants it.
 
-Candidate stage, fingerprint, holdout consumption, rejection reason, rollback target and full transition ledger persist in canonical StateStore/local checkpoint.
-
-Restore preserves evidence identity. Unsafe migration blocks promotion rather than starting an empty clean registry.
-
-There is no runtime GitHub push/promotion dependency.
-
-## 14. Dashboard
-
-Show:
-
-```text
-Champion
-Challenger
-Candidate stage
-semantic fingerprint
-evidence age/health
-holdout used/not used
-stress/shadow/canary status
-approval / rollback state
-Broker Authority NONE unless ordinary DEMO runtime independently grants it
-```
-
-A generic “learning active” label must never hide actual promotion stage.
-
-## 15. Planned implementation ownership
+## 17. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/research/promotion.py
@@ -212,12 +129,8 @@ src/gold_scalp_trader/research/discovery.py
 src/gold_scalp_trader/research/invention.py
 ```
 
-## 16. Planned proof
+## 18. Planned proof / open research
 
-Tests must prove no stage skipping, evidence-bound transitions, chronological ledger persistence, semantic lock, one-shot holdout, stress/shadow/canary order, zero raw broker authority in research/shadow, normal gates in canary, self-promotion denial, incomplete legacy evidence cannot promote, rollback target/evidence requirement and restart/local-backup continuity.
+Tests prove no stage skipping, evidence-bound transitions, semantic lock, one-shot holdout, stress/shadow/canary order, zero research broker authority, canary ordinary gates, self-promotion denial, incomplete-evidence rejection, rollback requirement and restart continuity.
 
-## 17. Evidence boundary / open items
-
-Software tests prove governance mechanics, not human authentication, market edge or future profitability.
-
-Open items: minimum samples, material-improvement thresholds, Shadow/Canary duration, final approval UX and degradation-alert policy.
+Open values include minimum samples, material-improvement thresholds, Shadow/Canary duration, approval UX and degradation-alert policy.
