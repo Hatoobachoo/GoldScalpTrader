@@ -1,29 +1,30 @@
 # GoldScalpTrader — Canonical Documentation Manual
 
-**Status:** DRAFT PRE-CHALLENGE MANUAL
-**Version:** 0.1-foundation
+**Status:** DRAFT PRE-CHALLENGE MANUAL — 64-FILE INVENTORY TARGET
+**Version:** 0.2-full-manual-draft
 **Authority:** Entry point, reading order, document ownership and design-before-code boundary.
 
 ## 1. What this manual is
 
-`Documents/` is the only current design and implementation authority for GoldScalpTrader.
+`Documents/` is the only current design, implementation and verification authority for GoldScalpTrader.
 
-GoldScalpTrader is intentionally being designed as the scalping-specialized sibling of GoldSwingTraderAI. The engineering system, authority separation, documentation discipline, recovery philosophy, learning boundaries, audits and parallel/serial runtime model are preserved unless a scalp-specific challenge proves a change is necessary.
+GoldScalpTrader is the scalping-specialized sibling of GoldSwingTraderAI. The reference project's engineering system, authority separation, documentation discipline, recovery philosophy, learning boundaries, audit model and parallel/serial architecture are preserved where they still make sense. Trading personality, time horizons, cost sensitivity and calibration are adapted for scalping.
 
-No implementation convenience may silently redefine a documented rule. Chat history is not durable project authority.
+No implementation convenience, chat memory, dashboard label, test fixture or reference-project threshold may silently redefine a current scalp contract.
 
-## 2. Project method
+## 2. Mandatory project method
 
-The mandatory project sequence is:
-
-1. decide architecture and product behaviour;
-2. write the complete interconnected canonical manual;
-3. challenge the manual from zero and against Gold scalping realities;
-4. resolve contradictions and open questions;
-5. freeze approved contracts;
-6. implement from those contracts;
-7. verify code against documents and tests;
-8. keep the affected document graph synchronized with every material change.
+```text
+complete canonical draft manual
+→ challenge it from zero
+→ resolve contradictions / classify calibration and external proof
+→ synchronize affected graph
+→ freeze approved contracts
+→ implement from contracts
+→ verify Documents → Code → Tests/Evidence
+→ connected DEMO/recovery proof
+→ keep Documents synchronized with every material change
+```
 
 Code must not outrun the canonical manual.
 
@@ -35,111 +36,166 @@ Code must not outrun the canonical manual.
 4. `00-foundation/ARCHITECTURE.md`;
 5. `00-foundation/TRADING_FLOOR_ARCHITECTURE.md`;
 6. `00-foundation/BUILD_PHASES.md`;
-7. `10-market-intelligence/` contracts;
-8. `20-trading-decisions/` contracts;
-9. `30-risk-execution/` contracts;
-10. `40-research-learning/` contracts;
-11. `50-operator/` contracts;
-12. `60-engineering/` standards, catalogs, tests and audits;
-13. `90-governance/` decisions, open questions, preservation and documentation control;
-14. top-level setup, coder, recovery, user and final-build guides.
+7. all `10-market-intelligence/` contracts;
+8. all `20-trading-decisions/` contracts;
+9. all `30-risk-execution/` contracts;
+10. all `40-research-learning/` contracts;
+11. all `50-operator/` contracts;
+12. `60-engineering/CODING_STANDARD.md`, `MODULE_STRUCTURE.md`, `FILE_AND_TEST_CATALOG.md`, testing/health/release/audits;
+13. all `90-governance/` decisions/open questions/preservation/documentation-control files;
+14. `CODER_GUIDE.md`;
+15. `PROJECT_BUILD_AND_RECOVERY_GUIDE.md`;
+16. `SETUP_AND_RUN_GUIDE.md`;
+17. `USER_MANUAL.md`;
+18. `FINAL_BUILD_PROMPT.md`.
 
-## 4. Architectural spine
+## 4. Canonical inventory
 
-The intended governed production path is:
+Expected reference-equivalent inventory:
+
+```text
+Top level                  7
+00-foundation              5
+10-market-intelligence     7
+20-trading-decisions       7
+30-risk-execution          6
+40-research-learning       7
+50-operator                3
+60-engineering            14
+90-governance              8
+TOTAL                      64
+```
+
+The full inventory must be verified before Audit 1 is changed from `NOT RUN` to an active/completed fresh-zero review.
+
+## 5. Architectural spine
 
 ```text
 one MT5 read boundary
 → immutable MarketSnapshot
 → staged bounded-parallel market intelligence
 → independent scalp strategy-family hypotheses
-→ independent BUY / SELL fusion
+→ independent BUY / SELL fusion + Red Team
 → persistent Opportunity
-→ scalp Entry Timing
-→ family-aware structural Trade Plan
+→ scalp Entry Timing + event freshness
+→ family-aware structural TradePlan
 → independent monetary Risk
 → hard session/news/system/account/controller authorities
-→ central Execution Permission Gate
+→ central ExecutionPermissionGate
 → durable one-shot ExecutionIntent
 → sole MT5Writer broker request
 → reconciliation against broker truth
-→ post-entry Trade Manager
-→ verified close accounting
+→ ManagedTrade / Trade Manager
+→ verified close
 → durable learning/research evidence
+→ local backup/recovery
 ```
 
-Analysis may be parallel where dependencies permit. Money, broker authority, durable intent, writes and reconciliation remain ordered and serial.
+Analysis may be parallel where dependencies allow. Money, broker authority, durable intent, writer calls and reconciliation remain ordered/serial.
 
-## 5. Scalping adaptation rule
+## 6. Scalping adaptation rule
 
-GoldSwingTraderAI is the structural reference, not a source of blindly copied trading calibration.
+GoldSwingTraderAI is a structural/preservation reference, not a source of blindly copied calibration.
 
 Preserve by default:
+
 - one normalized broker-read boundary;
 - typed facts and explicit UNKNOWN states;
 - causal/no-lookahead evidence;
 - bounded analytical parallelism;
-- independent strategy families and BUY/SELL debate;
-- structural Trade Plan before monetary Risk;
-- one central execution permission authority;
+- independent family hypotheses and BUY/SELL debate;
+- structural TradePlan before monetary Risk;
+- one central execution authority;
 - persist-before-send one-shot Intent;
-- sole raw broker writer and reconciliation;
+- sole raw writer + reconciliation;
 - crash-safe persistence/recovery;
 - downstream learning with no direct broker authority;
 - read-only operator dashboards;
 - document → code → test → audit traceability.
 
-Re-design for scalping where evidence requires:
-- timeframe roles;
-- opportunity and trigger freshness;
-- spread/slippage/executable-price geometry;
-- strategy-family hypotheses;
-- entry timing and late-entry protection;
-- target/stop/holding-time logic;
-- re-arm/cooldown behaviour;
-- session specialization;
-- cost-aware research and performance metrics.
+Re-design/challenge for scalping:
 
-## 6. GitHub and billing boundary
+- H4/H1/M15/M5/M1 roles;
+- opportunity/trigger freshness;
+- spread/slippage/drift/latency sensitivity;
+- family decomposition/thresholds;
+- entry timing and chase protection;
+- structural R / target room after costs;
+- risk bands for small account/minimum lot;
+- hold-time/time-exit logic;
+- session/news specialization;
+- cost-aware replay and performance metrics.
 
-GitHub is source control and remote project backup only.
+## 7. Current major open decisions
+
+Before implementation freeze, Audit 1 must explicitly decide at minimum:
+
+- final timeframe/M1 authority;
+- whether all six starting families remain independent;
+- final `Market OPEN + News UNKNOWN` new-entry policy;
+- structural R / cost-room policy;
+- monetary risk profile shape and whether any aggressive mode should exist;
+- exact broker-write V1 scope after DRY_RUN.
+
+Many numerical values may remain `CALIBRATION PENDING` even after architecture freezes.
+
+## 8. GitHub / zero-cost boundary
+
+GitHub is deliberate source control/remote source backup only.
 
 The architecture does not require:
+
 - GitHub Actions;
 - Codespaces;
 - Git LFS;
-- paid Marketplace apps;
+- paid Marketplace services;
 - paid cloud compute;
 - paid external APIs.
 
-The bot runtime must not automatically push to GitHub on graceful shutdown.
+The trading runtime has no GitHub credential or automatic publication authority.
 
-No runtime GitHub token, repository credential or autonomous publication authority is required for trading.
+## 9. Local backup boundary
 
-## 7. Local backup boundary
+GoldScalpTrader is designed to remain recoverable without GitHub availability.
 
-GoldScalpTrader also maintains a GitHub-independent local recovery design.
+```text
+local working clone + .git
+→ rolling runtime checkpoints
+→ graceful-shutdown final verified local checkpoint
+→ portable local recovery package
+→ optional deliberate local Git bundle at source milestone
+→ optional second physical drive copy
+```
 
-Three distinct layers are planned:
+Automatic backup paths live outside the working repository.
 
-1. **Local working clone** — source + normal local Git history.
-2. **Rolling runtime backup** — durable trading/runtime/research state snapshots stored outside the repository working tree.
-3. **Portable recovery package** — controlled local package capable of reconstructing source/history plus verified runtime state without requiring GitHub access.
+`.env`, passwords, tokens, MT5 credentials, GitHub PATs/private keys and credential-bearing URLs are excluded from automatic recovery artifacts.
 
-Default local backup paths must live outside the repository to avoid recursive archives and accidental commits.
+Graceful shutdown may create local state backup. It must not perform Git commit/push.
 
-`.env`, passwords, tokens, MT5 credentials and other secrets are never automatically included in source/recovery archives.
+## 10. Evidence boundary
 
-Graceful shutdown may create a local state backup. It must not perform a GitHub push.
+Keep separate:
 
-## 8. Evidence boundary
+```text
+DRAFT / FROZEN DOCUMENTED DESIGN
+DETERMINISTIC SOFTWARE PROOF
+REPLAY / RESEARCH EVIDENCE
+CONNECTED READ-ONLY PROOF
+CONNECTED DEMO LIFECYCLE PROOF
+LOCAL RECOVERY PROOF
+CALIBRATION PENDING
+EXTERNAL PROOF PENDING
+```
 
-A passing deterministic test proves only the exercised software contract. It does not prove current broker connectivity, execution quality, future edge or profitability.
+A green deterministic suite does not prove current broker connectivity, realistic execution, future edge or profitability.
 
-Claims must remain classified as deterministic proof, replay/research evidence, connected broker proof, calibration pending or external proof pending.
+## 11. Current status and next phase
 
-## 9. Current status
+The canonical tree is being finalized as a complete **DRAFT PRE-CHALLENGE** manual.
 
-This manual is intentionally `DRAFT PRE-CHALLENGE`.
+Once exact 64/64 inventory and cross-links are verified, the next phase is **`60-engineering/AUDIT_1_FRESH_DESIGN_REVIEW.md`**:
 
-Foundation and governance contracts are being written first. Trading calibration is not frozen yet. The later fresh-from-zero challenge may KEEP, MODIFY, REMOVE, ADD or defer individual design choices before implementation begins.
+> If GoldScalpTrader were designed today from zero, what would we keep, improve, change, remove or add?
+
+Only after that review and affected-graph synchronization do accepted contracts become frozen for implementation.
