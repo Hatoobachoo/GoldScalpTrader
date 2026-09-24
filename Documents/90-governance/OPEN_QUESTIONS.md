@@ -1,137 +1,212 @@
 # GoldScalpTrader — Open Questions and Closure Plan
 
-**Status:** ACTIVE PRE-CHALLENGE QUESTION REGISTER
-**Version:** 0.1-foundation-questions
+**Status:** DRAFT QUESTION REGISTER — PRE-CHALLENGE
+**Version:** 0.2-full-manual-draft
 **Authority:** Unresolved choices, required evidence and completion boundaries.
 
 ## 1. Why this file exists
 
-An open question is not automatically a design failure. Some items must be fixed before build, some are implementation choices, some need historical calibration, some require connected broker proof and some may be deliberately deferred.
+An open question is not automatically a design failure. Some choices require architecture review, historical calibration, connected broker/machine proof or deliberate deferral.
 
-| Class | Meaning | Closure method |
-|---|---|---|
-| FIX BEFORE BUILD | safety/ownership cannot be safely guessed | contract + deterministic proof plan |
-| IMPLEMENTATION CHOICE | several safe implementations exist | choose, document and test |
-| CALIBRATE IN RESEARCH | architecture fixed; numerical value needs evidence | chronological replay/stress/holdout |
-| EXTERNAL PROOF | only real terminal/broker/machine can answer | controlled connected evidence |
-| DEFERRED V1 | intentionally outside initial scope | remain explicitly deferred |
+Classes:
 
-## 2. Product/timeframe questions
+```text
+FIX BEFORE BUILD
+IMPLEMENTATION CHOICE
+CALIBRATE IN RESEARCH
+EXTERNAL PROOF
+DEFERRED V1
+```
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-001 | What are the exact H1/M15/M5/M1/tick authority roles for scalping? | FIX BEFORE BUILD | do not inherit Swing roles blindly |
-| Q-002 | Is M1 production timing evidence, diagnostic only, or both under typed boundaries? | FIX BEFORE BUILD | challenge explicitly |
-| Q-003 | Are forming-candle/tick facts allowed for timing, and how are they typed versus completed bars? | FIX BEFORE BUILD | causal separate type required if used |
-| Q-004 | What is the expected scalp holding horizon and when does a thesis become “not a scalp”? | CALIBRATE IN RESEARCH | architecture supports time-aware management |
+Nothing in this register may be silently guessed during coding.
 
-## 3. Strategy-floor questions
+## 2. FIX BEFORE BUILD
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-010 | Are six independent strategy families still the cleanest decomposition? | FIX BEFORE BUILD | six is starting point, not sacred number |
-| Q-011 | Do Liquidity Sweep and Failed Breakout Reversal duplicate too much evidence? | FIX BEFORE BUILD | inspect correlation and ownership |
-| Q-012 | Does Momentum Expansion deserve an independent family or belong inside continuation? | FIX BEFORE BUILD | challenge separately |
-| Q-013 | Should Range Extreme / Mean Reversion be production V1 or research-only? | FIX BEFORE BUILD | requires clear regime ownership |
-| Q-014 | What optional confluence is useful without turning the floor into filter soup? | CALIBRATE IN RESEARCH | optional/soft by default |
-| Q-015 | How much opposing-family strength turns a leading thesis into CONFLICTED/WAIT? | CALIBRATE IN RESEARCH | fusion owns semantics; weights later |
+### OQ-001 — Final timeframe authority
 
-## 4. Freshness and timing questions
+Decide final roles for H4/H1/M15/M5/M1 and quote/tick context.
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-020 | How is Opportunity expiry measured: wall-clock, completed bars, event replacement, distance or combination? | CALIBRATE IN RESEARCH | durable explicit expiry state |
-| Q-021 | What makes a BOS/MSS/sweep/retest trigger stale for a scalp? | CALIBRATE IN RESEARCH | knowledge time + event lineage required |
-| Q-022 | How far may current executable price drift from approved entry reference before MISSED/LATE? | CALIBRATE IN RESEARCH | use volatility/cost normalized evidence |
-| Q-023 | What causal event is sufficient to re-arm a terminal opportunity? | FIX BEFORE BUILD | never simple timer reset alone |
-| Q-024 | Should timing require completed M1/M5 evidence, or permit bounded tick confirmation? | FIX BEFORE BUILD | separate from strategy thesis |
+Current baseline: H1 broad regime, M15 opportunity/location, M5 primary setup/timing, H4 optional major context, M1 diagnostic only.
 
-## 5. Cost/execution questions
+Closure: fresh-zero review + cross-document sync.
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-030 | Which spread representation governs entry: absolute price, points, ATR fraction, target fraction or hybrid? | CALIBRATE IN RESEARCH | cost must be target/geometry aware |
-| Q-031 | What slippage/deviation policy is safe for Gold scalps? | CALIBRATE IN RESEARCH + EXTERNAL PROOF | broker behaviour required |
-| Q-032 | How should Bid/Ask geometry be normalized for backtests when tick history is incomplete? | FIX BEFORE BUILD | assumptions must be explicit and conservative |
-| Q-033 | What quote-age threshold is required for new entries? | CALIBRATE IN RESEARCH + EXTERNAL PROOF | diagnose first, then hard threshold |
-| Q-034 | Should risk-reducing CLOSE actions ignore some entry-only spread conditions? | FIX BEFORE BUILD | action-sensitive safety likely required |
+### OQ-002 — Strategy-family decomposition
 
-## 6. Risk questions
+Do all six starting families remain independent and useful for scalping, or should any be merged/split/replaced?
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-040 | What is default per-trade risk for V1 small accounts? | CALIBRATE IN RESEARCH | conservative default; no profit promise |
-| Q-041 | Should aggressive small-account profile exist, and what hard ceiling applies? | CALIBRATE IN RESEARCH | explicit opt-in only if retained |
-| Q-042 | What daily safety-loss threshold and cooldown/loss-streak policy best fits scalp frequency? | CALIBRATE IN RESEARCH | frequency interaction must be modelled |
-| Q-043 | Does one-position-at-a-time remain V1? | FIX BEFORE BUILD | current default yes |
-| Q-044 | What happens when minimum lot exceeds allowed monetary risk? | FIX BEFORE BUILD | block; never distort structural stop |
+Closure: fresh-zero review, logic decomposition and initial replay design.
 
-## 7. Trade-management questions
+### OQ-003 — `OPEN + News UNKNOWN` policy
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-050 | Which management states are useful for scalping: HOLD/PROTECT/TRAIL/RUNNER/EXIT? | FIX BEFORE BUILD | preserve boundary; possibly simplify states |
-| Q-051 | Should time-stop exist and how is it measured? | CALIBRATE IN RESEARCH | likely scalp-specific |
-| Q-052 | When should break-even/protection occur without choking normal Gold noise? | CALIBRATE IN RESEARCH | structure/volatility aware |
-| Q-053 | Are partial TP/runner mechanics justified for small positions/min lot? | CALIBRATE IN RESEARCH + EXTERNAL PROOF | broker volume-step dependent |
-| Q-054 | How does spread deterioration affect holding versus closing? | CALIBRATE IN RESEARCH | action-sensitive cost logic |
+Reference Swing system allowed adaptive continuation. Scalping may need stronger caution.
 
-## 8. Session/news questions
+Closure: architecture decision plus replay/connected evidence plan; no implementation guess.
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-060 | Which sessions/windows are production-priority for XAU scalping? | CALIBRATE IN RESEARCH | London/NY/overlap candidates |
-| Q-061 | Which known events require hard blackout and for how long before/after? | CALIBRATE IN RESEARCH | event tier + XAU sensitivity |
-| Q-062 | How should unavailable external news provider affect permission when broker session truth is known? | FIX BEFORE BUILD | UNKNOWN visible; do not fabricate CLEAR |
+### OQ-004 — Minimum structural R / cost-adjusted room
 
-## 9. Persistence/recovery questions
+Swing's 1.20R Primary floor is not automatically inherited.
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-070 | Is local SQLite still the best V1 durable store? | IMPLEMENTATION CHOICE | strong default; zero-cost/simple |
-| Q-071 | Exact checkpoint cadence and event retention? | IMPLEMENTATION CHOICE | durability without excessive I/O |
-| Q-072 | What startup evidence is required before reopening new entries after crash/restart? | FIX BEFORE BUILD | full broker reconciliation first |
-| Q-073 | Same-account/symbol laptop handoff workflow? | FIX BEFORE BUILD | sequential only in V1 candidate |
+Closure: define structural quality metric before implementation, numerical threshold may remain CALIBRATE.
 
-## 10. Local-backup questions
+### OQ-005 — Risk-policy shape
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-080 | Default local backup root? | IMPLEMENTATION CHOICE | outside repository, e.g. `C:\GoldScalpTrader_Backups` |
-| Q-081 | Runtime backup cadence/retention? | IMPLEMENTATION CHOICE | rolling + graceful-shutdown; exact counts later |
-| Q-082 | Should source Git bundle be created automatically on every shutdown? | IMPLEMENTATION CHOICE | current preference: no; milestone/manual to avoid unnecessary work |
-| Q-083 | Should graceful shutdown always create a runtime-state backup? | IMPLEMENTATION CHOICE | yes candidate, unless no durable state exists |
-| Q-084 | How is SQLite copied consistently during live runtime? | FIX BEFORE BUILD | use transactional/SQLite backup semantics, not unsafe raw copy |
-| Q-085 | Should portable recovery package include logs/research datasets? | IMPLEMENTATION CHOICE | manifest-driven selectable classes |
-| Q-086 | How are secrets recovered after machine loss if automatic archives exclude them? | FIX BEFORE BUILD | separate operator-managed secret recovery procedure |
-| Q-087 | Do we support optional second physical drive/USB mirror? | DEFERRED/OPTIONAL V1 | yes as path option, no cloud dependency |
+Define final account-profile model and whether an optional aggressive small-account mode should exist at all.
 
-## 11. GitHub questions
+Closure: fresh-zero challenge before build; exact percentages may remain CALIBRATE.
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-090 | Repository visibility? | IMPLEMENTATION CHOICE | private preferred; current repo visibility is external account setting |
-| Q-091 | Any runtime GitHub credential? | FIX BEFORE BUILD | no |
-| Q-092 | Any shutdown GitHub publication/push? | FIX BEFORE BUILD | explicitly no |
-| Q-093 | Any GitHub Actions/Codespaces requirement? | FIX BEFORE BUILD | no |
+### OQ-006 — Runtime mode scope
 
-## 12. Research/learning questions
+Confirm V1 build target after DRY_RUN documentation phase: read-only/DRY_RUN only first, then governed DEMO writer; REAL remains separately governed/out-of-scope unless explicitly decided.
 
-| ID | Question | Class | Current direction |
-|---|---|---|---|
-| Q-100 | Which scalp-specific episode metrics must StrategyMemory retain? | FIX BEFORE BUILD | include cost/duration/MAE/MFE/entry-exit efficiency |
-| Q-101 | How are blocked/missed opportunities sampled without selection bias? | FIX BEFORE BUILD | causal evidence package required |
-| Q-102 | What minimum evidence is required to promote a discovered strategy/parameter change? | CALIBRATE IN RESEARCH | staged holdout/stress/shadow/canary governance |
-| Q-103 | Can autonomous invention propose new scalp families? | FIX BEFORE BUILD | proposal only; no executable self-modification |
+Closure: architecture decision.
 
-## 13. Closure rule
+## 3. IMPLEMENTATION CHOICES
 
-No `FIX BEFORE BUILD` item affecting the current implementation phase may be silently guessed.
+### OQ-020 — Python/package layout
 
-When an item closes:
+Choose supported Python version based on current MetaTrader5 compatibility and fix provisional `src/` package launch/install design.
 
-1. record the decision in `DESIGN_DECISIONS.md`;
-2. update the owning topic contract;
-3. synchronize the full affected document graph;
-4. define implementation/test/evidence ownership;
-5. keep any remaining calibration/external proof explicitly pending.
+Closure: verify current package/platform compatibility, update setup docs, implement installable package.
+
+### OQ-021 — SQLite detail
+
+Confirm SQLite/WAL/synchronous/checksum/schema/migration implementation.
+
+Architecture currently favors simple local SQLite but does not freeze low-level settings yet.
+
+### OQ-022 — Bounded parallel scheduler
+
+Choose worker implementation/limits while preserving one-worker semantic parity and deterministic output order.
+
+### OQ-023 — Dashboard stack
+
+Confirm Rich/wcwidth dependency and when secondary browser dashboard enters build sequence.
+
+### OQ-024 — Secret scanner / Documents verifier implementation
+
+Choose smallest dependable local scripts and tests; no cloud/Actions requirement.
+
+### OQ-025 — Local backup implementation
+
+Choose SQLite backup API/export mechanism, manifest format, catalog naming, free-space handling and optional second-drive copy.
+
+## 4. CALIBRATE IN RESEARCH
+
+### OQ-040 — Event freshness
+
+Family/event-specific M5 age, distance-travelled and extension thresholds.
+
+### OQ-041 — Entry/chase policy
+
+Maximum acceptable drift from approved entry, trigger age and processing delay.
+
+### OQ-042 — Spread / execution friction
+
+Healthy baseline method, spread-to-stop/target thresholds, slippage reserve and broker deviation policy.
+
+### OQ-043 — Structural target quality
+
+Minimum gross R, cost-adjusted room and objective hierarchy thresholds.
+
+### OQ-044 — Risk percentages
+
+Preferred/elevated/hard-ceiling bands and daily-loss limits for SMALL/MEDIUM/NORMAL profile if profiles survive challenge.
+
+Current 0.50% scaffold is provisional; reference aggressive bands are not frozen.
+
+### OQ-045 — Cooldown / same-episode re-entry
+
+Loss-streak threshold, cooldown time/conditions and maximum fresh re-entry count.
+
+### OQ-046 — Session specialization
+
+Whether Asia/London/NY/overlap receive family/timing conditioning and whether this improves out-of-sample net expectancy after costs.
+
+### OQ-047 — News blackout/warmup
+
+Event tiers, pre/post windows and post-news clean-bar/spread-normalization requirements.
+
+### OQ-048 — Reopen/pre-close timing
+
+Exact daily/weekend no-entry and flatten cutoffs plus clean completed-M5 reopen requirement.
+
+### OQ-049 — Trade Manager time efficiency
+
+Normal hold-duration distribution, soft/hard time exit and target/protection timing.
+
+### OQ-050 — Runner/Expansion policy
+
+How often a scalp may extend beyond Primary and what fresh evidence is required.
+
+### OQ-051 — Optional confluence
+
+FVG/OB/Fib/Trendline/POC/M1/macro marginal value by ablation.
+
+### OQ-052 — Research sample/confidence thresholds
+
+Walk-forward/holdout sizes, minimum samples, shrinkage/confidence, Monte Carlo/bootstrap methodology.
+
+### OQ-053 — Discovery/invention limits
+
+Cluster/sample/similarity/complexity/resource thresholds.
+
+### OQ-054 — Backup retention
+
+Rolling checkpoint interval, hourly/daily/milestone retention, disk-space thresholds, optional encryption-at-rest.
+
+## 5. EXTERNAL PROOF
+
+### OQ-070 — Exness symbol facts
+
+Verify real XAUUSDm digits/point/tick-size/tick-value/min/max/step/stops/freeze/filling/margin behaviour on intended account.
+
+### OQ-071 — Broker schedule
+
+Verify current normal daily/weekend session hours, DST handling and special-holiday behaviour.
+
+### OQ-072 — Execution metadata
+
+Verify AutoTrading/trade API/account/symbol permission surfaces and actual `order_check`/retcode semantics.
+
+### OQ-073 — Spread/slippage/latency
+
+Observe real DEMO distributions across sessions/news/reopen conditions.
+
+### OQ-074 — Connected lifecycle
+
+Natural governed OPEN/MODIFY/CLOSE, broker SL/TP, exact known manual close and restart/reconciliation.
+
+### OQ-075 — Fresh-machine recovery
+
+Prove local recovery package → new DB/path → fresh broker reconciliation/controller → READY without duplicate exposure.
+
+### OQ-076 — Actual learning
+
+Verify exact-close queue/receipt and exactly-once MAIN_DEMO observation from real broker history.
+
+## 6. DEFERRED V1
+
+- same-scope simultaneous cross-laptop PRIMARY/STANDBY;
+- active-active or distributed DB/fencing;
+- generic multi-broker abstraction;
+- mandatory paid news/macro data;
+- cloud hosting;
+- self-deploying AI/generated code;
+- ungoverned REAL trading;
+- HFT claims/infrastructure;
+- partial-profit requirement for 0.01 indivisible volume.
+
+## 7. Closure discipline
+
+Every closed question must update:
+
+```text
+this register
+DESIGN_DECISIONS
+owning topic contract
+Architecture/Module/Coder/Testing docs if affected
+operator/research/persistence consequences
+relevant tests/evidence plan
+```
+
+Marking an item closed without affected-graph synchronization is not closure.

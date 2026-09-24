@@ -1,228 +1,263 @@
 # GoldScalpTrader — Documentation Standard
 
 **Status:** DRAFT PRE-CHALLENGE DOCUMENTATION GOVERNANCE
-**Version:** 0.1-canonical-method
-**Authority:** Documentation ownership, synchronization, quality, affected-graph control and durable project truth.
+**Version:** 0.2-full-manual-draft
+**Authority:** Documentation ownership, preservation, synchronization, quality and change control.
 
 ## 1. Purpose
 
 GoldScalpTrader is documentation-first. The repository is implemented from contracts, not undocumented assumptions.
 
-Before changing code, a developer or AI must be able to answer:
+Before changing code a developer/AI must be able to answer:
 
-- Why does this subsystem exist?
-- What inputs does it accept?
-- What output/state does it produce?
-- Which work may happen independently or in parallel?
-- Which authority must happen in strict order?
-- What happens on stale, missing, corrupt or UNKNOWN truth?
-- What survives restart/restore/machine migration?
-- What does the operator see?
-- Which source files and tests implement/prove it?
-- Which research, backup and release documents are affected?
+- why the subsystem exists;
+- its inputs/outputs/state;
+- which work is independent/parallel;
+- which authority is ordered/serial;
+- stale/missing/corrupt/UNKNOWN behaviour;
+- restart/restore/migration semantics;
+- operator visibility;
+- implementation/test ownership;
+- research/backup/release consequences.
 
-## 2. Canonical folder rule
+Behaviour belongs to topic contracts. This standard owns how truth is maintained.
 
-`Documents/` is the only active documentation authority.
-
-Do not create a second lowercase `docs/` manual or another parallel source of current product truth.
-
-Historical/superseded reasoning belongs in governance records and Git history, not in a competing active contract tree.
-
-## 3. One behavioural owner
-
-Every material rule has one authoritative topic contract.
-
-Other documents may summarize, link or explain it but must not silently redefine it.
-
-Examples:
-- project purpose → `00-foundation/PROJECT_VISION.md`;
-- top-level invariants → `00-foundation/SYSTEM_CONTRACT.md`;
-- topology/concurrency → `00-foundation/ARCHITECTURE.md`;
-- strategy-family ownership → `20-trading-decisions/STRATEGY_FLOOR.md`;
-- structural entry/stop/targets → `20-trading-decisions/TRADE_PLAN.md`;
-- monetary risk → `30-risk-execution/RISK_CONTRACT.md`;
-- restart/recovery → `30-risk-execution/PERSISTENCE_RESTART_AND_RECOVERY.md`;
-- local backup/machine portability → `40-research-learning/LEARNING_BACKUP_AND_MULTI_MACHINE.md` plus recovery contract for runtime state;
-- code placement → `60-engineering/MODULE_STRUCTURE.md`;
-- documentation method → this file.
-
-## 4. Document contract shape
-
-Where applicable, a topic document should state:
-
-1. Status/version/authority.
-2. Purpose and boundary.
-3. Inputs.
-4. Outputs/state.
-5. Invariants.
-6. Dependency/flow diagram or ordered text path.
-7. Allowed influence.
-8. Forbidden authority.
-9. Failure/UNKNOWN behaviour.
-10. Persistence/restart consequence.
-11. Parallel/serial semantics.
-12. Operator/dashboard consequence.
-13. Research/replay consequence.
-14. Implementation owner(s).
-15. Test/evidence owner(s).
-16. Calibration/external-proof items.
-17. Links to affected contracts.
-
-Not every file needs identical headings, but no critical semantic area should be implicit.
-
-## 5. Preserve rationale, not obsolete ambiguity
-
-When behaviour changes:
-
-- current topic contract becomes unambiguous;
-- old rationale remains visible through `DESIGN_DECISIONS.md`, audit records or Git history;
-- superseded behaviour must not remain written as if active;
-- summaries/manuals must be synchronized.
-
-## 6. Full affected-graph update rule
-
-A material change is not documented when only the nearest file is updated.
-
-The author must inspect the full affected graph:
+## 2. Canonical documentation authority
 
 ```text
-Code or contract change
-        |
-        v
-Authoritative topic owner
-        |
-        +--> Design Decision / Open Question
-        +--> System/Runtime Architecture
-        +--> Trading Floor / lifecycle documents
-        +--> Module Structure / File-Test Catalog
-        +--> Coder / Build / Setup guides
-        +--> Persistence / Backup / Recovery
-        +--> Dashboard / Diagnostics
-        +--> Research / Learning
-        +--> Release Checklist / Audits
-        +--> Glossary / README when navigation or terminology changes
+Documents/ = only active project manual
+chat memory = convenience context, never durable authority
+root README = project entry only, not competing behaviour manual
 ```
 
-Only actually affected documents need text changes, but all relevant surfaces must be consciously checked.
+No parallel lowercase `docs/` authority is created.
 
-## 7. Before implementation
+Historical rationale remains in Git history/governance records rather than active contradictory manuals.
 
-For a coherent feature/change packet:
+## 3. Required metadata
 
-1. identify the behavioural owner;
-2. classify it as existing decision, new decision or open question;
-3. resolve any FIX-BEFORE-BUILD ambiguity;
-4. define typed inputs/outputs/state;
-5. define failure and UNKNOWN semantics;
-6. define parallel versus ordered work;
-7. define persistence/restart impact;
-8. define operator/research impact;
-9. define source/test ownership;
-10. identify affected documentation graph.
+Substantive canonical files include:
 
-## 8. During implementation
+```text
+Status
+Version
+Authority
+```
 
-1. implement only documented behaviour;
-2. keep hard-authority boundaries intact;
-3. update source/entry-point/test ownership if the actual design changes;
-4. synchronize persistence/dashboard/research/release consequences;
-5. preserve superseded rationale through governance records;
-6. run focused verification;
-7. run broader structural verification when the change crosses module boundaries.
+Status language must distinguish DRAFT, FROZEN, IMPLEMENTED, NOT RUN, CALIBRATION PENDING and EXTERNAL PROOF PENDING truthfully.
 
-If implementation reveals a wrong assumption, update the contract/decision before accepting the changed code as canonical.
+Do not mark a feature implemented because its document exists.
 
-## 9. Before handoff/completion claim
+## 4. One behavioural owner
 
-1. read affected documents end-to-end;
-2. check source/test inventory and links;
-3. verify terminology against Glossary;
-4. verify no parallel authority was accidentally introduced;
-5. distinguish deterministic proof from connected/calibration proof;
-6. perform reconstructability review: could another capable developer continue without chat history?
-7. record open items accurately;
-8. synchronize the final affected graph.
+Every meaningful rule has one canonical owner.
 
-## 10. Documentation change packet
+Other documents summarize/link rather than silently redefine it.
 
-Each material packet should be traceable through:
+Examples:
 
-| Field | Required meaning |
+```text
+completed-candle chronology → MARKET_DATA/CANDLE_STRUCTURE
+family hypotheses           → STRATEGY_FLOOR
+entry lifecycle             → ENTRY_TIMING
+structural geometry         → TRADE_PLAN + family extensions
+monetary affordability      → RISK_CONTRACT
+session/news permission     → SESSION_AND_RISK_STATE_MACHINE
+broker lifecycle            → EXECUTION_AND_BROKER_SAFETY
+backup/recovery             → PERSISTENCE_RESTART_AND_RECOVERY
+learning boundaries         → LEARNING_AND_AI_BOUNDARIES
+operator meaning            → DASHBOARD_AND_UX
+```
+
+## 5. Preserve rationale without preserving obsolete truth
+
+If a decision is superseded:
+
+- current topic contract becomes unambiguous;
+- `DESIGN_DECISIONS.md` keeps historical rationale/status;
+- `OPEN_QUESTIONS.md` updates if evidence is pending;
+- Git history preserves old text.
+
+Do not leave obsolete behaviour active merely because it was historically important.
+
+## 6. Full affected-graph rule
+
+A material change is not documented when only the nearest file changes.
+
+```text
+change
+→ authoritative topic
+→ Design Decision / Open Question
+→ System/Architecture/lifecycle impact
+→ Module/File-Test/Coder/Build map
+→ Persistence/recovery effect
+→ Operator/diagnostics effect
+→ Research/learning effect
+→ Testing/release/audit evidence
+```
+
+Inspect all relevant nodes even when some remain unchanged; record why where useful.
+
+## 7. Change packet
+
+A coherent packet records:
+
+| Field | Required content |
 |---|---|
-| Behaviour owner | authoritative topic file |
-| Preserved meaning | rationale/invariants intentionally retained |
-| New truth | decision/state/evidence change |
-| Affected graph | documents inspected/updated |
-| Source map | files/classes/entry points once implemented |
-| Tests/evidence | deterministic versus external/calibration |
-| Diagram impact | updated or explicitly unchanged |
-| Reconstructability | continuation possible without chat history |
+| Behaviour owner | authoritative file |
+| Preserved meaning | retained rationale/invariant |
+| New truth | semantic change |
+| Affected graph | synchronized docs |
+| Source map | planned/actual files/classes/entry points |
+| Tests/evidence | deterministic vs replay vs external |
+| Persistence/recovery | state/restore/backup consequence |
+| Operator impact | visible meaning |
+| Research impact | replay/learning/promotion consequence |
+| Reconstructability | continuation without chat history |
 | Open items | exact remaining work |
 
-## 11. AI/ChatGPT working rule
+## 8. Documentation-first build loop
 
-Before implementing a material feature, the AI/developer must:
+Before implementation:
 
-1. read `Documents/README.md` and the relevant authority contracts;
-2. read `CODER_GUIDE.md`, `60-engineering/MODULE_STRUCTURE.md` and `60-engineering/CODING_STANDARD.md` once those files exist;
-3. inspect current source/tests and latest repository state;
-4. identify the affected graph;
-5. implement one coherent packet;
-6. run focused/full verification as appropriate;
-7. synchronize Documents before claiming completion;
-8. keep durable project truth in repository documents, not chat memory.
+1. read `Documents/README.md` and relevant topic owners;
+2. read `CODER_GUIDE.md`, `MODULE_STRUCTURE.md`, `CODING_STANDARD.md`;
+3. identify one coherent feature/dependency;
+4. classify decisions/open questions;
+5. define source/test/failure ownership;
+6. identify affected-document graph;
+7. ensure implementation is not starting ahead of unresolved FIX-BEFORE-BUILD questions.
 
-If code, tests and Documents disagree, classify and repair the contradiction rather than guessing which one “probably” wins.
+During implementation:
 
-## 12. Scalping-specific documentation rule
+1. implement from the authoritative contract;
+2. keep deterministic/typed ownership;
+3. update source/test maps;
+4. update persistence/operator/research/release consequences;
+5. preserve superseded rationale;
+6. run focused/full verification.
 
-Scalp contracts must be explicit where a short horizon changes semantics, especially:
+Before handoff:
 
-- timeframe authority;
-- completed versus forming/tick evidence;
-- event/trigger freshness;
-- Bid/Ask/executable geometry;
-- spread/slippage/cost assumptions;
-- opportunity expiry and re-arm;
-- time-based exits;
-- high-frequency risk-day interactions;
-- backtest transaction-cost assumptions;
-- latency/freshness diagnostics.
+1. reread affected files end-to-end;
+2. inspect source/test inventory/links;
+3. classify evidence honestly;
+4. perform reconstructability review;
+5. record remaining external/calibration proof.
 
-Do not hide these differences behind generic “same as Swing” wording.
+## 9. AI/ChatGPT working rule
 
-## 13. Local backup documentation rule
+For any material change:
 
-Backup is a cross-cutting recovery surface.
+```text
+read canonical authority
+→ inspect current repository/source/tests
+→ state/understand affected graph
+→ implement one coherent packet
+→ verify
+→ synchronize Documents
+→ retain durable truth in repository
+```
 
-Any change to durable state, schema, learning artifacts, source packaging or restore order must check:
+If code/tests/Documents disagree, classify and repair contradiction rather than guessing.
 
-- `PERSISTENCE_RESTART_AND_RECOVERY.md`;
-- `LEARNING_BACKUP_AND_MULTI_MACHINE.md`;
-- module/file catalogs;
-- setup/build/recovery guides;
-- release checklist/audit;
-- security/secret-exclusion rules.
+AI may not use chat history to override canonical current files.
 
-No shutdown-GitHub-push behaviour is part of the target project.
+## 10. Scalping-specific synchronization hotspots
 
-## 14. Quality gates
+The following changes are especially cross-cutting:
 
-Documentation fails review if it:
+### Timeframe/M1 role
 
-- relies on chat history for a rule missing from `Documents/`;
-- uses vague words such as “safe”, “fresh”, “low spread” or “good setup” without naming the owning contract;
-- duplicates authority in two topic files;
-- hides UNKNOWN/error behaviour;
-- confuses analytics with broker permission;
-- confuses backtest success with live readiness/profitability;
-- moves a rule without updating links/ownership;
-- updates only one file when the affected graph is larger;
-- lets a dashboard/prompt/checklist override a topic contract;
-- introduces implementation details that contradict the source/test map;
-- silently copies Swing calibration into the scalp project without challenge.
+Touches Market Data, Candle Structure, Technical/Liquidity/Quant, Strategy Floor, Entry Timing, Architecture, Research/Replay, Dashboard, Coder/Testing.
 
-## 15. Freeze rule
+### Risk percentages / min lot
 
-This documentation method will itself be challenged before final freeze. Once frozen, changing it requires a governance decision and preservation review.
+Touches Risk, System Contract, Trade Plan boundary, dashboard, config, tests, research and release.
+
+### News UNKNOWN policy
+
+Touches Fundamental/News, Provider, Session/Risk state, Execution Gate, Health, dashboards, tests/replay and manuals.
+
+### Structural R / cost threshold
+
+Touches TradePlan, timing, strategy/fusion context, Risk boundary, audits, dashboards, replay/research and tests.
+
+### Local backup
+
+Touches Persistence, Learning Backup, Module Structure, Coder/Setup/Build guides, health, release/audits and scripts.
+
+### Broker-write implementation
+
+Touches System Contract, Execution, Risk/Session, Recovery, Controller, Management, local backup, dashboards, testing/release/user manuals.
+
+## 11. Diagrams and terminology
+
+Diagrams are architecture aids and must match current prose ownership.
+
+Canonical terms are defined in `GLOSSARY.md`; topic contracts may add precision but must not silently redefine hard-authority meaning.
+
+## 12. Cross-links and path truth
+
+Document links/paths must point to current canonical files.
+
+When source paths are only planned, say `planned` until implementation creates them.
+
+Do not cite nonexistent tests as passing proof.
+
+## 13. Evidence wording
+
+Approved claim categories:
+
+```text
+DOCUMENTED / DRAFT
+FROZEN DESIGN
+IMPLEMENTED
+DETERMINISTICALLY VERIFIED
+REPLAY/RESEARCH EVIDENCE
+CONNECTED READINESS VERIFIED
+CONNECTED DEMO VERIFIED
+LOCAL RECOVERY VERIFIED
+CALIBRATION PENDING
+EXTERNAL PROOF PENDING
+```
+
+Never convert a lower evidence rung into a higher one by wording.
+
+## 14. Backup/publication documentation rule
+
+GoldScalpTrader's current design is local-backup-first:
+
+- graceful runtime shutdown may create local verified checkpoint/package;
+- trading runtime does not Git commit/push;
+- source Git commits happen through deliberate development workflow;
+- local Git bundle is an optional deliberate source-history backup;
+- backup packages exclude secrets.
+
+Any future reversal of this boundary requires explicit governance decision and full affected-graph review.
+
+## 15. Quality gates
+
+Do not:
+
+- add code with no documented behavioural owner;
+- update one doc when affected graph is larger;
+- let dashboard/prompt/checklist override topic contract;
+- call unit tests external broker proof;
+- invent missing source/test evidence;
+- recreate a parallel manual;
+- rely on chat memory for a rule absent from `Documents/`;
+- mark audit PASS before it is run.
+
+## 16. Freeze process
+
+Current manual remains `DRAFT PRE-CHALLENGE` until:
+
+1. 64-file reference-equivalent inventory is complete;
+2. `AUDIT_1_FRESH_DESIGN_REVIEW.md` challenges every major component;
+3. contradictions/open questions are resolved/classified;
+4. affected docs are synchronized;
+5. reconstructability/documentation audit passes;
+6. accepted architecture is explicitly frozen for implementation.
+
+Changing this maintenance method after freeze requires governance decision plus preservation review.
