@@ -1,0 +1,39 @@
+# Secrets / local config
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage.xml
+.coverage
+htmlcov/
+
+# Runtime / logs / local data
+logs/
+data/
+runtime/
+*.log
+*.csv
+*.jsonl
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local MT5-related exports/backups
+mt5_data/
+backups/
