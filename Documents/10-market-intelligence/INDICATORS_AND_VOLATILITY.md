@@ -1,12 +1,12 @@
 # GoldScalpTrader — Indicators and Volatility
 
-**Status:** DRAFT PRE-CHALLENGE QUANTITATIVE EVIDENCE CONTRACT
-**Version:** 0.1-scalp-quant
+**Status:** FROZEN V1 QUANTITATIVE EVIDENCE ARCHITECTURE — SCALP THRESHOLD CALIBRATION PENDING
+**Version:** 1.0-scalp-quant-context
 **Authority:** EMA20/EMA50, RSI14, ATR14, volatility normalization, momentum phase, compression/expansion measurement, extension/chase and short-horizon execution-context evidence.
 
 ## 1. Purpose
 
-The Quant desk makes Gold price behaviour measurable across changing volatility regimes. It supports and normalizes structure; it does not replace structure.
+The Quant desk makes Gold price behaviour measurable across changing volatility regimes. It supports/normalizes structure; it does not replace structure.
 
 > Indicators explain pressure, distance, volatility and extension. They do not independently create a trade or broker permission.
 
@@ -14,17 +14,16 @@ The Quant desk makes Gold price behaviour measurable across changing volatility 
 
 | Rule | Meaning |
 |---|---|
-| Completed bars only | forming candles are excluded from indicator series |
-| One calculation per snapshot | indicator series are computed once and shared |
-| Chronological arrays | values use only information available at that point |
-| Explicit missingness | None/UNKNOWN is not a bearish or neutral vote |
+| Completed bars only | forming candles excluded from production indicator series |
+| One calculation per snapshot | series computed once/shared |
+| Chronological arrays | no future values |
+| Explicit missingness | None/UNKNOWN is not bearish/neutral vote |
 | ATR normalization | prefer volatility-relative geometry to fixed Gold points |
 | Soft evidence | hard safety belongs elsewhere |
-| No filter soup | no rule requiring every indicator/timeframe to agree |
+| No filter soup | no universal all-indicator/timeframe agreement |
+| M1 boundary | diagnostics/research only under current V1 authority |
 
-## 3. Baseline indicator family
-
-The initial reference set is retained for challenge:
+## 3. Preserved baseline indicators
 
 ```text
 EMA fast  = 20
@@ -33,7 +32,7 @@ RSI       = 14 (Wilder)
 ATR       = 14 (Wilder)
 ```
 
-These are design seeds, not frozen profitability parameters. The challenge/research process may keep or replace them only with explicit evidence.
+These reference primitives are preserved. Their existence is not a profitability claim and additional/alternative quantitative evidence requires governed research rather than silent replacement.
 
 ## 4. Quant pipeline
 
@@ -46,7 +45,7 @@ completed CandleSeries
 → QuantReport + coverage
 ```
 
-The report is shared with Structure, Technical, Liquidity, Strategy, Entry Timing, Trade Plan and Trade Manager.
+The shared report feeds Structure, Technical, Liquidity, Strategy, Entry Timing, TradePlan and Trade Manager.
 
 ## 5. EMA flow
 
@@ -58,37 +57,21 @@ EMA20 < EMA50 → SELL support
 otherwise      → NONE/UNKNOWN
 ```
 
-EMA order is not a strategy. A scalp still needs structure, location, freshness, path room, transaction-cost viability and timing.
-
-Potential later research can inspect slope/separation/pullback depth without turning them into universal gates.
+EMA order is context, not strategy permission. A scalp still needs structure, location, freshness, path room, cost viability and timing.
 
 ## 6. RSI pressure
 
-RSI14 is pressure context, not a rigid overbought/oversold reversal command.
-
-A strong trend can remain above 70 or below 30 while continuing. RSI disagreement is evidence, not automatic veto.
-
-Divergence remains a research candidate until validated and governed.
+RSI14 is pressure context, not rigid overbought/oversold reversal command. Strong trends may remain >70 or <30 while continuing. RSI disagreement is evidence, not automatic veto. Divergence remains research-only unless separately governed.
 
 ## 7. ATR as shared volatility unit
 
-ATR may normalize:
+ATR may normalize candle strength, swing significance, zone width, liquidity clustering, volatility regime, extension/chase, structural stop/target context, spread/room ratios and entry drift/movement since trigger.
 
-- candle strength;
-- swing confirmation/significance;
-- zone width;
-- liquidity clustering;
-- volatility regime;
-- extension/chase;
-- structural stop/target context;
-- spread/room ratios;
-- entry drift and movement since trigger.
-
-ATR does not independently set the final SL/TP.
+ATR does not independently set final SL/TP.
 
 ## 8. Volatility states
 
-Draft vocabulary:
+Vocabulary may include:
 
 ```text
 UNKNOWN
@@ -100,13 +83,9 @@ EXTREME
 DISLOCATED
 ```
 
-Exact boundaries remain calibration.
-
-EXTREME is context/warning, not universal rejection. DISLOCATED is adverse evidence that later timing/session/execution authorities may treat more strongly.
+Exact boundaries are scalp calibration. EXTREME is context/warning, not universal rejection. DISLOCATED is strong adverse evidence consumed by timing/session/execution owners.
 
 ## 9. Momentum phase
-
-Draft states:
 
 ```text
 UNKNOWN
@@ -117,83 +96,60 @@ EXHAUSTING
 REVERSING
 ```
 
-Momentum may combine EMA flow, recent completed-close progress, body/ATR efficiency, RSI pressure and extension.
+Momentum may combine EMA flow, completed-close progress, body/ATR efficiency, RSI pressure and extension.
 
-Strong momentum can still be a poor scalp entry when price is already too extended or transaction-cost-adjusted room is small.
+Strong momentum can still be a poor scalp entry when price is extended or cost-adjusted room is small.
 
-## 10. Extension and chase protection
+## 10. Extension / chase protection
 
-Baseline extension measurement can use:
+A baseline measurement may use:
 
 ```text
 abs(close - EMA20) / ATR
 ```
 
-with draft states:
+with states such as UNKNOWN, FRESH, NORMAL, EXTENDED and SEVERELY_EXTENDED.
 
-```text
-UNKNOWN
-FRESH
-NORMAL
-EXTENDED
-SEVERELY_EXTENDED
-```
-
-Extension is analytical evidence. Entry Timing combines it with structural-event age, trigger freshness and current executable market facts.
+Extension remains analytical evidence. Entry Timing combines it with event age, chase distance and current executable facts.
 
 ## 11. Scalp-specific quantitative context
 
-Without adding hidden new indicators, the Quant desk may publish derived measurements useful for scalping:
+Without inventing hidden indicators, Quant may publish:
 
 - recent bar range/ATR;
 - body efficiency;
-- short-window realized expansion/compression;
-- distance travelled since the structural event in ATR;
-- current spread relative to ATR or intended gross room as descriptive context;
+- short-window expansion/compression;
+- distance travelled since structural event in ATR;
+- spread relative to ATR/gross room as descriptive context;
 - recent volatility acceleration/deceleration.
 
-Any metric that becomes a hard broker gate must move to or be explicitly owned by the appropriate risk/execution contract.
+If a metric becomes hard broker gate, ownership moves explicitly to the relevant Risk/Execution contract.
 
-## 12. Timeframe baseline
+## 12. Frozen timeframe roles
 
-| Timeframe | Draft quant role |
+| Timeframe | Quant role |
 |---|---|
 | H4 | optional broad volatility context |
 | H1 | broad regime/trend support |
-| M15 | opportunity volatility and extension context |
+| M15 | opportunity volatility/extension context |
 | M5 | primary scalp momentum/extension/setup quality |
-| M1 | diagnostic micro-volatility until promoted |
+| M1 | diagnostic/research micro-volatility only |
 
-The system never requires all timeframes to agree.
+All-timeframe agreement is never required. M1 production promotion requires a future governed change.
 
-## 13. Compression, expansion and exhaustion ownership
+## 13. Compression / expansion / exhaustion ownership
 
-Quant supplies normalized measurements. Candle Structure owns the multi-bar sequence label. This prevents the same market episode from being double counted as separate certainty.
-
-Exhaustion does not automatically reverse the thesis or close a trade; relevant structural/liquidity evidence is still required.
+Quant supplies normalized measurements; Candle Structure owns multi-bar sequence labels. Exhaustion does not automatically reverse thesis or close trade without relevant structure/liquidity evidence.
 
 ## 14. Restart/replay
 
-The same completed prefix plus QuantConfig must reproduce the same series/report after restart. Missing values remain missing rather than being filled with zero.
-
-Chronological replay uses the production calculation at each prefix; no final-bar indicator value may leak backward.
+Same completed prefix plus QuantConfig must reproduce same series/report. Missing values stay missing rather than zero-filled. Replay uses production calculations at each prefix with no final-bar leakage.
 
 ## 15. Dashboard/research visibility
 
-Operator/research views should expose at least:
+Expose EMA flow, RSI, ATR, volatility state/ratio, momentum phase, extension/ATR distance, coverage and report/config version.
 
-```text
-EMA flow
-RSI
-ATR
-volatility state/ratio
-momentum phase
-extension state/ATR distance
-coverage
-report/config version
-```
-
-Research evaluates expectancy, Net R, drawdown, trade frequency, MAE/MFE, entry/exit efficiency, hold duration and transaction costs—not win rate alone.
+Research evaluates expectancy/Net R, drawdown, frequency, MAE/MFE, entry/exit efficiency, hold duration and costs—not win rate alone.
 
 ## 16. Planned implementation ownership
 
@@ -204,8 +160,8 @@ src/gold_scalp_trader/intelligence/snapshot.py
 
 ## 17. Planned proof
 
-Tests must prove chronological EMA/RSI/ATR, no-future values, UNKNOWN handling, volatility/momentum/extension states, shared ATR reuse, timeframe separation, restart determinism and replay parity.
+Tests prove chronological EMA/RSI/ATR, no-future values, UNKNOWN handling, volatility/momentum/extension states, shared ATR reuse, frozen timeframe separation, M1 non-authority, restart determinism and replay parity.
 
-## 18. Pre-challenge calibration
+## 18. Scalp calibration pending
 
-Open items: whether EMA20/50 and RSI14 remain optimal baselines, volatility-state bands, extension thresholds, short-window volatility metrics, M1 usefulness, divergence, percentile context and whether any added metric improves out-of-sample performance without creating filter soup.
+Volatility-state bands, extension thresholds, short-window volatility metrics, optional divergence/percentile context and marginal value of any added metric remain evidence questions. EMA20/EMA50, RSI14 and ATR14 remain the preserved baseline unless a later governed evidence packet changes them.

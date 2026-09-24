@@ -1,92 +1,71 @@
 # GoldScalpTrader — Breakout Retest Geometry Extension
 
-**Status:** DRAFT PRE-CHALLENGE CANONICAL EXTENSION
-**Version:** 0.1-scalp-retest-invalidation
-**Authority:** Family-specific invalidation ordering for Breakout Retest Continuation and preservation of general Trade Plan/risk boundaries.
+**Status:** FROZEN V1 FAMILY-GEOMETRY EXTENSION — SCALP RETEST/FRESHNESS CALIBRATION PENDING
+**Version:** 1.0-scalp-retest-invalidation
+**Authority:** Family-specific invalidation ordering for Breakout Retest Continuation and preservation of general TradePlan/Risk boundaries.
 
-## 1. Relationship to Trade Plan
+## 1. Relationship to TradePlan
 
-This document extends `TRADE_PLAN.md` for the `BREAKOUT_RETEST_CONTINUATION` family.
+This document extends `TRADE_PLAN.md` for `BREAKOUT_RETEST_CONTINUATION`.
 
-It exists because the executable retest thesis can fail at a much more local M5 boundary than the broader M15/H1 continuation structure. Using an unnecessarily broad stop can make a good scalp appear structurally uneconomic.
+The executable retest thesis can fail at a more local M5 boundary than broader M15/H1 continuation structure. Using unnecessarily broad invalidation can make a good scalp structurally uneconomic, but this is never permission to invent convenient tight stop.
 
-This is not permission to invent a tighter stop.
-
-## 2. Draft invalidation order
+## 2. Frozen invalidation preference
 
 ```text
 Breakout Retest Continuation:
-exact M5 retest-failure boundary
+exact causally proven M5 retest-failure boundary
 → M5 protected/confirmed structure
 → M15 meaningful structure
 → H1 fallback
 ```
 
-The exact M5 boundary must be causally proven from the same immutable snapshot and lie on the correct side of entry.
+The exact M5 boundary must come from the same immutable causal lineage and lie on the correct side of entry.
 
-If the required retest evidence is missing or ambiguous, the planner falls back conservatively. It must never synthesize a convenient level.
+If retest evidence is missing/ambiguous, planner falls back conservatively. It never synthesizes a convenient level.
 
-## 3. Why scalping makes this important
+## 3. Why this is scalp-specific
 
-Scalp targets are smaller and transaction cost is proportionally larger. A broad stop can:
+Scalp targets are smaller and transaction cost proportionally larger. A broad stop can inflate original 1R, weaken nearby objective quality, increase minimum-lot dollar risk and convert a short-horizon thesis into a different broader trade.
 
-- inflate original 1R;
-- make nearby valid objectives look poor;
-- increase minimum-lot dollar risk;
-- convert a short-horizon thesis into a different, broader trade.
-
-The correct fix is thesis-correct geometry—not lowering safety thresholds or tightening stops arbitrarily.
+Correct response is thesis-correct local geometry—not lower safety or arbitrary tightening.
 
 ## 4. Required event evidence
 
-A valid retest boundary should preserve:
+A valid retest boundary preserves:
 
 - source breakout event;
 - broken level identity;
-- retest event time;
+- causal acceptance/displacement evidence;
+- retest event time/knowledge time;
 - retest hold/reclaim/rejection facts;
-- exact local invalidation source;
+- exact invalidation source;
 - event freshness;
 - family/Opportunity/Episode identity.
 
-A stale old retest cannot be reused as a fresh scalp trigger without a new causal event.
+The breakout must causally precede the retest. A stale/consumed retest cannot be reused as a fresh scalp trigger without a new causal event.
 
-## 5. Downstream policy is unchanged
+## 5. M1 boundary
 
-This extension does not own:
+M1 remains diagnostic/research only under current V1. It cannot redefine Breakout Retest invalidation or independently create a production trigger. Any future M1 production role requires a separate governed change/evidence packet.
 
-- monetary risk percentage;
-- lot sizing;
-- minimum structural R/cost-adjusted room threshold;
-- session/news permission;
-- exposure/controller authority;
-- final execution gate;
-- Intent/writer/reconciliation.
+## 6. Downstream policy unchanged
 
-A retest plan can still be DEGRADED/INVALID or later BLOCKED.
+This extension does not own monetary risk percentage/profile/overlay, lot sizing, minimum structural/cost-adjusted room policy, session/news permission, exposure/controller authority, Gate or Intent/writer/reconciliation.
 
-## 6. Planned implementation ownership
+A valid retest plan may still be DEGRADED/INVALID or later BLOCKED.
+
+## 7. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/decisions/family_trade_plan.py
 src/gold_scalp_trader/decisions/trade_plan.py
 ```
 
-## 7. Planned proof
+## 8. Planned proof
 
-Tests must prove:
+Tests prove causal breakout-before-retest ordering, valid M5 retest-boundary preference, invalid/missing evidence fallback, no stale/consumed reuse, outward/broker-valid buffering, no account/Risk manipulation, current cost/target-room ownership and replay no-lookahead.
 
-- valid M5 retest boundary is preferred when present;
-- invalid/missing event evidence falls back conservatively;
-- stop remains outward/buffered and broker-valid;
-- no account/risk manipulation changes structural invalidation;
-- transaction-cost/target-room policy remains owned by general Trade Plan;
-- causal/replay timing prevents future retest knowledge.
+## 9. Scalp calibration pending
 
-## 8. Pre-challenge questions
-
-- exact definition of a valid retest hold/failure;
-- how long a retest remains fresh for an M5 scalp;
-- whether M1 may refine timing without becoming invalidation authority;
-- whether some breakout types should prefer M15 instead;
-- final minimum R/cost-adjusted room requirement.
+Exact retest hold/failure maturity, family-specific freshness/chase distance, whether some breakout subtypes should fall back to M15 earlier and final gross/cost-room threshold remain scalp evidence questions. M1 authority is not open.

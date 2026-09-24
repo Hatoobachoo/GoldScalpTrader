@@ -1,7 +1,7 @@
 # GoldScalpTrader — Technical Structure and Levels
 
-**Status:** DRAFT PRE-CHALLENGE LOCATION CONTRACT
-**Version:** 0.1-scalp-location-and-room
+**Status:** FROZEN V1 LOCATION ARCHITECTURE — SCALP GEOMETRY CALIBRATION PENDING
+**Version:** 1.0-scalp-location-and-room
 **Authority:** Support/resistance zones, structural level lifecycle, scalp location quality, target room, causal trendlines, Fibonacci geometry and broker-local volume-profile context.
 
 ## 1. Purpose
@@ -10,20 +10,18 @@ The Technical desk answers:
 
 > Where is current Gold price relative to confirmed geometry, and is there enough clean room for a short-duration trade after considering nearby structure?
 
-It consumes confirmed structure and quantitative context. It does not redefine BOS/MSS, choose strategy direction, set the final broker stop or grant execution permission.
+It consumes confirmed structure and quantitative context. It does not redefine BOS/MSS, choose strategy direction, set final broker stop or grant execution permission.
 
 ## 2. Output boundary
-
-The desk publishes generic location facts and optional confluence:
 
 | Output | Question | Hard permission? |
 |---|---|---:|
 | adaptive zones | where are confirmed support/resistance areas? | no |
 | BUY/SELL location | is each side positioned near supportive/opposing geometry? | no |
 | gross target room | distance to meaningful opposing structure | no |
-| cost-aware room context | how much room remains relative to current spread/expected friction? | no |
+| cost-aware room context | how much room remains relative to current spread/friction? | no |
 | trendline | causal touch/break/reclaim context | no |
-| Fibonacci | location inside a confirmed impulse | no |
+| Fibonacci | location inside confirmed impulse | no |
 | POC | broker-local volume concentration | no |
 | conflict | competing zones/path compression | no |
 
@@ -43,18 +41,16 @@ completed candles + labelled volume → broker-local POC
 
 all outputs
 → TechnicalReport / ConfluenceReport
-→ strategy families / fusion / Trade Plan / management
+→ strategy families / fusion / TradePlan / management
 ```
 
 The desk never rereads MT5 and never recomputes shared ATR merely for convenience.
 
 ## 4. Adaptive zones
 
-Zones are areas, not exact prices.
+Zones are areas, not exact prices. A source swing may become a tick/ATR-aware band; nearby compatible same-side zones may merge only with preserved provenance.
 
-A source swing can become a volatility-aware band using broker tick size plus ATR-normalized width. Nearby compatible same-side zones may merge only with preserved provenance.
-
-Draft lifecycle vocabulary:
+Lifecycle vocabulary:
 
 ```text
 ACTIVE
@@ -66,31 +62,29 @@ CONSUMED
 STALE
 ```
 
-A zone must not remain active forever after causally confirmed price acceptance through it.
+Consumed/broken structure must not continue polluting live executable geometry unless a later causal reclaim makes it relevant again.
 
-## 5. Scalping adaptation: local geometry matters more
+## 5. Scalp-specific local geometry
 
-A swing system can sometimes tolerate broad zones. A scalper cannot assume that a structurally valid level is executable when the invalidation distance or target room is too large relative to the intended move.
+A scalper cannot assume a valid broad level remains executable when invalidation distance or target room is too large relative to intended move.
 
-The Technical report therefore needs enough geometry to let later layers evaluate:
+Publish enough geometry for downstream evaluation of:
 
 - nearest meaningful support/resistance;
-- distance from current executable side of the market;
+- distance from current executable side;
 - gross path room;
 - local conflict density;
-- whether a breakout level is an obstacle or the thesis itself;
-- whether a retest remains fresh;
+- whether breakout level is obstacle or thesis level;
+- whether retest remains fresh;
 - current spread relative to gross room as descriptive context.
 
-This desk does not convert those facts into a monetary risk decision.
+This desk does not convert those facts into monetary Risk.
 
 ## 6. Independent BUY/SELL location
 
 BUY and SELL location are evaluated independently.
 
-A good BUY location does not make SELL impossible, and a poor BUY location does not erase a valid SELL thesis.
-
-Draft categories:
+Categories may include:
 
 ```text
 EXCELLENT
@@ -101,13 +95,13 @@ DANGEROUS
 UNKNOWN
 ```
 
-`DANGEROUS` means current geometry is unusually constrained; exact thresholds remain calibration.
+`DANGEROUS` means unusually constrained geometry; exact thresholds remain scalp calibration.
 
-## 7. Target room and transaction-cost context
+## 7. Target room / transaction-cost context
 
-Target-room distance is factual context, not the final TP.
+Target-room distance is factual context, not final TP.
 
-The report may publish both:
+Publish gross room plus spread/cost-relative facts such as:
 
 ```text
 gross_room_to_structure
@@ -115,72 +109,48 @@ current_spread
 room_to_spread_ratio
 ```
 
-or an equivalent normalized representation.
-
-This is especially important for scalping because a setup with apparently good chart room may have poor executable economics after Bid/Ask friction.
-
-The final structural target and original R belong to Trade Plan. Slippage/deviation and current pre-submit cost acceptance belong to Execution.
+TradePlan owns structural target/original R and explicit cost-adjusted planning truth. Execution owns final fresh spread/slippage/drift acceptance.
 
 ## 8. Causal trendlines
 
-Trendlines may be built only from already-confirmed structural anchors.
-
-Possible outputs:
-
-```text
-SUPPORT / RESISTANCE
-ASCENDING / DESCENDING / FLAT
-TOUCH / BREAK / RECLAIM / NONE
-projected price
-ATR-normalized distance
-```
+Trendlines use only already-confirmed structural anchors and may expose support/resistance, slope, touch/break/reclaim, projected price and ATR-normalized distance.
 
 Trendlines are optional confluence and cannot replace confirmed structure.
 
 ## 9. Fibonacci geometry
 
-Fibonacci anchors require a causal confirmed impulse pair. Future pivots and arbitrary visual highs/lows are prohibited.
+Fib anchors require a causal confirmed impulse pair. Future pivots and arbitrary visual highs/lows are prohibited.
 
-Initial retracement/extension labels may mirror the reference system as researchable confluence, but no exact ratio becomes a universal scalp entry rule.
-
-Fib context is optional; absence or disagreement cannot become a hidden veto.
+Reference ratios may remain researchable confluence; no ratio becomes universal scalp entry gate without separate governed evidence.
 
 ## 10. Broker-local volume profile / POC
 
-POC is computed from a bounded recent candle window and labelled by source:
+POC uses bounded completed history and explicitly labels volume source:
 
 ```text
 real_volume when meaningful
 otherwise tick_volume
 ```
 
-Tick volume is broker-local activity, not centralized exchange volume.
+Tick volume is broker-local activity, not centralized Gold exchange volume. POC is direction-neutral and cannot independently create BUY/SELL thesis.
 
-POC is direction-neutral and cannot independently create a BUY/SELL thesis.
+## 11. Session / prior-range levels
 
-For scalping, the challenge should test whether shorter rolling POC windows add useful local context or simply duplicate price structure.
+Session highs/lows, prior-session ranges and prior-day extremes may be technical/liquidity sources only with explicit provenance and creation time. They are not silently equivalent to confirmed swing zones.
 
-## 11. Session and prior-range levels
+## 12. Frozen timeframe roles
 
-Session highs/lows, prior session ranges and possibly prior-day extremes may be accepted as additional technical/liquidity sources only if their creation time and provenance are explicit.
-
-They must not be silently mixed with confirmed swing zones as if every source had identical meaning.
-
-## 12. Timeframe baseline
-
-| Timeframe | Draft technical role |
+| Timeframe | Technical role |
 |---|---|
 | H4 | optional major external zones |
 | H1 | broad regime/major support-resistance |
 | M15 | main scalp opportunity location and target path |
 | M5 | primary local setup/retest/entry geometry |
-| M1 | optional diagnostic micro-level context |
+| M1 | diagnostic/research micro-level context only |
 
-M5 location cannot overwrite H1/M15 context; lower timeframe detail refines rather than rewrites higher-timeframe facts.
+M5 detail refines but does not rewrite H1/M15 facts. M1 has no hidden production authority.
 
 ## 13. Confluence rule
-
-Draft composition follows the reference philosophy:
 
 ```text
 base strategy-family evidence
@@ -188,21 +158,11 @@ base strategy-family evidence
 = adjusted analytical evidence
 ```
 
-Guarantees:
-
-- missing confluence does not reduce a valid base thesis automatically;
-- optional items cannot become universal gates;
-- correlated confluence must be capped/bounded;
-- POC alone remains neutral;
-- hard safety remains outside weighted scoring.
+Missing optional evidence does not automatically penalize a valid base thesis; correlated confluence is bounded; POC alone is neutral; hard safety remains outside scoring.
 
 ## 14. Restart/replay
 
-Zones, trendlines, Fib anchors and POC must rebuild from the same causal prefix after restart.
-
-Replay stores source swing IDs, confirmation times, zone provenance, merge lineage, target-room facts, volume source and configuration fingerprint.
-
-No later bar may upgrade an earlier replay point.
+Zones, trendlines, Fib anchors and POC rebuild from same causal prefix. Replay stores source IDs, confirmation times, zone provenance/merge lineage, room facts, volume source and config fingerprint. No later bar upgrades an earlier replay point.
 
 ## 15. Failure behaviour
 
@@ -211,7 +171,7 @@ No later bar may upgrade an earlier replay point.
 | no confirmed swings | no fabricated zones |
 | no ATR | normalized location UNKNOWN |
 | no optional confluence | base analytical evidence remains intact |
-| no real volume | explicitly labelled tick-volume fallback where allowed |
+| no real volume | labelled tick-volume fallback where allowed |
 | opposing nearby zones | conflict exposed, not forced direction |
 | corrupt chronology | rejected upstream |
 
@@ -225,8 +185,8 @@ src/gold_scalp_trader/intelligence/snapshot.py
 
 ## 17. Planned proof
 
-Tests must cover zone construction/merging/provenance, independent BUY/SELL location, gross room, cost-aware descriptive ratios, causal trendline/Fib anchors, POC source labelling, timeframe separation, no-penalty missing confluence and replay no-lookahead.
+Tests cover zone construction/merging/provenance, lifecycle/consumption, independent BUY/SELL location, gross room, cost-aware descriptive ratios, causal trendline/Fib anchors, POC source labelling, frozen timeframe separation, missing-confluence semantics and replay no-lookahead.
 
-## 18. Pre-challenge calibration
+## 18. Scalp calibration pending
 
-Open items include zone width/merge tolerance, local-vs-major zone ranking, retest lifecycle, room thresholds, cost-aware room normalization, session/prior-day sources, POC lookback/binning, trendline tolerance, Fib impulse quality and whether any optional confluence adds out-of-sample value.
+Zone width/merge tolerance, local-vs-major ranking, retest lifecycle/freshness, room thresholds, cost-aware normalization, session/prior-day sources, POC lookback/binning, trendline tolerance, Fib impulse quality and marginal confluence value remain evidence questions.
