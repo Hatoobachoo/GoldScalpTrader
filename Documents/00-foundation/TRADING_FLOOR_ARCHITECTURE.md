@@ -1,227 +1,163 @@
 # GoldScalpTrader — Trading Floor Architecture
 
-**Status:** DRAFT PRE-CHALLENGE ARCHITECTURE CONTRACT
-**Version:** 0.1-scalp-floor
-**Authority:** Specialist-team ownership, staged analytical parallelism, opportunity capture and hard-authority boundaries.
+**Status:** FROZEN V1 ARCHITECTURE — CALIBRATION PENDING
+**Version:** 1.0-six-family-logical-floor
+**Authority:** Specialist-team ownership, logical analytical parallelism, Opportunity capture, correlation control and hard-authority boundaries.
 
 ## 1. Why a trading floor
 
-GoldScalpTrader is not one giant strategy function and not a checklist bot that requires every indicator to agree.
+GoldScalpTrader is not one giant strategy function and not a checklist bot requiring every indicator to agree.
 
-Each specialist desk asks a bounded question, publishes a typed result, and has an explicit authority limit.
+Each specialist desk asks one bounded question, publishes typed evidence and has an explicit authority limit.
 
-The floor has two simultaneous objectives:
+Objectives:
 
 1. build evidence-rich, internally challenged scalp theses;
-2. preserve Opportunity Recall so valid short-duration Gold moves are not discarded merely because an optional desk is neutral or unavailable.
+2. preserve Opportunity Recall so valid Gold moves are not discarded merely because optional evidence is neutral/unavailable.
 
-Soft analytical evidence and hard safety authority must remain separate.
+Soft analytical evidence and hard financial/broker authority remain separate.
 
-## 2. Opportunity-first, not trade-frequency-first
+## 2. Opportunity-first, not frequency-first
 
-Opportunity-first does not mean “trade often.” It means:
-
-- optional disagreement stays visible as score/conflict/debate;
-- one strong attributable family may lead when others are neutral;
-- required safety failures remain hard blocks;
-- stale or cost-dominated opportunities expire rather than being chased;
-- frequency is an output of qualified market conditions, not a target that overrides quality.
+- optional disagreement stays score/conflict/debate;
+- one strong attributable family may lead with others neutral;
+- required safety failures remain hard BLOCK/UNKNOWN;
+- stale/cost-dominated opportunities become WAIT/MISSED instead of chase;
+- frequency is an evidence outcome, never a safety override.
 
 ## 3. Shared immutable truth
 
-All analytical desks receive one normalized MarketSnapshot and declared upstream reports.
+All analytical desks consume one normalized immutable MarketSnapshot plus declared upstream reports. No desk privately fetches a fresher MT5 truth.
 
-No desk may secretly fetch a fresher MT5 value and create a private version of reality.
+Current quote/tick facts enter through normalized market-data boundaries and carry timestamps; they do not become retroactive structural evidence.
 
-Where live/tick evidence is later approved, it must enter through an explicit normalized boundary and carry its own timestamp/identity.
+## 4. Frozen staged floor
 
-## 4. Proposed staged floor
+### Stage A — Core intelligence
 
-### Stage A — Core fact/intelligence desks
-
-Candidate core desks:
 - Candle/Structure;
 - Indicators/Volatility;
-- Session Context;
-- execution-cost/quote context.
+- Session context;
+- current quote/cost/freshness facts.
 
-These produce broadly reusable facts for the rest of the floor.
+### Stage B — Specialist intelligence
 
-### Stage B — Specialist desks
-
-Candidate specialist desks:
 - Technical Structure/Levels;
 - Liquidity/SMC;
-- Fundamental/News context;
-- optional Trendline/Fibonacci/Volume POC confluence;
-- scalp microstructure/freshness desk if the challenge justifies a separate owner.
+- Fundamental/News;
+- bounded optional Trendline/Fibonacci/Volume-POC/FVG/OB confluence.
 
-Specialist outputs remain evidence, not broker authority.
+### Stage C — Six strategy-family teams
 
-### Stage C — Strategy-family teams
+Audit 1 freezes:
 
-Independent strategy families evaluate the same IntelligenceSnapshot.
+1. **Trend Pullback Continuation** — controlled retracement then short-horizon directional resumption.
+2. **Breakout Expansion** — fresh accepted break releasing expansion without late chase.
+3. **Breakout Retest Continuation** — meaningful break holds on a fresh executable retest.
+4. **Liquidity Sweep Reversal** — pre-existing pool is taken/rejected with reclaim/shift.
+5. **Failed Breakout Reversal** — attempted acceptance fails and opposing response forms.
+6. **Compression Expansion** — causal compressed range releases with directional evidence.
 
-GoldSwingTraderAI uses six independent families. GoldScalpTrader will preserve a six-family architecture as the starting design unless the fresh-zero scalp challenge shows a different count materially improves clarity or avoids duplicated hypotheses.
+Range mean-reversion is not a seventh V1 production family; it may be researched later. Generic “Momentum Expansion” is represented through Breakout/Compression narratives rather than an overlapping family.
 
-Candidate scalp families to challenge rather than freeze immediately:
+## 5. Frozen timeframe roles
 
-1. **Trend Pullback Continuation** — short-horizon continuation after controlled retracement into valid structure/location.
-2. **Breakout Retest Continuation** — fresh break/displacement followed by valid executable retest.
-3. **Liquidity Sweep Reversal** — sweep/probe and reclaim with fresh reversal structure.
-4. **Failed Breakout Reversal** — failed acceptance beyond a meaningful level followed by reclaim/invalidation geometry.
-5. **Momentum Expansion Continuation** — fresh compression-to-expansion or displacement continuation when entry is not late/cost-dominated.
-6. **Range Extreme / Mean-Reversion Scalp** — qualified range-edge rejection/reclaim under non-trending conditions.
+```text
+H1   broad soft regime
+M15  opportunity/location/path/liquidity/session context
+M5   primary completed setup/timing/management structure
+H4   optional major context
+M1   diagnostic/research only
+quote current executable condition
+```
 
-Names, membership and exact evidence requirements are DRAFT and must be challenged before freezing.
+No family may hide M1 production authority.
 
-## 5. Family independence
+## 6. Family independence / correlation
 
-A strategy family:
-- owns one market hypothesis;
-- receives shared evidence;
-- may request bounded family-specific evidence already available in typed reports;
-- publishes BUY/SELL/neutral thesis information and reasons;
-- preserves family attribution;
-- never owns monetary sizing;
-- never owns hard session/news permission;
-- never owns account/controller identity;
-- never sends an order.
+A family owns one hypothesis, uses shared evidence, publishes attributable BUY/SELL/neutral cases and never owns Risk/Gate/controller/order sending.
 
-No family may become a hidden sequential gate for every other family.
+Several families can describe the same episode. Event lineage/correlation control must prevent one sweep/failed-break/reclaim sequence from being counted as several independent confirmations.
 
-## 6. BUY and SELL teams
+## 7. BUY / SELL teams
 
-BUY and SELL are built independently.
+BUY and SELL theses are built independently. Strong opposing evidence remains visible rather than merely subtracting points from one confidence score.
 
-Strong SELL evidence should not be represented merely by subtracting points from BUY confidence. The system preserves both theses so conflict is visible and auditable.
+The directional floor exposes leading BUY/SELL families, supporting/conflicting evidence, coverage, correlation concerns, freshness/cost concerns and why one side leads or neither qualifies.
 
-The directional floor should be able to answer:
-- strongest BUY family and evidence;
-- strongest SELL family and evidence;
-- supporting/contradicting desks;
-- evidence coverage/availability;
-- correlation/duplication concerns;
-- freshness/cost concerns;
-- why one side leads or why neither is actionable.
+## 8. Red Team / Debate
 
-## 7. Red Team / Debate
+Challenges include:
 
-The leading direction is challenged before Opportunity creation.
+- late/extended move;
+- stale event;
+- weak target room;
+- probe versus accepted break;
+- hostile volatility/momentum;
+- spread/cost burden;
+- correlated support;
+- opposing thesis;
+- unavailable optional evidence.
 
-Red Team questions may include:
-- Is the move already late?
-- Is the thesis using stale structure/liquidity evidence?
-- Is opposing structure too close?
-- Is the apparent breakout only a probe?
-- Is volatility collapsing/expanding against the thesis?
-- Is spread/executable cost consuming too much target room?
-- Are multiple supporting signals actually the same underlying event counted several times?
-- Is the setup dependent on optional unavailable evidence?
+Red Team is analytical challenge, not broker permission.
 
-Red Team creates analytical challenge, not broker authority.
+## 9. Floor Manager
 
-## 8. Floor Manager
-
-The Floor Manager receives attributable family reports and debate output and publishes an auditable DecisionBoard.
-
-It may produce:
-- BUY_LEADS;
-- SELL_LEADS;
-- CONFLICTED;
-- WAIT;
-- NO_QUALIFIED_OPPORTUNITY;
-- degraded/unknown analytical classifications where applicable.
+Produces an auditable DecisionBoard/Opportunity handoff such as BUY_LEADS, SELL_LEADS, CONFLICTED, WAIT or NO_QUALIFIED_OPPORTUNITY.
 
 It does not set monetary risk or grant final permission.
 
-## 9. Opportunity lifecycle
+## 10. Opportunity / timing boundary
 
-A qualified directional thesis becomes a persistent Opportunity rather than a transient loop result.
+Opportunity asks:
 
-Opportunity should carry enough identity to prevent duplicates and stale re-entry, including candidate fields such as:
-- opportunity ID;
-- direction;
-- primary family;
-- originating structural/liquidity event IDs/timestamps;
-- location/reference zone;
-- creation/knowledge time;
-- policy/version identity;
-- lifecycle state;
-- latest valid timing window;
-- terminal reason when missed/invalidated/expired/executed.
+> Is this thesis worth stalking?
 
-Exact fields will be specified in the decision contracts.
+Entry Timing asks:
 
-## 10. Entry Timing boundary
+> Is the current completed-M5 moment fresh and efficient enough to act?
 
-Opportunity asks “is this thesis worth stalking?”
+Timing guards chase distance, event age, drift, spread/cost context, remaining room and duplicate-entry/re-arm semantics. M1 remains diagnostic only.
 
-Entry Timing asks “is it executable now?”
+## 11. Logical parallelism / physical concurrency
 
-Entry Timing may use finer, fresh evidence but cannot silently change the original thesis into a different setup.
+All six families and dependency-independent desks are **logically independent**.
 
-Scalp timing must explicitly guard against:
-- chase distance;
-- stale trigger;
-- spread deterioration;
-- trigger-to-current-price drift;
-- already-consumed target room;
-- false microstructure confirmation;
-- duplicate entry on the same event.
+Physical concurrent workers are optional/profiling-driven. Requirements if used:
 
-## 11. Parallel execution model
-
-Strategy families are logical peers and may later run in bounded parallel.
-
-Rules:
-- same immutable input;
-- no side effects;
-- deterministic output ordering;
+- immutable common input;
 - bounded workers;
-- serial fallback produces equivalent meaning;
-- worker exception is visible/degraded, not fabricated neutral evidence;
-- no broker read/write inside strategy workers.
+- deterministic canonical result order;
+- one-worker semantic parity;
+- visible worker failure/degradation;
+- no persistence/Risk/Gate/broker writes inside analytical workers.
+
+Concurrency is an optimization, not an authority.
 
 ## 12. Hard-authority handoff
-
-The floor ends before money/broker authority begins.
 
 ```text
 DecisionBoard
 → Opportunity
-→ Entry Timing
-→ Trade Plan
+→ completed-M5 Entry Timing
+→ TradePlan gross + cost-adjusted room
 ---------------- analytical/geometry boundary ----------------
-→ monetary Risk
+→ STANDARD monetary Risk
 → hard permission authorities
 → central Gate
 → Intent
-→ MT5Writer
+→ sole MT5Writer
+→ reconciliation
 ```
 
-This boundary is non-negotiable unless governance explicitly replaces it.
+This serial financial/broker spine is non-negotiable without a governed architecture change.
 
-## 13. Dashboard relationship
+## 13. Dashboard / research
 
-The dashboard may show desk reports, leading family, BUY/SELL conflict, Opportunity state, timing state and reasons.
+Dashboard shows desk/family/debate/Opportunity/timing facts but recalculates no hidden signal/permission.
 
-It may not compute a secret alternative signal or turn a display button into broker authority without a separate documented control architecture.
+Family attribution survives through trade/close/learning so research can compare narratives and correlation without reconstructing ownership from P/L.
 
-## 14. Research relationship
+## 14. Calibration pending
 
-Family attribution must survive through trade, close and learning so research can evaluate each family without reconstructing strategy ownership from P/L alone.
-
-Research may propose threshold/family changes. Production changes require governed promotion.
-
-## 15. Fresh-zero challenge targets
-
-The challenge must test:
-- whether six families remain the best decomposition for scalping;
-- overlap/correlation between reversal families;
-- whether momentum expansion deserves its own family;
-- whether range mean-reversion should be production or research-only;
-- exact timeframe/evidence role per family;
-- whether M1/tick evidence belongs in Entry Timing, Intelligence or diagnostics;
-- how cost/freshness should influence Floor Manager versus later Trade Plan/Risk;
-- whether any family creates sequential-filter-soup behaviour.
+Family scores/weights, correlation caps, Opportunity thresholds, session conditioning, event freshness and cost/freshness analytical penalties require chronological replay/stress/holdout and connected evidence.

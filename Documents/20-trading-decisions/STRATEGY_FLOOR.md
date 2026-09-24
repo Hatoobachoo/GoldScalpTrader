@@ -1,22 +1,20 @@
 # GoldScalpTrader — Strategy Floor
 
-**Status:** DRAFT PRE-CHALLENGE STRATEGY CONTRACT
-**Version:** 0.1-scalp-six-family-floor
-**Authority:** Independent production strategy-family hypotheses, shared evidence, bounded concurrency, optional confluence, attribution and runtime handoff.
+**Status:** FROZEN V1 STRATEGY ARCHITECTURE — CALIBRATION PENDING
+**Version:** 1.0-six-family-scalp-floor
+**Authority:** Six independent production strategy-family hypotheses, shared evidence, logical independence, optional confluence, correlation control, attribution and runtime handoff.
 
-## 1. Purpose and boundary
+## 1. Purpose
 
-The Strategy Floor defines independent, auditable scalp hypotheses. It does not own monetary risk, hard session/news permission, broker identity, controller ownership or order execution.
+The Strategy Floor defines six independent, auditable scalp hypotheses. It does not own monetary risk, hard session/news permission, broker identity, controller ownership or order execution.
 
 > Parallel hypotheses, bounded evidence, no sequential filter soup, no unanimity requirement.
 
-Every family receives the same verified IntelligenceSnapshot. Family outputs remain attributable until BUY/SELL fusion.
+Every family consumes the same verified IntelligenceSnapshot. Outputs remain attributable until BUY/SELL fusion.
 
-The objective is selective but healthy scalp opportunity coverage—not raw trade count and not a perfect checklist that almost never triggers.
+## 2. Frozen six-family map
 
-## 2. Initial six-family map
-
-The reference six-family architecture is retained as the **starting decomposition** because the narratives remain meaningful at scalp horizons. Their exact definitions are adapted toward M5 opportunity/entry behaviour and remain challengeable.
+Audit 1 retains:
 
 ```text
 Trend Pullback Continuation
@@ -27,144 +25,78 @@ Failed Breakout Reversal
 Compression Expansion
 ```
 
-All six are evaluated independently. The fresh-zero audit may KEEP, MERGE, SPLIT, REPLACE or REMOVE a family only with explicit reasoning.
+The narratives remain distinct enough at M5 scalp horizon that premature merging would reduce attribution and research clarity.
 
-## 3. Shared timeframe baseline
-
-Draft role mapping:
+## 3. Frozen timeframe baseline
 
 ```text
-H1  → broad regime / important structural context
-M15 → opportunity location, path, session/liquidity context
-M5  → primary scalp setup + trigger structure
-M1  → diagnostic/micro-timing context only in baseline
-quote/spread → executable condition, not strategy history
+H1  → broad soft regime / important directional-volatility context
+M15 → opportunity location, path, liquidity/session context
+M5  → primary completed-bar scalp setup/timing structure
+H4  → optional major context only
+M1  → diagnostic/research only
+quote/spread → executable condition, not strategy-history authority
 ```
 
-H4 may remain optional major context and can never be required for every scalp.
+No family may quietly use M1 as an independent V1 trigger.
 
-## 4. Family reports
+## 4. FamilyReport contract
 
-Each `FamilyReport` should preserve:
+Each report preserves:
 
 - family identity;
 - independent BUY and SELL cases;
-- bounded score/strength and coverage;
-- supporting/conflicting evidence labels;
+- score/strength and evidence coverage;
+- support/conflict labels;
 - source timestamps/lineage;
 - nearest plausible structural objective;
 - path/room context;
 - preferred timing profile;
-- scalp freshness context;
-- session/regime attribution.
+- event/freshness context;
+- session/regime attribution;
+- correlation/event-cluster identity where needed.
 
-A FamilyReport is soft analytical evidence, not a broker vote.
+A FamilyReport is soft analytical evidence, not broker permission.
 
-## 5. Trend Pullback Continuation
+## 5. Family definitions
 
-Question:
+### 5.1 Trend Pullback Continuation
 
-> Is an established short-horizon move resuming after a controlled pullback into useful location?
+Is an established short-horizon move resuming after a controlled pullback into useful location?
 
-Draft evidence:
+Evidence may include H1/M15 context, M15/M5 location, M5 pullback/resumption, EMA/ATR/momentum, liquidity path and session context. Optional FVG/OB/Fib/trendline/POC is not mandatory.
 
-- H1/M15 directional context;
-- M15/M5 location and target room;
-- M5 pullback depth and resumption structure;
-- EMA flow, ATR-normalized extension and momentum;
-- liquidity path / nearby obstacle context;
-- session context.
+### 5.2 Breakout Expansion
 
-Optional FVG/OB/Fib/trendline/POC support is not mandatory.
+Is a meaningful level being accepted and releasing fresh expansion with remaining executable room?
 
-Scalp-specific concern: reject/WAIT when the resumption is already extended or the remaining move after costs is too small.
+Use causal M15/M5 level/break evidence, completed-bar acceptance, M5 displacement/volatility, path/target room and chase protection. A perfect retest is not mandatory.
 
-## 6. Breakout Expansion
+### 5.3 Breakout Retest Continuation
 
-Question:
+Did a meaningful break hold on a fresh retest with M5 continuation structure?
 
-> Is a meaningful level being accepted and releasing a fresh expansion that still has executable room?
+Use prior causal break, M15/M5 retest area, M5 hold/reclaim/rejection, target room and event freshness. Exact retest invalidation is owned by `BREAKOUT_RETEST_GEOMETRY.md`.
 
-Draft evidence:
+### 5.4 Liquidity Sweep Reversal
 
-- meaningful M15/M5 level/break;
-- completed-bar acceptance, not wick-only probe;
-- M5 displacement/expansion and volatility build;
-- liquidity path/target room;
-- non-chased entry geometry;
-- current session context.
+Was a pre-existing pool taken and rejected strongly enough for a short-horizon reversal scalp?
 
-A retest is not mandatory. Entry Timing owns late-chase protection.
+Require a pre-existing pool plus causal sweep/reclaim and credible M5 response. A wick alone is insufficient.
 
-## 7. Breakout Retest Continuation
+### 5.5 Failed Breakout Reversal
 
-Question:
+Did attempted acceptance beyond a meaningful level fail and produce a credible opposing response?
 
-> Did a meaningful break hold on a fresh retest, with M5 structure showing continuation?
+Use causal failed-break evidence, M5 opposing response/MSS/reclaim, M15 location/path, target room and freshness.
 
-Draft evidence:
+### 5.6 Compression Expansion
 
-- prior causal break;
-- M15/M5 retest area;
-- M5 hold/reclaim/rejection and continuation;
-- path/target room;
-- event age/freshness.
+Did a real compressed range release with fresh directional evidence and enough remaining room?
 
-The executable retest structure may require M5-first invalidation; `BREAKOUT_RETEST_GEOMETRY.md` owns that extension.
+Use M15/M5 compression, causal boundary, M5 release/acceptance, volatility build, path/room and session context. Direction is never guessed before release evidence.
 
-## 8. Liquidity Sweep Reversal
-
-Question:
-
-> Was a pre-existing pool taken and rejected strongly enough to support a short-horizon reversal scalp?
-
-Draft evidence:
-
-- pre-existing M15/M5/session pool;
-- completed sweep/reclaim;
-- M5 rejection/structure shift;
-- acceptable opposing path room;
-- non-hostile broader context;
-- event freshness.
-
-A wick alone is insufficient.
-
-## 9. Failed Breakout Reversal
-
-Question:
-
-> Did attempted acceptance beyond a meaningful level fail and produce a credible opposing response?
-
-Draft evidence:
-
-- causal failed break;
-- M5 opposing response/MSS/reclaim;
-- M15 location/path;
-- target room;
-- event freshness and non-chased entry.
-
-This remains distinct from a sweep narrative even when the same market episode contains correlated evidence.
-
-## 10. Compression Expansion
-
-Question:
-
-> Did a real compressed range release with fresh directional evidence and sufficient remaining room?
-
-Draft evidence:
-
-- M15/M5 compression;
-- causal range boundary;
-- M5 release/acceptance;
-- volatility/momentum expansion;
-- path/target room;
-- session context.
-
-No direction is guessed before release evidence.
-
-## 11. Optional confluence
-
-Initial philosophy:
+## 6. Optional confluence
 
 ```text
 supportive Trendline/Fib/POC/FVG/OB → bounded positive support
@@ -173,57 +105,52 @@ opposed/unclear optional context     → visible conflict/context
 POC alone                            → no direction
 ```
 
-Optional tools cannot become hidden universal gates.
+Optional confluence cannot become a hidden universal gate.
 
-## 12. Correlation and family overlap
+## 7. Correlation / overlap
 
-Several families can describe the same episode. Fusion must preserve attribution and bound correlated support.
+Families can describe the same episode:
 
-Examples:
+- sweep + failed breakout;
+- breakout/retest + pullback;
+- compression release + breakout expansion.
 
-- a sweep can also create failed-break evidence;
-- breakout/retest and pullback narratives can overlap;
-- compression release can simultaneously look like breakout expansion.
+Fusion must use event lineage/correlation bounding so correlated labels do not become fake independent certainty. Family identity still remains visible for attribution/research.
 
-The system must not interpret three correlated labels as three independent confirmations.
+## 8. Logical parallelism / scheduling
 
-## 13. Runtime and bounded concurrency
-
-Family calculations are pure analytical jobs.
-
-The semantic contract is:
+Semantic contract:
 
 ```text
 one immutable IntelligenceSnapshot
 → six pure FamilyReports
 → deterministic canonical ordering
-→ optional bounded confluence
+→ bounded optional confluence
 → BUY/SELL fusion
 ```
 
-A one-worker serial run and bounded-parallel run must produce the same reports.
+Logical independence is required. Actual concurrent worker scheduling is optional and may be enabled only when profiling justifies it. A one-worker run is always valid and must be semantically identical.
 
-Family workers cannot persist broker lifecycle state, size lots or call MT5.
+Workers cannot mutate lifecycle state, size lots, persist Intents or call MT5.
 
-## 14. Frequency and quality philosophy
+## 9. Frequency / quality evidence
 
-Research must jointly measure:
+Research evaluates jointly:
 
-- Opportunity Recall;
-- meaningful missed moves;
-- analytical ENTER frequency;
-- capacity-admitted trade frequency;
-- Net R / expectancy / Profit Factor;
-- drawdown and loss streak;
+- Opportunity Recall and meaningful missed moves;
+- analytical ENTER and capacity-admitted trade frequency;
+- Net R/expectancy after costs;
+- drawdown/loss streak;
 - MAE/MFE;
-- entry/exit/capture efficiency;
+- entry/capture/exit efficiency;
 - hold duration;
-- spread/slippage/transaction cost;
-- family/session/regime attribution.
+- spread/slippage/latency;
+- family/session/regime attribution;
+- correlated-family contribution.
 
-A stricter rule is not automatically better merely because historical win rate rises.
+Higher historical win rate alone is not sufficient to justify a stricter filter.
 
-## 15. Planned implementation ownership
+## 10. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/strategies/floor.py
@@ -234,26 +161,10 @@ src/gold_scalp_trader/decisions/opportunity.py
 src/gold_scalp_trader/decisions/timing.py
 ```
 
-## 16. Planned proof
+## 11. Planned proof
 
-Tests must prove:
+Tests must prove same-snapshot inputs, independent BUY/SELL cases, attribution survival, no unanimity requirement, optional-evidence semantics, correlation bounding, serial/parallel semantic parity and zero family broker/risk authority.
 
-- all families consume the same snapshot;
-- BUY and SELL are independent;
-- family attribution survives fusion;
-- one strong coherent family can lead without unanimity;
-- optional evidence absence does not silently become veto;
-- correlated support is bounded;
-- parallel and serial evaluation are semantically identical;
-- no family has broker/risk authority.
+## 12. Calibration pending
 
-## 17. Pre-challenge questions
-
-- whether six families remain the optimal decomposition for scalping;
-- exact family evidence/weights;
-- whether M1 contributes explicit timing evidence;
-- family-specific event freshness;
-- session specialization;
-- family overlap/correlation rules;
-- opportunity thresholds balancing quality and frequency;
-- latency/resource cost of bounded concurrency.
+Family evidence weights, thresholds, preferred trigger profiles, event freshness, session conditioning, correlation caps and Opportunity thresholds remain replay/stress/holdout questions.

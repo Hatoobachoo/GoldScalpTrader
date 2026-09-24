@@ -1,37 +1,16 @@
 # GoldScalpTrader — Session, News and Risk State Machine
 
-**Status:** DRAFT PRE-CHALLENGE PERMISSION CONTRACT
-**Version:** 0.1-scalp-session-risk-state
-**Authority:** Market schedule states, news-safety states, risk/system states, permission composition and action-sensitive transitions.
+**Status:** FROZEN V1 PERMISSION ARCHITECTURE — TIMING CALIBRATION / EXTERNAL SCHEDULE PROOF PENDING
+**Version:** 1.0-news-unknown-conservative
+**Authority:** Market schedule states, News-safety states, monetary-risk/system states, action-sensitive permission composition and transitions.
 
 ## 1. Purpose
 
-This document defines how independent hard authorities become safe new-entry permission and how existing-position management behaves while entry is blocked.
+This contract defines how independent hard authorities become safe new-entry permission and how existing-position management behaves while entry is blocked.
 
-Market/session truth and News truth remain separate:
+Market/session truth and News truth remain separate.
 
-- broker/session truth is hard;
-- positively known high-impact blackout truth is hard;
-- external News-provider availability is adaptive context;
-- News UNKNOWN is never fabricated as CLEAR;
-- the treatment of `OPEN + News UNKNOWN` remains a deliberate policy item for the scalp challenge, because short-duration execution is unusually event-sensitive.
-
-## 2. State topology
-
-```text
-Market Permission
-+ News Permission
-+ Monetary Risk State
-+ Data / account / exposure / recovery / controller state
-→ centralized permission composition
-→ ALLOW / BLOCK / UNKNOWN for the requested action
-```
-
-The result for a **new entry** is not automatically the result for managing an already-open verified bot position.
-
-## 3. Market schedule states
-
-Draft states:
+## 2. Market states
 
 ```text
 OPEN
@@ -41,51 +20,11 @@ REOPEN_WARMUP
 SESSION_UNKNOWN
 ```
 
-Only verified OPEN can permit consideration of a new entry.
+Only verified OPEN can permit consideration of a new entry. Exact pre-close/reopen timing remains calibration/external proof.
 
-### OPEN
+`SESSION_UNKNOWN` fails closed for new entry; no schedule is invented.
 
-Means accepted broker/session facts support tradeability. It does not bypass risk, data, identity, controller, news or fresh execution checks.
-
-### PRE_CLOSE
-
-Verified symbol schedule says a closure is approaching.
-
-The mechanism from the reference system is retained:
-
-- stop new entries before a defined cutoff;
-- flatten bot-managed exposure before known closure where policy requires it;
-- route flatten through normal governed CLOSE Intent/writer/reconciliation;
-- never assume closed merely because schedule reached T-0.
-
-Exact daily/weekend scalp cutoff minutes remain challengeable and must use current broker evidence.
-
-### CLOSED
-
-No new entries. Analysis/dashboard/background research may remain alive.
-
-Any unexpected open position or unresolved Intent remains a reconciliation obligation, not invented flat truth.
-
-### REOPEN_WARMUP
-
-The first returned quote does not immediately grant entry authority.
-
-Warmup may require:
-
-- verified schedule OPEN;
-- fresh Bid/Ask and required bars;
-- normalized spread/execution conditions;
-- no unresolved gap/reconciliation issue;
-- one or more clean completed M5 bars;
-- additional weekend gap assessment.
-
-Exact clean-bar counts remain challengeable.
-
-### SESSION_UNKNOWN
-
-If required current schedule truth cannot be established, new entries fail closed. No open/close time is invented.
-
-## 4. News-safety states
+## 3. News states
 
 ```text
 NEWS_CLEAR
@@ -96,33 +35,30 @@ POST_NEWS_WARMUP
 
 ### NEWS_CLEAR
 
-Accepted event truth is current and no configured hard blackout/warmup is active.
+Accepted current event truth and no configured hard blackout/warmup.
 
 ### NEWS_BLACKOUT
 
-A positively known high-impact window is active. It blocks new entries/re-entry/add-ons. Scheduled news alone does not automatically force-close an existing position.
+Known high-impact configured event window; hard new-entry/re-entry block.
 
 ### NEWS_SAFETY_UNKNOWN
 
-Provider truth is missing/stale/malformed/unavailable. It remains visibly UNKNOWN.
-
-The reference system allowed `Session PASS + News UNKNOWN → combined PASS`. GoldScalpTrader will **not freeze that automatically** before the fresh-zero challenge because a scalper's holding/entry horizon is more exposed to immediate event shocks.
-
-Candidate policies to challenge include:
+Provider/event truth is missing, stale, malformed or unavailable. Audit 1 freezes conservative V1 treatment:
 
 ```text
-A) preserve reference adaptive-PASS behaviour;
-B) block only new entries when News is UNKNOWN while management continues;
-C) session/regime-specific degraded policy.
+Session OPEN + News UNKNOWN
+→ new-entry BLOCK / LIMITED
 ```
 
-Whatever is chosen must remain explicit and tested; UNKNOWN may never be renamed CLEAR.
+UNKNOWN is never relabelled CLEAR.
+
+Existing verified bot position management, protection and mandatory risk-reducing CLOSE continue under action-specific authorities; News UNKNOWN alone must not trap risk.
 
 ### POST_NEWS_WARMUP
 
-A known event/dislocation can keep new entries blocked until normalized conditions and fresh completed-bar evidence return. Exact duration/conditions remain calibration.
+After known event/dislocation, new entries can remain blocked until calibrated clean-bar/spread/market normalization conditions return.
 
-## 5. Risk states
+## 4. Risk states
 
 ```text
 NORMAL
@@ -131,15 +67,9 @@ COOLDOWN
 RISK_UNKNOWN
 ```
 
-`NORMAL` only means no risk-state lock is active. It cannot override another hard authority.
+NORMAL cannot override another hard authority. LOSS_LOCKED/COOLDOWN/RISK_UNKNOWN block new entry while safe management continues according to action-specific rules.
 
-`LOSS_LOCKED` blocks new exposure while allowing safe management.
-
-`COOLDOWN` blocks new entries until its documented release conditions pass.
-
-`RISK_UNKNOWN` fails closed for new entries.
-
-## 6. System/lifecycle states
+## 5. System / lifecycle states
 
 ```text
 HEALTHY
@@ -148,107 +78,78 @@ UNKNOWN
 RECONCILING
 ```
 
-Examples of hard unresolved truth:
+Hard unresolved examples include account/server/symbol mismatch, stale/corrupt required market data, unresolved Intent, StateStore integrity failure, unknown financial truth, ownership ambiguity, external Gold exposure or stale controller authority.
 
-- account/server/symbol mismatch;
-- stale/corrupt required market data;
-- unknown schedule;
-- unresolved Intent;
-- StateStore integrity failure;
-- unknown financial truth;
-- position ownership ambiguity;
-- external Gold exposure;
-- lost/stale controller authority.
+`RECONCILING` is not flat exposure.
 
-`RECONCILING` is not empty exposure.
-
-## 7. Controller state
-
-Initial V1 permits one active PRIMARY writer per account/symbol scope.
-
-Only the current verified controller holder/fencing epoch may proceed to an irreversible write.
-
-Same-scope simultaneous active writers are unsupported. Sequential handoff requires stop → checkpoint → transfer/restore → broker reconciliation → new controller acquisition.
-
-## 8. Permission composition
-
-Conceptual new-entry composition:
+## 6. New-entry composition
 
 ```text
 MarketPermission
 + NewsPermission
-+ RiskPermission
-+ DataQuality / quote freshness
++ STANDARD RiskPermission
++ Data / quote freshness
 + Account/server/symbol identity
-+ Position ownership / capacity
++ Position ownership/capacity
 + Recovery/reconciliation
 + Controller holder/epoch
 + fresh spread/drift/volume/margin/stops
-= centralized ExecutionPermission
+= central ExecutionPermission
 ```
 
-The central Gate consumes these results; it does not reimplement them independently.
+The Gate consumes owner results; it does not duplicate their logic.
 
-## 9. Action-sensitive entry versus management
+## 7. V1 News matrix
 
-Some conditions that block OPEN must not trap risk inside an existing position.
+| Market | News | New entry |
+|---|---|---|
+| OPEN | CLEAR | may proceed to remaining authorities |
+| OPEN | BLACKOUT | BLOCK |
+| OPEN | UNKNOWN | BLOCK / LIMITED |
+| OPEN | POST_NEWS_WARMUP | BLOCK until release conditions |
+| PRE_CLOSE/CLOSED/WARMUP | any | BLOCK |
+| SESSION_UNKNOWN | any | UNKNOWN / fail closed |
+
+## 8. Action-sensitive management
+
+Conditions that block OPEN must not mechanically trap unwanted exposure.
 
 Examples:
 
-- elevated spread may block discretionary OPEN;
-- a mandatory CLOSE still requires fresh quote/broker/controller/lifecycle authority, but should not be vetoed merely because spread is elevated if closing reduces unwanted exposure and broker accepts it;
-- MODIFY may retain stricter spread/drift controls;
-- News blackout normally blocks new entry, not necessary protection/close;
-- loss lock blocks new exposure, not safe management.
+- wide spread may block discretionary OPEN;
+- mandatory CLOSE still needs identity/controller/fresh quote/broker permission/Intent/reconciliation but elevated spread may be diagnostic rather than veto;
+- News UNKNOWN/BLACKOUT blocks new entry but does not automatically block protection/close;
+- loss lock blocks new exposure, not safe management;
+- MODIFY can have stricter cost/drift checks than mandatory CLOSE.
 
-Exact action-specific rules belong jointly to this contract and `EXECUTION_AND_BROKER_SAFETY.md`.
+## 9. PRE_CLOSE / reopen mechanism
 
-## 10. PRE_CLOSE policy seed
-
-The reference design used:
+Preserve the two-stage architecture:
 
 ```text
-daily close:   T-20m no new entry, T-10m mandatory flatten
-weekend close: T-60m no new entry, T-30m mandatory flatten
+no-new-entry cutoff
+→ later mandatory flatten cutoff while market still tradeable
 ```
 
-GoldScalpTrader preserves the **two-stage mechanism**, not these exact numbers as frozen policy. The challenge should account for scalp duration, broker schedule and real execution conditions.
+Exact daily/weekend minutes are **not** copied from Swing and require broker schedule plus scalp hold-duration evidence.
 
-## 11. Reopen policy seed
+Reopen retains a warmup mechanism requiring verified OPEN, fresh data, normalized execution conditions, no unresolved recovery issue and calibrated clean completed-M5 evidence. Exact counts remain calibration/external proof.
 
-The reference required one clean completed M5 after daily reopen and two after weekend reopen plus gap assessment.
+## 10. Holiday / special schedule uncertainty
 
-This is retained as a candidate baseline because M5 is the primary scalp timeframe, but exact counts remain external/calibration items.
+If current altered broker schedule cannot be verified, session remains UNKNOWN. Missing public News alone is not proof of holiday/closure.
 
-Clean bars never override abnormal spread, stale data, unresolved reconciliation, identity or risk failures.
+## 11. Controller / machine boundary
 
-## 12. Holiday/special schedule uncertainty
+One active PRIMARY writer per account/symbol scope. Same-scope simultaneous active writers are unsupported. Sequential handoff requires old stop → checkpoint/package → restore → fresh broker reconciliation → controller acquisition.
 
-A positively known holiday that may alter Gold hours means normal assumptions may be insufficient. Exact altered broker schedule is required or session remains UNKNOWN.
+## 12. Persistence / restart
 
-A missing public news calendar alone is not proof of a holiday or special closure.
+Persist risk-day/lock/cooldown/episode state, unresolved Intents, ManagedTrade, controller lineage and relevant permission transitions through their owners.
 
-## 13. Persistence/restart
+Restart refreshes current session/news observations and cannot convert unavailable News to CLEAR or forget cooldown/episode lock.
 
-Persist through owners:
-
-- risk-day/lock/cooldown/episode state;
-- unresolved Intents;
-- ManagedTrade context;
-- controller epoch/ownership lineage where durable;
-- relevant permission-transition evidence.
-
-Current session/news observations are refreshed on restart.
-
-Restart must not:
-
-- create a fresh risk baseline while lifecycle is unresolved;
-- turn unavailable News into CLEAR;
-- forget cooldown/episode lock;
-- assume external exposure is gone;
-- call writer before controller/reconciliation authority is ready.
-
-## 14. Dashboard
+## 13. Dashboard
 
 Display independently:
 
@@ -256,17 +157,16 @@ Display independently:
 Market State
 News State
 Risk State
-System / Recovery State
+System/Recovery State
 Controller State
 Entry Permission
-Management Permission / mandatory flatten state
-primary blocker
-secondary blocker
+Management Permission / mandatory flatten
+primary/secondary blocker
 ```
 
-An upstream TradePlan/Risk stop must not be mislabelled as a Central Gate failure.
+An upstream TradePlan/Risk stop is not automatically a central Gate failure.
 
-## 15. Planned implementation ownership
+## 14. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/risk/permissions.py
@@ -276,32 +176,12 @@ src/gold_scalp_trader/execution/gate.py
 src/gold_scalp_trader/execution/service.py
 ```
 
-## 16. Planned deterministic proof
+## 15. Planned proof
 
-Tests must cover:
+Tests cover market-state transitions, CLEAR/BLACKOUT/UNKNOWN News matrix, STANDARD risk composition, action-sensitive CLOSE, holiday/schedule UNKNOWN, restart persistence, controller/reconciliation blocks and truthful blocker-vs-Gate presentation.
 
-- OPEN/PRE_CLOSE/CLOSED/WARMUP/UNKNOWN transitions;
-- known blackout versus News UNKNOWN;
-- whichever `OPEN + News UNKNOWN` scalp policy is eventually frozen;
-- loss lock/cooldown composition;
-- action-sensitive CLOSE semantics;
-- holiday/special schedule unknown;
-- restart persistence;
-- controller/reconciliation blocks;
-- truthful upstream-vs-Gate presentation.
+Connected proof separately verifies actual Exness schedule/reopen/close behaviour.
 
-Connected broker proof separately verifies real Exness schedule and close/reopen behaviour.
+## 16. Calibration pending
 
-## 17. Non-goals
-
-This state machine does not choose strategy direction, calculate lots, fabricate News CLEAR, ignore known blackout, force-close solely due scheduled news, bypass controller/reconciliation, perform raw MT5 writes or claim profitability.
-
-## 18. Pre-challenge questions
-
-- final `News UNKNOWN` new-entry policy for scalping;
-- exact news blackout/warmup windows;
-- PRE_CLOSE cutoffs;
-- reopen clean-bar counts;
-- holiday schedule source;
-- action-sensitive spread rules for CLOSE/MODIFY;
-- cooldown release requirements.
+News blackout/post-event windows, PRE_CLOSE minutes, reopen clean-bar counts, holiday schedule source, spread rules for MODIFY/CLOSE and cooldown release requirements remain evidence questions.

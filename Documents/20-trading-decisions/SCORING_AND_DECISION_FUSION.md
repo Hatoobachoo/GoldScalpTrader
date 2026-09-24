@@ -1,78 +1,69 @@
 # GoldScalpTrader — Scoring and Decision Fusion
 
-**Status:** DRAFT PRE-CHALLENGE TOPIC CONTRACT
-**Version:** 0.1-scalp-floor-manager
-**Authority:** Independent BUY/SELL thesis fusion, Debate/Red-Team conflict, analytical coverage, correlation, attribution and Floor-Manager output.
+**Status:** FROZEN V1 FUSION ARCHITECTURE — WEIGHTS/THRESHOLDS CALIBRATION PENDING
+**Version:** 1.0-six-family-floor-manager
+**Authority:** Independent BUY/SELL thesis fusion, Red-Team conflict, analytical coverage, correlation, attribution and Floor-Manager output.
 
 ## 1. Purpose
 
-Fusion turns separate FamilyReports into two competing directional theses while preserving why each side leads, what opposes it and how much evidence is available.
+Fusion turns six FamilyReports into competing BUY and SELL theses while preserving why each side leads, what opposes it and how much evidence is available.
 
-It never converts a soft score into monetary risk or broker permission.
+It never converts soft score into monetary Risk or broker permission.
 
-> BUY and SELL are separate teams. Opposition is visible conflict, not hidden inside one confidence number.
+> BUY and SELL are separate teams. Opposition remains visible conflict.
 
 ## 2. Pipeline
 
 ```text
 six FamilyReports
 → bounded optional confluence
-→ BUY Team
-→ SELL Team
+→ BUY Team + SELL Team
+→ correlation control
 → Debate / Red Team
 → Floor Manager / DecisionBoard
 → persistent Opportunity
-→ Entry Timing
+→ completed-M5 Entry Timing
 → analytical DecisionSnapshot
 ```
 
-Hard risk/session/account/controller/execution authorities remain separate and downstream.
+Hard Risk/session/news/account/controller/execution authority remains downstream.
 
-## 3. Independent thesis construction
+## 3. Six-family input
 
-Each directional thesis consumes the same family reports independently.
+Fusion consumes the frozen V1 family set:
 
-The reference weighted-top-family model is retained as a design candidate, but exact percentages are not frozen for the scalper.
+- Trend Pullback Continuation;
+- Breakout Expansion;
+- Breakout Retest Continuation;
+- Liquidity Sweep Reversal;
+- Failed Breakout Reversal;
+- Compression Expansion.
 
-The thesis must preserve:
+Exact weights are calibration, not architecture.
 
-- leading family and supporting families;
-- family case strengths;
-- evidence names/lineage;
-- coverage;
-- structural target/room context;
-- session/regime context;
-- transaction-cost/freshness warnings;
-- preferred timing profile.
+## 4. Independent thesis construction
 
-Unanimity is not required. One strong coherent family may lead when other families are neutral.
+Each directional thesis consumes the same completed family set independently and preserves leading/supporting families, case strengths, evidence lineage, coverage, structural room, session/regime, freshness/cost warnings and timing preference.
 
-## 4. Correlation control
+Unanimity is not required. One coherent family can lead when others are neutral, subject to downstream timing/geometry/Risk/safety.
 
-Correlation control is mandatory because scalp evidence is dense and many labels can describe one five-minute episode.
+## 5. Correlation control
 
-Fusion must distinguish:
+Fusion must distinguish independent support from correlated labels describing one causal episode.
 
-```text
-independent support
-correlated support
-ordinary disagreement
-material opposing thesis
-```
+A sweep + reclaim + MSS + failed-break evidence from the same event cannot become four independent votes merely because four labels exist.
 
-A sweep + rejection + MSS + failed-break label from one event cannot be treated as four independent votes.
+Correlation/event lineage may cap/reweight synergy while preserving family attribution.
 
-## 5. Optional confluence
+## 6. Optional confluence
 
-Optional Trendline/Fib/POC/FVG/OB support may provide a bounded uplift only where the owning strategy narrative already exists.
+Trendline/Fib/POC/FVG/OB may provide bounded support only when compatible with an existing family narrative.
 
-Missing optional context leaves the base case unchanged. Opposed optional context remains visible to the Red Team but does not automatically become hard BLOCK.
+Missing optional context leaves base case unchanged. Opposed/unclear optional context is visible conflict, not automatic hard BLOCK.
 
-## 6. Debate / Red Team
+## 7. Red Team
 
-The Red Team challenges the leading thesis without requiring perfection.
-
-Draft objection classes include:
+Representative objections:
 
 ```text
 STRONG_OPPOSING_THESIS
@@ -87,31 +78,31 @@ FAILED_ACCEPTANCE
 NO_DIRECTIONAL_EDGE
 ```
 
-These are analytical objections. They cannot impersonate Risk, Session/News, Controller or Execution blockers.
+These remain analytical reasons. They cannot impersonate Risk, News/Session, Controller or Execution blockers.
 
-## 7. Coverage and UNKNOWN
+## 8. Coverage / UNKNOWN
 
-Coverage describes availability of expected analytical evidence.
+Coverage describes expected analytical evidence availability. Optional missing evidence may be omitted/reweighted where family contract permits.
 
-Optional missing evidence may be omitted/reweighted where the family contract allows. Required financial/broker/safety truth is not a weighted market feature.
+Required financial/broker/safety truth is not a weighted market feature.
 
-UNKNOWN must state what is unknown and whether the analytical result can remain observational, WAIT, or cannot be completed.
+UNKNOWN states exactly what is unavailable and whether analysis can remain observational/WAIT or cannot complete.
 
-## 8. Floor Manager versus Entry Timing
+## 9. Floor Manager versus Entry Timing
 
-Floor Manager asks:
+Floor Manager:
 
-> Is this market idea worth tracking as a qualified scalp Opportunity?
+> Is this market idea worth tracking as a persistent Opportunity?
 
-Entry Timing asks:
+Entry Timing:
 
-> Is this specific M5 moment efficient and fresh enough to act?
+> Is this completed-M5 moment fresh/efficient enough to act?
 
-A strong Opportunity cannot force ENTER when current price is extended, event lineage is stale, spread is poor, or the clean room has disappeared.
+A strong Opportunity cannot force ENTER when event is stale, move is chased, spread/cost burden is poor or target room has collapsed.
 
-## 9. Analytical actions
+M1 is diagnostic/research only and cannot create independent V1 ENTER authority.
 
-The analytical decision vocabulary is:
+## 10. Analytical action vocabulary
 
 ```text
 ENTER_BUY
@@ -121,74 +112,29 @@ MISSED
 INVALID
 ```
 
-`BLOCKED` belongs to downstream hard authorities, not to analytical scoring.
+`BLOCKED` is supplied by downstream hard authorities. Runtime preserves analytical result alongside later blocker so research can distinguish poor strategy from safe rejection.
 
-The runtime/dashboard must preserve the original analytical result even when later risk/safety blocks execution so research can distinguish a weak strategy from a safely blocked good idea.
+## 11. Cost awareness
 
-## 10. Scalp score interpretation
+Fusion may use descriptive cost/room context to recognize analytically inefficient setups early.
 
-Human-readable bands may describe:
+TradePlan owns explicit gross + cost-adjusted geometry. Execution owns final fresh Bid/Ask/spread/drift acceptance. Fusion never shifts stop/target or decides monetary affordability.
 
-```text
-NO_EDGE
-WATCH
-ARMABLE
-STRONG
-EXCEPTIONAL
-```
+## 12. Scheduling
 
-Exact thresholds remain research/calibration.
+Family reports may be computed serially or with bounded workers. Physical concurrency is optional/profiling-driven; canonical ordering and one-worker semantic parity are mandatory.
 
-No analytical score may:
+## 13. Persistence / research
 
-- increase monetary risk;
-- rescue structurally poor Trade Plan geometry;
-- lower the spread/slippage safety standard;
-- bypass news/session/account/controller rules;
-- change original R;
-- call MT5.
+Journal Opportunity/Episode, family cases, correlation grouping, Red-Team objections, coverage, timing, current cost/freshness context, policy/config/data identity and later hard blocker.
 
-## 11. Transaction-cost awareness
+Blocked/counterfactual outcomes are not actual P/L.
 
-Fusion may consume descriptive cost context from current market facts/Technical reports, such as spread relative to ATR or target room.
+## 14. Dashboard
 
-This is used to identify poor analytical efficiency early. Final executable spread/drift/slippage acceptance remains owned downstream.
+Show BUY Thesis, SELL Thesis, Directional Edge, Leading Family, correlation/debate, Opportunity/Episode, Timing, Coverage, Analytical Action and separate Hard Permission/blocker.
 
-## 12. Persistence and research
-
-Decision/family evidence should be journaled with:
-
-- Opportunity/Episode identity;
-- family/BUY/SELL cases;
-- Red-Team objections;
-- coverage;
-- timing result;
-- current cost/freshness context;
-- policy/config/code/data identity;
-- later hard blocker if any.
-
-Blocked/counterfactual outcomes are not executed P/L.
-
-## 13. Dashboard
-
-Show separately:
-
-```text
-BUY Thesis
-SELL Thesis
-Directional Edge
-Leading Family
-Debate / Red Team
-Opportunity / Episode
-Entry Timing
-Coverage
-Analytical Action
-Hard Permission / blocker
-```
-
-No optional confluence should be presented as a mandatory checkbox unless the final family contract explicitly says so.
-
-## 14. Planned implementation ownership
+## 15. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/strategies/floor.py
@@ -200,10 +146,8 @@ src/gold_scalp_trader/decisions/opportunity.py
 src/gold_scalp_trader/decisions/timing.py
 ```
 
-## 15. Planned proof
+## 16. Planned proof / calibration
 
-Tests must prove independent BUY/SELL construction, visible strong opposition, bounded correlation/synergy, optional-evidence handling, stable family attribution, Opportunity handoff, no broker authority and serial/parallel family parity.
+Tests prove independent BUY/SELL construction, strong opposition visibility, bounded correlation, optional evidence handling, family attribution, Opportunity handoff, no broker authority and serial/parallel parity.
 
-## 16. Pre-challenge calibration
-
-Open questions: thesis weights, synergy cap, conflict penalty, coverage threshold, Opportunity threshold, cost/freshness penalty semantics, Red-Team thresholds, and combinations that best balance opportunity recall, transaction-cost-adjusted expectancy, drawdown and healthy trade frequency.
+Weights, synergy cap, conflict penalties, coverage/Opportunity thresholds and cost/freshness penalty magnitudes remain calibration pending.

@@ -1,105 +1,92 @@
 # GoldScalpTrader — Entry Timing and Opportunity Lifecycle
 
-**Status:** DRAFT PRE-CHALLENGE TIMING CONTRACT
-**Version:** 0.1-scalp-opportunity-freshness
-**Authority:** Opportunity identity, scalp location, M5 executable timing, event freshness, late-entry protection, missed/re-arm rules and timing persistence.
+**Status:** FROZEN V1 TIMING ARCHITECTURE — THRESHOLDS CALIBRATION PENDING
+**Version:** 1.0-m5-opportunity-freshness
+**Authority:** Opportunity identity, M15 location, completed-M5 executable timing, event freshness, chase protection, missed/re-arm rules and timing persistence.
 
 ## 1. Purpose
 
 A valid market opportunity and a good executable scalp entry are different things.
 
-This contract prevents two opposite errors:
+This contract prevents chasing a late Gold move and prevents deleting a valid Opportunity merely because current M5 timing is not ready.
 
-- chasing a late Gold move because the thesis is attractive;
-- deleting a valid Opportunity merely because the current M5 bar/timing is not ready.
-
-## 2. Draft timeframe split
+## 2. Frozen timeframe split
 
 ```text
-H1  → broad regime / directional environment
+H1  → broad soft regime / directional-volatility context
 M15 → opportunity location, path and structural context
-M5  → primary executable setup/timing and fresh trigger
-M1  → diagnostic micro-timing context only in baseline
-quote/spread → current executable market condition
+M5  → primary completed-bar setup/timing + fresh trigger
+H4  → optional major context
+M1  → diagnostic/research only
+quote/spread → current executable condition
 ```
 
-M1/tick authority remains a fresh-zero challenge item.
+M1 cannot produce independent V1 `ENTER` authority. Current quote/tick can invalidate current executability but cannot retroactively manufacture a structural trigger.
 
 ## 3. Opportunity lifecycle
-
-Draft lifecycle:
 
 ```text
 DISCOVERED
 → ARMED
 → WAITING / READY
-→ TRIGGERED after governed broker lifecycle
+→ TRIGGERED only after governed broker lifecycle
 
 ARMED / WAITING / READY
-→ MISSED when a valid move becomes inefficient/late
+→ MISSED when entry becomes late/inefficient
 → INVALIDATED when thesis fails
 
 MISSED
-→ RE_ARMED only with explicit fresh event + surviving thesis
+→ RE_ARMED only with explicit fresh causal event + surviving thesis
 ```
 
-`STALE` may exist as vocabulary for a future generic expiry policy, but no automatic wall-clock expiry is implied until explicitly calibrated and frozen.
+`STALE` remains reserved vocabulary for any future generic expiry policy; V1 does not invent a universal timer unless calibration later promotes one.
 
 ## 4. Opportunity identity
 
-An Opportunity preserves:
+Preserve:
 
-- `opportunity_id`;
-- market `episode_id`;
-- BUY/SELL direction;
-- lifecycle state;
-- created/updated times;
-- thesis/family attribution;
+- `opportunity_id` and market `episode_id`;
+- direction/lifecycle state;
+- created/updated UTC times;
+- family/thesis attribution;
 - structural source lineage;
-- latest meaningful event time;
-- timing result/reason;
+- latest meaningful event knowledge time;
+- timing outcome/reason;
 - session/regime context;
-- relevant cost/freshness observations.
+- cost/freshness observations.
 
-A surviving same thesis keeps the same identity across WAIT/READY cycles and restart context.
-
-A restored Opportunity is context only; fresh market intelligence and timing must revalidate it before action.
+A surviving same thesis keeps the same identity across WAIT/READY and restart context. Restored identity is context only; fresh facts must revalidate it.
 
 ## 5. Terminal identity versus new episode
 
-`MISSED`, `INVALIDATED` and any later approved `STALE` are terminal for that exact Opportunity identity.
-
-Rules:
-
 ```text
-same thesis still survives unchanged
-→ do not fabricate a new ID
+same terminal thesis still survives unchanged
+→ keep terminal identity; do not fabricate a new episode
 
-new/different thesis independently satisfies discovery
-→ retire mismatched old plan
+materially new/different thesis independently qualifies
+→ preserve old terminal history
+→ retire mismatched old TradePlan
 → create new Opportunity + Episode IDs
 ```
 
-`TRIGGERED` remains broker-lifecycle lineage until the managed trade is reconciled/closed.
+`TRIGGERED` remains broker-lifecycle lineage until managed-trade close/recovery retires it.
 
-## 6. Timing inputs
+## 6. M5 timing inputs
 
-M5 timing may consume:
+Timing may consume:
 
-- M5 fine structure and sequence;
-- latest causal structural/liquidity event;
-- event age/freshness;
+- completed-M5 fine structure/candle sequence;
+- latest causal structural/liquidity event and knowledge time;
+- event freshness;
 - M5 momentum/extension;
 - M5 local location;
-- M15 room/path;
+- M15 remaining room/path;
 - family-preferred trigger profile;
 - session context;
-- current spread/drift/cost context where available for analysis;
-- optional M1 diagnostics if enabled.
+- current spread/drift/cost context for analytical efficiency;
+- M1 diagnostics only as non-authoritative observability/research.
 
-No single optional primitive is required across every family.
-
-## 7. Timing outcomes
+## 7. Outcomes
 
 ```text
 ENTER_BUY
@@ -111,27 +98,13 @@ INVALID
 
 `BLOCKED` belongs to Risk/Permissions/Execution.
 
-### WAIT
-
-Thesis survives, but current trigger/location/extension/freshness/cost efficiency is not acceptable yet.
-
-### MISSED
-
-The Opportunity was valid but the efficient entry window has passed. The system records it for counterfactual research and does not chase.
-
-### INVALID
-
-The underlying thesis/structure no longer survives.
-
-### ENTER
-
-The analytical trigger is currently ready. It still requires Trade Plan → Risk → hard authorities → Gate → Intent → broker write/reconciliation.
+`ENTER` means analytically ready only; TradePlan → Risk → hard authorities → Gate → Intent → writer/reconciliation still follow.
 
 ## 8. Event freshness
 
-Scalping makes freshness a first-class timing concept.
+Every executable structural/liquidity trigger requires causal knowledge time.
 
-Every structural/liquidity trigger used by timing must have an explicit causal knowledge timestamp. Timing may later classify it as:
+Timing may classify:
 
 ```text
 JUST_CONFIRMED
@@ -140,28 +113,26 @@ AGING
 STALE_FOR_ENTRY
 ```
 
-Exact age thresholds can vary by event/family and remain calibration until challenged.
+Exact age/distance thresholds can be family/event specific and remain calibration pending.
 
-An event becoming stale for entry does not rewrite history or invalidate the original structural fact; it only means the current scalp should not be entered from that old event without fresh evidence.
+An event can remain historically true while becoming stale for **new entry**.
 
-## 9. Chase/extension protection
+## 9. Chase / extension protection
 
-A move can be analytically correct but economically late.
+Timing distinguishes:
 
-Timing must distinguish:
-
-- thesis strength;
+- thesis quality;
 - current extension;
 - distance travelled since trigger;
+- time since fresh event;
 - remaining structural target room;
-- current transaction-cost burden;
-- time since fresh event.
+- current known transaction-cost burden.
 
-It must not improve apparent R by moving the stop or inventing a farther target.
+A correct directional thesis can still become `MISSED`. Timing never improves apparent geometry by moving the stop or inventing a farther target.
 
-## 10. Family-aware timing profiles
+## 10. Family timing profiles
 
-| Family | Draft M5 timing profile |
+| Family | M5 timing profile |
 |---|---|
 | Trend Pullback Continuation | pullback hold/reclaim + resumption |
 | Breakout Expansion | accepted fresh break without chase |
@@ -170,65 +141,40 @@ It must not improve apparent R by moving the stop or inventing a farther target.
 | Failed Breakout Reversal | failed acceptance + opposing response |
 | Compression Expansion | fresh release + controlled follow-through |
 
-Shared timing infrastructure may accept family parameters rather than duplicating six engines.
+Shared timing infrastructure should accept family parameters rather than duplicate six engines.
 
-## 11. Re-arm / second chance
+## 11. Re-arm
 
-A MISSED Opportunity may re-arm only if:
-
-- the underlying thesis still has relevance;
-- a genuinely fresh causal event is proven;
-- event timestamp differs meaningfully from the old trigger;
-- current structural Trade Plan can be rebuilt;
-- same-episode re-entry policy permits it;
-- no unchanged next-poll signal is misrepresented as fresh evidence.
-
-Automatic re-arm requires deterministic tests before production use.
+A MISSED Opportunity may re-arm only when the thesis remains relevant, a genuinely new causal event is proven, current geometry is rebuilt, same-episode risk policy permits it and unchanged polling output is not misrepresented as fresh evidence.
 
 ## 12. Persistence ordering
 
-Opportunity and Trade Plan lineage must remain consistent.
-
-When a new episode replaces a terminal analytical opportunity:
+When a genuinely new episode replaces a terminal analytical opportunity:
 
 ```text
-preserve old terminal event history
-→ clear mismatched old Trade Plan
+preserve old terminal history
+→ clear mismatched old TradePlan
 → persist new Opportunity identity
-→ build/save new Trade Plan only after later ENTER timing
+→ create/save a new TradePlan only after a later valid ENTER
 ```
-
-This ordering prevents stale plan attachment after a crash.
 
 ## 13. Research classification
 
-Research distinguishes:
+Keep distinct:
 
-- reconciled executed trades;
-- WAITed opportunities;
-- MISSED opportunities;
+- executed/reconciled trades;
+- WAITed Opportunities;
+- MISSED Opportunities;
 - INVALIDATED theses;
 - hard-BLOCKED opportunities.
 
-Counterfactual movement after a MISSED/BLOCKED setup is not actual P/L.
+Counterfactual movement after WAIT/MISSED/BLOCK is not actual P/L.
 
 ## 14. Dashboard
 
-Show:
+Show Opportunity/Episode IDs, direction/families, lifecycle, timing reason, latest event age, M5 momentum/extension, M15 room/location, current cost context and next authority.
 
-```text
-Opportunity / Episode IDs
-Direction + source families
-Lifecycle state
-Timing result + reason
-latest fresh-event time / age
-M5 momentum + extension
-M15 room/location
-cost/spread context
-next authority
-```
-
-ENTER must never be displayed as “order sent” before broker reconciliation.
+Never display analytical ENTER as “order sent”.
 
 ## 15. Planned implementation ownership
 
@@ -241,8 +187,8 @@ src/gold_scalp_trader/persistence/runtime_state.py
 
 ## 16. Planned proof
 
-Tests must prove stable identity across WAIT, terminal identity semantics, fresh-event re-arm requirement, no unchanged-poll re-arm, restart context revalidation, event-age calculations, severe extension/chase WAIT/MISSED, plan lineage ordering and no broker authority.
+Tests cover identity across WAIT, terminal semantics, fresh-event re-arm, no unchanged-poll re-arm, restart revalidation, event-age calculations, chase/MISSED behaviour, plan-lineage ordering, M1 non-authority and zero broker authority.
 
-## 17. Pre-challenge calibration
+## 17. Calibration pending
 
-Open items: ARM/ENTER thresholds, family-specific event age, generic expiry versus event-based expiry, M1 role, distance-travelled chase logic, transaction-cost efficiency thresholds, re-arm definitions and same-episode re-entry limits.
+ARM/ENTER thresholds, family-specific event age, distance-travelled chase limits, cost-efficiency threshold, re-arm details and same-episode re-entry limits remain research questions.

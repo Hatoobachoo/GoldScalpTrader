@@ -1,333 +1,163 @@
 # GoldScalpTrader — Dashboard and UX Contract
 
-**Status:** DRAFT PRE-CHALLENGE OPERATOR CONTRACT
-**Version:** 0.1-scalp-truthful-operator
-**Authority:** Operator visibility, typed dashboard mapping, primary terminal presentation, session context, verified performance provenance and safe read-only controls.
+**Status:** FROZEN V1 OPERATOR ARCHITECTURE — IMPLEMENTATION / CONNECTED PRESENTATION PROOF PENDING
+**Version:** 1.0-truthful-scalp-operator
+**Authority:** Operator visibility, typed dashboard mapping, primary terminal presentation, session/News truth, verified performance provenance and read-only controls.
 
 ## 1. Purpose
 
-The primary dashboard should let the operator understand within seconds:
+Within seconds the operator should understand:
 
-1. is XAUUSDm feed/market state healthy and what are current SELL/BUY prices;
-2. which soft session is active;
-3. what do H1/M15/M5 structures and core quant facts show;
-4. what is the current analytical decision and why;
-5. does an Opportunity/TradePlan exist, and where are Entry/SL/Primary/Expansion;
-6. which family leads and how BUY/SELL theses compare;
-7. what are verified actual DEMO family results when such evidence later exists;
-8. what are account/risk/capacity states;
-9. did the setup stop upstream or did the central Execution Gate actually evaluate;
-10. what is Trade Manager doing for an open managed position;
-11. what are learning/discovery/local-backup/recovery states.
+1. XAUUSDm feed/market health and current SELL/BUY;
+2. Soft Session, Hard Market State and News State;
+3. H1/M15/M5 market picture plus optional H4 and diagnostic M1;
+4. current BUY/SELL/Floor decision and why;
+5. Opportunity/timing/event freshness;
+6. actual TradePlan geometry, gross/cost-adjusted room and current executable quote;
+7. leading family/correlation/debate;
+8. STANDARD Risk/capacity/daily state;
+9. upstream blocker versus actual central Gate;
+10. ManagedTrade/Trade Manager state;
+11. verified learning/research/local-backup health.
 
-The dashboard is presentation—not a second trading engine.
+Dashboard is presentation, not a second trading engine.
 
 ## 2. One-way architecture
 
 ```text
-market / intelligence / strategy / decision / TradePlan / risk / execution / learning facts
-+ durable StateStore/local-backup health
-→ app/dashboard.py + app/live_presentation.py
-→ typed DashboardData
-→ operator/presentation.py truthful read-only normalization
-→ terminal-width dispatcher
-   64–95 → narrow dashboard
-   96+   → wide Rich dashboard
-   failure → compact safe fallback
-→ primary VS Code/terminal screen
-
-same normalized presentation state
-→ atomic graphical snapshot
-→ optional localhost graphical dashboard
+market/intelligence/strategy/decision/TradePlan/Risk/execution/learning facts
++ durable state/backup health
+→ authoritative DashboardData / presentation DTO
+→ terminal renderer
+→ optional atomic read-only browser snapshot
 ```
 
-Presentation may explain already-known facts; it may not recalculate permission.
+Presentation explains already-owned facts and never recalculates permission.
 
-## 3. Display cadence versus decision cadence
+## 3. Display pulse versus decision cadence
 
-Draft target:
+A fast display pulse may refresh PKT clock, Bid/Ask, spread, quote age, M5 countdown and already-owned broker facts without rerunning families, timing, TradePlan, Risk or Intent.
 
-```text
-Display pulse: nominal 1 second
-Governed analytical decision: completed M5 event/cadence unless final timing policy says otherwise
-```
+Production bar-based setup/timing remains completed M5. M1 is diagnostic/research only.
 
-The live pulse may refresh:
+## 4. Session / News presentation
 
-- PKT clock;
-- Bid/Ask;
-- spread;
-- M5 countdown;
-- quote/feed age;
-- account display;
-- current broker/position facts already owned elsewhere.
-
-It must not rerun families, rebuild TradePlan, resize risk, create Intent or send broker writes.
-
-## 4. Primary versus secondary view
-
-The terminal/VS Code dashboard is primary.
-
-The graphical/browser dashboard is optional, local-only and read-only. Closing/crashing it must not affect trading liveness.
-
-## 5. Always-visible truth
-
-CLOSED, stale, sparse, warming, News outage, reconciliation, upstream plan/risk rejection or zero setup are states—not reasons to hide the dashboard.
-
-Unknown/missing facts display `—`, `UNKNOWN`, `WAITING` or truthful equivalent. Never fabricate zero values or geometry.
-
-## 6. Session and News presentation
-
-Keep distinct:
+Show separately:
 
 ```text
 Soft Session   ASIA / LONDON / NEW YORK / OVERLAP / OFF HOURS
 Hard Market    OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN
-News           CLEAR / BLACKOUT / UNKNOWN/LIMITED / POST_NEWS_WARMUP
+News           CLEAR / BLACKOUT / UNKNOWN / POST_NEWS_WARMUP
+Entry Permission  ALLOW / BLOCK / UNKNOWN as owned downstream
 ```
 
-The renderer does not classify session time independently.
+Frozen V1 new-entry semantics:
 
-Because GoldScalpTrader's `OPEN + News UNKNOWN` entry policy is not yet frozen, dashboard wording must display actual News UNKNOWN/LIMITED without implying ALLOW or BLOCK unless the owning permission layer has decided it.
+```text
+OPEN + CLEAR    → may proceed to remaining authorities
+OPEN + BLACKOUT → BLOCK
+OPEN + UNKNOWN  → BLOCK / LIMITED
+```
 
-News UNKNOWN never displays CLEAR.
+Renderer never infers this independently; it displays owning permission facts. News UNKNOWN never appears as CLEAR. Existing management/protection/mandatory CLOSE remains action-sensitive.
 
-## 7. Primary visual hierarchy
-
-Draft wide hierarchy:
+## 5. Primary visual hierarchy
 
 ```text
 HEADER
-  🟡 GoldScalpTrader / mode / PRIMARY / PKT clock
-  Market / Session / XAUUSDm / SELL / BUY
-  Spread / quote age / M5 countdown / Action / News / Gate / Today P&L
+  product / mode / PKT / Market / Session / News / Gate
+  XAU SELL / BUY / spread / quote age / M5 countdown / Today P&L
 
 MARKET PICTURE
-  H1 / M15 / M5 structure
-  optional H4 / M1 context when enabled
-  EMA20/EMA50 / RSI / ATR / volatility / event freshness
+  H1 / M15 / M5
+  optional H4
+  diagnostic M1 only if explicitly available
+  EMA20/EMA50 / RSI / ATR / volatility / latest event freshness
 
 CURRENT DECISION
-  BUY thesis / SELL thesis / Opportunity / Entry Timing / coverage
-  Lead family / Floor Edge / WHY
+  BUY thesis / SELL thesis / Floor Edge / leading family
+  correlation / Red Team / Opportunity / completed-M5 Timing / WHY
 
 TRADE PLAN
-  approved Entry Reference / current executable quote separately
-  SL / Primary / Expansion / R / cost-room diagnostics / invalidation
+  Approved Entry Reference / current Bid/Ask separately
+  SL / Primary / optional Expansion / exceptional Runner
+  gross structural room / cost-adjusted room / invalidation / quality
 
-STRATEGY PERFORMANCE
-  verified actual DEMO samples only
+RISK & ACCOUNT
+  STANDARD policy / actual proposal / capacity / daily state / cooldown
 
-RISK & ACCOUNT | TODAY/ACTIVITY | SYSTEM/EXECUTION
-
-OPEN TRADE when present
-
-LEARNING / DISCOVERY / LOCAL BACKUP footer
+ACTIVITY / SYSTEM / EXECUTION / OPEN TRADE / LEARNING / LOCAL BACKUP
 ```
 
-The exact layout is presentation calibration; meaning/ownership is not.
+Exact layout is presentation calibration; meanings are not.
 
-## 8. Responsive terminal rule
+## 6. Responsive terminal
+
+Conceptual target:
 
 ```text
 64–95 display cells → stacked narrow renderer
-96+ display cells    → Rich wide renderer
+96+ display cells    → wide renderer
+render failure       → compact safe read-only fallback
 ```
 
-Every narrow line must fit the requested display-cell width. Do not force a virtual wide canvas into a small VS Code terminal.
+Presentation crash/fallback cannot stop trading or create authority.
 
-Rich/render/import failures fall back to compact read-only rendering and must never terminate the trading process.
-
-## 9. Emoji/colour grammar
-
-Use expressive but meaningful cues, not decoration that obscures truth.
-
-Suggested cues:
-
-| Meaning | Cue |
-|---|---|
-| Gold/product | 🟡 / 🤖 |
-| safety/mode | 🛡️ |
-| time | 🕒 / ⏱️ |
-| market/session | 🌐 / 🌍 |
-| SELL/BUY | 🔴 / 🟢 |
-| spread/cost | ↔️ |
-| decision | 🎯 |
-| entry/stop | ⚡ / 🛑 |
-| primary/expansion | 🎯 / 🚀 |
-| lead/debate | 👑 / ⚖️ |
-| account/risk | 💼 / 🛡️ |
-| feed/controller/backup | 🔌 / 🔐 / 💾 |
-| system | 🩺 / ⚙️ |
-| learning/discovery | 🧬 / 🔬 |
-
-Plain-text fallback preserves semantics.
-
-## 10. Current Decision and Gate truth
-
-Human-facing actions may include:
-
-```text
-WAIT
-BUY READY
-SELL READY
-MISSED
-ENTRY BLOCKED
-MANAGING TRADE
-RECONCILING
-```
-
-`ENTRY BLOCKED` is a broad runtime result and is **not synonymous** with `ExecutionPermissionGate = BLOCK`.
-
-Truthful mapping:
+## 7. Current Blocker versus Gate
 
 ```text
 TradePlan DEGRADED/INVALID
-→ Current Blocker: Trade Plan
-→ Gate: NOT EVALUATED / WAIT
+→ Current Blocker: TradePlan
+→ Gate: NOT EVALUATED
 
 Risk BLOCK/UNKNOWN before Gate
 → Current Blocker: Risk
-→ Gate: NOT EVALUATED / WAIT
+→ Gate: NOT EVALUATED
 
-actual central Gate BLOCK
+central Gate actually BLOCKS
 → Current Blocker: Execution Gate
 → Gate: BLOCKED
-
-actual Gate UNKNOWN
-→ Gate: CHECKING / UNKNOWN
 ```
 
-Machine reasons remain traceable, but human wording is concise and truthful.
+Broad `ENTRY_BLOCKED` is not synonymous with Gate BLOCKED.
 
-No fixed R threshold is hard-coded into dashboard copy. If TradePlan says target room/R is poor, presentation describes the owning TradePlan reason/version.
+## 8. TradePlan truth
 
-## 11. Market Picture
+Show only actual governed plan fields. If no plan exists, do not fabricate Entry/SL/targets/R as zero.
 
-Show only actual authoritative facts:
+Keep Approved Entry Reference and current executable Bid/Ask separate. Show gross structural room and cost-adjusted room diagnostics without inventing future fill/slippage.
 
-- structure per enabled timeframe;
-- EMA20/50, RSI, ATR;
-- volatility/momentum/extension;
-- latest meaningful event + age/freshness;
-- spread/feed age;
-- session range context.
+## 9. Strategy performance
 
-M1/H4 panels appear only if final architecture enables them.
+Only verified actual approved-environment closed ManagedTrades enter production performance tables. Signal, WAIT/MISSED/BLOCK, replay, shadow or canary counterfactuals do not count as actual trades/P&L.
 
-## 12. Trade Setup / TradePlan
+Zero verified closes shows `NO SAMPLE`, not fake 0% performance.
 
-Trade setup displays actual governed TradePlan facts only.
+## 10. Spread / freshness / latency
 
-If no plan exists:
+Useful display facts include current spread, approved healthy baseline if owned/known, entry drift, trigger/event age, quote age and execution latency diagnostics when available.
 
-```text
-Bias: WAIT
-No trade plan yet — Entry / SL / targets will appear after a valid setup.
-```
+Dashboard never invents thresholds.
 
-A strong desk score alone cannot fabricate Entry/SL/TP.
+## 11. STANDARD Risk / account
 
-Show approved entry reference and current executable Bid/Ask separately so the operator can see drift.
+Show balance/equity where appropriate, capacity, proposed normalized lot/actual risk if RiskEvaluation exists, daily loss state/budget, streak/cooldown and external exposure warnings.
 
-## 13. Verified strategy performance
+There are no auto-selected SMALL/MEDIUM/NORMAL production tiers in V1.
 
-Intended table:
+If no TradePlan/RiskEvaluation exists, show `Risk Standby`, not a risk failure.
 
-```text
-Strategy | Trades | W | L | BE | Win% | Net R | Avg R | Cost | Result
-```
+## 12. Open ManagedTrade
 
-Canonical production source is exactly-once verified `MAIN_DEMO`/approved environment evidence from closed ManagedTrades.
+Show ticket/ownership, verified Entry, live executable price, original/current SL, objectives, immutable original R/current open risk, current objective stage, M5 bars/time in trade, management action/reason and Intent/reconciliation/close state.
 
-Rules:
+Time/efficiency is an EXIT reason, not a separate dashboard authority/action.
 
-- signal != trade;
-- blocked/rejected != trade;
-- open != closed sample;
-- replay/shadow/canary do not enter production stats;
-- zero verified closes show NO SAMPLE, not fake `0%` performance;
-- crown/result label grants no authority.
+## 13. Local backup / research footer
 
-## 14. Spread / execution-friction presentation
+May show StrategyMemory/discovery health, last local runtime checkpoint, backup status/path shorthand and recovery state. Research recommendation is never displayed as active policy unless governed promotion has made it active.
 
-Show known numerical spread whenever available.
-
-A qualitative badge may use the authoritative execution-health/baseline result; the dashboard must not invent thresholds.
-
-Useful facts:
-
-```text
-current spread
-healthy baseline if known
-ratio/status
-approved-entry drift
-trigger/event age
-execution latency diagnostics when available
-```
-
-If baseline is missing, say `BASELINE N/A`, not generic UNKNOWN spread.
-
-## 15. Risk & Account
-
-Prioritize:
-
-- balance/equity as appropriate;
-- position/capacity;
-- proposed actual all-in Risk %/money when a RiskEvaluation exists;
-- normalized lot;
-- daily loss state/remaining budget;
-- loss streak/cooldown;
-- external/manual exposure warning.
-
-If no TradePlan/RiskEvaluation exists, show `Risk Standby`, not a misleading risk failure.
-
-## 16. Today / Activity
-
-Actual broker activity counters distinguish:
-
-- Today verified bot Trades;
-- total durable verified OPEN lifecycles;
-- Bot Realized;
-- Account Safety P/L;
-- External/manual activity/exposure;
-- funding/cash-flow truth where relevant.
-
-Signals and rejections never count as trades.
-
-## 17. Open Trade
-
-When present show:
-
-- direction/ticket/ownership;
-- verified Entry;
-- live executable price;
-- original/current SL;
-- Primary/Expansion/Runner objective if real;
-- original R/current open risk;
-- current R;
-- trade age / M5 bars;
-- Trade Manager action/reason;
-- close/Intent/reconciliation status.
-
-Dashboard grants no MODIFY/CLOSE permission.
-
-## 18. Learning / discovery / local backup
-
-Secondary footer may show:
-
-```text
-StrategyMemory health
-Discovery health
-Champion / Challenger stage
-Last local runtime backup
-Backup health/path shorthand
-Recovery state
-```
-
-Never show a research recommendation as active production policy.
-
-## 19. Planned implementation ownership
+## 14. Planned ownership
 
 ```text
 src/gold_scalp_trader/app/dashboard.py
@@ -341,12 +171,6 @@ src/gold_scalp_trader/operator/__init__.py
 src/gold_scalp_trader/app/loop.py
 ```
 
-## 20. Planned proof
+## 15. Planned proof
 
-Tests cover upstream blocker vs actual Gate truth, terminal width bounds, one-second presentation without new decisions, session/news truth, no-plan geometry, verified performance provenance, PKT/M5 countdown, fallback isolation, open-trade mapping and read-only authority.
-
-Connected Windows screenshots remain useful for scanability/emoji/font evidence only.
-
-## 21. Change rule
-
-Any change to visible metric meaning, blocker/Gate wording, hierarchy, session/news labels, performance provenance, width/fallback or operator authority updates this contract and affected tests/docs together.
+Tests cover blocker-vs-Gate truth, width/fallback, presentation pulse without new decisions, frozen session/News truth, no-plan geometry, verified performance provenance, PKT/M5 countdown, M1 non-authority, STANDARD Risk mapping, open-trade mapping and read-only authority.

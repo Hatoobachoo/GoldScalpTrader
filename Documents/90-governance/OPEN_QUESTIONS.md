@@ -1,94 +1,121 @@
 # GoldScalpTrader — Open Questions and Closure Plan
 
-**Status:** DRAFT QUESTION REGISTER — PRE-CHALLENGE
-**Version:** 0.2-full-manual-draft
-**Authority:** Unresolved choices, required evidence and completion boundaries.
+**Status:** POST-AUDIT-1 QUESTION REGISTER — ARCHITECTURE QUESTIONS CLOSED, CALIBRATION/IMPLEMENTATION/EXTERNAL PROOF REMAIN
+**Version:** 1.0-post-fresh-zero
+**Authority:** Unresolved implementation choices, numerical calibration, external proof and deliberate V1 deferrals.
 
-## 1. Why this file exists
-
-An open question is not automatically a design failure. Some choices require architecture review, historical calibration, connected broker/machine proof or deliberate deferral.
-
-Classes:
+## 1. Classification
 
 ```text
-FIX BEFORE BUILD
+CLOSED ARCHITECTURE
 IMPLEMENTATION CHOICE
 CALIBRATE IN RESEARCH
 EXTERNAL PROOF
 DEFERRED V1
 ```
 
-Nothing in this register may be silently guessed during coding.
+A closed architecture question may still have calibratable numbers. Coding may not guess unresolved implementation/calibration/external items.
 
-## 2. FIX BEFORE BUILD
+## 2. CLOSED ARCHITECTURE — Audit 1
 
-### OQ-001 — Final timeframe authority
+### OQ-001 — Final timeframe authority — CLOSED
 
-Decide final roles for H4/H1/M15/M5/M1 and quote/tick context.
+```text
+H1   broad soft regime / major directional-volatility context
+M15  opportunity location/path/session/liquidity context
+M5   primary completed-bar setup, entry timing and normal management structure
+H4   optional major context only
+M1   diagnostic/research only in V1
+quote current executable Bid/Ask/spread/drift/health only
+```
 
-Current baseline: H1 broad regime, M15 opportunity/location, M5 primary setup/timing, H4 optional major context, M1 diagnostic only.
+Promoting M1/tick-history authority later requires a governed design change.
 
-Closure: fresh-zero review + cross-document sync.
+### OQ-002 — Strategy-family decomposition — CLOSED
 
-### OQ-002 — Strategy-family decomposition
+Retain six independent starting families. Manage overlap with explicit correlation/event-lineage bounding rather than merging distinct hypotheses prematurely.
 
-Do all six starting families remain independent and useful for scalping, or should any be merged/split/replaced?
+### OQ-003 — `OPEN + News UNKNOWN` policy — CLOSED
 
-Closure: fresh-zero review, logic decomposition and initial replay design.
+News UNKNOWN blocks **new entries** in V1. It does not rename itself CLEAR and does not automatically prevent safe management/protection/mandatory CLOSE of an existing bot trade.
 
-### OQ-003 — `OPEN + News UNKNOWN` policy
+### OQ-004 — Structural R / cost-room architecture — CLOSED
 
-Reference Swing system allowed adaptive continuation. Scalping may need stronger caution.
+TradePlan must preserve both:
 
-Closure: architecture decision plus replay/connected evidence plan; no implementation guess.
+```text
+gross structural quality
++ explicit cost-adjusted executable-room diagnostics
+```
 
-### OQ-004 — Minimum structural R / cost-adjusted room
+Final broker submission separately rechecks current quote/spread/drift. Exact numerical floors remain calibration.
 
-Swing's 1.20R Primary floor is not automatically inherited.
+### OQ-005 — Risk-policy shape — CLOSED
 
-Closure: define structural quality metric before implementation, numerical threshold may remain CALIBRATE.
+V1 uses one explicit `STANDARD` production risk policy rather than automatic SMALL/MEDIUM/NORMAL equity tiers.
 
-### OQ-005 — Risk-policy shape
+Account size still affects actual risk through equity, structural stop, tick value and broker minimum/step volume.
 
-Define final account-profile model and whether an optional aggressive small-account mode should exist at all.
+Any future aggressive small-account experiment is explicit/research-governed, disabled by default and never auto-selected. Historical 8%/16% values are not active V1 policy.
 
-Closure: fresh-zero challenge before build; exact percentages may remain CALIBRATE.
+### OQ-006 — Runtime mode scope — CLOSED
 
-### OQ-006 — Runtime mode scope
+```text
+READINESS / DRY_RUN
+→ controlled governed DEMO writer after deterministic implementation proof
+REAL → DEFERRED V1, separate future governance decision
+```
 
-Confirm V1 build target after DRY_RUN documentation phase: read-only/DRY_RUN only first, then governed DEMO writer; REAL remains separately governed/out-of-scope unless explicitly decided.
+### OQ-007 — Trade Manager time action — CLOSED
 
-Closure: architecture decision.
+No separate `TIME_EXIT` lifecycle action in V1. Time/efficiency is a first-class reason that may produce normal `EXIT` once calibrated.
+
+### OQ-008 — Physical analytical concurrency — CLOSED
+
+Logical independence is architectural. Physical worker concurrency is optional/profiling-driven. One-worker execution is canonical semantic fallback and must be parity-equivalent.
+
+### OQ-009 — Development/source backup — CLOSED
+
+Normal workflow:
+
+```text
+major remote bulk commit
+→ operator git pull --ff-only
+→ local clone becomes complete source + Git-history backup
+→ optional secret-clean ZIP source snapshot after milestone
+```
+
+No runtime Git operation. Git bundle is optional advanced/manual tooling only.
 
 ## 3. IMPLEMENTATION CHOICES
 
 ### OQ-020 — Python/package layout
 
-Choose supported Python version based on current MetaTrader5 compatibility and fix provisional `src/` package launch/install design.
-
-Closure: verify current package/platform compatibility, update setup docs, implement installable package.
+Verify current MetaTrader5/Python compatibility, choose supported Python version and replace provisional launch/import layout with a simple installable package.
 
 ### OQ-021 — SQLite detail
 
-Confirm SQLite/WAL/synchronous/checksum/schema/migration implementation.
+Choose WAL/synchronous/checksum/schema/migration implementation while preserving transactional/crash-safe semantics.
 
-Architecture currently favors simple local SQLite but does not freeze low-level settings yet.
+### OQ-022 — Analytical scheduler implementation
 
-### OQ-022 — Bounded parallel scheduler
-
-Choose worker implementation/limits while preserving one-worker semantic parity and deterministic output order.
+Choose serial default vs bounded worker pool after profiling. Deterministic one-worker parity is mandatory either way.
 
 ### OQ-023 — Dashboard stack
 
-Confirm Rich/wcwidth dependency and when secondary browser dashboard enters build sequence.
+Confirm Rich/wcwidth dependency and implementation timing of optional browser dashboard.
 
-### OQ-024 — Secret scanner / Documents verifier implementation
+### OQ-024 — Secret scanner / Documents verifier
 
-Choose smallest dependable local scripts and tests; no cloud/Actions requirement.
+Choose smallest dependable local scripts/tests; no cloud/Actions requirement.
 
-### OQ-025 — Local backup implementation
+### OQ-025 — Local runtime backup implementation
 
-Choose SQLite backup API/export mechanism, manifest format, catalog naming, free-space handling and optional second-drive copy.
+Choose SQLite backup API/export method, manifest/checksum format, catalog naming, free-space handling and optional second-drive copy.
+
+### OQ-026 — Local source ZIP helper
+
+Decide whether to provide a repository script/PowerShell helper. Default archive must exclude `.env`, credentials, virtualenvs, logs, runtime DB/checkpoints and nested backup folders. Including `.git` is not required because the pulled local clone already preserves history.
 
 ## 4. CALIBRATE IN RESEARCH
 
@@ -106,21 +133,19 @@ Healthy baseline method, spread-to-stop/target thresholds, slippage reserve and 
 
 ### OQ-043 — Structural target quality
 
-Minimum gross R, cost-adjusted room and objective hierarchy thresholds.
+Minimum gross R, cost-adjusted room/Net-R equivalent and objective hierarchy thresholds.
 
-### OQ-044 — Risk percentages
+### OQ-044 — STANDARD risk values
 
-Preferred/elevated/hard-ceiling bands and daily-loss limits for SMALL/MEDIUM/NORMAL profile if profiles survive challenge.
-
-Current 0.50% scaffold is provisional; reference aggressive bands are not frozen.
+Preferred per-trade risk target, hard per-trade ceiling and daily-loss limit. Current 0.50% scaffold is provisional.
 
 ### OQ-045 — Cooldown / same-episode re-entry
 
-Loss-streak threshold, cooldown time/conditions and maximum fresh re-entry count.
+Loss-streak threshold, cooldown time/conditions and maximum genuinely fresh re-entry count.
 
 ### OQ-046 — Session specialization
 
-Whether Asia/London/NY/overlap receive family/timing conditioning and whether this improves out-of-sample net expectancy after costs.
+Whether Asia/London/NY/overlap conditioning improves out-of-sample net expectancy after costs.
 
 ### OQ-047 — News blackout/warmup
 
@@ -128,11 +153,11 @@ Event tiers, pre/post windows and post-news clean-bar/spread-normalization requi
 
 ### OQ-048 — Reopen/pre-close timing
 
-Exact daily/weekend no-entry and flatten cutoffs plus clean completed-M5 reopen requirement.
+Exact no-entry/flatten cutoffs and clean completed-M5 reopen requirement.
 
 ### OQ-049 — Trade Manager time efficiency
 
-Normal hold-duration distribution, soft/hard time exit and target/protection timing.
+Normal hold-duration distribution, soft/hard time-efficiency EXIT conditions and protection timing.
 
 ### OQ-050 — Runner/Expansion policy
 
@@ -144,21 +169,25 @@ FVG/OB/Fib/Trendline/POC/M1/macro marginal value by ablation.
 
 ### OQ-052 — Research sample/confidence thresholds
 
-Walk-forward/holdout sizes, minimum samples, shrinkage/confidence, Monte Carlo/bootstrap methodology.
+Walk-forward/holdout sizes, minimum samples, shrinkage/confidence and Monte Carlo/bootstrap methodology.
 
 ### OQ-053 — Discovery/invention limits
 
 Cluster/sample/similarity/complexity/resource thresholds.
 
-### OQ-054 — Backup retention
+### OQ-054 — Runtime-backup retention
 
-Rolling checkpoint interval, hourly/daily/milestone retention, disk-space thresholds, optional encryption-at-rest.
+Rolling checkpoint interval, hourly/daily/milestone retention, disk-space thresholds and optional encryption-at-rest.
+
+### OQ-055 — Aggressive risk experiment
+
+Whether an explicit disabled-by-default aggressive small-account research profile should exist at all; if studied, values require separate stress/holdout/DEMO evidence. Historical 8%/16% is only legacy context, not a seed that must be preserved.
 
 ## 5. EXTERNAL PROOF
 
 ### OQ-070 — Exness symbol facts
 
-Verify real XAUUSDm digits/point/tick-size/tick-value/min/max/step/stops/freeze/filling/margin behaviour on intended account.
+Verify intended account XAUUSDm digits/point/tick size/tick value/min/max/step/stops/freeze/filling/margin behaviour.
 
 ### OQ-071 — Broker schedule
 
@@ -186,19 +215,20 @@ Verify exact-close queue/receipt and exactly-once MAIN_DEMO observation from rea
 
 ## 6. DEFERRED V1
 
+- REAL trading;
+- M1/tick-history production decision authority;
 - same-scope simultaneous cross-laptop PRIMARY/STANDBY;
-- active-active or distributed DB/fencing;
+- active-active/distributed DB/fencing;
 - generic multi-broker abstraction;
 - mandatory paid news/macro data;
 - cloud hosting;
-- self-deploying AI/generated code;
-- ungoverned REAL trading;
+- self-deploying generated code;
 - HFT claims/infrastructure;
-- partial-profit requirement for 0.01 indivisible volume.
+- mandatory partial-profit logic for indivisible 0.01 volume.
 
 ## 7. Closure discipline
 
-Every closed question must update:
+Every remaining question closed later must update:
 
 ```text
 this register

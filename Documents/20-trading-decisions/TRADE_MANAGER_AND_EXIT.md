@@ -1,14 +1,14 @@
 # GoldScalpTrader — Trade Manager and Exit
 
-**Status:** DRAFT PRE-CHALLENGE MANAGEMENT CONTRACT
-**Version:** 0.1-scalp-management
+**Status:** FROZEN V1 MANAGEMENT ARCHITECTURE — CALIBRATION / CONNECTED DEMO PROOF PENDING
+**Version:** 1.0-scalp-efficiency-exit
 **Authority:** Post-entry management, structural protection, time/efficiency exits, target progression, modify/close decisions, broker-verified lifecycle updates and verified-close learning handoff.
 
 ## 1. Purpose and boundary
 
 Trade Manager is the post-entry decision floor for a verified bot-owned Gold position.
 
-It observes fresh structure, continuation, reversal, target, session and execution-condition facts and returns a governed action such as:
+V1 actions:
 
 ```text
 HOLD
@@ -18,9 +18,9 @@ RUNNER
 EXIT
 ```
 
-For scalping, the challenge may add explicit `TIME_EXIT` or keep time-based logic as an EXIT reason rather than a separate action.
+Audit 1 deliberately does **not** add a separate `TIME_EXIT` action. Time/efficiency is a first-class reason that can produce ordinary `EXIT` after calibrated evidence says the scalp is no longer behaving like a scalp.
 
-Trade Manager never creates a new entry thesis. Every modify/close action uses the same identity/controller/Gate/Intent/writer/reconciliation safety spine as entry.
+Trade Manager never creates a new entry thesis. Every MODIFY/CLOSE uses the same identity/controller/Gate/Intent/writer/reconciliation spine as entry.
 
 ## 2. Management pipeline
 
@@ -32,205 +32,154 @@ verified bot-owned broker position
 → HOLD / PROTECT / TRAIL / RUNNER / EXIT
 → action-specific hard checks
 → durable MODIFY/CLOSE Intent
-→ sole broker writer
+→ sole writer
 → reconciliation
 → persist state only after broker verification
 → verified full close receipt/queue
 → downstream learning
 ```
 
-Local state must never claim a modification/close succeeded before broker truth proves it.
+## 3. Frozen timeframe roles for management
 
-## 3. Scalp management priorities
+```text
+M5  primary normal management structure / efficiency clock
+M15 supporting path/location/continuation context
+H1  broad context only; may support exceptional runner management
+M1  diagnostic/research only
+quote current executable spread/price/health context
+```
 
-Compared with swing trading, GoldScalpTrader gives greater importance to:
+## 4. Scalp management priorities
 
-- time in trade;
-- speed/efficiency of progress after entry;
-- rapid invalidation of the exact M5 thesis;
-- spread/market deterioration;
-- session transition/close proximity;
-- avoiding turning a failed scalp into an accidental swing;
-- protecting earned structure without suffocating normal Gold noise.
+- exact family invalidation;
+- speed/efficiency of progress;
+- fresh M5 continuation/reversal structure;
+- target/path acceptance or rejection;
+- spread/execution deterioration;
+- session/pre-close transition;
+- avoiding a failed scalp becoming an accidental swing;
+- protecting earned structure without choking normal Gold noise.
 
 Profit alone does not decide management.
 
-## 4. Action contract
+## 5. Action contract
 
-| Action | Purpose | Draft minimum evidence |
+| Action | Purpose | Minimum concept |
 |---|---|---|
-| HOLD | allow healthy thesis to work | structure survives; no better action earned |
-| PROTECT | reduce open risk | sufficient progress + confirmed protective reference |
-| TRAIL | follow newly earned structure | valid tighter structural reference |
+| HOLD | let healthy thesis work | structure survives; no better action earned |
+| PROTECT | reduce open risk | progress + causal protective reference |
+| TRAIL | follow earned structure | valid tighter causal reference |
 | RUNNER | extend beyond normal scalp objective | exceptional fresh continuation + real next objective |
-| EXIT | close failed/inefficient/unsafe trade | structural failure, material reversal, exhausted path, time/efficiency failure or mandatory safety |
+| EXIT | close failed/inefficient/unsafe trade | invalidation, material reversal, exhausted path, time-efficiency failure or mandatory safety |
 
 Mandatory safety outranks normal HOLD/RUNNER preference.
 
-## 5. HOLD
+## 6. HOLD
 
-HOLD when the original thesis remains healthy and no protective/exit condition has been earned.
+A single opposite M5 candle, normal pullback, small RSI change or tiny profit is not enough alone.
 
-A single opposite M5 candle, normal pullback, small RSI change or tiny positive profit is not sufficient alone.
+A position also cannot drift indefinitely merely because no dramatic reversal appears; calibrated time/efficiency evidence may later require EXIT.
 
-However, a scalp is not allowed to drift indefinitely simply because no dramatic reversal appears. Time/efficiency rules may eventually require EXIT once frozen.
+## 7. PROTECT
 
-## 6. PROTECT
+Protection requires enough progress plus a causal confirmed structural reference and approved buffer. A fixed profit amount or arbitrary timer does not define the stop price.
 
-PROTECT reduces risk after market progress and confirmed structure justify it.
+Original R remains immutable for analytics.
 
-The proposed stop must come from a causal structural reference plus approved buffer. A fixed profit amount or arbitrary breakeven timer cannot by itself define the stop price.
-
-Original R remains immutable for analytics even after protection.
-
-## 7. TRAIL
+## 8. TRAIL
 
 Trailing follows earned structure and can only tighten risk.
 
-Draft BUY progression might use:
+Typical BUY progression can be:
 
 ```text
 original structural stop
-→ fresh M5 protected swing
+→ fresh M5 protected structure
 → stronger M5/M15 continuation structure
 ```
 
-SELL is symmetric.
+SELL is symmetric. H1 may support exceptional runner management only when it still tightens risk and the trade has genuinely evolved beyond ordinary scalp progression.
 
-H1 runner structure may remain available only for exceptional continuation; a normal scalp should not require broad H1 management.
+Stop must never intentionally widen beyond original approved risk.
 
-A stop must never intentionally widen beyond original approved risk.
+## 9. Primary / Expansion / Runner
 
-## 8. Primary scalp objective
+Primary is the normal scalp management checkpoint. Evaluate rejection/acceptance, remaining room, continuation momentum, opposing structure, spread/execution health, elapsed trade time and session context.
 
-The Primary target is a major management checkpoint.
+Expansion is optional and must be tied to real structure/liquidity.
 
-At/near Primary, the manager evaluates:
+Runner is exceptional. It requires fresh continuation plus a defined new structural objective. Profit alone cannot extend TP and there is never an infinite moving target.
 
-- rejection versus acceptance;
-- remaining path room;
-- continuation momentum;
-- opposing structural evidence;
-- current spread/execution health;
-- elapsed trade time;
-- session context.
+Exact Primary full-exit versus controlled continuation policy remains calibration pending.
 
-The challenge must decide whether ordinary V1 scalps normally close fully at Primary or allow controlled continuation more often.
+## 10. Time / efficiency EXIT reason
 
-## 9. Expansion and Runner
+Scalp validity includes expected speed.
 
-Expansion is optional and must be tied to real structure/liquidity, not greed.
-
-A Runner is exceptional in a scalper. It requires fresh continuation and a new objective. Profit alone cannot extend the target.
-
-There must never be an infinite moving target.
-
-## 10. Time/efficiency exit
-
-Scalp validity includes time efficiency.
-
-Potential evidence for a governed time/efficiency EXIT includes:
+Evidence that may contribute to normal `EXIT` includes:
 
 - little/no favorable progress after a calibrated number of completed M5 bars;
-- declining momentum while target remains distant;
+- declining momentum while objective remains distant;
+- repeated failure to clear a local obstacle;
 - spread/volatility regime deterioration;
-- repeated inability to progress through a local obstacle;
-- original trigger/event becoming stale while the position has not moved as expected;
+- original trigger/event becoming stale while the position remains inefficient;
 - imminent hard session/pre-close boundary.
 
-Exact bar/time thresholds are not frozen before research/challenge.
+Time does not override stronger current broker/safety truth and thresholds are not guessed before research.
 
-A time exit is not permission to ignore fresh structural evidence; it is a separate thesis-efficiency rule.
-
-## 11. Normal EXIT
-
-Normal EXIT may result from:
+## 11. Other normal EXIT reasons
 
 - exact family invalidation;
 - confirmed opposing M5 structural shift;
-- failed reclaim/failed continuation;
+- failed reclaim/continuation;
 - strong opposing displacement;
-- target rejection plus collapsing continuation;
+- objective rejection plus collapsing continuation;
 - no credible remaining room;
-- time/efficiency failure;
 - mandatory session/execution safety.
 
-A single soft indicator cannot force an exit by itself.
+A single soft indicator cannot force exit by itself.
 
-## 12. Mandatory PRE_CLOSE / market-safety exit
+## 12. PRE_CLOSE / mandatory safety exit
 
-If policy requires flattening before a known symbol closure, the close uses the governed execution path while the broker remains tradeable.
+When policy requires flattening before known closure, CLOSE uses the normal governed path while the broker remains tradeable.
 
-Ambiguous acknowledgement or loss of broker access preserves unresolved exposure and enters reconciliation. It must never be marked closed by assumption.
+Ambiguous acknowledgement or broker-access loss preserves unresolved exposure and enters reconciliation; local state never assumes the position closed.
 
-## 13. Original R and durable state
+## 13. Durable ManagedTrade truth
 
-ManagedTrade stores:
+Store:
 
 - ticket and bot ownership lineage;
 - Opportunity/Episode/TradePlan identity;
 - verified fill;
-- original and current SL/TP;
+- original/current SL/TP;
 - immutable original R;
 - objective stage;
 - action history/reasons;
 - frozen policy/config identity;
-- pending close/learning lineage where relevant.
+- pending close/learning lineage.
 
-Local state changes after MODIFY/CLOSE only after reconciliation verifies broker truth.
+State changes after MODIFY/CLOSE only after broker verification.
 
-## 14. Manual/external and broker-side close
+## 14. Manual / broker-side close
 
-Trade Manager never adopts a foreign/manual position discovered while bot state is flat.
+Trade Manager never adopts foreign/manual exposure discovered while bot state is flat.
 
-A manual close of an already-known ManagedTrade is different: the trade remains bot-originated, while closing origin may be external/mixed.
+A human close of an already-known ManagedTrade remains bot-originated entry lineage with EXTERNAL/MIXED close attribution after exact broker proof.
 
-If the known position disappears, recovery must prove the full broker-side close from durable ticket/deal lineage before clearing the ManagedTrade or creating learning.
-
-Partial-volume evidence that does not prove full closure remains reconciliation state.
+A disappeared known position requires exact ticket/deal/full-volume close evidence before clearing or learning. Partial/ambiguous evidence remains RECONCILING.
 
 ## 15. Minimum-lot / partial-profit boundary
 
-A small account may trade the broker minimum lot, making partial closes impossible or meaningless.
-
-V1 correctness must not depend on partial profit. Full-position HOLD/PROTECT/TRAIL/EXIT remains valid for indivisible volume.
-
-Partial-management policies can be researched later only for divisible positions.
+V1 correctness does not depend on partial closes. Full-position HOLD/PROTECT/TRAIL/RUNNER/EXIT remains valid for indivisible minimum volume. Partial management can be researched later only where volume is divisible.
 
 ## 16. Research metrics
 
-Management research should retain:
-
-- MAE/MFE;
-- realized R;
-- hold duration/bars;
-- Entry Efficiency;
-- Capture Efficiency;
-- Premature Exit Cost;
-- profit given back;
-- stop-protection quality;
-- Primary→Expansion rate;
-- time-exit outcomes;
-- spread/slippage around exit;
-- family/session/regime attribution;
-- close origin.
+Track MAE/MFE, realized R, hold bars/duration, entry/capture/exit efficiency, premature-exit cost, profit given back, protection quality, Primary→Expansion/Runner progression, time-efficiency exit outcomes, exit spread/slippage, family/session/regime and close origin.
 
 ## 17. Dashboard
 
-Where authoritative facts exist show:
-
-```text
-position ticket / ownership
-entry + original/current SL/TP
-original R / current open risk
-current objective stage
-continuation / reversal / structure / momentum health
-trade age / M5 bars in trade
-action + reason
-session/pre-close status
-Intent + reconciliation state
-verified/pending close evidence
-```
+Show ticket/ownership, entry/original/current SL/TP, original R/current open risk, objective stage, continuation/reversal/structure/momentum health, M5 bars/time in trade, action/reason, session/pre-close, Intent/reconciliation and verified/pending close evidence.
 
 ## 18. Planned implementation ownership
 
@@ -246,8 +195,8 @@ src/gold_scalp_trader/research/live_learning.py
 
 ## 19. Planned proof
 
-Tests must cover ordinary HOLD, structural protection, no stop widening, time/efficiency exit semantics once frozen, Primary handling, Runner requiring a real new objective, PRE_CLOSE override, ambiguous acknowledgement, verified state updates, exact broker-side/manual close proof, partial-volume fail-closed behaviour and exactly-once downstream learning.
+Tests cover HOLD, structural protection, no stop widening, time-efficiency EXIT semantics once calibrated, Primary handling, Runner requiring a new objective, PRE_CLOSE override, ambiguous ack, verified state updates, exact manual/broker-side close proof, partial-volume fail-closed behaviour and exactly-once downstream learning.
 
-## 20. Pre-challenge calibration
+## 20. Calibration pending
 
-Open items: normal scalp hold-time distribution, maximum/soft time stop, protection eligibility, M5/M15 trailing precedence, Primary full-exit policy, Expansion/Runner frequency, momentum/reversal thresholds and family-specific management profiles.
+Normal hold-duration distribution, time-efficiency thresholds, protection eligibility, M5/M15 trailing precedence, Primary full-exit policy, Expansion/Runner frequency and family-specific management profiles require replay/stress/holdout and connected DEMO evidence.

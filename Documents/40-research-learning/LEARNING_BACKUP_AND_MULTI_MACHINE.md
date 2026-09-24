@@ -1,73 +1,61 @@
 # GoldScalpTrader — Learning Backup and Multi-Machine Contract
 
-**Status:** DRAFT PRE-CHALLENGE LOCAL RECOVERY CONTRACT
-**Version:** 0.2-local-only-learning-backup
-**Authority:** Durable full-state backup, learning lineage, local recovery packages, closure receipts, laptop handoff and per-scope multi-machine safety boundary.
+**Status:** FROZEN V1 LOCAL RECOVERY / SOURCE-BACKUP ARCHITECTURE — RETENTION / EXTERNAL RESTORE PROOF PENDING
+**Version:** 1.0-local-first-no-runtime-git
+**Authority:** Durable runtime/learning backup, local recovery packages, development/source backup workflow, closure receipts, laptop handoff and per-scope multi-machine boundary.
 
 ## 1. Purpose
 
-GoldScalpTrader must not lose runtime lifecycle, risk history, broker-operation lineage, pending/completed learning, discovery or promotion history when the process restarts or the operator changes laptops.
+GoldScalpTrader must not lose runtime lifecycle, risk history, broker-operation lineage, pending/completed learning, discovery or promotion state across restart or machine migration.
 
-V1 scope rule:
+Separately, development/source work should be easy to keep locally with **minimal GitHub usage**.
 
-> Preserve all durable project/runtime/research state and allow only one active production PRIMARY writer for the same account/symbol scope at a time.
+## 2. Hard runtime rule
 
-Different independent account/symbol scopes may run separately with separate broker exposure, state, learning and backups.
-
-## 2. Difference from GoldSwingTraderAI
-
-The reference project automatically committed/pushed verified shutdown archives to GitHub.
-
-GoldScalpTrader explicitly removes that feature.
+The trading runtime has:
 
 ```text
-graceful PRIMARY shutdown
-→ final verified local full checkpoint
-→ optional focused local learning artifact
-→ local backup catalog updated
-→ controller/MT5 already safely released
-→ shutdown result shown
-
 NO automatic Git commit
 NO automatic Git push
+NO automatic Git pull/fetch requirement
 NO GitHub credential dependency
 ```
 
-## 3. Backup layers
+Graceful shutdown remains safe when GitHub/network is unavailable after broker authority is released.
+
+## 3. Runtime backup layers
 
 ```text
 live/research producers
-→ checksum/integrity-protected StateStore
+→ integrity-protected transactional StateStore
 → rolling local full checkpoints
-→ graceful-shutdown final local checkpoint
-→ optional focused local learning package
-→ portable recovery package for deliberate handoff
+→ graceful-shutdown final verified local checkpoint
+→ optional focused learning artifact
+→ portable runtime recovery package for deliberate handoff
 ```
 
-The full checkpoint is the runtime recovery authority. Focused learning packages are review/research conveniences, not complete machine-recovery authority.
+Full checkpoint/recovery package is the runtime recovery authority. Focused learning exports are not complete machine recovery.
 
 ## 4. Full checkpoint completeness
 
-The full StateStore snapshot preserves all current durable records plus required event history, including when present:
+Preserve all required durable namespaces, including where present:
 
 - risk-day/cash-flow/loss-lock/reset/cooldown;
 - Opportunity/Episode/TradePlan;
 - ExecutionIntent lifecycle;
 - ManagedTrade;
-- `closed_trade_learning_queue`;
-- `managed_trade_closure_receipt`;
-- StrategyMemory raw observations/summaries;
+- closed-trade learning queue + closure receipt;
+- StrategyMemory observations/summaries;
 - research episode journal;
-- strategy candidate/discovery state;
-- promotion/holdout/rollback/disable state;
+- candidate/discovery/promotion/rollback state;
 - configuration/policy/schema identities;
-- all other canonical durable namespaces.
+- other canonical durable namespaces.
 
-Backup must not rebuild state from a hand-picked subset.
+Do not rebuild a “full” backup from a convenient subset.
 
 ## 5. Credential boundary
 
-Automatic/local recovery artifacts must exclude authority-bearing credentials:
+Automatic/shareable artifacts exclude:
 
 ```text
 broker password/token
@@ -79,140 +67,117 @@ credential-bearing remote URL
 real .env secrets
 ```
 
-Non-secret runtime identity needed for safe scope verification may be included where disclosure risk is acceptable.
+Secret/integrity scan must fail closed before an artifact is called portable/shareable.
 
-Secret scanning fails closed before a package is marked portable/shareable.
+## 6. Runtime backup root
 
-## 6. Local rolling backup root
-
-Conceptual default:
+Conceptual default outside repository:
 
 ```text
 C:\GoldScalpTrader_Backups\runtime\
 C:\GoldScalpTrader_Backups\learning\
 C:\GoldScalpTrader_Backups\recovery-packages\
+C:\GoldScalpTrader_Backups\source-zips\
 ```
 
-The root is configurable and should normally be outside the Git working tree.
+Path is configurable. Optional second physical HDD/SSD/USB copy can improve device-failure resilience.
 
-A second physical drive/USB destination may be used for device-failure resilience.
+## 7. Development/source backup — operator-preferred normal workflow
 
-## 7. Focused learning package
+After a **major coherent documentation/code bulk**, normal workflow is:
 
-A focused local learning artifact may contain audited learning/research namespaces such as:
+```text
+one remote fast-forward commit
+→ operator runs: git pull --ff-only
+→ local working clone now contains latest project + complete Git history
+```
 
-- StrategyMemory;
-- pending learning queue;
-- research episode journal;
-- candidate/discovery/promotion records;
-- evidence/config fingerprints.
+This local clone is the primary development/source backup.
 
-It is not a substitute for full runtime checkpoint because lifecycle-only records such as closure receipts/risk/Intent state may be required for safe recovery.
+Do **not** ask the operator to pull after every tiny patch. Consolidate coherent bulks where safe.
 
-## 8. Closure receipt and learning queue
+## 8. Optional source ZIP
+
+After an important milestone, an optional Windows-friendly ZIP may be created locally for an extra offline snapshot.
+
+Default ZIP content should include current source/documents/config samples/tests/scripts while excluding secrets and machine/runtime noise such as:
+
+```text
+.env / secret files
+.venv / venv
+__pycache__ / test caches
+logs
+runtime SQLite/checkpoints
+nested backup directories
+credentials/private keys
+```
+
+Including `.git` inside ZIP is unnecessary by default because the pulled local clone already preserves full history. If the operator wants a history-bearing offline archive, an advanced/manual Git bundle can be created separately.
+
+## 9. Git bundle boundary
+
+Git bundle is optional advanced/manual source-history backup, not normal trading-runtime behaviour and not required after every bulk.
+
+The project may later provide an explicit operator helper, but the runtime itself never invokes it.
+
+## 10. Focused learning package
+
+May contain StrategyMemory, pending learning queue, episode journal, candidate/discovery/promotion records and evidence/config fingerprints. It is not a substitute for full checkpoint because lifecycle-only risk/Intent/receipt state may be required for safe recovery.
+
+## 11. Closure receipt / learning queue
 
 ```text
 closed_trade_learning_queue     → pending post-close learning
 managed_trade_closure_receipt   → durable proof managed lifecycle ended
 ```
 
-The queue may disappear after successful StrategyMemory ingestion. The closure receipt remains as lifecycle proof.
+Queue may disappear after successful exactly-once ingestion. Closure receipt remains lifecycle proof. Full backup preserves both.
 
-Full backup preserves both automatically.
+## 12. Production learning ownership
 
-## 9. Production learning ownership
+One writer per account/symbol production scope. Different independent scopes may have separate runtime state. Two same-scope independent databases cannot safely evolve as one bot.
 
-Exactly one writer per account/symbol production scope:
+Blind union, newest-file-wins and last-write-wins are not accepted merge strategies.
 
-```text
-Scope A PRIMARY → may mutate Scope A StrategyMemory
-Scope B PRIMARY → independent Scope B may run separately
-second writer for Scope A → prohibited
-offline research DB → separate scope
-```
+## 13. Same-scope split-brain boundary
 
-Idempotent source IDs make duplicate/conflicting evidence visible; they do not make two independently evolving same-scope databases safely mergeable.
+File sync/GitHub/Drive/Dropbox is archival transport, not real-time controller fencing or transactional coordination.
 
-Blind union/newest-file-wins/last-write-wins are not accepted merge algorithms.
+Same-scope simultaneous PRIMARY writers are unsupported.
 
-## 10. Same-scope split-brain boundary
-
-Two laptops with independent local runtime/coordination DBs cannot safely act as one bot for the same broker account/symbol:
-
-- controller ownership can diverge;
-- Intents can diverge;
-- ManagedTrade/recovery truth can diverge;
-- StrategyMemory can diverge;
-- candidate/promotion history can diverge.
-
-GitHub, Drive, Dropbox or ordinary file sync is archival transport—not real-time fencing/transactional coordination.
-
-## 11. Supported operator topology
-
-Initial V1:
-
-```text
-READINESS  read-only diagnostic
-PRIMARY    one active governed runtime per account/symbol scope
-STANDBY    not offered as safe same-scope cross-laptop mode
-```
-
-Different accounts/scopes may each have their own PRIMARY.
-
-## 12. Sequential same-scope laptop handoff
+## 14. Sequential laptop handoff
 
 ```text
 Laptop A PRIMARY
 → stop new work
 → safe shutdown / controller release
-→ final verified local checkpoint/recovery package
-→ deliberately transfer package
+→ final verified local checkpoint/package
+→ deliberate transfer
 → Laptop B restore into NEW runtime DB
+→ configure credentials separately
 → connect intended account/symbol
-→ fresh positions/deals/quote/identity read
-→ reconcile lifecycle/risk/learning/broker truth
-→ acquire local controller epoch
+→ fresh broker positions/deals/quote/identity
+→ reconcile lifecycle/risk/learning
+→ acquire controller
 → READY only after all authorities pass
 ```
 
-At no time may both be active writers for the same scope.
+If old machine status is uncertain, new machine remains blocked until single-writer safety can be established.
 
-Credentials are configured separately on the new machine.
-
-## 13. If old machine status is uncertain
-
-If the old PRIMARY cannot be positively known to be stopped, the new machine remains BLOCKED/incident-recovery state until operational, broker, controller and durable-state reconciliation establish a safe single-writer condition.
-
-A copied backup alone cannot fence an old process.
-
-## 14. Future simultaneous failover requirements
-
-True same-scope PRIMARY/STANDBY would require both:
-
-- shared cross-machine atomic coordination/fencing with global monotonic epoch;
-- shared or globally ordered durable Intent/ManagedTrade/risk/learning state.
-
-It would also require network-partition, stale-client, crash/takeover and real two-machine DEMO drills.
-
-This is deferred and not a V1 release gate.
-
-## 15. Actual learning durability path
-
-Future governed DEMO path:
+## 15. Learning durability path
 
 ```text
 verified OPEN
 → ManagedTrade freezes learning identity
-→ verified bot EXIT / SL / TP / exact manual close
+→ verified close mechanism
 → learning queue + closure receipt
-→ causal broker/path outcome
-→ one MAIN_DEMO StrategyMemory observation
+→ causal outcome
+→ exactly one production StrategyMemory observation
 → queue consumed after durable save
 → rolling/full local backup preserves state
-→ graceful shutdown creates fresh final local checkpoint
 ```
 
-No repository mutation is part of this runtime path.
+No repository mutation is part of this path.
 
 ## 16. Failure semantics
 
@@ -221,24 +186,15 @@ No repository mutation is part of this runtime path.
 | corrupt durable record | reject/degraded; never clean empty state |
 | duplicate identical learning source | idempotent |
 | duplicate conflicting source | explicit conflict |
-| incomplete exit evidence | keep queue/recovery pending |
-| verified checkpoint unavailable | no restore from guessed state |
-| dangerous credential detected | package fails security check |
-| backup destination exists unexpectedly | no destructive overwrite |
-| backup disk unavailable/full | explicit failure; preserve existing durable state/last good backup |
-| abrupt machine loss | final shutdown backup not guaranteed; rely on SQLite + rolling checkpoints |
-| same-scope second active writer | block; no automatic merge |
-| different independent scopes | allowed with isolated state/authority |
+| incomplete exit evidence | recovery/queue pending |
+| verified checkpoint unavailable | no guessed restore |
+| secret detected | package/source ZIP fails shareable check |
+| backup destination collision | no destructive overwrite |
+| backup disk unavailable/full | explicit failure; preserve last good state |
+| abrupt machine loss | final shutdown backup not guaranteed; rely on transactional state + rolling checkpoints |
+| same-scope second writer | block |
 
-## 17. Source-history local backup
-
-Source/document backup is distinct from production learning backup.
-
-At deliberate milestones the operator/development tooling may create a local Git bundle in the external source-backup directory. This is not generated on every trading shutdown.
-
-The trading runtime itself has no Git commit/push authority.
-
-## 18. Planned implementation ownership
+## 17. Planned implementation ownership
 
 ```text
 src/gold_scalp_trader/persistence/store.py
@@ -252,12 +208,14 @@ src/gold_scalp_trader/execution/controller.py
 src/gold_scalp_trader/execution/sqlite_coordination.py
 ```
 
-## 19. Planned proof
+Optional development helper may later live under `scripts/` for safe source ZIP; it has no broker/runtime authority.
 
-Tests must prove full-state preservation, queue/receipt survival, secret exclusion, idempotency/conflict, local backup integrity/catalog, same-scope single-writer rule, sequential handoff semantics, no auto-merge and explicit absence of runtime Git publication.
+## 18. Planned proof
 
-Connected fresh-machine/Windows MT5 proof separately validates real handoff/reconciliation.
+Tests prove full-state preservation, queue/receipt survival, secret exclusion, idempotency/conflict, backup integrity/catalog, same-scope single-writer, sequential handoff, no auto-merge and explicit absence of runtime Git operations.
 
-## 20. Open questions
+Fresh-machine connected proof separately validates real restore/reconciliation.
 
-Retention counts, backup cadence, secondary-drive replication, optional encryption-at-rest, source-bundle cadence, disk-space thresholds and fresh-machine drill acceptance criteria remain pre-challenge decisions.
+## 19. Calibration / implementation choices pending
+
+Runtime backup cadence/retention, disk-space thresholds, optional encryption, secondary-drive copy and exact source-ZIP helper implementation remain later evidence/implementation choices.
