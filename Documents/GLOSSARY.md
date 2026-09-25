@@ -1,169 +1,219 @@
 # GoldScalpTrader — Shared Glossary
 
-**Status:** FROZEN V1 REFERENCE — PRESERVATION-FIRST CORRECTION APPLIED
-**Version:** 1.2-profiled-risk-preserved-features
-**Authority:** Plain-language vocabulary shared by the canonical `Documents/` manual.
+**Status:** FINAL CANONICAL VOCABULARY — DOCUMENTATION FREEZE BASELINE
+**Version:** 2.0-institutional-scalp
+**Authority:** Shared terminology used by every GoldScalpTrader document, implementation, test, dashboard and audit.
 
-## 1. Core architecture
-
-| Term | Canonical meaning |
-|---|---|
-| Documents manual | Sole active canonical documentation set used to design, build and verify GoldScalpTrader. |
-| Preservation-first rule | GoldSwingTraderAI feature/default stays unless a direct scalp requirement, explicit operator instruction or proven reference defect justifies changing it. |
-| Trading Floor | Specialist analytical desks/families produce attributable evidence independently; bounded-parallel execution is preserved while financial/broker authority remains serial. |
-| MarketSnapshot | One immutable normalized account/symbol/quote/completed-candle/exposure view for one governed cycle. |
-| Strategy Family | One independent attributable market hypothesis; no Risk/write authority. |
-| BUY / SELL Team | Independent directional thesis builders; opposition remains visible. |
-| Red Team | Analytical challenge of leading thesis; never hard broker authority. |
-| Opportunity | Durable identity for a qualified thesis that may persist while waiting for timing. |
-| Entry Timing | Completed-M5 executable readiness of an existing Opportunity. |
-| TradePlan | Structural entry/invalidation/objective geometry plus gross and cost-adjusted room before monetary sizing. |
-| RiskEvaluation | Independent broker-aware monetary affordability result using the active account profile/overlay. |
-| ExecutionPermissionGate | Central ordered composition of required hard authorities for one action. |
-| ExecutionIntent | Durable unique one-shot action identity persisted before irreversible submission. |
-| MT5Writer | Sole raw MetaTrader5 irreversible write boundary. |
-| Reconciliation | Verify attempted broker action against broker truth instead of guessing/retrying. |
-| ManagedTrade | Durable bot-owned post-entry lifecycle identity. |
-| Trade Manager | Post-entry owner of HOLD/PROTECT/TRAIL/RUNNER/EXIT. |
-
-## 2. Timeframe vocabulary
+## 1. Documentation / governance
 
 | Term | Canonical meaning |
 |---|---|
-| H1 regime | Broad soft directional/volatility context; not universal veto. |
-| M15 opportunity context | Location/path/liquidity/session context for a scalp thesis. |
-| M5 production timeframe | Primary completed-bar setup, entry timing and normal management structure. |
-| H4 context | Optional major context only. |
-| M1 context | Diagnostic/research only; no independent production trigger authority. |
-| Quote/current tick | Executable Bid/Ask/spread/drift/freshness condition, not structural-history proof. |
+| Canonical Documents manual | The single active `Documents/` design/build/proof authority for GoldScalpTrader. |
+| Preservation-first rule | Preserve GoldSwingTraderAI feature/default behaviour unless a direct scalp requirement, explicit operator decision or proven reference defect justifies a governed difference. |
+| Affected-graph sync | When one policy changes, update its owner plus every relevant architecture, operator, engineering, test and governance consumer. |
+| Calibration | Architecture/dimension is approved, but the numerical value needs evidence. |
+| External proof | Current broker/platform/environment fact must be verified in the real intended environment. |
+| Approval Required | Research/candidate work may continue, but production/live promotion stops until explicit operator approval. |
 
-## 3. Scalping / chronology
-
-| Term | Canonical meaning |
-|---|---|
-| Scalp | Selective short-duration Gold trade with fresh thesis, executable geometry and cost-aware room. |
-| Knowledge time | Earliest time a fact could causally be known. |
-| Completed candle | Closed bar used for bar-based production authority. |
-| Causal lineage | Proven path from raw facts to evidence without future leakage. |
-| Event/trigger age | Time/bars since evidence became knowable. |
-| Stale for entry | Historically true fact that no longer supports a new entry without fresh evidence. |
-| Late entry | Current executable price has moved enough that original scalp efficiency/room no longer holds. |
-| Re-arm | New timing opportunity after a genuinely fresh causal event; never next-poll reset. |
-| Accidental swing conversion | Failed scalp held beyond intended thesis/horizon without governed reason. |
-| Time/efficiency EXIT | Normal `EXIT` reason caused by calibrated failure to progress; not a separate action enum. |
-
-## 4. Price / cost identities
+## 2. Market / setup vocabulary
 
 | Term | Canonical meaning |
 |---|---|
-| Signal Price | Price where evidence formed. |
-| Approved Entry Reference | Price reference used by TradePlan. |
-| Executable Quote | Fresh action-side Bid/Ask immediately before submit. |
-| Actual Fill | Broker-confirmed executed entry price. |
-| Gross structural room | Reward/path quality before current transaction-cost burden. |
-| Cost-adjusted room | Remaining executable opportunity after current known spread/friction context without inventing future fill/slippage. |
-| Cost-dominated setup | Structural room is insufficient relative to transaction costs under owning policy. |
-| Price drift | Movement between Approved Entry Reference and current executable quote/fill. |
+| MarketSnapshot | One immutable normalized cycle snapshot of account/symbol/quote/completed candles and required exposure facts. |
+| IntelligenceSnapshot | Causal reusable structure, technical, liquidity, quant, session and soft News context built from one MarketSnapshot. |
+| Setup Detector | Analytical process that asks what recognizable setup the chart/market currently forms; it never forces the currently active strategy onto unrelated market behaviour. |
+| Setup Candidate | A causally detected market pattern that appears to match one strategy-family definition; may be active-family eligible or shadow-only. |
+| Detected Setup | Best currently qualified setup classification with evidence/reasons, or `NONE/WAIT` when nothing qualifies. |
+| Strategy Family | One independent market hypothesis/recipe with no monetary or broker authority. |
+| ACTIVE_EXECUTION family | Exactly one strategy family currently eligible to originate live production Opportunities during isolation testing. It may trade only when its own setup is actually detected/qualified. |
+| SHADOW_ONLY family | Strategy family that analyzes and records counterfactual opportunities but cannot originate live production trades. |
+| Strategy Isolation Mode | One live trade-producing family at a time for clean efficiency attribution; the other five remain shadow/research. |
+| Dynamic Strategy Router | Future candidate capability that could select among proven families by detected setup. It is **not current production behaviour** and requires evidence + approval. |
+| BUY / SELL thesis | Independent directional cases inside the active setup/family; absence of one is not automatic proof of the other. |
+| Red Team | Analytical challenge of the active-family thesis; never monetary/broker authority. |
+| Opportunity | Durable identity for a qualified active-family M5 thesis that may persist while timing waits. |
+| Episode | Causal market episode that groups Opportunity/re-entry lineage without allowing next-poll identity reset. |
 
-## 5. Risk vocabulary
-
-| Term | Canonical meaning |
-|---|---|
-| DayStartEquity profile | Account Risk profile resolved at UTC risk-day boundary and fixed for that risk day. |
-| SMALL | Positive DayStartEquity below $300. Normal target 3.0–4.5%, elevated >4.5–6.5%, hard ceiling 7%, daily lock 12%. |
-| MEDIUM | DayStartEquity $300–$999.99. Normal target 2.0–3.0%, elevated >3.0–4.5%, hard ceiling 5%, daily lock 9%. |
-| NORMAL | DayStartEquity >= $1,000. Normal target 1.0–2.0%, elevated >2.0–3.5%, hard ceiling 4%, daily lock 7%. |
-| AGGRESSIVE_SMALL_ACCOUNT | Explicit optional policy overlay for eligible sub-$1,000 operation; disabled by default and never auto-enabled merely from balance. |
-| 8% aggressive ceiling | Maximum monetary SL risk for one new trade when aggressive mode is explicitly enabled; **not a sizing target**. |
-| 16% aggregate ceiling | Maximum aggregate open risk under explicitly enabled aggressive mode. |
-| 16% aggressive daily ceiling | Daily loss ceiling under explicitly enabled aggressive mode. |
-| Minimum-lot affordability | Whether broker minimum executable volume fits the active hard policy for the actual structural stop. |
-| Structural stop | Thesis invalidation price; never altered merely to make volume affordable. |
-| Original R | Initial structural risk preserved for later evaluation. |
-| Manual daily-loss reset | Preserved governed reset capability; disabled by default and unable to clear unrelated hard faults. |
-| Same-episode re-entry | At most the preserved reference allowance of one genuinely fresh re-entry under current baseline policy. |
-| Global loss cooldown | Reference baseline: three consecutive closed bot losses trigger at least 30 minutes plus required fresh/healthy release conditions. |
-
-## 6. News / provider vocabulary
+## 3. Timeframe / chronology
 
 | Term | Canonical meaning |
 |---|---|
-| News CLEAR | Accepted current event-safety truth with no configured blackout/warmup. Source may be fresh provider/file or valid LKG cache. |
-| News BLACKOUT | Positively known configured high-impact event window; hard new-entry block. |
-| News UNKNOWN / NEWS_SAFETY_UNKNOWN | Current News safety cannot be proved because no accepted current source/cache exists; new scalp entry blocks while management remains action-sensitive. |
-| Provider Health | Acquisition-source condition such as VERIFIED, DEGRADED, STALE, UNAVAILABLE or UNKNOWN; not identical to News truth. |
-| Last-known-good (LKG) cache | Previously accepted normalized calendar reused only while original scope/schema/coverage/TTL/integrity remain valid. |
-| Provider TTL baseline | 1800 seconds retained from reference unless a later direct provider/scalp reason supersedes it. |
-| Cache timestamp laundering | Prohibited rewriting of old fetch/as-of/valid-until values so stale data appears fresh. |
+| H4 context | Optional major context only; soft. |
+| H1 regime | Broad soft directional/volatility context. |
+| M15 opportunity context | Location, path, liquidity and target-room context. |
+| M5 production setup | Primary completed-bar setup/thesis and normal management structure. |
+| M1 refinement | Subordinate micro-entry refinement **after** a valid M5 Opportunity exists; cannot independently create a production trade. |
+| Quote/current tick | Current executable Bid/Ask/spread/drift/freshness truth, not historical structural proof. |
+| Knowledge time | Earliest moment a fact could causally be known. |
+| Completed candle | Closed bar allowed to become confirmed bar-based structure. |
+| Signal Price | Price where causal evidence formed. |
+| Approved Entry Reference | Price reference used to construct TradePlan geometry. |
+| Executable Quote | Fresh side-specific Bid/Ask used for current economic/execution validation. |
+| Actual Fill | Broker-confirmed executed price. |
+| Trigger/Event age | Time/bars since setup/refinement evidence became knowable. |
+| Chase | Current price has moved far enough from intended geometry that entry efficiency may be damaged. |
+| Drift | Movement between approved/reference price and current executable price. |
+| Re-arm | New timing opportunity only after genuinely fresh causal evidence and applicable re-entry policy. |
 
-## 7. Session baseline vocabulary
+## 4. Strategy families
+
+Preserved six production families:
+
+```text
+Trend Pullback Continuation
+Breakout Expansion
+Breakout Retest Continuation
+Liquidity Sweep Reversal
+Failed Breakout Reversal
+Compression Expansion
+```
+
+Important evidence such as EMA, RSI, Fib, FVG, OB, Trendline and POC may be `REQUIRED_FOR_THIS_FAMILY`, `STRONG_SUPPORT`, `OPTIONAL_SUPPORT`, `OPPOSITION`, `NOT_RELEVANT` or `UNKNOWN`. Importance to one family never makes it a universal checklist for all trades.
+
+## 5. Timing / plan / executable quality
 
 | Term | Canonical meaning |
 |---|---|
-| Daily PRE_CLOSE baseline | T-20 no new entry, T-10 mandatory flatten while broker remains tradeable. |
-| Weekend PRE_CLOSE baseline | T-60 no new entry, T-30 mandatory flatten. |
-| Daily reopen baseline | One clean completed M5 after verified reopen plus healthy execution/recovery state. |
-| Weekend reopen baseline | Two clean completed M5 plus weekend-gap assessment and healthy execution/recovery state. |
+| READY | Analytical timing is currently suitable; not broker permission. |
+| WAIT | Setup survives but current entry moment is not efficient/ready. |
+| MISSED | Exact current entry opportunity escaped/staled economically. |
+| INVALID | Underlying thesis/geometry failed. |
+| TradePlan | Structural invalidation/SL, objectives and gross geometry constructed before monetary sizing. |
+| Structural stop | Thesis invalidation price; never tightened merely to make minimum lot affordable. |
+| Immediate Obstacle | Nearest meaningful opposing structural/path fact. |
+| Primary Target | First credible structural objective. |
+| Expansion Target | Next credible continuation objective. |
+| Runner Objective | Exceptional further objective; profit alone does not justify runner mode. |
+| Original R | Immutable initial structural risk basis used for later performance analysis. |
+| Gross R | Structural reward/risk before current transaction-cost burden. |
+| Executable Quality | Current economic usability of a structurally valid plan using fresh quote, spread, drift, latency and costs. |
+| Emergency spread ceiling | Absolute circuit-breaker for clearly pathological spread; exact value is calibrated. |
+| Spread/SL | Current spread divided by structural stop distance. |
+| Spread/Target | Current spread divided by remaining credible target room. |
+| Cost/Reward | Expected transaction-cost burden relative to expected reward. |
+| Slippage allowance | Pre-fill estimate/reserve for plausible fill deterioration; calibrated from DEMO evidence. |
+| Broker deviation | Bounded request tolerance for permitted price movement where execution mode supports it. |
+| Decision→send latency | Time from final actionable decision to broker send; excess age normally triggers fresh revalidation rather than automatic permanent rejection. |
 
-Current broker schedule/DST/holiday facts still require external verification.
+## 6. Risk vocabulary
+
+| Term | Canonical meaning |
+|---|---|
+| DayStartEquity profile | Automatic account Risk profile resolved at the UTC risk-day boundary and fixed for that risk day. |
+| SMALL | Positive DayStartEquity below $300. Normal 3.0–4.5%, elevated >4.5–6.5%, hard ceiling 7%, daily lock 12%. |
+| MEDIUM | DayStartEquity $300–$999.99. Normal 2.0–3.0%, elevated >3.0–4.5%, hard ceiling 5%, daily lock 9%. |
+| NORMAL | DayStartEquity >= $1,000. Normal 1.0–2.0%, elevated >2.0–3.5%, hard ceiling 4%, daily lock 7%. |
+| AGGRESSIVE_SMALL_ACCOUNT | Explicit optional sub-$1,000 overlay; disabled by default and never auto-enabled from balance alone. |
+| 8% aggressive ceiling | Maximum single-trade monetary SL-risk ceiling when explicitly enabled; **not a sizing target**. |
+| 16% aggregate ceiling | Maximum aggregate open risk under aggressive mode. |
+| 16% aggressive daily ceiling | Daily-loss ceiling under aggressive mode. |
+| Minimum-lot affordability | Whether broker minimum executable volume fits active monetary policy using the real structural stop. |
+| Account Safety P/L | Whole-account risk-day equity change adjusted for identifiable non-trading cash flow. |
+| Bot Performance P/L | Bot-attributed trading performance, separated from manual/external activity. |
+| Same-episode re-entry | Preserved baseline allowance of one genuinely fresh re-entry under current policy. |
+| Global loss cooldown | Three consecutive closed bot losses → at least 30 minutes plus fresh/healthy release conditions. |
+| Manual daily-loss reset | Preserved governed capability, disabled by default; cannot clear unrelated hard faults. |
+
+## 7. Session / News vocabulary
+
+| Term | Canonical meaning |
+|---|---|
+| Session Context | Asia/London/New York/overlap descriptive context and performance segmentation; soft. |
+| Broker Market State | `OPEN`, `PRE_CLOSE`, `CLOSED`, `REOPEN_WARMUP` or `UNKNOWN`; hard factual authority where required. |
+| News Context | Scheduled-event/macro information used for dashboard, explanation and research; **not hard trading permission**. |
+| Provider Health | Acquisition-source condition such as VERIFIED, DEGRADED, STALE, UNAVAILABLE or UNKNOWN. |
+| LKG cache | Last-known-good News/context data kept with original provenance/timestamps; useful for context continuity, not broker permission. |
+| Provider TTL baseline | 1800 seconds retained as context-freshness baseline unless later evidence changes it. Expiry does not hard-block trading by itself. |
+| Daily PRE_CLOSE baseline | T-20 no new entry / T-10 mandatory governed flatten, subject to current broker proof. |
+| Weekend PRE_CLOSE baseline | T-60 no new entry / T-30 mandatory governed flatten. |
+| Daily reopen baseline | One clean completed M5 plus healthy broker/execution state. |
+| Weekend reopen baseline | Two clean completed M5 + gap assessment + healthy broker/execution state. |
 
 ## 8. Execution / ownership
 
 | Term | Canonical meaning |
 |---|---|
+| ExecutionPermissionGate | Central ordered composition of required hard authorities for one irreversible action. |
+| Gate NOT EVALUATED | An upstream owner already stopped the path; do not falsely label Gate BLOCKED. |
+| ExecutionIntent | Durable unique one-shot action identity persisted before irreversible submission. |
 | One-shot submission | One Intent ID has at most one irreversible send allowance. |
-| Accepted unknown | Broker effect may exist but final certainty is missing; blind resend forbidden. |
-| Controller fencing | Prevents stale/multiple runtime writers for one account/symbol scope. |
-| Capacity | Initial V1 one independently risk-bearing Gold position per scope. |
-| External/manual exposure | Broker Gold exposure not proven bot-owned; never silently adopted. |
+| Accepted Unknown | Broker effect may exist but final truth is unresolved; blind resend prohibited. |
+| MT5Writer | Sole raw MetaTrader5 irreversible write boundary. |
+| Reconciliation | Verify attempted action against current broker positions/orders/deals instead of guessing. |
+| Controller/Fencing | Ensures only the current valid local PRIMARY holder/epoch can write for one scope. |
+| Capacity | Initial one independently risk-bearing Gold position per account/symbol scope. |
+| External/manual exposure | Gold exposure not proven bot-owned; never silently adopted. |
+| ManagedTrade | Durable bot-owned post-entry lifecycle identity. |
 | Verified close | Exact known-trade broker lineage/outcome proven sufficiently for accounting/learning. |
-| Partial management | Preserved optional broker-valid partial action where volume is divisible; minimum-lot correctness never depends on it. |
 
-## 9. Runtime modes / capability stages
-
-| Term | Canonical meaning |
-|---|---|
-| READINESS | Read-only diagnostic/identity/data/recovery mode. |
-| DRY_RUN | Governed analytical/risk/permission path with zero irreversible broker writes. |
-| PRIMARY / DEMO | One active governed DEMO writer per account/symbol scope after its implementation/evidence gate. |
-| REAL capability | Preserved future governed feature; disabled/unavailable until DEMO proof, release gates and explicit operator approval satisfy its own policy. |
-| STANDBY / same-scope distributed writer | Not part of current local-state writer design without a separate shared-fencing architecture. |
-
-## 10. Parallel / serial vocabulary
+## 9. Management
 
 | Term | Canonical meaning |
 |---|---|
-| Bounded analytical concurrency | Preserved capability for dependency-independent desks/families using immutable inputs and bounded workers. |
-| One-worker fallback | Deterministic fallback required to be semantically equivalent to bounded-parallel analysis. |
-| Serial financial authority | TradePlan → Risk → hard permissions → Gate → Intent → writer → reconciliation; never competing broker writers. |
+| HOLD | Thesis healthy; no justified change. |
+| PROTECT | Reduce open risk after progress/structure earns protection. |
+| TRAIL | Move stop using earned structure; never widen approved risk. |
+| RUNNER | Exceptional continuation mode with fresh objective/evidence. |
+| EXIT | Governed close because thesis, path, time efficiency, PRE_CLOSE or another owning reason requires it. |
+| Time-efficiency EXIT | Normal EXIT reason when a scalp fails calibrated progress expectations; not a separate action enum. |
+| Partial management | Optional broker-valid partial action where volume is divisible; minimum-lot correctness never depends on it. |
 
-## 11. Backup / recovery
+## 10. Learning / research
 
 | Term | Canonical meaning |
 |---|---|
-| Local working clone | Project directory plus local `.git`; source/history backup after `git pull --ff-only`. |
+| StrategyMemory | Durable actual-trade observations/summaries with exactly-once source identity. |
+| Actual Active evidence | Verified production/DEMO outcome from the currently active family. |
+| Shadow Counterfactual | What a shadow family would have done; never broker P/L. |
+| Missed Opportunity | Meaningful untraded opportunity measured for recall/efficiency research. |
+| Candidate | Versioned research strategy/parameter/model hypothesis with no automatic production authority. |
+| Autonomous Invention | Backend generation of new declarative candidates from audited primitives/evidence. |
+| Automatic Stage Progression | Candidate may progress through research/validation/holdout/stress/shadow/DEMO evidence stages where contracts allow. |
+| Production Promotion | Versioned live policy change; always stops at `APPROVAL_REQUIRED` until operator approval. |
+| Qualified Opportunity Recall | How many genuine qualifying opportunities were found. |
+| Opportunity Capture Rate | How many qualifying opportunities became actual trades. |
+| Entry/Capture/Exit Efficiency | Quality of actual entry, move capture and exit relative to available causal path. |
+| 120 trades/day benchmark | Research throughput capability question; never a forced quota. |
+
+## 11. Runtime / backup
+
+| Term | Canonical meaning |
+|---|---|
+| READINESS | Read-only diagnostic/identity/data/recovery stage. |
+| DRY_RUN | Full governed analytical/risk/permission path with zero irreversible broker writes. |
+| DEMO PRIMARY | One active governed DEMO writer per account/symbol scope after its evidence gate. |
+| Future REAL | Preserved future capability requiring separate DEMO/release proof and explicit operator approval. |
 | Runtime checkpoint | Consistent verified snapshot/export of durable runtime/research state. |
-| Final shutdown checkpoint | Fresh verified local runtime checkpoint after safe shutdown; no Git operation. |
-| Source ZIP | Optional secret-clean Windows-friendly milestone snapshot. |
-| Git bundle | Optional advanced/manual source-history archive. |
-| Recovery package | Controlled runtime package containing approved checkpoint/manifest/identity; secrets excluded. |
+| Source backup | Local Git + GitHub source/history remote; optional secret-clean milestone ZIP. |
+| Sequential handoff | Stop old same-scope PRIMARY, transfer verified state, restore/reconcile on new machine, then acquire new controller. |
+| Distributed DB/fencing | Same-scope active-active distributed infrastructure; explicitly deferred. |
 
-## 12. Learning / evidence
+## 12. Dashboard vocabulary
 
-Learning/research stays downstream and cannot create broker authority. Strategy candidates cannot self-promote. Actual, counterfactual and system-fault evidence remain separate.
+| Term | Canonical meaning |
+|---|---|
+| Primary graphical dashboard | Approved Swing-style one-screen institutional layout adapted to Scalp; no scrollbars. |
+| Functional chart controls | M1/M5/M15/H1/H4, Indicators, Drawings and Settings controls perform real UI/state actions rather than decorative clicks. |
+| Detected Setup panel | Displays what the market currently forms and why, independent of whether that family is live-eligible. |
+| Active Test Family | The one strategy currently allowed to originate live trades under isolation testing. |
+| Shadow Detected Setup | Valid setup detected for a non-active family; shown/researched but live action remains WAIT. |
+| Current Blocker | Exact upstream owner/reason, distinct from actual Gate state. |
 
-Evidence terms:
+## 13. Evidence status vocabulary
+
+Use precise claims:
 
 ```text
-FROZEN
-PRESERVED REFERENCE DEFAULT
-SCALP CALIBRATION PENDING
-IMPLEMENTED
-DETERMINISTIC PROOF
-REPLAY EVIDENCE
-CONNECTED DEMO PROOF
-FUTURE REAL RELEASE PROOF
-EXTERNAL PROOF PENDING
+APPROVED DOCUMENTED DESIGN
+DOCUMENTATION FROZEN
+IMPLEMENTATION PENDING / IMPLEMENTED
+DETERMINISTIC PROOF PENDING / PASS
+CALIBRATION PENDING
+EXTERNAL PROOF PENDING / PASS
+CONNECTED DEMO PENDING / PASS
+APPROVAL_REQUIRED
+DEFERRED
+NOT RUN
 ```
 
-GoldSwingTraderAI remains the default preservation/reference baseline. Exact current differences are owned by `90-governance/DOCUMENTATION_COMPARISON.md`.
+Never treat documentation, unit tests, replay, DEMO and profitability as the same evidence class.

@@ -1,251 +1,370 @@
 # GoldScalpTrader — Coder Guide
 
-**Status:** POST-AUDIT-1 DEVELOPER MANUAL — PRESERVATION-FIRST CORRECTED, IMPLEMENTATION NOT STARTED
-**Version:** 1.2-preserved-feature-handoff
-**Authority:** Developer navigation, phase boundaries, source/test ownership, implementation traces and completion evidence.
+**Status:** FINAL PRE-IMPLEMENTATION DEVELOPER MANUAL — DOCUMENTATION FREEZE BASELINE
+**Version:** 2.0-institutional-scalp
+**Authority:** Developer/AI navigation, architecture ownership, implementation order, source/test synchronization and completion evidence.
 
 ## 1. Read before code
 
-GoldScalpTrader is documentation-first. Repository truth beats remembered chat.
-
-Current sequence:
+GoldScalpTrader is documentation-first.
 
 ```text
-64-file canonical manual              COMPLETE
-Fresh-Zero Audit 1                    COMPLETE + preservation correction
-Affected-graph semantic sync          CURRENT
-Metadata/cross-link normalization     PENDING
-Final operator scalp-delta discussion PENDING
-Implementation                        NOT STARTED
+66-document institutional manual
+→ final architecture / governance freeze
+→ implementation
+→ deterministic tests
+→ replay / calibration
+→ connected DEMO
+→ release evidence
 ```
 
-### Preservation-first coding rule
+Repository truth beats remembered chat. Code must never get ahead of canonical Documents.
 
-GoldSwingTraderAI feature/default behaviour remains baseline unless the current Scalp documents show a direct scalp-specific change, an explicit operator-directed change, or a proven reference defect correction.
+## 2. Preservation-first rule
 
-Do not simplify/remove a reference feature because a smaller implementation is easier.
+GoldSwingTraderAI is the reference feature/default baseline.
 
-## 2. Authority reading order
+Before changing inherited behaviour ask:
 
-1. `README.md` + `GLOSSARY.md`;
-2. `00-foundation/SYSTEM_CONTRACT.md`;
+```text
+direct Scalp requirement?
+OR explicit operator decision?
+OR proven reference defect/current external fact update?
+```
+
+If no, preserve it. Do not remove a feature because a simpler implementation is easier.
+
+The exact accepted Swing→Scalp/operator differences are owned by `08-governance/DOCUMENTATION_COMPARISON.md` after folder migration.
+
+## 3. Authority reading order
+
+1. `README.md` and `GLOSSARY.md`;
+2. `01-foundation/SYSTEM_CONTRACT.md`;
 3. owning topic contract;
-4. `DESIGN_DECISIONS.md` + `OPEN_QUESTIONS.md`;
-5. `DOCUMENTATION_COMPARISON.md` + `PRESERVATION_LEDGER.md` when reference behaviour is involved;
-6. Architecture / Trading Floor;
+4. `08-governance/DESIGN_DECISIONS.md` + `OPEN_QUESTIONS.md`;
+5. `DOCUMENTATION_COMPARISON.md` + `PRESERVATION_LEDGER.md` for inherited behaviour;
+6. Architecture + Trading Floor;
 7. Coding Standard;
 8. Module Structure + File/Test Catalog;
 9. current source/tests/evidence.
 
-## 3. Architectural spine
+## 4. Final architectural spine
 
-```text
-one normalized MT5 read boundary
-→ immutable MarketSnapshot
-→ staged bounded-parallel intelligence
-→ six independent scalp families
-→ BUY / SELL fusion + Red Team
-→ persistent Opportunity
-→ completed-M5 Entry Timing / event freshness
-→ family-aware TradePlan
-→ gross + cost-adjusted room
-→ SMALL/MEDIUM/NORMAL monetary Risk
-   + optional explicit disabled-by-default aggressive overlay
-→ hard session/news/system/account/controller authorities
-→ central Gate
-→ durable one-shot Intent
-→ sole MT5Writer
-→ broker reconciliation
-→ ManagedTrade / Trade Manager
-→ verified close
-→ exactly-once learning
-→ research/discovery/promotion
-→ local checkpoint/recovery
+```mermaid
+flowchart TB
+    MT5["Normalized MT5 read boundary"] --> SNAP["Immutable MarketSnapshot"]
+    SNAP --> INTEL["Causal market intelligence"]
+    INTEL --> DETECT["Setup detection across 6 families"]
+    DETECT --> ISO["1 ACTIVE_EXECUTION + 5 SHADOW_ONLY"]
+    ISO --> LIVE["Active family eligible only if its own setup exists"]
+    ISO --> SHADOW["Other detected setups → shadow/research"]
+    LIVE --> THESIS["BUY/SELL + Red Team"]
+    THESIS --> OPP["Persistent M5 Opportunity"]
+    OPP --> M1["Subordinate M1 entry refinement"]
+    M1 --> PLAN["Structural TradePlan"]
+    PLAN --> QUAL["Executable Quality"]
+    QUAL --> RISK["Preserved monetary Risk"]
+    RISK --> GATE["Hard authorities + Gate"]
+    GATE --> INTENT["Durable one-shot Intent"]
+    INTENT --> WRITE["Sole MT5Writer"]
+    WRITE --> RECON["Broker reconciliation"]
+    RECON --> MANAGE["ManagedTrade"]
+    MANAGE --> LEARN["Learning / discovery / invention / ML"]
+    LEARN --> ASK["Production promotion → APPROVAL_REQUIRED"]
 ```
 
-## 4. Timeframe authority
+## 5. Setup detection — never force a strategy
+
+This is a hard analytical rule:
 
 ```text
-H1   broad soft regime
-M15  opportunity/location/path
-M5   primary completed-bar setup/timing/management
+chart/market facts
+→ detect what setup actually exists
+→ map to matching family or NONE
+→ active-family eligibility check
+```
+
+Wrong:
+
+```text
+active family = Breakout Retest
+→ reinterpret every market as Breakout Retest
+```
+
+Correct:
+
+```text
+Detected Setup = Liquidity Sweep
+Active Test Family = Breakout Retest
+→ live action WAIT
+→ Sweep recorded SHADOW_ONLY
+```
+
+Exactly one family has live trade authority, but no family has permission to fabricate its own setup.
+
+## 6. Timeframe authority
+
+```text
 H4   optional major context
-M1   diagnostic/research only
-quote executable Bid/Ask/spread/drift/health
+H1   broad soft regime/context
+M15  opportunity location/path/target context
+M5   primary setup/thesis + normal management structure
+M1   subordinate entry refinement after valid M5 Opportunity
+quote current executable Bid/Ask/spread/drift truth
 ```
 
-## 5. Bounded parallel versus serial authority
+M1 cannot independently originate a production trade.
 
-Preserve bounded concurrency for dependency-independent analytical work.
+## 7. Analytical performance model
 
-Implementation requirements:
+Logical specialist independence is mandatory. Physical parallelism is profiling-driven.
 
-- immutable shared inputs;
-- bounded workers/resources;
-- deterministic result order;
-- no lifecycle/broker side effects in workers;
-- one-worker fallback;
-- one-worker ↔ bounded-parallel semantic parity tests.
-
-Must remain serial:
+Implementation order:
 
 ```text
-TradePlan
-→ Risk profile/overlay
-→ hard permissions
-→ Gate
-→ Intent persisted
-→ fresh broker checks
-→ sole writer
-→ reconciliation
+share calculations
+→ vectorize/cache
+→ deterministic serial baseline
+→ profile
+→ bounded parallelism only where measured benefit exists
+→ prove one-worker/parallel semantic parity
 ```
 
-## 6. Preserved Risk contract
+Financial/broker authority is always serial.
+
+## 8. Preserved monetary Risk
+
+Do not replace the canonical profiles with one generic `STANDARD` profile.
+
+| Profile | DayStartEquity | Normal | Elevated | Hard ceiling | Daily lock |
+|---|---:|---:|---:|---:|---:|
+| SMALL | positive < $300 | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
+| MEDIUM | $300–$999.99 | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
+| NORMAL | >= $1,000 | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
+
+Preserve disabled-by-default aggressive capability:
 
 ```text
-SMALL   DayStartEquity < $300
-MEDIUM  $300–$999.99
-NORMAL  >= $1,000
+8%  max single-trade monetary SL-risk ceiling — NOT target
+16% max aggregate open risk
+16% daily loss ceiling
 ```
 
-| Profile | Normal | Elevated | Hard | Daily |
-|---|---:|---:|---:|---:|
-| SMALL | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
-| MEDIUM | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
-| NORMAL | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
+Manual daily-loss reset remains disabled by default. One fresh same-episode re-entry and 3 losses → at least 30m cooldown remain current baselines.
 
-Preserved explicit optional overlay:
+## 9. TradePlan / executable quality separation
+
+TradePlan owns structural invalidation/SL/objectives/gross R.
+
+Executable Quality owns current economics:
 
 ```text
-AGGRESSIVE_SMALL_ACCOUNT disabled by default
-eligible baseline < $1,000
-8% max monetary SL risk — NOT target
-16% aggregate open-risk cap
-16% daily-loss ceiling
+emergency spread ceiling
+spread/SL
+spread/target
+recent spread baseline
+total cost/reward
+slippage allowance
+broker deviation
+decision→send latency
+price drift/chase
 ```
 
-Manual reset capability remains disabled by default. Baseline re-entry/cooldown remains one genuinely fresh same-episode re-entry and three consecutive closed losses → at least 30 minutes global cooldown plus release conditions.
+Do not move structural SL/target to improve ratios.
 
-The provisional 0.50% scaffold is not production policy.
+Swing's 1.20R floor is not automatically a hard Scalp floor.
 
-## 7. Session / News / cache
+## 10. Session and News
 
-Preserve:
+Hard broker/session facts remain hard:
 
 ```text
-Provider TTL 1800s
-Daily PRE_CLOSE T-20 / T-10
-Weekend PRE_CLOSE T-60 / T-30
-Daily reopen 1 clean M5
-Weekend reopen 2 clean M5 + gap assessment
+OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN
 ```
 
-Current broker schedule remains external proof.
-
-Scalp-specific News rule:
+Preserved baselines pending current broker proof:
 
 ```text
-true NEWS_UNKNOWN → new-entry BLOCK / LIMITED
-refresh failure + valid LKG cache → use cached accepted truth
-refresh failure + expired/invalid/no cache → UNKNOWN
+Daily PRE_CLOSE   T-20 no entry / T-10 flatten
+Weekend PRE_CLOSE T-60 no entry / T-30 flatten
+Daily reopen      1 clean completed M5
+Weekend reopen    2 clean completed M5 + gap assessment
 ```
 
-Never rewrite cache timestamps/TTL to keep trading.
+News/Fundamental is soft context/research only:
 
-## 8. Scalping engineering hotspots
+- event does not directly block;
+- provider failure does not directly block;
+- no News cooldown;
+- no mandatory post-News warmup;
+- actual spread/drift/dislocation/cost deterioration is handled by real market/execution owners.
 
-### Freshness
-Keep bar identity, knowledge time, event time, Opportunity/TradePlan creation, decision, Intent/precheck/send/reconcile timestamps distinct.
+1800s remains a context-cache freshness baseline, not trade permission.
 
-### Cost / geometry
-Keep gross geometry, Approved Entry Reference, current Bid/Ask/spread, explicit reserves and Actual Fill distinct. Never double-count costs or change SL/target to improve apparent R.
-
-### 1.20R
-Swing's 1.20R is not automatically a hard scalp entry floor. Exact scalp gross/net thresholds are a genuine scalp calibration item.
-
-### Management
-Runner is exceptional. Time weakness can produce normal `EXIT`. Optional partial management remains supported where broker-valid/divisible; correctness at minimum lot never depends on it.
-
-## 9. Runtime capability progression
+## 11. Runtime capability progression
 
 ```text
-READINESS / DRY_RUN
-→ controlled DEMO
+READINESS
+→ DRY_RUN
+→ controlled DEMO PRIMARY
 → future governed REAL
 ```
 
-REAL is preserved as a future feature but is disabled/unavailable until its separate DEMO/release/explicit-approval gate passes.
+REAL is preserved but unavailable until its separate evidence/release gate and explicit operator approval.
 
-## 10. UNKNOWN / corrupt / ambiguous examples
+## 12. Execution invariants
 
 ```text
-positions_get == []   → verified zero
-positions_get == None → unavailable, not zero
-News refresh fail + valid cache → accepted cached truth, provider may be DEGRADED
-News refresh fail + invalid/no cache → NEWS_UNKNOWN
-unknown equity/profile state → Risk UNKNOWN
-ambiguous send → reconcile, never resend blindly
+TradePlan
+→ Executable Quality
+→ Risk
+→ hard authorities
+→ Gate
+→ persist Intent
+→ fresh broker checks / order_check
+→ persist SUBMITTING
+→ exactly one raw writer call
+→ classify acknowledgement
+→ reconcile
 ```
 
-## 11. Runtime persistence / backup
+Never blind-retry ambiguous acknowledgement.
+
+`positions=[]` means verified zero. `positions=None/error` means unavailable, not zero.
+
+## 13. Management invariants
+
+```text
+HOLD | PROTECT | TRAIL | RUNNER | EXIT
+```
+
+- time-efficiency may cause EXIT;
+- Runner is exceptional and requires fresh continuation/objective;
+- optional partial management where volume is divisible;
+- 0.01-lot correctness never depends on partial close;
+- stop never intentionally widens beyond approved risk;
+- broker verification precedes durable local state mutation.
+
+## 14. Learning / invention / ML
+
+Backend autonomy is active:
+
+- actual and shadow evidence;
+- replay/walk-forward/holdout/stress;
+- strategy invention;
+- candidate parameter tuning;
+- advanced ML candidates;
+- automated stage progression.
+
+But:
+
+```text
+candidate/shadow policy may evolve
+production policy cannot silently evolve
+```
+
+Final production/live promotion always stops at `APPROVAL_REQUIRED`.
+
+## 15. Dashboard engineering
+
+The approved primary graphical UX is Swing-style institutional one-screen layout adapted to Scalp:
+
+- no scrollbars;
+- central interactive chart;
+- functional M1/M5/M15/H1/H4 buttons;
+- functional Indicators/Drawings/Settings;
+- Detected Setup separate from Active Test Family;
+- shadow setup clearly labelled research only;
+- exact upstream blocker separate from Gate state;
+- Account/Risk, TradePlan, execution, activity, learning, system/data and verified closes visible on one screen.
+
+Presentation is read-only and cannot recalculate trading authority.
+
+## 16. Runtime persistence / source backup
+
+Runtime:
 
 ```text
 transactional StateStore
-→ rolling local checkpoint
-→ graceful-shutdown final local checkpoint
-→ portable runtime recovery package when requested
+→ rolling checkpoints
+→ graceful-stop verified checkpoint
+→ optional portable recovery package
 ```
 
 No runtime Git operation.
 
-Development/source backup:
+Development/source:
 
 ```text
-one coherent remote commit
+one coherent commit
 → operator git pull --ff-only
-→ local clone = latest source + full Git history
-→ optional clean ZIP
+→ local clone + full Git history
+→ optional secret-clean ZIP
 ```
 
-## 12. Planned source ownership
+## 17. Code quality requirement
 
-Use `MODULE_STRUCTURE.md` and `FILE_AND_TEST_CATALOG.md` as exact planned source/test maps. Key owners include:
+Every material module documents:
 
-- `market_data/*` one read boundary;
-- `strategies/parallel.py` bounded analytical scheduler;
-- `risk/engine.py`, `state.py`, `permissions.py` profiles/overlay/risk state;
-- `app/session_news.py` provider/cache transport;
-- `execution/*` Gate/Intent/writer/reconciliation;
-- `management/*` post-entry management;
-- `persistence/*` local durable state/recovery;
-- `operator/*` read-only presentation;
-- `research/*` downstream evidence/proposals.
+- purpose and authority;
+- inputs/outputs/units;
+- side effects;
+- UNKNOWN/failure semantics;
+- chronology/no-lookahead;
+- thread/concurrency expectations;
+- persistence/broker implications;
+- important invariants.
 
-## 13. Feature packet before coding
+Inline comments explain **why**, not obvious syntax. Use type hints, frozen DTOs where appropriate, enums/reason codes, no magic numbers, structured redacted logs and narrow external adapters.
 
-Every material feature defines purpose, one owner, typed inputs/freshness, outputs/state, parallel-vs-serial boundary, failure semantics, persistence, tests, operator view, research effect, release proof and full affected documentation graph.
+## 18. Feature packet before implementation
 
-For inherited behavior, also record whether it is preserved or a justified scalp/operator delta.
+For every material feature record:
 
-## 14. Context-loss recovery
+1. canonical owner;
+2. preservation/Scalp/operator classification;
+3. typed inputs/outputs;
+4. chronology/freshness;
+5. state machine;
+6. failure/UNKNOWN;
+7. concurrency/order;
+8. persistence/recovery;
+9. Risk/broker effect;
+10. operator representation;
+11. research effect;
+12. source owner;
+13. tests;
+14. calibration/external proof;
+15. affected-document graph.
+
+## 19. Context-loss recovery
 
 ```text
-inspect main HEAD
-→ README / Documentation Standard
+current main HEAD
+→ README / Glossary
 → System Contract / Architecture
-→ Comparison / Preservation Ledger
-→ relevant topic + Decisions/Open Questions
+→ Documentation Comparison / Preservation Ledger
+→ owning topic contract
+→ Design Decisions / Open Questions
 → Module Structure / File-Test Catalog
 → current source/tests/evidence
-→ continue first incomplete dependency
+→ first incomplete dependency
 ```
 
-## 15. Completion classification
+## 20. Completion classification
 
-Use DONE / PARTIAL / MISSING / BROKEN / SCALP CALIBRATION PENDING / EXTERNAL PROOF PENDING.
+Use exact statuses:
 
-Green tests alone never mean the project is complete or profitable.
+```text
+DOCUMENTED
+IMPLEMENTED
+DETERMINISTIC PASS
+CALIBRATION PENDING
+EXTERNAL PROOF PENDING
+CONNECTED DEMO PASS
+APPROVAL_REQUIRED
+DEFERRED
+BROKEN
+```
 
-## 16. Next implementation dependency
-
-No implementation starts until Documentation Audit closes affected-graph + metadata/cross-link work and the operator completes the final documentation discussion of genuine scalp-specific differences.
+Green tests are not profitability proof.

@@ -1,50 +1,40 @@
 # GoldScalpTrader — User Manual
 
-**Status:** POST-AUDIT-1 USER GUIDE — PRESERVATION-FIRST CORRECTED / IMPLEMENTATION PENDING
-**Version:** 1.2-preserved-risk-features-user
-**Authority:** Human-facing intended operation and interpretation; topic contracts own trading behaviour.
+**Status:** FINAL OPERATOR MANUAL — DOCUMENTATION FREEZE BASELINE / IMPLEMENTATION PENDING
+**Version:** 2.0-institutional-scalp
+**Authority:** Human-facing description of the intended GoldScalpTrader system. Technical topic contracts remain authoritative.
 
-## 1. What the bot is intended to do
+## 1. Product overview
 
-GoldScalpTrader is a local Exness MT5 XAUUSD/XAUUSDm system for selective short-duration Gold scalps. It is a governed multi-desk system, not a simple EMA cross bot and not HFT.
+GoldScalpTrader is the documented target design for a local Exness MT5 XAUUSD/XAUUSDm scalping research/trading system. The manual distinguishes analytical setup detection, timing, structural planning, monetary policy, broker execution, management, learning and operator presentation.
 
-GoldSwingTraderAI remains the default feature/default baseline. Only direct scalp-specific differences or explicit operator-directed changes are allowed before final documentation review.
+No documentation statement is a profitability guarantee or proof that the current provisional code already implements the behaviour.
 
-## 2. Scalp trading personality
+## 2. Market-first setup detection
 
-```text
-H1   broad soft regime
-M15  opportunity/location/path
-M5   primary completed-bar setup/timing/management
-H4   optional major context
-M1   diagnostic/research only
-quote current executable Bid/Ask/spread/drift/health
+The system is designed to identify what setup the chart/market actually forms before deciding whether that setup is live-eligible.
+
+```mermaid
+flowchart LR
+    MKT["Chart + causal market facts"] --> DETECT["Detected setup(s) or NONE"]
+    DETECT --> ISO["Strategy Isolation policy"]
+    ISO --> MATCH{"Setup belongs to current ACTIVE_EXECUTION family?"}
+    MATCH -->|Yes| EVAL["Live analytical evaluation may continue"]
+    MATCH -->|No| WAIT["Live WAIT • other setup remains SHADOW_ONLY"]
 ```
 
-The system prefers fresh, cost-aware, clearly invalidatable scalps and refuses late/stale/cost-dominated entries.
+The active test family is never forced onto an unrelated chart pattern.
 
-## 3. Decision path
+Example display:
 
 ```text
-MarketSnapshot
-→ bounded-parallel Intelligence
-→ six strategy families
-→ BUY/SELL + Red Team
-→ persistent Opportunity
-→ completed-M5 Entry Timing
-→ TradePlan gross + cost-adjusted room
-→ SMALL/MEDIUM/NORMAL monetary Risk
-   + optional explicit aggressive overlay
-→ Session/News/account/exposure/controller
-→ central Gate
-→ one-shot Intent
-→ sole writer
-→ broker reconciliation
+Detected Setup: Liquidity Sweep Reversal
+Active Test Family: Breakout Retest
+Live Action: WAIT
+Shadow: Liquidity Sweep Reversal • valid research observation
 ```
 
-A candidate can stop before Gate; `ENTRY_BLOCKED` does not automatically mean Gate BLOCKED.
-
-## 4. Six strategy families
+## 3. Six preserved strategy families
 
 1. Trend Pullback Continuation
 2. Breakout Expansion
@@ -53,137 +43,162 @@ A candidate can stop before Gate; `ENTRY_BLOCKED` does not automatically mean Ga
 5. Failed Breakout Reversal
 6. Compression Expansion
 
-These reference families are preserved. Correlated evidence from one event is not repeatedly counted as independent certainty.
+During Strategy Isolation Mode, exactly one family is `ACTIVE_EXECUTION`; the remaining five are `SHADOW_ONLY`. All may analyze, but only the active family may originate a production Opportunity and only when its own setup is genuinely detected.
 
-## 5. Opportunity / freshness
-
-A strong idea can WAIT for an efficient entry. Terminal setup does not reset merely on the next poll; re-arm needs genuinely fresh causal evidence.
-
-M1 cannot independently create a production entry.
-
-## 6. TradePlan / costs
-
-TradePlan creates structural Entry Reference, invalidation/SL, Primary/optional Expansion/Runner objectives and original R before money sizing.
-
-Scalp adds explicit cost-adjusted room and stronger entry-drift/freshness checks.
-
-Swing's 1.20R floor is not automatically used as the hard scalp entry floor; exact scalp target-quality thresholds remain evidence questions.
-
-Structural stop is never tightened to make minimum lot fit.
-
-## 7. Preserved account Risk profiles
+## 4. Timeframes
 
 ```text
-SMALL   positive DayStartEquity < $300
-MEDIUM  $300–$999.99
-NORMAL  >= $1,000
+H4   optional major context
+H1   broad regime/context
+M15  opportunity location/path/target context
+M5   primary setup/thesis + normal management structure
+M1   subordinate entry refinement after valid M5 Opportunity
+quote current Bid/Ask/spread/drift truth
 ```
 
-| Profile | Normal / target | Elevated | Hard ceiling | Daily loss lock |
-|---|---:|---:|---:|---:|
-| SMALL | 3.0%–4.5% | >4.5%–6.5% | 7% | 12% |
-| MEDIUM | 2.0%–3.0% | >3.0%–4.5% | 5% | 9% |
-| NORMAL | 1.0%–2.0% | >2.0%–3.5% | 4% | 7% |
+M1 cannot independently create a production trade.
 
-Profile is fixed from DayStartEquity for the UTC risk day.
+## 5. Evidence and confluence
 
-If theoretical lot is below broker minimum:
+The analytical system can use structure/BOS/MSS, support/resistance, liquidity/sweeps, EMA20/EMA50, RSI14, ATR14, FVG, qualified Order Blocks, trendlines, Fibonacci, broker-local POC/volume context, session context and soft News/Fundamental context.
+
+An item can be very important to the strategy family that needs it without becoming a universal requirement for every setup.
+
+## 6. Opportunity and entry timing
+
+A qualified active-family M5 setup becomes a persistent Opportunity. Current timing may be:
 
 ```text
-evaluate actual broker minimum volume
-→ calculate actual risk at structural stop
-→ PASS only if active policy permits
-→ otherwise BLOCK current TradePlan
+READY   current entry timing is analytically suitable
+WAIT    setup survives but timing is not ready
+MISSED  current opportunity became too late/inefficient
+INVALID underlying setup failed
 ```
 
-## 8. Aggressive small-account mode
+Re-arm after a terminal state requires genuinely fresh causal evidence.
 
-This feature is **preserved** and **disabled by default**.
+## 7. TradePlan and current execution quality
 
-When explicitly enabled for eligible sub-$1,000 operation:
+TradePlan documents:
+
+- Approved Entry Reference;
+- structural invalidation/SL;
+- Immediate Obstacle;
+- Primary Target;
+- Expansion Target;
+- optional Runner objective;
+- gross structural R.
+
+The structural stop is not altered merely to make broker minimum volume fit.
+
+Current executable quality is evaluated separately using dimensions such as:
 
 ```text
-8%  = MAXIMUM monetary SL-risk ceiling per trade
-      NOT a target
-16% = maximum aggregate open risk
-16% = daily loss ceiling
+absolute emergency spread ceiling
+spread / structural SL
+spread / remaining target room
+spread versus recent healthy conditions
+total cost / reward
+slippage allowance
+price drift/chase
+decision→send latency
 ```
 
-It never automatically enables merely because the account is small. All normal structural, session, News, exposure, controller, Gate and execution safeguards remain active.
+Swing's fixed 1.20R rule is not automatically the hard Scalp minimum; Scalp gross/net quality thresholds remain evidence-calibration items.
 
-## 9. Daily lock / reset / cooldown
+## 8. Preserved monetary policy reference
 
-Manual daily-loss reset capability is preserved but disabled by default.
+The current canonical documentation preserves these reference profiles exactly:
 
-Preserved baseline:
+| Profile | DayStartEquity | Normal band | Elevated band | Hard ceiling | Daily lock |
+|---|---:|---:|---:|---:|---:|
+| SMALL | positive < $300 | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
+| MEDIUM | $300–$999.99 | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
+| NORMAL | >= $1,000 | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
 
-- one genuinely fresh same-episode re-entry can be allowed;
-- if it also loses, that episode locks;
-- three consecutive closed bot losses trigger at least 30 minutes global cooldown;
-- fresh/healthy release conditions must also pass.
+The documented optional aggressive small-account policy remains a preserved project capability, disabled by default. Its reference limits are 8% maximum single-trade monetary SL-risk ceiling (not a target), 16% aggregate open-risk ceiling and 16% daily-loss ceiling.
 
-Restart does not clear these states.
+The manual also preserves a disabled-by-default manual daily-loss reset capability, one genuinely fresh same-episode re-entry baseline, and the current three-consecutive-loss / at-least-30-minute cooldown baseline.
 
-## 10. Session / News and API failure
+## 9. News and sessions
 
-For new entry:
+News/Fundamental information is soft context and research data. It does not directly create a News-only entry block, cooldown, post-News warmup or forced close.
+
+If an event coincides with poor spread, drift, dislocation, data quality, slippage or other measurable execution conditions, those actual facts are handled by their owning market/execution components.
+
+Hard broker/session state is separate. Current preserved schedule baselines pending Exness verification are:
 
 ```text
-OPEN + current News CLEAR    → may proceed
-OPEN + current News BLACKOUT → BLOCK
-OPEN + true NEWS_UNKNOWN     → BLOCK / LIMITED
+Daily:   T-20 no new entry / T-10 flatten
+Weekend: T-60 no new entry / T-30 flatten
+Daily reopen:   1 clean completed M5
+Weekend reopen: 2 clean completed M5 + gap assessment
 ```
 
-Temporary provider/API error:
+## 10. Position capacity and ownership
 
-```text
-refresh fails + still-valid last-known-good cache
-→ use cached accepted calendar
-→ provider may show DEGRADED
+Initial target capacity is one independently risk-bearing Gold position per account/symbol scope.
 
-refresh fails + expired/invalid/no cache
-→ NEWS_SAFETY_UNKNOWN
-→ new entry blocked
-```
+Manual/foreign/unknown exposure is not silently adopted. While a managed trade exists, analytical/shadow research can continue and missed opportunities can still be recorded.
 
-The bot never rewrites an old cache timestamp/TTL just to keep trading.
+## 11. Trade management
 
-Preserved baselines:
-
-```text
-Provider TTL 1800 seconds
-Daily T-20 no entry / T-10 flatten
-Weekend T-60 no entry / T-30 flatten
-Daily reopen 1 clean completed M5
-Weekend reopen 2 clean completed M5 + gap assessment
-```
-
-Current broker schedule still needs connected verification.
-
-## 11. Management
+The documented actions are:
 
 ```text
 HOLD | PROTECT | TRAIL | RUNNER | EXIT
 ```
 
-Scalp-specific differences:
+Time-efficiency is a normal possible EXIT reason for a scalp. Runner is exceptional and requires a fresh continuation reason/objective. Optional partial management remains possible where broker-valid/divisible; correctness at minimum lot does not depend on partial close.
 
-- time/efficiency failure can cause EXIT;
-- Runner is exceptional and needs fresh continuation/new objective.
+## 12. Learning / discovery / AI
 
-Optional partial management remains supported where current volume is broker-valid/divisible. A 0.01 position is not required to partial-close for the system to work correctly.
+The backend design supports continuous:
 
-## 12. Manual/external trades
+- verified actual learning;
+- shadow-family comparison;
+- missed/blocked opportunity analysis;
+- strategy invention;
+- candidate parameter research;
+- advanced ML research;
+- replay, walk-forward, holdout, stress, shadow and controlled candidate DEMO evidence stages.
 
-Unknown manual/foreign Gold exposure is never adopted and can block new entry. A human close of a known bot ManagedTrade can complete lifecycle only after exact broker proof with correct close-origin attribution.
+Candidate/shadow policies may evolve in research. The current production policy cannot silently change. Final live production promotion stops at `APPROVAL_REQUIRED` until explicit operator approval.
 
-## 13. Bounded analytical concurrency
+## 13. Throughput benchmark
 
-Independent desks/families retain bounded-parallel execution as a planned feature. A deterministic one-worker fallback must produce semantically identical outputs.
+The operator-approved approximately 120 trades/day figure is a research throughput benchmark, not a mandatory quota. The research system should explain where throughput is lost rather than manufacturing entries.
 
-Money/broker authority stays serial.
+Relevant reasons include setup scarcity, active-family mismatch, M1 timing, chase/drift, cost burden, monetary policy/cooldown, position capacity, actual broker/session restrictions and system faults.
 
-## 14. Runtime capability stages
+## 14. Approved graphical dashboard
+
+The primary graphical dashboard follows the approved GoldSwingTraderAI institutional visual baseline adapted to Scalp.
+
+Required operator experience:
+
+- one-screen layout with no scrollbars;
+- central candlestick chart;
+- functional M1/M5/M15/H1/H4 buttons;
+- functional Indicators/Drawings/Settings controls;
+- market analysis and trend panels;
+- Detected Setup panel;
+- Active Test Family and shadow setup/family states;
+- Current Signal and exact reason;
+- TradePlan;
+- Current Blocker separately from actual Gate state;
+- multi-timeframe analysis;
+- Account & Risk;
+- Open Trade;
+- Execution & Controller;
+- Trading Activity;
+- Learning & Discovery;
+- System & Data;
+- Recent Verified Closes.
+
+The dashboard is presentation-only with respect to trading authority.
+
+## 15. Runtime capability stages
 
 ```text
 READINESS
@@ -192,44 +207,30 @@ controlled DEMO PRIMARY
 future governed REAL
 ```
 
-REAL is preserved as a future capability but cannot be enabled until its separate DEMO/release/explicit-approval gate is satisfied.
+Future REAL capability remains unavailable until its separate DEMO/recovery/release evidence and explicit approval requirements are satisfied.
 
-## 15. Runtime local backup
+## 16. Runtime and source recovery
 
-No automatic GitHub push on shutdown.
+Trading-runtime state is local and transactional:
 
 ```text
-transactional local state
-→ rolling runtime checkpoint
-→ final graceful-shutdown local checkpoint
-→ optional portable runtime recovery package
+StateStore
+→ rolling verified checkpoints
+→ graceful-stop checkpoint
+→ optional portable recovery package
 ```
 
-## 16. Development/source backup
+The trading runtime performs no Git commit/push/pull.
 
-After a major coherent bulk:
+Development/source recovery uses local Git + GitHub source/history. After a coherent remote milestone, the normal local synchronization command is:
 
 ```powershell
+cd "D:\Trading Bot\GoldScalpTrader"
 git pull --ff-only
 ```
 
-One pull updates the local clone and full Git history. Optional secret-clean ZIP can provide another offline copy.
+An optional secret-clean ZIP may be created as a separate milestone copy.
 
-## 17. Exact Swing → Scalp differences
+## 17. Evidence boundary
 
-Read:
-
-`Documents/90-governance/DOCUMENTATION_COMPARISON.md`
-
-It now records:
-
-- genuine scalp-specific changes;
-- explicit operator-directed changes;
-- preserved Swing features/defaults;
-- earlier unintended removals that have been restored.
-
-## 18. Current proof boundary
-
-Documentation is still in freeze preparation. Final package/runtime/tests/DEMO execution/learning/local recovery/current broker proof are not yet claimed complete. No profitability claim exists.
-
-Before implementation, the remaining genuinely scalp-specific differences will be discussed with the operator during final documentation review.
+The final documentation describes intended behaviour. Implementation, deterministic tests, replay/calibration, connected MT5 evidence, controlled DEMO lifecycle, recovery/handoff proof, future REAL release and profitability are separate evidence classes.

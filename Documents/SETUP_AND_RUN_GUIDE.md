@@ -1,54 +1,45 @@
 # GoldScalpTrader — Setup and Run Guide
 
-**Status:** POST-AUDIT-1 OPERATOR TARGET — PRESERVATION-FIRST CORRECTED / IMPLEMENTATION PENDING
-**Version:** 1.2-profiled-risk-preserved-capabilities
-**Authority:** Intended installation, configuration, runtime modes, Risk profiles/aggressive option, News provider/cache, shutdown, local source/runtime backup, restore/migration and operator commands.
+**Status:** FINAL OPERATOR TARGET — DOCUMENTATION FREEZE BASELINE / IMPLEMENTATION PENDING
+**Version:** 2.0-institutional-scalp
+**Authority:** Intended installation, configuration, runtime stages, local paths, dashboard launch shape, backup, restore and operator verification.
 
 ## 1. Current truth
 
-The canonical design is still pre-implementation. Commands become proof only after exact code/environment verification.
+GoldScalpTrader documentation is the target specification. The repository still contains provisional code and does not yet prove the final runtime.
 
-GoldSwingTraderAI features/defaults remain the baseline unless Scalp docs explicitly classify a direct scalp-specific or operator-directed difference.
+Commands in this guide are intended implementation targets until the exact packaging/runtime is built and verified.
 
-## 2. Intended capability stages
+## 2. Intended Windows environment
+
+Target operating environment:
+
+- Windows desktop/laptop;
+- MetaTrader 5 terminal connected to the intended Exness account/server;
+- local repository path, normally `D:\Trading Bot\GoldScalpTrader`;
+- Python version verified against the current MetaTrader5 package during implementation;
+- local writable state/backup directories;
+- no requirement for GitHub credentials inside the trading runtime.
+
+Secrets remain local and uncommitted.
+
+## 3. Runtime capability stages
 
 ```text
-READINESS  explicit read-only diagnostic
-DRY_RUN    governed analytical/runtime path with zero irreversible broker writes
-PRIMARY    controlled governed DEMO runtime after its evidence gate
-REAL       preserved future governed capability; disabled/unavailable until separate DEMO/release/explicit-approval gate
+READINESS  read-only identity/data/recovery checks
+DRY_RUN    full analytical/Risk/permission path with zero irreversible writes
+DEMO       one governed PRIMARY writer after its deterministic/evidence gate
+REAL       preserved future capability after separate DEMO/release proof + approval
 ```
 
-Same-scope simultaneous PRIMARY writers remain unsupported without a separate shared-fencing architecture.
+Same-account/symbol active-active writers are not supported in the current architecture.
 
-## 3. Scalp timeframe/operator meaning
+## 4. Intended install shape
 
-```text
-H1   broad soft regime
-M15  opportunity/location/path
-M5   primary completed-bar scalp setup/timing/management
-H4   optional major context
-M1   diagnostic/research only
-quote current executable Bid/Ask/spread/drift/health
-```
-
-## 4. Intended prerequisites after implementation
-
-- Windows + MetaTrader 5;
-- intended Exness account/server;
-- supported Python version verified against current MetaTrader5 package;
-- local repository checkout;
-- disk space for state/backups/News cache;
-- network for MT5 and optional News source, not for safe local shutdown;
-- `.env`/credentials kept local and uncommitted.
-
-Trading runtime does not require GitHub credentials.
-
-## 5. Intended install shape
-
-Example target after packaging:
+After packaging is implemented, the expected local workflow is approximately:
 
 ```powershell
+cd "D:\Trading Bot\GoldScalpTrader"
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
@@ -56,100 +47,92 @@ python -m pip install -e ".[dev,mt5]"
 Copy-Item .env.example .env
 ```
 
-Current repository packaging remains provisional until implementation phase.
+Do not treat this as current proof until the packaging phase creates and tests the exact project metadata.
 
-## 6. Configuration families
+## 5. Configuration families
 
 Expected settings include:
 
 - runtime stage/mode;
-- preferred/resolved Gold symbol;
-- allowed account/server identity;
-- magic/comment/deviation policy;
-- state/backup paths;
-- bounded analytical worker configuration with one-worker fallback;
-- News/session provider + LKG cache path;
-- provider TTL baseline 1800s;
-- controller settings;
-- SMALL/MEDIUM/NORMAL Risk policy version;
-- explicit aggressive-small-account enable flag, default false;
+- intended account/server identity;
+- preferred Gold symbol and approved aliases;
+- magic/comment identity;
+- local state/checkpoint paths;
+- deterministic analytical scheduler/worker policy;
+- active strategy family + policy version;
+- preserved SMALL/MEDIUM/NORMAL Risk policy;
+- aggressive-small-account enable flag, default false;
 - manual daily-loss reset enable flag, default false;
-- log level.
+- session schedule policy/version;
+- optional News/context provider/cache settings;
+- logging/diagnostics settings;
+- dashboard host/port/local-only settings where graphical UI is enabled.
 
-Hard policy is not a dashboard toggle.
+Hard policy is not an ad-hoc dashboard toggle.
 
-## 7. Risk operator truth
+## 6. Setup Detector / Strategy Isolation configuration
 
-Automatic profile selection is preserved:
-
-```text
-SMALL   positive DayStartEquity < $300
-MEDIUM  $300–$999.99
-NORMAL  >= $1,000
-```
-
-| Profile | Normal / target | Elevated | Hard ceiling | Daily loss lock |
-|---|---:|---:|---:|---:|
-| SMALL | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
-| MEDIUM | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
-| NORMAL | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
-
-Profile is fixed from DayStartEquity for the UTC risk day.
-
-If theoretical lot is below broker minimum, evaluate actual minimum-lot risk against the active hard policy. Structural SL is never tightened merely to make 0.01 fit.
-
-### 7.1 Aggressive small-account option
-
-Preserved feature, **disabled by default**.
-
-When explicitly enabled and eligible:
+The runtime must preserve two distinct concepts:
 
 ```text
-8%  = MAXIMUM monetary SL risk per trade — NOT TARGET
-16% = maximum aggregate open risk
-16% = daily loss ceiling
+Detected Setup
+vs
+Active Test Family
 ```
 
-It never auto-enables merely because balance/equity is below $1,000. All other hard authorities remain.
-
-### 7.2 Daily reset / cooldown
-
-Manual daily-loss reset capability is preserved but disabled by default.
-
-Preserved cooldown/re-entry baseline:
-
-- one genuinely fresh same-episode re-entry;
-- three consecutive closed bot losses → at least 30 minutes global cooldown;
-- release also requires fresh/healthy conditions owned by Risk policy.
-
-## 8. News operator truth / API outage
+Example:
 
 ```text
-OPEN + accepted News CLEAR    → may proceed to other authorities
-OPEN + accepted News BLACKOUT → BLOCK
-OPEN + true NEWS_SAFETY_UNKNOWN → BLOCK / LIMITED
+ACTIVE_EXECUTION=BREAKOUT_RETEST
+Detected Setup=LIQUIDITY_SWEEP_REVERSAL
+→ LIVE WAIT
+→ Liquidity Sweep remains SHADOW_ONLY evidence
 ```
+
+Changing the active production family is a governed/versioned policy change. The setup detector itself continues to inspect all six family definitions.
+
+## 7. Timeframes
+
+Expected production data:
 
 ```text
-refresh fails + valid LKG cache
-→ keep cached accepted event truth
-→ provider may show DEGRADED
-
-refresh fails + expired/invalid/no cache
-→ NEWS_SAFETY_UNKNOWN
+H1   broad regime/context
+M15  location/path/target context
+M5   primary setup/thesis + management structure
+M1   subordinate entry refinement after M5 Opportunity
+H4   optional major context
+quote current executable condition
 ```
 
-Cache original timestamps/coverage/validity are never extended on failure.
+M1 is not a standalone production strategy.
 
-Preserved baseline TTL:
+## 8. Preserved monetary-policy reference
+
+The implementation must reproduce the canonical documented profiles exactly:
+
+| Profile | DayStartEquity | Normal | Elevated | Hard ceiling | Daily lock |
+|---|---:|---:|---:|---:|---:|
+| SMALL | positive < $300 | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
+| MEDIUM | $300–$999.99 | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
+| NORMAL | >= $1,000 | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
+
+The preserved optional aggressive-small-account capability remains disabled by default. Its documented reference ceilings are 8% maximum single-trade monetary SL risk (not a target), 16% aggregate open risk and 16% daily loss.
+
+The current documentation also preserves one genuinely fresh same-episode re-entry and the 3-loss / at-least-30-minute cooldown baseline.
+
+## 9. News / session configuration
+
+News/context provider settings affect analytical/dashboard context, not a News-only trading kill switch.
+
+A provider/cache may expose:
 
 ```text
-1800 seconds
+VERIFIED / DEGRADED / STALE / UNAVAILABLE / UNKNOWN
 ```
 
-## 9. Session safety baseline
+The preserved context TTL baseline is 1800 seconds. Cache timestamps are never laundered to appear fresh.
 
-Until current broker proof supersedes factual schedule assumptions:
+Hard broker/session safety is separate. Baseline policy pending connected Exness verification:
 
 ```text
 Daily no-entry / flatten    T-20 / T-10
@@ -158,91 +141,132 @@ Daily reopen                1 clean completed M5
 Weekend reopen              2 clean completed M5 + gap assessment
 ```
 
-Special holiday/schedule uncertainty fails safely rather than inventing hours.
+## 10. READINESS target
 
-## 10. READINESS
+Expected READINESS flow:
 
-```text
-initialize MT5 read boundary
-→ verify account/server/symbol
-→ read SymbolSpec / Bid/Ask / positions
-→ verify completed H1/M15/M5 data (+ optional H4, diagnostic M1)
-→ validate state/risk-day profile/overlay identity
-→ read/revalidate session/news provider + LKG cache
-→ report readiness/recovery/controller state
+```mermaid
+flowchart TB
+    START["Start READINESS"] --> MT5["Initialize read boundary"]
+    MT5 --> ID["Verify account/server/symbol"]
+    ID --> SPEC["Read SymbolSpec / Bid/Ask / positions"]
+    SPEC --> DATA["Verify completed H1/M15/M5 + bounded M1 (+ optional H4)"]
+    DATA --> STATE["Verify StateStore / Risk day / active family policy"]
+    STATE --> SESSION["Verify broker session facts + optional News context"]
+    SESSION --> REC["Reconcile unresolved lifecycle"]
+    REC --> REPORT["Read-only readiness report"]
 ```
 
 No irreversible broker write.
 
-## 11. DRY_RUN
+## 11. DRY_RUN target
 
 ```text
-market facts
-→ bounded-parallel intelligence/families
-→ fusion / Opportunity / completed-M5 timing
-→ TradePlan gross + cost-aware room
-→ profiled monetary Risk
-→ permission/Gate diagnostics
-→ STOP before irreversible writer
+MarketSnapshot
+→ intelligence
+→ setup detection across six families
+→ active/shadow Strategy Isolation
+→ active BUY/SELL + Red Team
+→ M5 Opportunity
+→ M1 refinement
+→ TradePlan
+→ Executable Quality
+→ monetary Risk
+→ hard permission/Gate diagnostics
+→ STOP before raw writer
 ```
 
-## 12. Controlled DEMO PRIMARY
+DRY_RUN should still record shadow/missed/blocker/throughput research evidence where the owning contracts permit.
 
-Future implemented path:
+## 12. Controlled DEMO target
+
+After deterministic implementation proof:
 
 ```text
-MT5 initialize
-→ identity / MarketSnapshot
-→ StateStore integrity
-→ risk-day/profile/cash-flow reconciliation
-→ controller lease/epoch
-→ Session/News provider + cache validation
-→ startup recovery/reconciliation
-→ READY / RECONCILING / BLOCKED
-→ governed M5/event loop
+startup/recovery
+→ acquire controller
+→ READY
+→ governed cycles
+→ one-shot Intent
+→ fresh broker checks / order_check
+→ sole MT5Writer
+→ reconciliation
+→ ManagedTrade
 ```
 
-## 13. Future REAL capability
+Ambiguous acknowledgement is reconciled, never blindly retried.
 
-REAL is not removed, but is not an initial operator shortcut.
+## 13. Approved graphical dashboard target
 
-Activation requires a separate future policy/release packet after required DEMO lifecycle, recovery, risk, execution and operator evidence plus explicit approval.
+The graphical dashboard must be local/read-only with respect to trading authority and follow the approved Swing-style institutional one-screen layout.
 
-## 14. Graceful shutdown
+Required UI properties:
+
+- no scrollbars;
+- central chart;
+- functional timeframe buttons `M1`, `M5`, `M15`, `H1`, `H4`;
+- functional `Indicators`, `Drawings`, `Settings` controls;
+- chart zoom/pan/crosshair/tooling appropriate to implementation;
+- Detected Setup panel;
+- Active Test Family + Shadow families;
+- signal/reason;
+- TradePlan/current quality/blocker;
+- Risk/account;
+- execution/controller;
+- activity;
+- learning/discovery;
+- system/data;
+- recent verified closes.
+
+No UI button may bypass normal trading authority.
+
+## 14. Graceful shutdown target
 
 ```text
-stop new work
-→ resolve/record safe lifecycle obligations
-→ persist state
-→ release controller / MT5 resources
-→ create fresh verified LOCAL checkpoint
-→ integrity/secret scan as applicable
-→ update local backup catalog
-→ report success/failure
+stop new entry scheduling
+→ preserve/finish safe lifecycle transitions
+→ persist current state
+→ create fresh verified local checkpoint
+→ secret/integrity checks as applicable
+→ release controller
+→ release MT5 resources
+→ report shutdown/backup result
 ```
 
-No Git fetch/add/commit/push in runtime shutdown.
+No Git fetch/add/commit/push occurs during runtime shutdown.
 
-## 15. Development/source backup
+## 15. Runtime restore / laptop handoff
 
-After a major coherent bulk:
+```text
+old same-scope PRIMARY stopped
+→ verified state package/checkpoint
+→ restore into NEW local state path
+→ configure secrets separately
+→ connect intended MT5 account/server/symbol
+→ read positions/deals/quote/account
+→ reconcile Risk/Intent/ManagedTrade/learning
+→ acquire new controller epoch
+→ READY only after hard authorities pass
+```
+
+Distributed DB/fencing and same-scope active-active are deferred.
+
+## 16. Development/source synchronization
+
+After a meaningful remote documentation/code milestone:
 
 ```powershell
 cd "D:\Trading Bot\GoldScalpTrader"
 git pull --ff-only
 ```
 
-One pull updates source + full Git history. No need to pull after every tiny patch.
+Avoid repeated cloning or unnecessary micro-pulls. The local clone holds source plus reachable Git history.
 
-Optional secret-clean ZIP may be created after major milestones.
-
-## 16. Runtime restore / laptop handoff
-
-Restore uses a new DB/path, credentials configured separately, then fresh broker account/symbol/positions/deals/quote truth is reconciled before controller/write authority.
+Optional secret-clean source ZIPs are separate artifacts and are not committed back into the repository.
 
 ## 17. Intended local verification
 
-After tooling exists:
+After implementation tooling exists:
 
 ```powershell
 python -m pytest -q
@@ -253,12 +277,33 @@ python scripts/scan_financial_secrets.py .
 python scripts/verify_documents_manual.py .
 ```
 
-## 18. Explicit Swing → Scalp differences
+Additional tests/commands are defined by `07-engineering/TESTING_AND_VERIFICATION.md` and the file/test catalog.
 
-Read `90-governance/DOCUMENTATION_COMPARISON.md`.
+## 18. Failure interpretation
 
-It now distinguishes genuine scalp-specific deltas from operator-directed differences and lists earlier non-scalp simplifications that have been restored.
+Examples:
+
+```text
+positions=[]       → verified zero current positions
+positions=None     → unavailable, not zero
+News unavailable   → context degraded, not a News-only hard block
+session UNKNOWN    → hard broker/session permission unresolved
+Intent SUBMITTING  → reconcile, do not resend
+StateStore corrupt → fail affected authority / restore verified state to new path
+shadow setup valid → research evidence, not live trade authority
+```
 
 ## 19. Proof boundary
 
-Clean install/launch, deterministic tests, current broker reads, provider/cache behavior, DEMO lifecycle, recovery, future REAL release and future profitability are separate evidence classes.
+A clean local launch does not prove trading edge. Keep separate:
+
+```text
+install proof
+unit/integration proof
+replay/calibration
+connected READINESS proof
+controlled DEMO execution proof
+recovery/handoff proof
+future REAL release approval
+profitability
+```

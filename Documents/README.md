@@ -1,76 +1,34 @@
 # GoldScalpTrader — Canonical Documentation Manual
 
-**Status:** 66-DOCUMENT INSTITUTIONAL RECONSTRUCTION IN PROGRESS — IMPLEMENTATION NOT STARTED
-**Version:** 2.0-reference-depth-rebuild
-**Authority:** Documentation entry point, current reconstruction status, reading order, design-before-code boundary and project-wide approved architecture summary.
+**Status:** DOCUMENTATION FROZEN — IMPLEMENTATION READY / CODE EVIDENCE PENDING
+**Version:** 2.1-final-66-document-baseline
+**Authority:** Documentation entry point, final architecture summary, reading order, evidence boundary and design-before-code contract.
 
-## 1. What this manual is
+## 1. Final manual status
 
-`Documents/` is the durable design/implementation/proof baseline for GoldScalpTrader.
-
-A future developer or AI must be able to rebuild the project from this manual without relying on chat history.
-
-The manual is being reconstructed against the latest verified GoldSwingTraderAI `Published_B/Documents` reference tree because the prior Scalp manual had correct high-level concepts but materially compressed many institutional details and omitted two top-level reference documents.
-
-## 2. Verified reference-tree finding
-
-Latest verified reference inventory:
+GoldScalpTrader now uses a **66-document canonical manual** reconstructed against the latest verified GoldSwingTraderAI `Published_B/Documents` reference topology and adapted only for approved Scalp/operator differences.
 
 ```text
-Top-level Markdown documents     9
-00-foundation                    5
-10-market-intelligence           7
-20-trading-decisions             7
-30-risk-execution                6
-40-research-learning             7
-50-operator                      3
-60-engineering                  14
-90-governance                    8
+Top-level manuals/policies       9
+01-foundation                    5
+02-market-intelligence           7
+03-trading-decisions             7
+04-risk-execution                6
+05-research-learning             7
+06-operator                      3
+07-engineering                  14
+08-governance                    8
 TOTAL                           66
 ```
 
-Prior GoldScalpTrader manual contained 64 files and was missing:
+The two reference documents previously missing from Scalp are restored/adapted:
 
 ```text
 GITHUB_STRICT_USE_POLICY.md
 BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md
 ```
 
-Both are now part of the reconstruction target.
-
-## 3. Current project stage
-
-```mermaid
-flowchart LR
-    REF["Latest 66-doc reference tree verified"] --> REBUILD["Deep institutional reconstruction"]
-    REBUILD --> LINKS["Folder rename + cross-link verification"]
-    LINKS --> CHALLENGE["100+ challenge audit"]
-    CHALLENGE --> OP["Operator final review"]
-    OP -->|Approve| FREEZE["DOCUMENTS FROZEN"]
-    FREEZE --> CODE["Implementation begins"]
-```
-
-Current status:
-
-```text
-reference tree parity audit                  COMPLETE
-missing-document identification              COMPLETE
-operator architecture decisions              APPROVED
-Foundation/policy reconstruction             IN PROGRESS
-Market/Decision/Risk/Research/Operator docs  PENDING RECONSTRUCTION
-Engineering/audit depth restoration          PENDING RECONSTRUCTION
-folder numbering migration                   PENDING ATOMIC RENAME
-full 66-doc cross-link audit                 PENDING
-100+ post-rebuild challenge                  PENDING
-operator final documentation approval        PENDING
-implementation                               NOT STARTED
-```
-
-The prior “64-file manual complete” claim is superseded.
-
-## 4. Approved final folder numbering
-
-Final target:
+## 2. Canonical folder tree
 
 ```text
 Documents/
@@ -93,139 +51,143 @@ Documents/
 └── 08-governance/
 ```
 
-The old `00/10/20/...` paths remain temporarily only while reconstruction is staged. Final freeze requires one atomic rename/cross-link migration with no broken links.
+Old `00/10/20/30/40/50/60/90` category names are retired.
 
-## 5. Current reading order during reconstruction
+## 3. Reading order
 
-Until final rename:
+Recommended:
 
 1. `README.md`;
-2. `GITHUB_STRICT_USE_POLICY.md`;
-3. `BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md`;
-4. `GLOSSARY.md`;
-5. `00-foundation/PROJECT_VISION.md`;
-6. `00-foundation/SYSTEM_CONTRACT.md`;
-7. `00-foundation/ARCHITECTURE.md`;
-8. `00-foundation/TRADING_FLOOR_ARCHITECTURE.md`;
-9. `00-foundation/BUILD_PHASES.md`;
-10. topic-owner contracts;
-11. `90-governance/DOCUMENTATION_STANDARD.md`;
-12. engineering source/test/audit maps;
-13. operator/manual/handoff guides.
+2. `GLOSSARY.md`;
+3. `GITHUB_STRICT_USE_POLICY.md`;
+4. `BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md`;
+5. `01-foundation/PROJECT_VISION.md`;
+6. `01-foundation/SYSTEM_CONTRACT.md`;
+7. `01-foundation/ARCHITECTURE.md`;
+8. `01-foundation/TRADING_FLOOR_ARCHITECTURE.md`;
+9. `01-foundation/BUILD_PHASES.md`;
+10. relevant topic-owner contract;
+11. `08-governance/DESIGN_DECISIONS.md` and `OPEN_QUESTIONS.md`;
+12. `08-governance/DOCUMENTATION_COMPARISON.md` for exact Swing→Scalp changes;
+13. `07-engineering/MODULE_STRUCTURE.md` and `FILE_AND_TEST_CATALOG.md` before coding.
 
 Conflict order:
 
 ```text
 SYSTEM_CONTRACT
 → owning topic contract
-→ active DESIGN_DECISIONS
-→ OPEN_QUESTIONS
+→ final DESIGN_DECISIONS
+→ OPEN_QUESTIONS classification
 → Architecture / Trading Floor
 → engineering/operator summaries
 ```
 
-## 6. Approved product philosophy
-
-GoldScalpTrader is:
+## 4. Final product philosophy
 
 > **Opportunity-First, Evidence-Weighted, Precision-Timed, Cost-Aware, Execution-Disciplined and Continuously-Learning.**
 
-The system should maximize qualified opportunities and entry efficiency without weakening objective broker/account safety.
+Formal objective:
 
-## 7. Approved trading architecture
+> Maximize qualified after-cost edge captured while preserving documented monetary and broker/execution safety.
+
+Do not optimize win rate, trade count or “perfect confirmation” in isolation.
+
+## 5. Market-first setup rule
+
+The most important final strategy rule:
+
+> **The chart/market determines what setup actually exists. The active strategy is never forced into every trade.**
 
 ```mermaid
 flowchart TB
-    MT5["One normalized MT5 read boundary"] --> SNAP["Immutable MarketSnapshot"]
-    SNAP --> INTEL["Causal intelligence"]
-    INTEL --> SIX["Six independent strategy analyses"]
-    SIX --> ISO["Exactly 1 ACTIVE_EXECUTION + 5 SHADOW_ONLY"]
-    ISO --> THESIS["Active-family BUY/SELL + Red Team"]
+    FACTS["Causal chart / market facts"] --> DETECT["Detect matching family setup(s) or NONE"]
+    DETECT --> ISO["Strategy Isolation"]
+    ISO --> MATCH{"Detected setup belongs to ACTIVE_EXECUTION family?"}
+    MATCH -->|No| WAIT["LIVE WAIT • valid other setup remains SHADOW_ONLY"]
+    MATCH -->|Yes| THESIS["Active BUY/SELL + Red Team"]
     THESIS --> OPP["Persistent M5 Opportunity"]
-    OPP --> M1["Subordinate M1 entry refinement"]
-    M1 --> PLAN["Structural TradePlan"]
-    PLAN --> QUAL["Fixed + aware executable quality"]
-    QUAL --> RISK["Preserved monetary Risk"]
-    RISK --> HARD["Objective hard authorities"]
-    HARD --> GATE["Central Gate"]
-    GATE --> INTENT["Durable one-shot Intent"]
-    INTENT --> WRITE["Sole MT5Writer"]
-    WRITE --> RECON["Broker reconciliation"]
-    RECON --> MANAGE["ManagedTrade"]
-    MANAGE --> LEARN["Learning / research / invention / ML"]
-    LEARN --> ASK["Production promotion → operator approval"]
 ```
 
-## 8. Strategy Isolation Mode
-
-The operator approved live strategy efficiency testing one family at a time.
+Current evaluation policy:
 
 ```text
-Six families analyze every eligible episode
-Exactly one family may originate live trades
-Remaining five are shadow/research only
+1 ACTIVE_EXECUTION family
+5 SHADOW_ONLY families
 ```
 
-This prevents blended voting from hiding which family actually has edge.
+All six analyze; only the active family can originate a live production Opportunity, and only if its own setup is genuinely present.
 
-The six preserved families remain:
+## 6. Six preserved strategy families
 
-1. Trend Pullback Continuation
-2. Breakout Expansion
-3. Breakout Retest Continuation
-4. Liquidity Sweep Reversal
-5. Failed Breakout Reversal
-6. Compression Expansion
+```text
+Trend Pullback Continuation
+Breakout Expansion
+Breakout Retest Continuation
+Liquidity Sweep Reversal
+Failed Breakout Reversal
+Compression Expansion
+```
 
-## 9. Timeframe roles
+No family was removed.
+
+A future Dynamic Strategy Router may be researched after sufficient clean family-isolation evidence; it is not current production behavior.
+
+## 7. Timeframe authority
 
 ```text
 H4   optional major context
-H1   broad regime/directional context
+H1   broad soft regime/context
 M15  opportunity location/path/target context
-M5   primary setup/thesis + management structure
+M5   primary setup/thesis + normal management structure
 M1   subordinate entry refinement after valid M5 Opportunity
-quote/tick current executable Bid/Ask/spread/drift truth
+quote current executable Bid/Ask/spread/drift truth
 ```
 
-M1 cannot create an independent production trade.
+M1 cannot independently create a production trade.
 
-## 10. News/Fundamental policy
+## 8. Evidence without filter soup
 
-Approved change:
+Structure, EMA/RSI/ATR, liquidity/SMC, FVG, OB, trendline, Fibonacci, POC, session and other context may be important.
 
-> **News/Fundamentals are soft context, dashboard and research attribution only.**
+But:
 
-News/event/API status does not directly:
+```text
+important to one family
+≠
+universal requirement for every family/trade
+```
 
-- hard-block a trade;
-- trigger a News cooldown;
-- require a post-News warmup;
-- force-close an otherwise valid trade.
+Family definitions own required/supportive/opposing evidence. Causal lineage prevents one event from being counted repeatedly as independent confidence.
 
-Actual event-induced market problems are handled by measurable spread, cost, drift, quote health, dislocation, slippage/latency and broker facts.
+## 9. Entry / TradePlan / executable quality
 
-## 11. Spread / cost policy
+```text
+qualified active-family M5 setup
+→ persistent Opportunity
+→ M1 READY/WAIT/MISSED/INVALID
+→ structural TradePlan
+→ fresh Executable Quality
+```
 
-Approved hybrid model:
+TradePlan owns structural invalidation/SL/objectives/gross R.
+
+Executable Quality owns:
 
 ```text
 absolute emergency spread ceiling
-+
-spread / structural SL
-+
-spread / target room
-+
-spread versus recent healthy baseline
-+
-total expected cost / reward
+spread / SL
+spread / target
+recent healthy spread comparison
+cost / reward
+slippage allowance
+broker deviation context
+decision→send latency
+drift / chase
 ```
 
-Spread/SL and spread/target dimensions are approved. Exact thresholds remain calibration evidence.
+Swing's fixed 1.20R floor is not automatically imposed as the hard Scalp floor.
 
-## 12. Preserved monetary Risk
-
-Do **not** change the existing profile percentages/bands.
+## 10. Preserved monetary Risk — do not change silently
 
 | Profile | DayStartEquity | Normal | Elevated | Hard ceiling | Daily lock |
 |---|---:|---:|---:|---:|---:|
@@ -233,127 +195,177 @@ Do **not** change the existing profile percentages/bands.
 | MEDIUM | $300–$999.99 | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
 | NORMAL | >= $1,000 | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
 
-Preserved aggressive small-account option, disabled by default:
+Preserved disabled-by-default aggressive capability:
 
 ```text
-8% maximum single-trade monetary SL-risk ceiling — NOT target
+8%  maximum single-trade monetary SL-risk ceiling — NOT target
 16% maximum aggregate open risk
 16% daily loss ceiling
 ```
 
-Preserved baseline, later research/calibration allowed:
+Also preserved:
 
+- manual daily-loss reset capability, disabled by default;
 - one genuinely fresh same-episode re-entry;
-- three consecutive closed bot losses → at least 30-minute cooldown.
+- three consecutive closed bot losses → at least 30-minute cooldown + release conditions;
+- one independently risk-bearing Gold position initially;
+- dynamic broker-aware sizing/min-lot actual-risk evaluation;
+- no stop distortion to fit minimum volume;
+- no martingale/grid/averaging down.
 
-## 13. 120 trades/day benchmark
+## 11. News / broker session
 
-Approved as a **research throughput benchmark**, never a forced quota.
-
-The bot must diagnose whether low throughput is caused by:
-
-- lack of genuine opportunities;
-- active strategy quality;
-- M1 timing;
-- chase/drift;
-- spread/cost burden;
-- Risk/min-lot/margin;
-- cooldown;
-- position occupancy;
-- actual broker closure/permissions;
-- system latency/fault.
-
-The objective is maximum qualified after-cost edge captured, not maximum raw trade count.
-
-## 14. Continuous learning / invention / ML
-
-The following are active backend capabilities once their evidence inputs exist:
-
-- autonomous strategy invention;
-- candidate parameter tuning;
-- advanced ML research;
-- automated candidate evidence-stage progression.
-
-They may test/iterate in research, replay, holdout, shadow and controlled DEMO lanes.
-
-**Production/live promotion requires explicit operator approval.**
-
-## 15. Performance architecture
-
-Logical analytical independence is mandatory. Physical analytical concurrency is profiling-driven.
+Final News rule:
 
 ```text
-share calculations
-→ vectorize/cache
-→ profile
-→ bounded-parallelize only measured independent bottlenecks
+News/Fundamental = soft context / dashboard / research
 ```
 
-Financial/broker authority remains serial:
+No News-only hard entry block, News cooldown, mandatory post-News warmup or forced close.
+
+Actual event-induced spread/drift/dislocation/slippage/data problems are governed by real market/execution owners.
+
+Broker session remains separate hard authority. Preserved baselines pending current Exness proof:
+
+```text
+Daily:   T-20 no entry / T-10 flatten
+Weekend: T-60 no entry / T-30 flatten
+Daily reopen:   1 clean completed M5
+Weekend reopen: 2 clean completed M5 + gap assessment
+```
+
+## 12. Execution safety
 
 ```text
 TradePlan
 → Executable Quality
-→ Risk
-→ hard authorities
+→ monetary Risk
+→ objective hard authorities
 → Gate
-→ Intent
-→ broker checks
-→ sole writer
-→ reconciliation
+→ durable one-shot Intent
+→ fresh broker checks/order_check
+→ sole MT5Writer
+→ acknowledgement classification
+→ broker reconciliation
 ```
 
-## 16. Documentation quality rule
+Upstream stop means `Gate NOT_EVALUATED`.
 
-Every relevant contract must be deeply explained with the appropriate mix of:
+Ambiguous acknowledgement means `ACCEPTED_UNKNOWN → reconcile`, never blind retry.
 
-- Mermaid topology/flow diagrams;
-- state diagrams;
-- sequence diagrams;
-- tables/matrices;
-- formulas;
-- examples;
-- explicit owner/non-authority;
-- failure/recovery cases;
-- source/test/evidence mapping.
-
-Performance charts use real replay/DEMO data only; fake empirical charts are prohibited.
-
-Code, when implementation begins, must be clean, typed, optimized, reason-rich and heavily documented where reasoning/safety is non-obvious.
-
-## 17. GitHub / recovery policy
-
-GitHub stores source/history only and is never trading-runtime authority. Current repository visibility remains unchanged because the operator explicitly said **not now** regarding privacy.
-
-Runtime uses local durable state/checkpoints. Development uses coherent commits and operator `git pull --ff-only` checkpoints. Optional independent clean/off-site recovery packages remain separate from live runtime state.
-
-## 18. Evidence boundary
-
-Keep separate:
+## 13. Management
 
 ```text
-APPROVED DOCUMENTED DESIGN
-DOCUMENTATION RECONSTRUCTION COMPLETE
-IMPLEMENTATION COMPLETE
-DETERMINISTIC TEST PASS
-REPLAY / CALIBRATION EVIDENCE
-CONNECTED READ EVIDENCE
-CONTROLLED DEMO EVIDENCE
-RECOVERY/HANDOFF EVIDENCE
-PRODUCTION PROMOTION APPROVAL
-FUTURE REAL RELEASE APPROVAL
-PROFITABILITY CLAIM
+HOLD | PROTECT | TRAIL | RUNNER | EXIT
 ```
 
-No earlier evidence class automatically proves the later one.
+Time-efficiency may produce EXIT. Runner is exceptional and requires fresh continuation/objective. Optional partial management remains where broker-valid/divisible; minimum-lot correctness never depends on it.
 
-## 19. Next step
+## 14. Continuous learning / AI / invention
 
-Complete the 66-document institutional reconstruction first. Then perform:
+Backend improvement remains active:
 
-1. atomic folder-numbering/cross-link migration;
-2. full section-level reference→Scalp coverage matrix;
-3. new 100+ challenge audit;
-4. final operator review;
-5. documentation freeze;
-6. only then implementation.
+```text
+actual verified learning
++ shadow counterfactuals
++ missed/blocked episodes
+→ StrategyMemory
+→ discovery / autonomous invention / parameter tuning / advanced ML
+→ replay / validation / holdout / stress / shadow / candidate DEMO
+→ APPROVAL_REQUIRED
+```
+
+Production/live policy cannot silently self-change. Final promotion requires explicit operator approval.
+
+## 15. Throughput benchmark
+
+Approximately 120 trades/day is a research throughput benchmark, not a quota.
+
+The system measures where throughput is lost and whether those lost opportunities had genuine after-cost value.
+
+## 16. Approved graphical dashboard
+
+The approved primary graphical UI follows the GoldSwingTraderAI institutional one-screen design adapted to Scalp.
+
+Required:
+
+- no scrollbars;
+- central interactive chart;
+- functional M1/M5/M15/H1/H4 controls;
+- functional Indicators/Drawings/Settings;
+- Detected Setup;
+- Active Test Family;
+- shadow setup/family status;
+- signal + exact reason;
+- TradePlan/current blocker;
+- MTF analysis;
+- Account/Risk;
+- Open Trade;
+- Execution/Controller;
+- Trading Activity;
+- Learning/Discovery;
+- System/Data;
+- Recent Verified Closes.
+
+Dashboard remains read-only regarding trading authority.
+
+## 17. Runtime / backup / GitHub
+
+Runtime:
+
+```text
+local transactional StateStore
+→ rolling checkpoint
+→ graceful-stop verified checkpoint
+→ optional portable runtime/learning package
+```
+
+No trading-runtime Git operations or GitHub credentials.
+
+Development:
+
+```text
+coherent remote commit
+→ operator git pull --ff-only
+→ local clone + Git history
+→ optional secret-clean ZIP
+```
+
+Same-scope active-active/distributed writer and distributed DB/fencing are deferred; sequential handoff is current architecture.
+
+## 18. Documentation challenge result
+
+`07-engineering/AUDIT_1_FRESH_DESIGN_REVIEW.md` contains 100 primary challenges plus additional meta-challenges.
+
+Final result: no unresolved core architecture question remains. Pending work is explicitly classified as calibration, external proof, deferred architecture or future approval.
+
+## 19. Exact Swing → Scalp differences
+
+Read:
+
+`08-governance/DOCUMENTATION_COMPARISON.md`
+
+It separates:
+
+1. genuine Scalp-specific changes;
+2. explicit operator-directed/project-operating changes;
+3. Swing features/defaults intentionally preserved.
+
+## 20. Evidence boundary
+
+Documentation is frozen, but these are still later evidence stages:
+
+```text
+implementation
+unit/integration tests
+replay/calibration
+current Exness connected proof
+controlled DEMO lifecycle
+recovery/handoff certification
+future REAL release
+profitability
+```
+
+## 21. Next project phase
+
+After the final 66-document tree/path commit is verified, **implementation may begin with Phase 1 from `01-foundation/BUILD_PHASES.md`**. No later code change may contradict these documents without first reopening and synchronizing the affected documentation graph.
