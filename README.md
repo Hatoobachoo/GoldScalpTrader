@@ -4,15 +4,15 @@ Safety-first local MetaTrader 5 gold scalping project.
 
 ## Current runtime
 
-The offline architecture is implemented. `python bot.py` now routes by runtime mode:
+`python bot.py` routes by runtime mode:
 
 - `DRY_RUN` → analytical/read-only cycle, zero broker writes.
-- `DEMO` → continuous guarded demo trading loop with local SQLite state.
+- `DEMO` → continuous guarded demo trading with local SQLite state.
 - `REAL` → disabled in this release.
 
-DEMO broker writes are fail-closed. The connected MT5 account must explicitly report `ACCOUNT_TRADE_MODE_DEMO`; otherwise the runtime refuses to send an order. The Gate also blocks on stale/incomplete market data, occupied/unknown exposure, unresolved execution intents, controller conflicts, failed persistence, disabled expert trading, or failed broker `order_check`.
+The connected MT5 account must explicitly report DEMO mode before any DEMO broker write. The runtime blocks on stale/incomplete required data, occupied/unknown exposure, unresolved Intents, controller conflicts, persistence failure, disabled expert trading, or failed broker prechecks.
 
-The DEMO runtime now also manages verified bot-owned positions through the documented lifecycle:
+Verified bot positions use the governed lifecycle:
 
 ```text
 OPEN → ManagedTrade → HOLD / PROTECT / TRAIL / RUNNER / EXIT
@@ -20,42 +20,37 @@ OPEN → ManagedTrade → HOLD / PROTECT / TRAIL / RUNNER / EXIT
      → exact exit-deal proof → close receipt + learning queue
 ```
 
-A position carrying the configured bot magic but lacking durable ManagedTrade lineage is never silently adopted. Broker-side/manual close is not accepted merely because the position disappeared; complete exit-deal volume proof is required before the ManagedTrade is archived.
+A bot-magic position without durable ManagedTrade lineage is never silently adopted. A missing known position is not called closed until exit-deal volume proof is available.
+
+## Approved graphical dashboard
+
+DEMO uses the approved local graphical dashboard by default. It is one-screen/no-scroll and includes a live candlestick chart, M1/M5/M15/H1/H4 buttons, Indicators, Drawings and Settings controls, Detected Setup, Active Test Family, shadow setups, TradePlan, Risk, ManagedTrade, Execution and Gate information.
+
+Chart/UI controls are presentation-only. They redraw the cached dashboard snapshot and cannot trigger broker writes. The governed trading cycle advances only on its fixed runtime timer.
 
 ## Live DEMO quick start
 
-Keep MetaTrader 5 open and logged into the intended **demo** account, then:
+Keep MetaTrader 5 open and logged into the intended demo account, then:
 
 ```powershell
 cd "D:\Trading Bot\GoldScalpTrader"
 git pull --ff-only
-Copy-Item .env.demo.example .env
+Copy-Item .env.demo.example .env -Force
 python bot.py
 ```
 
-The supplied demo profile uses:
+The supplied DEMO profile uses the preserved one-active-family evaluation model. REAL broker execution remains hard-disabled.
 
-```text
-MODE=DEMO
-ACTIVE_STRATEGY_FAMILY=TREND_PULLBACK_CONTINUATION
-ACTIVE_STRATEGY_POLICY_VERSION=v1
-BOT_MAGIC=560501
-BOT_COMMENT_PREFIX=GST
-TARGET_RISK_PERCENT=1.00
-DEMO_TRADING_CONFIRM=YES_I_APPROVE_DEMO
-```
-
-`Ctrl+C` stops the local loop and writes a runtime checkpoint. Runtime state stays under `runtime/` and is not published to GitHub.
+`Ctrl+C` stops terminal mode safely; closing the graphical window writes a local runtime checkpoint. Runtime state stays under `runtime/` and is not published to GitHub.
 
 ## Non-negotiable project rules
 
-- Trading runs locally on the user's Windows PC and MetaTrader 5 terminal.
-- GitHub is used only for source control and backup.
-- GitHub Actions, Codespaces, Git LFS, paid Marketplace services, and paid external APIs are not required.
-- `.env.example` remains a safe DRY_RUN template; `.env.demo.example` is the explicit live-demo template.
-- REAL order execution remains disabled.
-- Credentials, account numbers, passwords, tokens, and `.env` files must never be committed.
-- One-position-at-a-time and hard risk controls are part of the design.
-- No martingale, unlimited averaging, or uncontrolled grid logic.
+- Trading runs locally on Windows with MetaTrader 5.
+- GitHub is source/history backup only, never runtime authority.
+- No runtime Git commit/push/pull.
+- REAL execution remains disabled until its future governed release gate.
+- Credentials, account numbers, passwords, tokens and `.env` files are never committed.
+- One independently risk-bearing Gold position at a time initially.
+- No martingale, uncontrolled grid or averaging-down rescue.
 
-> Automated trading can lose money. Connected DEMO evidence must be completed before any future REAL release is considered.
+> Automated trading can lose money. Connected DEMO evidence is still required before any future REAL release is considered.

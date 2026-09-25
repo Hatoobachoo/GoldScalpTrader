@@ -1,7 +1,8 @@
 """Continuous guarded DEMO runtime.
 
-This module is the only normal launcher path that can reach DEMO broker writes.
-REAL trading remains disabled by configuration policy.
+This module is the normal DEMO launcher. GUI is the approved default; the
+terminal loop remains available for headless verification. REAL trading remains
+disabled by configuration policy.
 """
 from __future__ import annotations
 
@@ -15,7 +16,7 @@ from gold_scalp_trader.app.runtime import RuntimeResult, run_guarded_demo_cycle
 from gold_scalp_trader.config import Settings
 from gold_scalp_trader.domain.enums import RuntimeMode
 from gold_scalp_trader.market_data.mt5_reader import Mt5ReadError
-from gold_scalp_trader.operator.graphical_snapshot import from_cycle
+from gold_scalp_trader.operator.graphical_snapshot import from_runtime
 from gold_scalp_trader.operator.terminal_dashboard import render
 from gold_scalp_trader.persistence.checkpoint import export_checkpoint
 from gold_scalp_trader.persistence.store import StateStore
@@ -38,7 +39,7 @@ def _print_result(result: RuntimeResult, state_path: Path) -> None:
     print("=" * 78)
     print(" GOLD SCALP TRADER — LIVE DEMO")
     print("=" * 78)
-    print(render(from_cycle(result.cycle, market_state="DEMO")))
+    print(render(from_runtime(result, market_state="DEMO")))
     print("-" * 78)
     print("Mode         : DEMO")
     print(f"State DB     : {state_path}")
@@ -70,6 +71,13 @@ def run_live_demo(
 ) -> int:
     if settings.mode is not RuntimeMode.DEMO or not settings.demo_write_enabled:
         raise PermissionError("DEMO mode with explicit DEMO confirmation is required")
+
+    # Approved operator default. Tests/headless tooling can request a bounded
+    # terminal run without constructing a GUI.
+    if settings.dashboard_mode == "GUI" and max_cycles is None:
+        from gold_scalp_trader.app.graphical_demo_runner import run_graphical_demo
+
+        return run_graphical_demo(settings, api)
 
     state_path = _state_path(settings)
     store = StateStore(state_path)

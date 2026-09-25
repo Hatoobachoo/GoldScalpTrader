@@ -58,6 +58,7 @@ class Settings:
     state_db_path: str = "runtime/gold_scalp_demo.sqlite3"
     loop_interval_seconds: float = 2.0
     max_quote_age_seconds: float = 10.0
+    dashboard_mode: str = "GUI"
 
     @property
     def demo_write_enabled(self) -> bool:
@@ -143,6 +144,7 @@ def load_settings() -> Settings:
         state_db_path=os.getenv("STATE_DB_PATH", "runtime/gold_scalp_demo.sqlite3").strip(),
         loop_interval_seconds=float(os.getenv("LOOP_INTERVAL_SECONDS", "2.0")),
         max_quote_age_seconds=float(os.getenv("MAX_QUOTE_AGE_SECONDS", "10.0")),
+        dashboard_mode=os.getenv("DASHBOARD_MODE", "GUI").strip().upper(),
     )
     validate_settings(settings)
     return settings
@@ -184,6 +186,8 @@ def validate_settings(settings: Settings) -> None:
         raise ValueError("LOOP_INTERVAL_SECONDS must be at least 0.5")
     if settings.max_quote_age_seconds <= 0:
         raise ValueError("MAX_QUOTE_AGE_SECONDS must be positive")
+    if settings.dashboard_mode not in {"GUI", "TERMINAL"}:
+        raise ValueError("DASHBOARD_MODE must be GUI or TERMINAL")
     if settings.mode is RuntimeMode.REAL:
         if not REAL_RELEASE_ENABLED:
             raise ValueError("REAL trading release is not approved/enabled in this build")
