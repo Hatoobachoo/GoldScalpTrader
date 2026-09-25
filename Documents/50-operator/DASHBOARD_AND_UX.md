@@ -1,100 +1,394 @@
 # GoldScalpTrader — Dashboard and UX Contract
 
-**Status:** FROZEN V1 OPERATOR ARCHITECTURE — PRESERVATION-FIRST CORRECTED / IMPLEMENTATION PROOF PENDING
-**Version:** 1.2-profiled-risk-cache-aware-operator
-**Authority:** Operator visibility, typed dashboard mapping, primary terminal presentation, session/News/provider/cache truth, profiled Risk visibility, verified performance provenance and read-only controls.
+**Status:** APPROVED OPERATOR UX ARCHITECTURE — GRAPHICAL PRIMARY VISUAL BASELINE / TERMINAL FALLBACK
+**Version:** 2.0-detected-setup-one-screen
+**Authority:** Operator visibility, graphical/terminal presentation hierarchy, detected-setup semantics, active/shadow strategy display, read-only interaction, no-scroll layout and exact blocker/Gate/Risk truth.
 
 ## 1. Purpose
 
 Within seconds the operator should understand:
 
-1. XAUUSDm feed/market health and current SELL/BUY;
-2. Soft Session, Hard Market State and News State;
-3. News provider health/source and LKG cache validity;
-4. H1/M15/M5 market picture plus optional H4 and diagnostic M1;
-5. current BUY/SELL/Floor decision and why;
-6. Opportunity/timing/event freshness;
-7. TradePlan geometry, gross/cost-adjusted room and executable quote;
-8. leading family/correlation/debate;
-9. current SMALL/MEDIUM/NORMAL Risk profile and actual proposal;
-10. aggressive small-account mode ENABLED/DISABLED and its ceilings when applicable;
-11. daily loss / reset / streak / cooldown / capacity;
-12. upstream blocker versus actual central Gate;
-13. ManagedTrade/Trade Manager/partial-management state;
-14. verified learning/research/local-backup health.
+1. XAUUSDm feed/market health and live Bid/Ask/spread;
+2. soft Session and hard broker Market State;
+3. M5 primary setup plus subordinate M1 refinement;
+4. **which setup is actually detected now**;
+5. which family is `ACTIVE_EXECUTION` and whether that setup is live-eligible;
+6. which other families are `SHADOW_ONLY` without implying they are being mixed into the trade;
+7. current Opportunity/Timing state and why;
+8. TradePlan geometry and executable-quality ratios;
+9. preserved SMALL/MEDIUM/NORMAL Risk truth;
+10. upstream blocker versus actual central Gate;
+11. open ManagedTrade / Trade Manager state;
+12. execution/controller/reconciliation state;
+13. verified activity and closes;
+14. learning/discovery/candidate state;
+15. backup/data/system health.
 
 Dashboard is presentation, not a second trading engine.
 
-## 2. One-way architecture
+## 2. Approved operator-surface hierarchy
 
-```text
-authoritative market/intelligence/decision/TradePlan/Risk/execution/learning facts
-+ session/news provider/cache facts
-+ durable state/backup health
-→ DashboardData / presentation DTO
-→ terminal renderer
-→ optional atomic read-only browser snapshot
+```mermaid
+flowchart TB
+    OWNERS["Market / Intelligence / Strategies / Decisions / Risk / Execution / Learning"] --> DTO["Authoritative immutable DashboardData"]
+    DTO --> GUI["Primary graphical visual interface"]
+    DTO --> TERM["Terminal / compact fallback"]
+
+    GUI -. "view controls only" .-> GUI
+    GUI -. "NO broker/Risk/strategy mutation" .-> OWNERS
+    TERM -. "read-only fallback" .-> OWNERS
 ```
 
-Presentation never recalculates profile, risk, cache validity, signal, permission or lifecycle state.
+The graphical dashboard is the approved primary visual UX baseline when available.
 
-## 3. Display pulse versus decision cadence
+The terminal renderer remains valuable as:
 
-A fast display pulse may refresh PKT clock, Bid/Ask, spread, quote age, M5 countdown, provider/cache age and already-owned broker facts without rerunning analytical decisions.
+- startup/fallback visibility;
+- diagnostics;
+- low-dependency recovery interface;
+- presentation-failure fallback.
 
-Production bar-based setup/timing remains completed M5. M1 is diagnostic/research only.
+Trading liveness does not depend on either renderer.
 
-## 4. Session / News / provider presentation
+## 3. One-screen UX rule
+
+The approved graphical floor has **no page or panel scroll bars**.
+
+Target behavior:
+
+```text
+1920×1080 → full institutional layout
+1600×900  → compact institutional layout
+smaller    → density-reduced fallback, never hidden critical safety state
+```
+
+Critical operational facts remain visible without scrolling:
+
+```text
+market state
+live price/spread
+bot state
+detected setup
+timing
+TradePlan/blocker
+Risk
+open trade
+execution/controller/system health
+```
+
+Optional deep details may use tabs/tooltips/popovers, not scroll-dependent main layout.
+
+## 4. Setup detection versus strategy forcing
+
+The market/chart evidence decides whether a real setup exists.
+
+```text
+chart/structure/liquidity/quant/location
+→ family-specific setup detection
+→ zero, one or several analytical candidates may exist
+→ Strategy Isolation determines live eligibility
+```
+
+Critical semantics:
+
+> **An `ACTIVE_EXECUTION` family is eligible to trade only when its own genuine setup is detected. The system must never force that family narrative onto every market episode.**
+
+Example:
+
+```text
+Active family: Trend Pullback
+Current chart: no valid Trend Pullback
+Shadow family: Liquidity Sweep detected
+
+Dashboard:
+Detected Market Setup   Liquidity Sweep Reversal
+Live Eligibility        SHADOW ONLY
+Active Family Setup     NONE
+Current Signal          WAIT
+```
+
+This is correct. The bot does not turn the shadow setup into a live trade and does not fabricate a Trend Pullback.
+
+## 5. Graphical panel hierarchy
+
+Approved visual organization follows the operator-approved Swing-style institutional dashboard:
+
+### Masthead
+
+```text
+GoldScalpTraderAI
+institutional/scalping tagline
+bilingual decorative identity
+PKT date/time
+account mode/environment
+MT5/controller identity
+```
+
+### Top market strip
+
+```text
+XAUUSDm / Gold
+Market OPEN/PRE_CLOSE/CLOSED
+Soft Session
+Live price
+Bid / Ask / spread
+M5 countdown
+Bot Status
+```
+
+### Left analysis rail
+
+```text
+EMA20 / EMA50 / RSI14 / ATR14
+Trend Direction H4/H1/M15/M5
+Session / News Context
+```
+
+M1 appears as subordinate timing when relevant rather than an independent higher-level trend row.
+
+### Center chart
+
+Real interactive XAU chart with:
+
+```text
+M1 | M5 | M15 | H1 | H4
+Indicators
+Drawings
+Settings
+```
+
+Buttons must be functional at implementation time.
+
+### Right decision rail
+
+```text
+Detected Setup / Current Signal
+Trade Plan
+Current Blocker / Executable Quality
+Multi-Timeframe Candle/Structure Analysis
+```
+
+### Lower floor
+
+```text
+Account & Risk
+Strategy / Setup Board
+Open Trade
+Execution & Controller
+Trading Activity
+Learning & Discovery
+System & Data
+Recent Verified Closes
+```
+
+## 6. Functional chart controls
+
+### Timeframe tabs
+
+`M1/M5/M15/H1/H4` change only displayed chart timeframe.
+
+They do not modify production timeframe authority:
+
+```text
+M5   primary setup/thesis
+M1   subordinate entry refinement
+M15  location/path/target context
+H1   broad regime context
+H4   optional major context
+```
+
+### Indicators
+
+Toggles approved visual overlays. It does not enable/disable strategy calculations.
+
+### Drawings
+
+Local operator annotations only; no automated-trading authority.
+
+### Settings
+
+Presentation preferences only. Live Risk, active strategy, hard execution thresholds and REAL activation are not casual graphical settings.
+
+### Zoom / pan / reset
+
+Functional chart-only interaction with no decision side effect.
+
+## 7. Session / News presentation
 
 Show separately:
 
 ```text
 Soft Session      ASIA / LONDON / NEW YORK / OVERLAP / OFF HOURS
 Hard Market       OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN
-News              CLEAR / BLACKOUT / UNKNOWN / POST_NEWS_WARMUP
+News Context      event/context/none/unknown
 Provider Health   VERIFIED / DEGRADED / STALE / UNAVAILABLE / UNKNOWN
-Provider Source   LIVE / FILE / LKG CACHE
-Entry Permission  ALLOW / BLOCK / UNKNOWN as owned downstream
 ```
+
+Current approved semantics:
 
 ```text
-OPEN + accepted CLEAR from fresh source/cache → may proceed
-OPEN + BLACKOUT → BLOCK
-OPEN + true NEWS_SAFETY_UNKNOWN → new-entry BLOCK / LIMITED
+News event         → soft context only
+News UNKNOWN       → soft context unavailable
+provider failure   → does NOT directly block trading
 ```
 
-A refresh/API error is not itself UNKNOWN if accepted LKG cache remains valid under original timestamps/coverage/TTL.
+Actual event-induced spread/drift/dislocation/slippage/data problems are shown through their real owners.
 
-## 5. Preserved session baselines shown when authoritative
+No old `NEWS_BLACKOUT → BLOCK` or `POST_NEWS_WARMUP` UI semantics remain.
+
+## 8. Detected Setup / Current Signal panel
+
+Preferred fields:
 
 ```text
-Provider TTL baseline       1800s
-Daily no-entry/flatten      T-20 / T-10
-Weekend no-entry/flatten    T-60 / T-30
-Daily reopen baseline       1 clean M5
-Weekend reopen baseline     2 clean M5 + gap assessment
+Detected Setup
+Active Family
+Family Mode          ACTIVE_EXECUTION / SHADOW_ONLY
+Direction            BUY / SELL / WAIT
+BUY Thesis
+SELL Thesis
+Opportunity
+Entry Timing
+M5 Setup Event
+M1 Refinement
+Coverage
+Red-Team Conflict
+Reason
 ```
 
-Dashboard displays owning state and countdown; it never calculates broker schedule independently.
-
-## 6. Risk/account presentation
-
-Show current risk truth, not one generic `STANDARD` label.
+### No valid setup
 
 ```text
-Profile               SMALL / MEDIUM / NORMAL
-DayStartEquity         verified value
-Normal target band     profile-owned range
-Elevated band          profile-owned range
-Hard new-entry ceiling profile-owned value
-Daily loss lock        profile-owned value
-Proposed lot/risk      when RiskEvaluation exists
-Capacity               e.g. 0/1 or 1/1
-Loss streak/cooldown   owned state
-Manual reset           DISABLED / enabled-bounded state
+WAIT / NO VALID SETUP
+انتظار
+Reason: no active-family setup currently detected
 ```
 
-Reference profile values:
+### Shadow setup only
+
+```text
+Detected Setup: Liquidity Sweep Reversal
+Status: SHADOW ONLY
+Live Signal: WAIT
+Reason: current isolation policy does not allow this family to originate live trade
+```
+
+### Active setup
+
+```text
+Detected Setup: Breakout Retest
+Mode: ACTIVE_EXECUTION
+Opportunity: ARMED
+M1: WAIT / READY
+```
+
+## 9. Strategy / Setup Board
+
+Do not show all six families as if all six are contributing to the same live trade.
+
+The board must communicate:
+
+```text
+which family is active
+which setup is actually detected
+which shadow families see a candidate
+which families see no setup
+which evidence is verified actual performance vs no sample
+```
+
+Example:
+
+| Family | Mode | Setup State | Direction | Quality | Verified Samples |
+|---|---|---|---|---:|---:|
+| Breakout Retest | ACTIVE | DETECTED | BUY | 78 | 41 |
+| Trend Pullback | SHADOW | NONE | — | — | shadow only |
+| Breakout Expansion | SHADOW | CANDIDATE | BUY | 61 | shadow only |
+| Liquidity Sweep | SHADOW | NONE | — | — | shadow only |
+| Failed Breakout | SHADOW | NONE | — | — | shadow only |
+| Compression | SHADOW | WAIT | — | 44 | shadow only |
+
+Shadow metrics never become actual production P/L.
+
+## 10. M1 display
+
+The previous “M1 diagnostic only” operator wording is superseded.
+
+Current UI meaning:
+
+```text
+M5 setup exists
+→ M1 may show subordinate refinement pattern/freshness/timing
+
+no M5 setup
+→ M1 cannot display itself as a production setup
+```
+
+Examples:
+
+```text
+M1 RECLAIM • fresh • READY
+M1 pullback incomplete • WAIT
+M1 trigger stale • MISSED
+```
+
+## 11. Trade Plan
+
+Display only actual governed geometry:
+
+```text
+Bias / Direction
+Approved Entry Reference
+Current executable Bid/Ask
+Structural SL
+Primary Target
+Expansion Target
+optional Runner
+Gross R
+Spread/SL
+Spread/Target
+Cost/Reward
+Plan Quality
+```
+
+No plan = `—`, never fake zero.
+
+Do not hard-code Swing's historical `1.20R` floor into the Scalp UI.
+
+## 12. Current Blocker versus Gate
+
+```text
+no active-family setup
+→ Current Blocker: Setup Detector / Strategy Floor
+→ Gate: NOT EVALUATED
+
+M1 timing WAIT/MISSED
+→ Current Blocker: Entry Timing
+→ Gate: NOT EVALUATED
+
+TradePlan invalid
+→ Current Blocker: TradePlan
+→ Gate: NOT EVALUATED
+
+Executable cost poor
+→ Current Blocker: Executable Quality
+→ Gate: NOT EVALUATED
+
+Risk BLOCK/UNKNOWN
+→ Current Blocker: Risk
+→ Gate: NOT EVALUATED
+
+actual central Gate BLOCK
+→ Current Blocker: Execution Gate
+→ Gate: BLOCKED
+```
+
+News context never appears as a hard blocker under current architecture.
+
+## 13. Risk/account presentation
+
+Show current Risk truth, not a generic `STANDARD` label.
+
+Reference profile values remain:
 
 | Profile | Normal | Elevated | Hard | Daily |
 |---|---:|---:|---:|---:|
@@ -102,124 +396,136 @@ Reference profile values:
 | MEDIUM | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
 | NORMAL | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
 
-### Aggressive small-account display
-
-When explicit mode is disabled:
+Also show:
 
 ```text
-Aggressive Small Account: DISABLED
+Balance / Equity / Free Margin
+proposed lot / actual risk
+capacity 0/1 or 1/1
+Day P/L / loss budget
+loss streak / cooldown
+same-episode re-entry state
+manual daily-loss reset status
+Aggressive mode ENABLED/DISABLED
 ```
 
-When explicitly enabled and eligible:
+If aggressive mode enabled:
 
 ```text
-Aggressive Small Account: ENABLED
-Per-trade SL-risk ceiling: 8% MAX — NOT TARGET
-Aggregate open-risk cap:   16%
-Daily loss ceiling:        16%
+8%  MAX SL-risk ceiling — NOT TARGET
+16% aggregate
+16% daily
 ```
 
-Never imply the bot is trying to size every aggressive trade to 8%.
+## 14. Open ManagedTrade
 
-If no TradePlan/RiskEvaluation exists, show `Risk Standby`, not Risk failure.
+When flat, show a clean empty state.
 
-## 7. Primary visual hierarchy
+When open, show:
 
 ```text
-HEADER
-  product / mode / PKT / Market / Session / News / Gate
-  XAU SELL / BUY / spread / quote age / M5 countdown / Today P&L
-
-NEWS / PROVIDER
-  health / source / last success / cache age-validity / next event
-
-MARKET PICTURE
-  H1 / M15 / M5 / optional H4 / diagnostic M1
-  EMA20/EMA50 / RSI / ATR / volatility / event freshness
-
-CURRENT DECISION
-  BUY thesis / SELL thesis / Floor Edge / leading family
-  correlation / Red Team / Opportunity / M5 Timing / WHY
-
-TRADE PLAN
-  Approved Entry Reference / current Bid/Ask
-  SL / Primary / optional Expansion / exceptional Runner
-  gross room / cost-adjusted room / invalidation / quality
-
-RISK & ACCOUNT
-  profile / optional aggressive mode / actual proposal / capacity
-  daily loss / reset / streak / cooldown
-
-ACTIVITY / SYSTEM / EXECUTION / OPEN TRADE / LEARNING / LOCAL BACKUP
+family/version
+ticket/direction
+actual Entry/current price
+original/current SL
+Primary/Expansion/Runner stage
+original/open R
+remaining volume
+trade age/M5 bars
+Trade Manager action/reason
+Intent/reconciliation/close state
 ```
 
-## 8. Current Blocker versus Gate
+## 15. Verified performance
+
+Only verified actual closed ManagedTrades count as live production performance.
 
 ```text
-TradePlan invalid/degraded
-→ Current Blocker: TradePlan
-→ Gate: NOT EVALUATED
-
-Risk BLOCK/UNKNOWN before Gate
-→ Current Blocker: Risk
-→ Gate: NOT EVALUATED
-
-News/Session owner blocks before central Gate
-→ show owning blocker
-→ do not fabricate Gate BLOCKED
-
-central Gate actually BLOCKS
-→ Current Blocker: Execution Gate
-→ Gate: BLOCKED
+signal != trade
+shadow != actual
+replay != actual
+blocked opportunity != trade
+open position != closed sample
+zero samples → NO SAMPLE
 ```
 
-## 9. TradePlan / freshness truth
+This applies to strategy board, trading activity and recent closes.
 
-Show only actual governed plan fields. Keep Approved Entry Reference and current executable Bid/Ask separate.
+## 16. Learning / discovery
 
-Useful scalp facts include event age, trigger age, entry drift, spread, target-room/cost context and latency diagnostics.
-
-## 10. Verified strategy performance
-
-Only verified actual approved-environment closed ManagedTrades count as production performance. Signal, WAIT/MISSED/BLOCK, replay/shadow/counterfactual evidence do not count as actual trades/P&L.
-
-Zero verified closes = `NO SAMPLE`.
-
-## 11. Open ManagedTrade
-
-Show ticket/ownership, verified Entry, live executable price, original/current SL, objectives, original R/current risk, remaining volume, objective stage, any verified partial action, M5 bars/time in trade, management action/reason and Intent/reconciliation/close state.
-
-Time/efficiency is an EXIT reason. Runner is exceptional.
-
-## 12. Runtime capability display
-
-Operator mode must clearly distinguish:
+Show clearly separate:
 
 ```text
-READINESS
-DRY_RUN
-DEMO PRIMARY
-REAL — future capability, disabled/unavailable until its release gate
+actual active-family learning
+shadow-family evidence
+candidate count/stage
+best challenger
+ML/discovery health
+APPROVAL_REQUIRED state
 ```
 
-No dashboard toggle may bypass the governed REAL release path.
+A research candidate never appears as already-live production policy.
 
-## 13. Responsive terminal / fallback
+## 17. Presentation pulse
 
-Conceptual target:
+Fast display refresh may update:
+
+- PKT clock;
+- current Bid/Ask/spread;
+- quote age;
+- M5 countdown;
+- chart current candle display where allowed by presentation contract;
+- already-owned account/system state.
+
+The pulse may not rerun strategies or mutate Opportunity/TradePlan/Risk/Gate merely because the UI refreshed.
+
+## 18. Failure / fallback
 
 ```text
-64–95 cells → stacked narrow renderer
-96+ cells   → wide renderer
-render failure → compact safe read-only fallback
+graphical renderer fails
+→ trading continues
+→ terminal/compact fallback remains available
+→ no authority changes
 ```
 
-Presentation failure cannot stop trading or create authority.
+Unknown values render `UNKNOWN`, `—`, `WAITING`, or `NO SAMPLE`.
 
-## 14. Local backup / research footer
+No fabricated candles, plan geometry, Risk or performance.
 
-May show StrategyMemory/discovery health, last local runtime checkpoint, backup status/path shorthand and recovery state. Research recommendation is never active policy unless governed promotion makes it so.
+## 19. Security / interaction
 
-## 15. Planned proof
+Initial GUI is local-only/read-only with respect to trading authority.
 
-Tests cover blocker-vs-Gate truth, width/fallback, presentation pulse without new decisions, provider/cache states, profile/overlay Risk rendering, 8%-is-ceiling-not-target wording, reset/cooldown state, no-plan geometry, verified performance provenance, open-trade partial state and read-only authority.
+No dashboard control may:
+
+- place BUY/SELL manually;
+- close/modify positions directly;
+- change active production family casually;
+- edit Risk percentages live;
+- enable REAL.
+
+Presentation settings and chart controls remain functional.
+
+## 20. Planned proof
+
+Tests and visual acceptance must cover:
+
+- approved one-screen layout;
+- no scroll bars;
+- functional chart timeframe buttons;
+- Indicators / Drawings / Settings behavior;
+- setup detection truth;
+- active strategy not forced onto every episode;
+- shadow-only candidate display;
+- M1 subordinate role;
+- News soft-only display;
+- blocker vs Gate;
+- exact preserved Risk rendering;
+- no-plan/no-sample truth;
+- graphical failure isolation;
+- local/read-only security;
+- 1920×1080 and compact 1600×900 screenshots/visual checks.
+
+## 21. Final invariant
+
+> **The operator sees the market as a coherent institutional floor: one real detected setup, one live-eligible strategy family under isolation, subordinate M1 timing, transparent shadow observations, functional chart controls and exact Risk/execution truth—all on one screen without scroll bars and without giving presentation any broker authority.**
