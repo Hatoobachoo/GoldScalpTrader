@@ -1,7 +1,7 @@
 # GoldScalpTrader — Module Structure and File Map
 
-**Status:** IMPLEMENTED ARCHITECTURE MAP — CONNECTED DEMO CERTIFICATION PENDING
-**Version:** 2.1-institutional-scalp-implementation
+**Status:** IMPLEMENTED ARCHITECTURE MAP — CONNECTED DEMO CERTIFICATION IN PROGRESS
+**Version:** 2.2-institutional-scalp-implementation
 **Authority:** Actual package/file ownership, dependency direction, setup-detection/isolation boundaries, serial financial authority and research/presentation separation.
 
 ## 1. Dependency direction
@@ -362,6 +362,12 @@ No runtime Git publication module exists.
 
 Research may run computationally heavier/offline workloads, but cannot mutate live production policy directly.
 
+`research/replay.py` owns causal multi-timeframe completed-bar replay points.
+
+`research/management_replay.py` owns one-position production-capacity replay while keeping shadow hypotheses counterfactual.
+
+`research/evidence.py` + `research/packages.py` own immutable evidence identity/write-new research packages.
+
 `research/promotion.py` stops at `APPROVAL_REQUIRED` before production promotion.
 
 `research/models.py` isolates advanced ML feature/model identity and reproducible evidence.
@@ -400,6 +406,7 @@ No dashboard module imports Risk engine or MT5 writer to recalculate/mutate auth
 scripts/run_walk_forward.py
 scripts/acquire_mt5_dataset.py
 scripts/report_demo_learning_evidence.py
+scripts/certify_connected_demo.py
 scripts/restore_runtime_checkpoint.py
 scripts/create_local_recovery_package.py
 scripts/create_source_zip.py
@@ -408,6 +415,8 @@ scripts/verify_documents_manual.py
 scripts/verify_contract_sync.py
 scripts/verify_offline_release.py
 ```
+
+`certify_connected_demo.py` is a read-only Phase 15 evidence collector. It connects to the intended MT5 DEMO account, reads normalized market/account facts plus local durable evidence, writes an evidence JSON, and performs no broker write. Missing drills remain explicitly PENDING.
 
 `verify_contract_sync.py` statically enforces high-value frozen-document invariants against the source tree. It is part of the offline release audit and does not replace connected broker proof.
 
@@ -426,15 +435,16 @@ Risk → tighten structural SL to fit volume                 NO
 News provider failure → hard trading kill switch           NO
 trading runtime → Git commit/push/pull                     NO
 backup package → credentials                               NO
+connected certification tool → broker write               NO
 ```
 
 ## 18. Source-map synchronization
 
-Any source/test rename, ownership change or new package updates:
+Any source/test rename, ownership change or new material script/package updates:
 
 - this file;
 - `FILE_AND_TEST_CATALOG.md`;
-- owning topic contract;
+- owning topic contract when behavior changes;
 - affected tests/audits/operator docs;
 - final release traceability.
 

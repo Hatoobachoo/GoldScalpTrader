@@ -1,12 +1,12 @@
 # GoldScalpTrader — Complete File and Test Catalog
 
-**Status:** IMPLEMENTED FILE/TEST MAP — OFFLINE CONTRACT SYNC ENFORCED / CONNECTED DEMO PROOF PENDING
-**Version:** 2.1-institutional-scalp-implementation
+**Status:** IMPLEMENTED FILE/TEST MAP — OFFLINE CONTRACT SYNC ENFORCED / CONNECTED DEMO CERTIFICATION IN PROGRESS
+**Version:** 2.2-institutional-scalp-implementation
 **Authority:** Actual source ownership, actual deterministic/integration proof, remaining connected proof and implementation/document synchronization.
 
 ## 1. Current repository reality
 
-The repository is no longer a provisional scaffold. The documented architecture is implemented through the live guarded DEMO runtime, managed-trade lifecycle and approved graphical dashboard.
+The repository is no longer a provisional scaffold. The documented architecture is implemented through the live guarded DEMO runtime, managed-trade lifecycle, governed research toolkit and approved graphical dashboard.
 
 Current evidence classes must remain separate:
 
@@ -125,7 +125,7 @@ tests/test_decision_pipeline.py
 
 Required frozen behavior:
 
-- completed/casual structure;
+- completed/causal structure;
 - optional evidence neutrality;
 - M1 subordinate to valid M5 Opportunity;
 - News context soft-only;
@@ -441,11 +441,12 @@ Current proof:
 tests/test_research_governance.py
 tests/test_research_integrity.py
 scripts/report_demo_learning_evidence.py
+scripts/run_walk_forward.py
 ```
 
-Research has zero raw broker authority. Candidate progression may advance through governed research stages but production promotion stops at `APPROVAL_REQUIRED`.
+The research toolkit now includes causal multi-timeframe replay, M1 no-lookahead, one-position production-capacity replay, typed actual/shadow outcomes, opportunity/efficiency metrics, explicit stress, walk-forward boundaries, one-shot holdout semantics, ablation and immutable evidence packages.
 
-Phase 13 remains an area for additional depth/coverage while the architecture and safety boundaries are implemented.
+Research has zero raw broker authority. Candidate progression may advance through governed research stages but production promotion stops at `APPROVAL_REQUIRED`.
 
 ## 17. Implemented scripts
 
@@ -453,6 +454,7 @@ Phase 13 remains an area for additional depth/coverage while the architecture an
 scripts/run_walk_forward.py
 scripts/acquire_mt5_dataset.py
 scripts/report_demo_learning_evidence.py
+scripts/certify_connected_demo.py
 scripts/restore_runtime_checkpoint.py
 scripts/create_local_recovery_package.py
 scripts/create_source_zip.py
@@ -463,6 +465,8 @@ scripts/verify_offline_release.py
 ```
 
 `report_demo_learning_evidence.py` is read-only and reports durable StateStore evidence; it never connects to MT5 or performs a broker action.
+
+`certify_connected_demo.py` is also read-only with respect to broker actions. It opens the intended MT5 DEMO session, verifies DEMO identity, reads normalized market/symbol facts and local durable evidence, writes a Phase 15 evidence artifact and leaves unperformed drills as `PENDING`.
 
 `verify_contract_sync.py` fails the offline release when selected high-value frozen-document invariants drift from the source tree.
 
@@ -483,7 +487,7 @@ OPEN/MODIFY/CLOSE reconciliation
 broker deal-history close proof
 StateStore/checkpoint/recovery package
 graphical runtime and chart controls
-research governance/integrity
+research no-lookahead/capacity/metrics/governance/integrity
 ```
 
 Future file splits or additional edge-case tests must update this catalog only when they change material proof ownership.
@@ -502,11 +506,11 @@ Offline code/tests cannot prove:
 - restart during a real active lifecycle;
 - fresh-machine MT5 recovery/handoff.
 
-These remain Phase 15 evidence requirements.
+`scripts/certify_connected_demo.py` records the connected facts that can be observed read-only and explicitly leaves the remaining operator/safe-drill evidence pending. These remain Phase 15 evidence requirements until actually observed.
 
 ## 20. Synchronization rule
 
-Every material source/test addition, removal, rename or ownership change updates:
+Every material source/test/script addition, removal, rename or ownership change updates:
 
 - this catalog;
 - `MODULE_STRUCTURE.md`;
