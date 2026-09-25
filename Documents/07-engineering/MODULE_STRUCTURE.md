@@ -1,8 +1,8 @@
 # GoldScalpTrader — Module Structure and File Map
 
 **Status:** IMPLEMENTED ARCHITECTURE MAP — CONNECTED DEMO CERTIFICATION IN PROGRESS
-**Version:** 2.2-institutional-scalp-implementation
-**Authority:** Actual package/file ownership, dependency direction, setup-detection/isolation boundaries, serial financial authority and research/presentation separation.
+**Version:** 2.3-institutional-scalp-implementation
+**Authority:** Actual package/file ownership, dependency direction, setup-detection/isolation boundaries, serial financial authority, connected evidence observation and research/presentation separation.
 
 ## 1. Dependency direction
 
@@ -28,6 +28,7 @@ flowchart TB
     PERSIST -.-> EXEC
     PERSIST -.-> MGMT
     PERSIST -.-> RESEARCH
+    APP -. "read-only certification observations" .-> DIAG["diagnostics"]
 ```
 
 Broker/financial authority remains serial even if analytical work is physically parallelized after profiling.
@@ -38,7 +39,7 @@ Broker/financial authority remains serial even if analytical work is physically 
 |---|---|---|
 | `config` | validated settings/policy identities | hidden live policy mutation |
 | `domain` | enums, typed IDs/DTOs, units/states | MT5 calls |
-| `diagnostics` | structured logs, reason/health models, metrics | trading authority |
+| `diagnostics` | structured logs, reason/health models, metrics, read-only accumulated connected-DEMO evidence summaries | trading authority |
 | `security` | secret detection/redaction | secret storage |
 | `market_data` | sole normalized analytical MT5 read boundary, account-mode verification and activity normalization | raw irreversible writes |
 | `intelligence` | causal descriptive structure/technical/liquidity/quant/session/News context | money/Gate |
@@ -68,7 +69,8 @@ src/gold_scalp_trader/
 │   ├── logging.py
 │   ├── reasons.py
 │   ├── health.py
-│   └── metrics.py
+│   ├── metrics.py
+│   └── connected_demo.py
 ├── security/
 │   └── financial_secrets.py
 ├── market_data/
@@ -400,13 +402,26 @@ Approved Swing-style Scalp graphical dashboard is local and presentation-only.
 
 No dashboard module imports Risk engine or MT5 writer to recalculate/mutate authority.
 
-## 16. Implemented scripts
+## 16. Connected DEMO evidence ownership
+
+Phase-15 evidence observation is deliberately separated from trading authority.
+
+`diagnostics/connected_demo.py` owns pure aggregation of already-captured read-only connected-DEMO reports. It verifies one account/symbol scope, accumulates lifecycle facts across time and refuses evidence that claims a certification-tool broker write or REAL release.
+
+`scripts/certify_connected_demo.py` captures one read-only connected snapshot.
+
+`scripts/monitor_connected_demo.py` repeatedly invokes that collector from a separate operator process while the governed DEMO bot may continue trading. It writes only local `runtime/evidence` artifacts, never broker state, source control or production policy.
+
+Cumulative facts such as verified OPEN/MODIFY/CLOSE/learning remain observed once proven. Current-health facts such as unresolved Intent use the latest sample. Manual/restart/handoff/schedule/distribution drills remain explicitly PENDING until actual evidence exists.
+
+## 17. Implemented scripts
 
 ```text
 scripts/run_walk_forward.py
 scripts/acquire_mt5_dataset.py
 scripts/report_demo_learning_evidence.py
 scripts/certify_connected_demo.py
+scripts/monitor_connected_demo.py
 scripts/restore_runtime_checkpoint.py
 scripts/create_local_recovery_package.py
 scripts/create_source_zip.py
@@ -418,9 +433,11 @@ scripts/verify_offline_release.py
 
 `certify_connected_demo.py` is a read-only Phase 15 evidence collector. It connects to the intended MT5 DEMO account, reads normalized market/account facts plus local durable evidence, writes an evidence JSON, and performs no broker write. Missing drills remain explicitly PENDING.
 
+`monitor_connected_demo.py` is a read-only accumulation wrapper for long-running DEMO certification. It enforces a minimum sampling interval, rejects scope/REAL/write inconsistencies, writes local runtime evidence atomically and may stop once the core normal DEMO lifecycle has been observed. It never marks external/manual drills PASS by inference.
+
 `verify_contract_sync.py` statically enforces high-value frozen-document invariants against the source tree. It is part of the offline release audit and does not replace connected broker proof.
 
-## 17. Forbidden dependency directions
+## 18. Forbidden dependency directions
 
 ```text
 intelligence/strategy worker → MT5Writer                    NO
@@ -435,10 +452,11 @@ Risk → tighten structural SL to fit volume                 NO
 News provider failure → hard trading kill switch           NO
 trading runtime → Git commit/push/pull                     NO
 backup package → credentials                               NO
-connected certification tool → broker write               NO
+connected certification/monitor tool → broker write        NO
+connected certification/monitor tool → REAL enablement     NO
 ```
 
-## 18. Source-map synchronization
+## 19. Source-map synchronization
 
 Any source/test rename, ownership change or new material script/package updates:
 

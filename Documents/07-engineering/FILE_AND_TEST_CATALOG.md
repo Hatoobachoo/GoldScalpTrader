@@ -1,12 +1,12 @@
 # GoldScalpTrader — Complete File and Test Catalog
 
 **Status:** IMPLEMENTED FILE/TEST MAP — OFFLINE CONTRACT SYNC ENFORCED / CONNECTED DEMO CERTIFICATION IN PROGRESS
-**Version:** 2.2-institutional-scalp-implementation
+**Version:** 2.3-institutional-scalp-implementation
 **Authority:** Actual source ownership, actual deterministic/integration proof, remaining connected proof and implementation/document synchronization.
 
 ## 1. Current repository reality
 
-The repository is no longer a provisional scaffold. The documented architecture is implemented through the live guarded DEMO runtime, managed-trade lifecycle, governed research toolkit and approved graphical dashboard.
+The repository is no longer a provisional scaffold. The documented architecture is implemented through the live guarded DEMO runtime, managed-trade lifecycle, governed research toolkit, read-only connected evidence tooling and approved graphical dashboard.
 
 Current evidence classes must remain separate:
 
@@ -36,9 +36,10 @@ config/domain/diagnostics/security
 persistence = durable local context/recovery
 research = downstream replay/learning/discovery/invention/ML/promotion
 graphical_dashboard = read-only local presentation
+diagnostics connected-demo = read-only Phase-15 evidence aggregation
 ```
 
-## 3. Foundation/config/domain — implemented source
+## 3. Foundation/config/domain/diagnostics — implemented source
 
 ```text
 src/gold_scalp_trader/config/settings.py
@@ -50,6 +51,7 @@ src/gold_scalp_trader/diagnostics/logging.py
 src/gold_scalp_trader/diagnostics/reasons.py
 src/gold_scalp_trader/diagnostics/health.py
 src/gold_scalp_trader/diagnostics/metrics.py
+src/gold_scalp_trader/diagnostics/connected_demo.py
 src/gold_scalp_trader/security/financial_secrets.py
 ```
 
@@ -59,9 +61,12 @@ Current proof includes:
 tests/test_settings.py
 tests/test_config.py
 tests/test_market_domain.py
+tests/test_connected_demo_evidence.py
 scripts/scan_financial_secrets.py
 scripts/verify_contract_sync.py
 ```
+
+The connected-DEMO evidence test proves cumulative OPEN/MODIFY/CLOSE/learning evidence does not create a false full-certification PASS, current unresolved-Intent state is not laundered, scope mismatch is rejected, and certification evidence cannot claim REAL enablement or a broker write.
 
 The contract-sync verifier additionally checks exact preserved Risk bands, disabled-by-default aggressive/manual-reset policy and `REAL_RELEASE_ENABLED = False`.
 
@@ -130,8 +135,6 @@ Required frozen behavior:
 - M1 subordinate to valid M5 Opportunity;
 - News context soft-only;
 - no broker authority.
-
-Future test-depth additions may split current combined tests into finer files, but test-file naming is not behavioral authority.
 
 ## 6. Setup Detector / Strategy Isolation / six families
 
@@ -444,17 +447,54 @@ scripts/report_demo_learning_evidence.py
 scripts/run_walk_forward.py
 ```
 
-The research toolkit now includes causal multi-timeframe replay, M1 no-lookahead, one-position production-capacity replay, typed actual/shadow outcomes, opportunity/efficiency metrics, explicit stress, walk-forward boundaries, one-shot holdout semantics, ablation and immutable evidence packages.
+The research toolkit includes causal multi-timeframe replay, M1 no-lookahead, one-position production-capacity replay, typed actual/shadow outcomes, opportunity/efficiency metrics, explicit stress, walk-forward boundaries, one-shot holdout semantics, ablation and immutable evidence packages.
 
 Research has zero raw broker authority. Candidate progression may advance through governed research stages but production promotion stops at `APPROVAL_REQUIRED`.
 
-## 17. Implemented scripts
+## 17. Connected DEMO evidence / Phase 15
+
+Implemented source and tooling:
+
+```text
+src/gold_scalp_trader/diagnostics/connected_demo.py
+scripts/certify_connected_demo.py
+scripts/monitor_connected_demo.py
+tests/test_connected_demo_evidence.py
+```
+
+`certify_connected_demo.py` captures one read-only connected observation and never performs a broker write.
+
+`monitor_connected_demo.py` may run in a separate terminal while the guarded DEMO bot trades. It samples at a bounded interval, writes only ignored local `runtime/evidence` files, accumulates normal lifecycle evidence and keeps external/manual drills pending until actually observed.
+
+Aggregation semantics are intentionally conservative:
+
+```text
+verified OPEN/MODIFY/CLOSE/learning observed at least once
+→ evidence remains observed
+
+unresolved Intent state
+→ latest sample controls current-clear status
+
+scope/account/symbol mismatch
+→ reject evidence set
+
+certification tool reports broker write or REAL enablement
+→ reject evidence set
+
+missing manual/restart/handoff/schedule/distribution drill
+→ PENDING, never inferred PASS
+```
+
+This accelerates evidence accumulation without weakening the Phase-15 contract.
+
+## 18. Implemented scripts
 
 ```text
 scripts/run_walk_forward.py
 scripts/acquire_mt5_dataset.py
 scripts/report_demo_learning_evidence.py
 scripts/certify_connected_demo.py
+scripts/monitor_connected_demo.py
 scripts/restore_runtime_checkpoint.py
 scripts/create_local_recovery_package.py
 scripts/create_source_zip.py
@@ -466,11 +506,9 @@ scripts/verify_offline_release.py
 
 `report_demo_learning_evidence.py` is read-only and reports durable StateStore evidence; it never connects to MT5 or performs a broker action.
 
-`certify_connected_demo.py` is also read-only with respect to broker actions. It opens the intended MT5 DEMO session, verifies DEMO identity, reads normalized market/symbol facts and local durable evidence, writes a Phase 15 evidence artifact and leaves unperformed drills as `PENDING`.
-
 `verify_contract_sync.py` fails the offline release when selected high-value frozen-document invariants drift from the source tree.
 
-## 18. Integration test families currently represented
+## 19. Integration test families currently represented
 
 The current suite contains combined/integration tests for:
 
@@ -488,11 +526,12 @@ broker deal-history close proof
 StateStore/checkpoint/recovery package
 graphical runtime and chart controls
 research no-lookahead/capacity/metrics/governance/integrity
+connected DEMO evidence accumulation safety
 ```
 
 Future file splits or additional edge-case tests must update this catalog only when they change material proof ownership.
 
-## 19. Connected DEMO proof — still external
+## 20. Connected DEMO proof — still external
 
 Offline code/tests cannot prove:
 
@@ -506,9 +545,9 @@ Offline code/tests cannot prove:
 - restart during a real active lifecycle;
 - fresh-machine MT5 recovery/handoff.
 
-`scripts/certify_connected_demo.py` records the connected facts that can be observed read-only and explicitly leaves the remaining operator/safe-drill evidence pending. These remain Phase 15 evidence requirements until actually observed.
+The read-only connected collector/monitor records facts that can be observed without manufacturing broker events. These remain Phase 15 evidence requirements until actually observed.
 
-## 20. Synchronization rule
+## 21. Synchronization rule
 
 Every material source/test/script addition, removal, rename or ownership change updates:
 
