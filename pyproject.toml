@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gold-scalp-trader"
+version = "0.1.0"
+description = "Documentation-first XAUUSD scalping research and execution system"
+requires-python = ">=3.11"
+dependencies = [
+  "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+mt5 = ["MetaTrader5>=5.0"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120

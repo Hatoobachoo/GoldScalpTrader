@@ -1,0 +1,18 @@
+"""Stable reason codes for operator/debug surfaces."""
+from __future__ import annotations
+from enum import Enum
+
+
+class ReasonCode(str, Enum):
+    READY = "READY"
+    DRY_RUN = "DRY_RUN"
+    MT5_UNAVAILABLE = "MT5_UNAVAILABLE"
+    SYMBOL_NOT_FOUND = "SYMBOL_NOT_FOUND"
+    DATA_UNAVAILABLE = "DATA_UNAVAILABLE"
+    DATA_CORRUPT = "DATA_CORRUPT"
+    NO_VALID_SETUP = "NO_VALID_SETUP"
+    ACTIVE_FAMILY_SETUP_NOT_PRESENT = "ACTIVE_FAMILY_SETUP_NOT_PRESENT"
+    M1_NOT_READY = "M1_NOT_READY"
+    RISK_BLOCK = "RISK_BLOCK"
+    GATE_BLOCK = "GATE_BLOCK"
+    RECONCILING = "RECONCILING"
