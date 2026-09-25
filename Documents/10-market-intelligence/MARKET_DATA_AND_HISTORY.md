@@ -1,105 +1,160 @@
 # GoldScalpTrader — Market Data and History
 
-**Status:** FROZEN V1 READ ARCHITECTURE — FRESHNESS THRESHOLD / CONNECTED MT5 PROOF PENDING
-**Version:** 1.0-scalp-read-boundary
-**Authority:** Normalized MT5 facts, completed-candle chronology, quote/tick freshness, data quality, frozen timeframe roles, history and current exposure reads.
+**Status:** APPROVED READ CONTRACT — DOCUMENTATION RECONSTRUCTION / CONNECTED FRESHNESS PROOF PENDING
+**Version:** 2.0-scalp-m1-aware-read-boundary
+**Authority:** Normalized MT5 facts, completed-candle chronology, quote integrity, data quality, history gaps, current exposure reads and immutable MarketSnapshot construction.
 
 ## 1. Reader promise
 
-This document defines how raw MetaTrader 5 data becomes trusted typed facts. It does not decide whether a setup is attractive, affordable or executable.
+This document explains how raw MT5 data becomes trustworthy typed facts.
 
-Strategies/intelligence never open private MT5 read clients or reinterpret missing broker truth.
+It does not decide:
 
-## 2. One read boundary
+- strategy direction;
+- which family is active;
+- whether a setup is attractive;
+- monetary affordability;
+- News policy;
+- final broker permission.
 
-```text
-MetaTrader5 terminal
-        ↓
-market_data/mt5_reader.py
-        ├─ AccountFacts
-        ├─ SymbolSpec
-        ├─ Quote / spread / capture time
-        ├─ completed CandleSeries
-        └─ OpenPositionFacts / broker activity
-        ↓
-immutable MarketSnapshot
-        ↓
-IntelligenceSnapshot
+## 2. One normalized MT5 read boundary
+
+```mermaid
+flowchart TB
+    MT5["MetaTrader 5 terminal"] --> READER["market_data/mt5_reader.py"]
+    READER --> ACCOUNT["AccountFacts"]
+    READER --> SPEC["SymbolSpec"]
+    READER --> QUOTE["Bid / Ask / tick timestamp"]
+    READER --> H4["Optional completed H4"]
+    READER --> H1["Completed H1"]
+    READER --> M15["Completed M15"]
+    READER --> M5["Completed M5"]
+    READER --> M1["Bounded completed M1 for subordinate timing"]
+    READER --> POS["Positions / required deals"]
+
+    ACCOUNT --> SNAP["Immutable MarketSnapshot"]
+    SPEC --> SNAP
+    QUOTE --> SNAP
+    H4 --> SNAP
+    H1 --> SNAP
+    M15 --> SNAP
+    M5 --> SNAP
+    M1 --> SNAP
+
+    SNAP --> INTEL["Intelligence / strategies"]
+    ACCOUNT --> REC["Recovery truth"]
+    SPEC --> REC
+    POS --> REC
 ```
 
-Irreversible create/modify/close belongs only to execution writer.
+Intelligence modules do not create private MT5 clients/read loops.
 
-## 3. Facts and missingness
+Raw irreversible writes belong only to the execution writer.
 
-| Fact | Meaning | Missing/corrupt result |
+## 3. Core normalized facts
+
+| Fact | Meaning | If unavailable/corrupt |
 |---|---|---|
-| AccountFacts | account/server/currency/equity/mode/identity | unavailable or identity mismatch |
-| SymbolSpec | digits, point, tick size/value, contract, volume, stop/freeze/filling rules | UNKNOWN/BLOCK upstream |
-| Quote | Bid, Ask, capture/broker time, spread | stale/unavailable/corrupt |
-| Candle | completed UTC OHLCV bar | corrupt/sparse/future-clock failure |
-| CandleSeries | chronological completed history | insufficient/stale/sparse |
-| OpenPositionFacts | current broker exposure | unavailable/corrupt; never guessed zero |
-| MarketSnapshot | reusable cycle truth | weakest required input controls quality |
+| AccountFacts | login/server/currency/equity/account mode/trade flags | identity/read unavailable; fail owning authority |
+| SymbolSpec | digits/point/tick/contract/volume/stops/filling/trade mode | symbol/spec unknown |
+| Quote | Bid/Ask/capture/source timestamp/spread | stale/unavailable/corrupt |
+| Candle | UTC OHLC + volume + timeframe | invalid/corrupt if impossible/non-finite |
+| CandleSeries | ordered completed-bar prefix | insufficient/stale/sparse/corrupt |
+| PositionFacts | broker ticket/symbol/side/volume/open/SL/TP/magic/comment | unavailable ≠ zero |
+| DealFacts | bounded deal/position lineage for recovery/close proof | unavailable where required → reconciliation cannot complete |
+| MarketSnapshot | reusable causal cycle facts | quality reflects required inputs |
 
 ## 4. Gold symbol resolution
 
-Preferred initial symbol is `XAUUSDm`, with configured aliases such as `XAUUSD` only through deterministic resolution:
+Typical resolution policy:
 
 ```text
-preferred symbol
-→ configured aliases in order
+configured preferred symbol
+→ configured approved aliases
 → SYMBOL_NOT_FOUND
 ```
 
-Resolved symbol + broker specification are part of runtime/recovery identity.
+Current project target includes `XAUUSDm` with approved `XAUUSD` alias support where configuration/broker facts permit.
 
-## 5. Completed-candle authority
+Resolved symbol identity must be persisted/reported in:
 
-MT5 position 0/forming bar is not structural proof. Reader normalizes UTC chronology, rejects duplicates/impossible OHLC/non-finite/out-of-order data and never inserts a forming bar into completed `CandleSeries`.
+- runtime scope;
+- Risk/exposure context;
+- Intent;
+- ManagedTrade;
+- recovery state;
+- evidence/research records.
 
-## 6. Frozen scalp timeframe roles
+## 5. Completed-candle rule
 
-| Timeframe | Role |
+MT5 position/index 0 is normally the currently forming candle. Structural history starts from completed bars.
+
+```text
+forming H1/M15/M5 → not confirmed structure
+completed H1/M15/M5 → causal structural input
+```
+
+M1 is subordinate timing data. Production M1 structural/micro-pattern evidence also follows explicit causal completion rules unless a future approved timing contract permits a narrowly defined forming-bar telemetry field. It may not silently mix forming values into historical arrays.
+
+## 6. Candle normalization
+
+Every Candle must be checked for:
+
+- timezone-aware UTC timestamp;
+- finite OHLC;
+- `high >= max(open,close,low)`;
+- `low <= min(open,close,high)`;
+- chronological ordering;
+- duplicate identity;
+- timeframe alignment where required;
+- materially future-dated corruption;
+- volume fields represented honestly.
+
+Sorting a corrupt series must not silently hide duplicated/impossible input.
+
+## 7. History windows
+
+Reference windows such as hundreds/thousands of completed bars are useful implementation baselines but not trading-edge claims.
+
+The Scalp implementation needs enough causal history for:
+
+| Series | Minimum purpose |
 |---|---|
-| H4 | optional major/macro context; never scalp trigger |
-| H1 | broad regime / important structure |
-| M15 | opportunity/location/session path context |
-| M5 | primary completed scalp setup/timing/management structure |
-| M1 | diagnostic/research micro-context only |
-| quote/tick | current executable condition, not historical structural proof |
+| H4 | optional major context |
+| H1 | regime/structure/major levels |
+| M15 | location/liquidity/target path |
+| M5 | setup/events/replay/management |
+| M1 | bounded subordinate timing/refinement |
 
-The fresh-zero question is closed: M1/tick history has no hidden production trigger authority in current V1. Any future promotion requires governed design/evidence change.
+Exact bar counts are implementation/performance choices validated against indicator warmup, structural lookback and memory/latency requirements. M1 history should be bounded to actual timing needs rather than loaded excessively without benefit.
 
-## 7. Freshness is first-class
+## 8. Quote integrity and age
 
-Snapshot exposes enough timestamps to measure quote age, latest completed-bar age, clock skew, snapshot construction time, spread and relevant SymbolSpec age.
-
-Exact hard age thresholds remain scalp calibration. Material future-dated quote/candle facts are CORRUPT, not clamped.
-
-## 8. Expected closure gaps versus missing history
+Quote normalization preserves:
 
 ```text
-large recent gap
-→ explained by verified/accepted normal broker closure
-   → expected closure; not automatically SPARSE
-→ otherwise
-   → unexplained history hole; SPARSE/UNKNOWN
+bid
+ask
+spread = ask - bid
+source/server timestamp where available
+local capture timestamp
+quote age
 ```
 
-This does not itself prove market currently OPEN. Hard session authority owns that truth.
+A quote that is materially stale or unreasonably future-dated is not “fresh” merely because an absolute/signed calculation looks small.
 
-## 9. Open-position truth
+Conceptual states:
 
 ```text
-positions_get == []    → verified zero positions
-positions_get == None  → DATA_UNAVAILABLE
-invalid/duplicate data → DATA_CORRUPT
-SL/TP numeric zero      → explicit absence where broker semantics require it
+FRESH
+STALE
+UNAVAILABLE
+CORRUPT
 ```
 
-Broker position fact does not prove bot ownership; ownership requires durable lineage/reconciliation.
+Final execution re-reads current quote as required; the analytical snapshot cannot override a fresher broker precheck.
 
-## 10. Data-quality states
+## 9. Data-quality model
 
 ```text
 HEALTHY
@@ -110,62 +165,214 @@ CORRUPT
 UNKNOWN
 ```
 
-Recoverable waits may include STALE/INSUFFICIENT/SPARSE. Corrupt chronology, identity failure and unknown exposure fail closed for affected writes/new entry.
+Suggested semantics:
 
-## 11. Snapshot reuse and fresh pre-submit truth
-
-Normal analysis shares one immutable snapshot. Execution/recovery may perform explicit fresh reads where their contracts require them.
-
-Snapshot reuse never overrides fresh pre-submit Bid/Ask, spread, symbol rules, exposure, account identity or hard session state.
-
-## 12. Scalp history roles
-
-- recent M5: trigger structure, displacement, rejection, compression, event freshness;
-- wider M5/M15: local swings, liquidity pools, session path, target room and recent regimes;
-- H1/H4: broad/major context;
-- M1: diagnostics/research only;
-- deep portable history: offline replay/research input, not permanent live lifecycle state.
-
-Historical archives never replace durable Opportunity, TradePlan, Risk day/profile, Intent, ManagedTrade or learning receipts.
-
-## 13. Spread / transaction-cost facts
-
-Reader reports raw Bid/Ask/spread. It does not decide acceptability. TradePlan/Entry Timing/Execution own their respective cost/freshness policies.
-
-## 14. Restart and recovery
-
-Recovery rebuilds current broker truth from MT5. It must prove account/symbol scope, current exposure and pending execution lineage before normal new-entry work resumes. Unknown exposure is never zero.
-
-## 15. Failure/operator meaning
-
-| Failure | Runtime meaning |
+| State | Meaning |
 |---|---|
-| MT5 unavailable | no readiness/new entry |
-| symbol not found | blocked |
-| stale quote | visible wait/block where required |
-| future quote/candle | corrupt/fail closed |
-| insufficient candles | warm-up wait |
-| expected closure gap | normal non-trading interval |
-| unexplained recent gap | no new setup |
-| unknown positions | recovery/new-entry blocked |
+| HEALTHY | required facts available and chronologically plausible |
+| INSUFFICIENT | warm-up/history not yet enough |
+| STALE | expected updates not advancing |
+| SPARSE | unexplained gaps/missing bars |
+| CORRUPT | impossible/inconsistent/future-clock/duplicate data |
+| UNKNOWN | availability cannot be established |
 
-Dashboard never translates stale data into a confident claim that market is closed.
+These states are facts, not strategy scores.
 
-## 16. Planned implementation ownership
+## 10. Expected broker closure gaps vs missing history
 
-```text
-src/gold_scalp_trader/market_data/mt5_reader.py
-src/gold_scalp_trader/market_data/snapshot.py
-src/gold_scalp_trader/domain/market.py
-src/gold_scalp_trader/app/recovery_mt5.py
+A timestamp jump is not automatically data loss.
+
+Known normal market closure/maintenance/weekend intervals can create legitimate candle gaps.
+
+```mermaid
+flowchart TB
+    GAP["Recent candle gap"] --> KNOWN{"Covered by verified/accepted normal broker closure?"}
+    KNOWN -->|Yes| EXPECT["Expected non-trading gap — not SPARSE"]
+    KNOWN -->|No / cannot prove| SPARSE["SPARSE / investigate"]
 ```
 
-## 17. Planned deterministic proof
+Important separation:
 
-Tests cover forming-bar exclusion, chronology normalization, corrupt/future rejection, expected closure gap handling, symbol alias resolution, Bid/Ask/spread mapping, zero versus unavailable exposure, frozen timeframe roles, M1 non-authority and identical snapshot semantics under one-worker/bounded-parallel orchestration.
+- Market Data decides whether a gap looks like missing history versus expected no-trade interval.
+- Broker Session authority decides whether the market is currently OPEN/CLOSED/PRE_CLOSE.
+- News context does not decide either.
 
-Connected Windows/MT5 freshness, current SymbolSpec and actual broker schedule remain external evidence.
+Exact Exness XAU closure schedules require current external verification.
 
-## 18. Pending evidence / implementation choices
+## 11. Open-position truth
 
-Hard quote/candle freshness thresholds, minimum live history windows, whether raw tick streams are retained or only current quotes sampled, broker-specific closure-gap handling and portable recent-history size remain implementation/scalp-evidence questions. Timeframe authority itself is frozen.
+The read boundary distinguishes:
+
+```text
+positions_get returns []
+→ positively verified zero current positions
+
+positions_get returns None / error
+→ POSITION_DATA_UNAVAILABLE
+→ NEVER reinterpret as zero
+```
+
+Normalize:
+
+- position ticket;
+- symbol;
+- direction;
+- volume;
+- open price;
+- SL/TP (`0` broker sentinel may normalize to `None` where contract says so);
+- magic/comment;
+- account/server/scope.
+
+Broker position does not alone prove bot ownership. Durable Intent/ManagedTrade lineage owns attribution.
+
+## 12. Deal/history reads
+
+Deal history is bounded and purpose-specific for:
+
+- unresolved Intent reconciliation;
+- known-position close proof;
+- non-trading cash-flow/risk-day reconciliation;
+- learning lineage after verified close.
+
+Unknown/failed history reads are not empty history.
+
+Avoid excessive broad history reads in every fast scalp cycle. Fetch/reuse only what the owning lifecycle needs.
+
+## 13. Snapshot architecture
+
+A MarketSnapshot should be immutable and identify:
+
+```text
+scope/account/server/symbol
+captured_at
+quote
+SymbolSpec
+H1/M15/M5 series
+optional H4
+bounded M1
+current positions/exposure facts as required
+DataQuality per required component
+```
+
+```mermaid
+flowchart LR
+    READ["One bounded broker read phase"] --> SNAP["Immutable snapshot"]
+    SNAP --> INTEL1["Structure"]
+    SNAP --> INTEL2["Quant"]
+    SNAP --> INTEL3["Technical/Liquidity"]
+    SNAP --> FAM["Six family analyses"]
+```
+
+Shared snapshots increase speed and prevent analytical races.
+
+## 14. Fresh-read exceptions
+
+Normal snapshot reuse ends where current broker truth must be revalidated.
+
+Fresh reads are expected for:
+
+- executable Bid/Ask;
+- spread/drift immediately before execution;
+- account/margin/order-check inputs;
+- current positions before ambiguous action/reconciliation;
+- active trade management where current position truth matters;
+- startup/recovery.
+
+Fresh execution reads may change whether the action is still efficient/safe without changing the original M5 structural history.
+
+## 15. M1 performance considerations
+
+M1 can increase read/computation frequency substantially.
+
+Architecture rules:
+
+- M1 is fetched/analyzed only at the cadence/coverage justified by timing needs;
+- no separate M1 terminal client;
+- reuse bounded M1 series;
+- do not recalculate full H1/M15/M5 history on every M1 pulse if facts are unchanged;
+- measure acquisition + analysis latency;
+- preserve causal completed-bar semantics.
+
+## 16. Restart / recovery
+
+Recovery read adapter obtains fresh current facts:
+
+```text
+account
+→ resolved symbol/spec
+→ quote
+→ positions
+→ required deals
+→ recovery snapshot
+```
+
+Restored local state is compared to fresh broker truth. It never invents missing broker exposure.
+
+## 17. Failure / operator meaning
+
+| Failure | Meaning | Runtime consequence |
+|---|---|---|
+| MT5 unavailable | terminal/read connection failure | no readiness/write |
+| symbol not found | intended Gold symbol unresolved | block affected runtime |
+| quote stale | executable feed not advancing | no new write; visible reason |
+| quote future-corrupt | clocks/truth unreliable | fail owning authority |
+| insufficient bars | warm-up incomplete | WAIT/limited analysis |
+| expected closure gap | normal non-trading history interval | do not fabricate SPARSE |
+| unexplained in-session gap | data hole | SPARSE / no trusted strategy path |
+| positions unavailable | exposure unknown | no new entry/reconciliation incomplete |
+
+## 18. Dashboard
+
+```text
+MARKET DATA
+Symbol        XAUUSDm
+Bid / Ask     4318.42 / 4318.66
+Spread        0.24
+Quote Age     110 ms
+H1/M15/M5     HEALTHY / HEALTHY / HEALTHY
+M1 Timing     HEALTHY • latest completed 14:35
+Positions     verified 0 / or explicit UNKNOWN
+```
+
+Never display an unavailable read as zero.
+
+## 19. Planned source/test ownership
+
+```text
+market_data/mt5_reader.py
+market_data/snapshot.py
+market_data/activity.py
+domain/market.py
+app/recovery_mt5.py
+```
+
+Tests cover:
+
+- symbol resolution;
+- forming-bar exclusion;
+- M1 bounded completed history;
+- quote age/future corruption;
+- bar validation/order/duplicates;
+- expected closure gap vs real sparse gap;
+- `[]` vs `None` positions;
+- SymbolSpec normalization;
+- no-write reader boundary;
+- shared snapshot determinism;
+- fresh execution reads not mutating history;
+- recovery truth semantics.
+
+## 20. External proof
+
+Connected Windows/Exness evidence must verify:
+
+- actual XAUUSDm/XAUUSD symbol/spec;
+- timestamp/clock behavior;
+- current history availability;
+- weekend/daily closure gaps;
+- positions/deals APIs;
+- realistic read latency;
+- M1 data stability/performance.
+
+## 21. Final invariant
+
+> **Market Data must tell the truth even when that truth is “unavailable.” One normalized causal snapshot feeds analysis; only explicit fresh broker reads may update current execution/recovery truth. M1 adds timing resolution without creating a second uncontrolled market-data universe.**

@@ -1,91 +1,113 @@
 # GoldScalpTrader — Candle Structure and Price Behaviour
 
-**Status:** FROZEN V1 INTELLIGENCE ARCHITECTURE — SCALP THRESHOLD CALIBRATION PENDING
-**Version:** 1.0-causal-m5-structure
-**Authority:** Candle anatomy, chronological sequences, causal swings, protected structure, BOS/MSS maturity, failed breaks, displacement, rejection, compression, expansion and short-horizon event freshness.
+**Status:** APPROVED INTELLIGENCE CONTRACT — DOCUMENTATION RECONSTRUCTION / CALIBRATION PENDING
+**Version:** 2.0-scalp-causal-structure
+**Authority:** Candle anatomy, causal sequences, swings, protected structure, BOS/MSS maturity, displacement, rejection, compression/expansion, event knowledge-time and M5/M1 structural boundaries.
 
 ## 1. Purpose
 
-This desk answers:
+The Candle/Structure desk answers:
 
-> What did Gold actually do on completed candles, when did that fact become knowable, and is that structural event still fresh enough to matter to a scalp?
+> **What did price actually do, and when did that fact become knowable without hindsight?**
 
-It is market intelligence only. It does not choose a strategy, size Risk, approve broker write or manage an existing trade.
+It provides causal market facts to Technical, Liquidity/SMC, strategy families, Opportunity/Timing, TradePlan, Trade Manager and research.
 
-## 2. Non-negotiable invariants
+It does **not**:
 
-| Invariant | Required behaviour |
+- select the live strategy family;
+- create broker permission;
+- size money;
+- set final broker SL/TP;
+- turn M1 noise into an independent trade;
+- use future bars to improve historical labels.
+
+## 2. Core invariants
+
+| Invariant | Required behavior |
 |---|---|
-| Completed-candle authority | forming candle is never structural proof |
-| Causal knowledge time | geometry identity and knowable time remain separate |
-| No lookahead | replay prefixes contain no future-confirmed swing/break |
-| Timeframe independence | H1/M15/M5 and optional H4 reports do not rewrite each other |
-| M1 boundary | diagnostic/research only; no independent production authority |
-| Shared normalization | ATR/quant inputs reused from shared IntelligenceSnapshot |
-| Soft output | structure evidence never becomes final broker permission |
-| Explicit absence | insufficient evidence = UNKNOWN/lower coverage, never invented trend |
-| Freshness lineage | actionable structural events carry event/confirmation time |
+| Completed-bar structural authority | Forming H1/M15/M5 candles never become confirmed structural proof. |
+| Causal knowledge time | Any fact requiring a completed candle becomes knowable no earlier than that candle's close. |
+| Pivot vs confirmation | `pivot_time` identifies geometry; `confirmed_at` identifies when the swing became knowable. |
+| No lookahead | Replay prefix before `confirmed_at/event_time` cannot contain the future fact. |
+| Per-timeframe ownership | M5 cannot rewrite H1/M15; M1 cannot rewrite M5 thesis structure. |
+| Graduated evidence | Candidate, confirmed, protected and major/external structure remain distinct. |
+| Shared inputs | ATR/normalized inputs are reused from the shared intelligence pipeline where available. |
+| Soft analytical output | Structure supports/contradicts a thesis but does not grant broker permission. |
+| Explicit missingness | Insufficient history yields UNKNOWN/reduced coverage, never fabricated trend. |
 
-## 3. Causal pipeline
+## 3. Causal structure pipeline
 
-```text
-completed chronological candles
-→ candle anatomy
-→ sequence state
-→ candidate swing
-→ confirmed swing
-→ protected/major structure where earned
-→ probe / qualified break / BOS / MSS / failed break
-→ StructureReport + coverage + timestamps
+```mermaid
+flowchart TB
+    BARS["Completed chronological candles"] --> ANATOMY["Range / body / wick / close position"]
+    ANATOMY --> SEQ["Continuation / rejection / compression / expansion"]
+    SEQ --> SWING["Candidate → Confirmed → Protected swing"]
+    SWING --> BREAK["Probe → Qualified Break → BOS/MSS/Failed Break"]
+    BREAK --> REPORT["StructureReport + coverage + causal timestamps"]
+    REPORT --> TECH["Technical / Location"]
+    REPORT --> LIQ["Liquidity / SMC"]
+    REPORT --> FAMS["Six strategy families"]
+    REPORT --> TIMING["Opportunity / M1 refinement"]
+    REPORT --> MANAGE["Trade Manager"]
 ```
 
-Later stages may consume earlier facts but cannot manufacture them retroactively.
+## 4. Time identity and knowledge identity
 
-## 4. Published facts
-
-Expose where applicable:
-
-- `CandleFacts`: direction, range, body, wick, close position, ATR-normalized range;
-- `CandleSequenceState`: continuation, expansion, rejection, compression or mixed;
-- `SwingPoint`: side, price, pivot time, confirmed-at time, role, significance;
-- `StructureState`: BULLISH, BEARISH, RANGE, TRANSITION or UNDETERMINED;
-- `BreakEvent`: PROBE, QUALIFIED_BREAK, BOS, MSS or FAILED_BREAK;
-- protected high/low where causally established;
-- bounded bull/bear evidence and coverage;
-- event age/freshness inputs for Entry Timing.
-
-## 5. Timestamp semantics
-
-MT5 candle time identifies bar open. Facts requiring completed OHLC become knowable no earlier than bar close.
+MT5 candle timestamp is treated as bar-open identity:
 
 ```text
-bar_open_time  = Candle.time_utc
-bar_close_time = Candle.time_utc + timeframe_duration
+bar_open_time  = candle.time_utc
+bar_close_time = candle.time_utc + timeframe_duration
 ```
 
-A swing records pivot identity plus later confirmation time. BOS/MSS/failed-break events use the close time that made the event knowable.
-
-For scalping, event-age accuracy is first-class because one completed M5 can materially change whether entry is fresh or chased.
-
-## 6. Candle anatomy
-
-For completed candles derive:
+A derived structural fact may preserve both:
 
 ```text
-range
-body
-upper_wick
-lower_wick
-body_ratio
-close_position
-range_in_ATR
+geometry time     = where price extreme/event occurred
+knowledge time    = when enough completed evidence existed to know it
 ```
 
-Bullish/bearish candle labels are descriptive only. Named candlestick patterns cannot independently create BUY/SELL authority.
+This distinction is mandatory in live, replay and learning.
 
-## 7. Sequence states
+### Example
 
-Baseline vocabulary:
+Suppose a possible swing high occurs on an M5 bar opening at 10:00, but the reversal needed to confirm that high only completes on the 10:10 bar at 10:15.
+
+```text
+pivot_time   = 10:00
+confirmed_at = 10:15
+```
+
+A replay decision at 10:05 or 10:10 cannot use that confirmed swing.
+
+## 5. Candle anatomy
+
+For a completed candle:
+
+```text
+range       = high - low
+body        = abs(close - open)
+upper_wick  = high - max(open, close)
+lower_wick  = min(open, close) - low
+body_ratio  = body / range                if range > 0
+close_pos   = (close - low) / range       if range > 0
+range_atr   = range / ATR                 if ATR > 0
+body_atr    = body / ATR                  if ATR > 0
+```
+
+Direction labels describe price behavior only:
+
+```text
+close > open  → BULLISH_BAR
+close < open  → BEARISH_BAR
+close = open  → NEUTRAL_BAR
+```
+
+A single candle label is never a standalone trade command.
+
+## 6. Sequence states
+
+The desk may classify bounded multi-bar behavior such as:
 
 ```text
 BULL_CONTINUATION
@@ -96,94 +118,272 @@ BULL_REJECTION
 BEAR_REJECTION
 COMPRESSION
 MIXED
+UNKNOWN
 ```
 
-Expansion/rejection/compression are volatility-normalized. One large Gold candle is not automatically breakout; one wick is not automatically reversal.
+Sequence classification uses normalized body/range/overlap/close behavior rather than named-pattern folklore.
 
-## 8. Swing lifecycle
+### Scalping requirement
+
+M5 sequence quality is a first-class setup/timing fact. M1 sequence may refine an already-valid M5 Opportunity, but cannot promote itself into an independent production thesis.
+
+## 7. Swing lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> CANDIDATE
+    CANDIDATE --> CANDIDATE: new extreme before confirmation
+    CANDIDATE --> CONFIRMED: later completed reversal satisfies causal threshold
+    CANDIDATE --> EXPIRED: no confirmation in available prefix
+    CONFIRMED --> PROTECTED: accepted structural consequence
+    PROTECTED --> MAJOR: higher significance / external context
+    CONFIRMED --> CONSUMED: structure invalidated/used by later event
+    PROTECTED --> CONSUMED: structure invalidated/used by later event
+```
+
+### Candidate
+
+Emerging pivot with no completed reversal proof. It may move. It has no confirmed structural authority.
+
+### Confirmed
+
+A later completed bar supplies the required ATR-normalized reversal/confirmation. Output records at least:
 
 ```text
-CANDIDATE
-→ CONFIRMED
-→ PROTECTED
-→ MAJOR / EXTERNAL where justified
+side
+price
+pivot_time
+confirmed_at
+timeframe
+significance_atr
+source_ids
 ```
 
-A candidate has no structural authority until causally confirmed. Protected structure requires accepted consequence, not merely a visually important pivot.
+### Protected
 
-## 9. Break/BOS/MSS lifecycle
+A swing whose structural consequence gives it stronger invalidation/management meaning. It remains market geometry; TradePlan owns actual stop construction.
+
+### Major/external
+
+Higher-significance context used mostly by H1/H4/M15. A later future extreme cannot relabel an earlier decision retroactively.
+
+## 8. Structure state
+
+Per timeframe:
 
 ```text
-PROBE
-→ QUALIFIED_BREAK
-→ CONFIRMED_BOS or MSS_CANDIDATE
-→ CONFIRMED_MSS or FAILED_BREAK
+BULLISH
+BEARISH
+RANGE
+TRANSITION
+UNDETERMINED
 ```
 
-Wick-only penetration is not BOS/MSS. Counter-structure break is not automatically full reversal. Strategy family decides how much maturity its thesis requires.
+Typical interpretation:
 
-## 10. Scalp freshness
+- higher confirmed highs + higher confirmed lows → BULLISH;
+- lower confirmed highs + lower confirmed lows → BEARISH;
+- mixed progression / competing changes → TRANSITION;
+- bounded repeated geometry → RANGE;
+- insufficient confirmed structure → UNDETERMINED.
 
-Structure publishes factual event/knowledge time. Entry Timing owns family/event freshness and chase policy.
+This is **context**, not a universal entry veto. A reversal family may intentionally operate against the prevailing local trend when its own causal conditions are satisfied.
 
-Downstream may classify:
+## 9. Break / BOS / MSS lifecycle
 
-```text
-JUST_CONFIRMED
-FRESH
-AGING
-STALE_FOR_ENTRY
+```mermaid
+stateDiagram-v2
+    [*] --> PROBE
+    PROBE --> QUALIFIED_BREAK: completed close beyond confirmed level
+    QUALIFIED_BREAK --> BOS: accepted continuation with existing structure
+    QUALIFIED_BREAK --> MSS_CANDIDATE: counter-structure break
+    MSS_CANDIDATE --> MSS: follow-through / acceptance confirms transition
+    QUALIFIED_BREAK --> FAILED_BREAK: acceptance lost
+    MSS_CANDIDATE --> FAILED_BREAK: transition attempt fails
 ```
 
-Exact age/distance boundaries remain scalp calibration; the source event timestamp is mandatory.
-
-## 11. Frozen timeframe roles
-
-| Timeframe | Structure role |
+| Event | Minimum meaning |
 |---|---|
-| H4 | optional major context only |
-| H1 | broad regime / major protected structure |
-| M15 | opportunity/location structure |
-| M5 | primary scalp setup, break, rejection and trigger structure |
-| M1 | diagnostic/research microstructure only |
+| PROBE | price traded through/touched known level; no acceptance yet |
+| QUALIFIED_BREAK | completed close exceeded level by configured normalized amount |
+| BOS | accepted break consistent with existing structural direction |
+| MSS_CANDIDATE | qualified counter-structure break |
+| MSS | later completed evidence confirms transition attempt |
+| FAILED_BREAK | accepted-break attempt loses acceptance / returns through level |
 
-M1 production promotion is **not an open V1 question**; it requires a future governed design/evidence change.
+A wick-only penetration is not automatically BOS/MSS.
 
-## 12. Correlation and double counting
+## 10. M5 authority and M1 subordinate structure
 
-Rejection, failed break, sweep and MSS can describe the same episode. Structure publishes traceable facts; Strategy/Fusion must not count correlated labels as independent certainty.
+### M5
 
-## 13. Restart and replay
+Owns production setup/thesis structure and normal management structure.
 
-Same completed-candle prefix, configuration and shared quantitative inputs must rebuild the same report after restart.
+M5 may establish:
 
-Replay exposes only bars knowable at the simulated timestamp. A swing/event cannot appear before its `confirmed_at`/`event_time`.
+- fresh break/retest;
+- sweep/reclaim;
+- pullback structure;
+- compression/expansion setup;
+- failed break;
+- local invalidation geometry.
 
-## 14. Failure behaviour
+### M1
+
+May publish micro-structure **only after** a valid M5 Opportunity exists for production timing.
+
+Allowed M1 refinement examples:
+
+- micro reclaim;
+- micro rejection;
+- pullback completion;
+- micro continuation;
+- failed micro-break;
+- excessive micro extension/chase warning.
+
+M1 cannot:
+
+- create an independent production Opportunity;
+- override invalid M5 structure;
+- relabel H1/M15/M5 confirmed facts;
+- become a hidden seventh strategy.
+
+## 11. Timeframe contract
+
+| Timeframe | Structural role | Production interpretation |
+|---|---|---|
+| H4 | optional major/external context | soft only |
+| H1 | broad regime/directional structure | soft contextual support/conflict |
+| M15 | opportunity location/path structure | contextual setup support |
+| M5 | **primary setup/thesis + management structure** | required for production setup |
+| M1 | **subordinate micro entry refinement** | only after M5 Opportunity |
+
+Reports remain separate in the shared IntelligenceSnapshot.
+
+## 12. Correlation and event lineage
+
+One market episode may simultaneously produce:
+
+- rejection;
+- sweep;
+- MSS;
+- FVG;
+- failed break.
+
+These are not automatically five independent confirmations.
+
+Every meaningful event should retain causal/source IDs so downstream strategy/Red-Team logic can distinguish:
+
+```text
+same event interpreted several ways
+vs
+truly separate evidence
+```
+
+## 13. Restart / replay determinism
+
+Given the same completed candle prefix, configuration and normalized inputs, the same StructureReport must be reproducible.
+
+Replay sequence:
+
+1. expose only bars whose close time is already knowable;
+2. calculate indicators/ATR on that prefix;
+3. derive candidates;
+4. confirm swings only when confirmation bar closes;
+5. emit break/BOS/MSS/failed-break only at causal knowledge time;
+6. pass downstream without final-series hindsight.
+
+This is essential for M5 event-age and M1 timing research.
+
+## 14. Failure behavior
 
 | Condition | Result |
 |---|---|
-| no candles | explicit analysis failure |
-| insufficient history | UNKNOWN/lower coverage |
-| corrupt chronology | rejected upstream |
-| forming-bar structural input | contract violation/reject |
-| no downstream consumer | report remains valid; no hidden order path |
+| no bars | explicit unavailable/analysis failure |
+| insufficient ATR/history | UNKNOWN/reduced coverage |
+| non-chronological/corrupt bars | reject upstream / no trusted structure |
+| forming bar passed as completed structure | contract violation |
+| no confirmed swings | no fabricated structure |
+| M1 data unavailable | M5 Opportunity may remain WAIT/other approved timing path; never invent micro confirmation |
 
-## 15. Dashboard/research visibility
+## 15. Operator / dashboard meaning
 
-Expose H1/M15/M5 structure separately, latest event/direction/age, protected high/low, sequence state, coverage and report/config version. M1 may appear only as explicitly labelled diagnostics/research.
-
-## 16. Planned implementation ownership
+Example conceptual presentation:
 
 ```text
-src/gold_scalp_trader/intelligence/candle_structure.py
-src/gold_scalp_trader/intelligence/snapshot.py
+STRUCTURE
+H1      BULLISH
+M15     TRANSITION
+M5      BULL_EXPANSION
+M5 Event QUALIFIED_BREAK ↑ • age 1 bar
+M1      MICRO_RECLAIM • subordinate timing
+Protected Low  4312.40
+Coverage       100%
 ```
 
-## 17. Planned proof
+The dashboard must distinguish M5 structural authority from M1 refinement.
 
-Tests prove causal swing confirmation, bar-close knowledge timestamps, probe versus qualified break, BOS/MSS/failed-break semantics, no-lookahead replay, frozen timeframe separation, M1 non-authority, restart determinism, event-age lineage and shared ATR reuse.
+## 16. Research data
 
-## 18. Scalp calibration pending
+Research stores at least:
 
-Swing reversal distance, break penetration, follow-through maturity, protected-swing promotion, sequence thresholds, significance ranking and M5 family/event freshness categories remain evidence questions. The timeframe authority itself is frozen.
+- timeframe;
+- config fingerprint;
+- source/pivot IDs;
+- pivot time;
+- confirmed/event knowledge time;
+- state/event type;
+- ATR-normalized significance;
+- coverage;
+- active/shadow strategy consumer identity where relevant.
+
+## 17. Planned implementation ownership
+
+```text
+intelligence/candle_structure.py
+    anatomy / sequence / swings / BOS-MSS / causal timestamps
+
+intelligence/snapshot.py
+    shared per-timeframe structure reports
+
+decisions/timing.py
+    consumes M5/M1 facts; does not redefine structure
+```
+
+No structure module reads MT5 directly.
+
+## 18. Planned proof
+
+Tests must cover:
+
+- anatomy formulas;
+- completed-bar timestamps;
+- pivot vs confirmation time;
+- candidate→confirmed lifecycle;
+- protected/consumed behavior;
+- probe vs qualified break;
+- BOS/MSS/failed break;
+- no lookahead in replay;
+- timeframe separation;
+- M1 cannot create production Opportunity;
+- M1 causal freshness;
+- restart parity;
+- event lineage/correlation identity.
+
+## 19. Calibration
+
+Evidence may tune:
+
+- swing reversal threshold;
+- break penetration/acceptance;
+- displacement/rejection/compression thresholds;
+- M5 event-age validity;
+- M1 micro-pattern definitions;
+- M1 trigger freshness;
+- significance ranking.
+
+Any production change remains versioned and governed.
+
+## 20. Final invariant
+
+> **Structure must be causal, timeframe-bounded and reproducible. M5 proves the production setup; M1 may sharpen timing but cannot invent the thesis. No future candle, forming bar or correlated relabeling may create false certainty.**

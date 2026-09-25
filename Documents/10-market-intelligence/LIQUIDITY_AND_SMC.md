@@ -1,58 +1,192 @@
 # GoldScalpTrader — Liquidity and SMC Evidence
 
-**Status:** FROZEN V1 INTELLIGENCE ARCHITECTURE — SCALP EVENT/PATH CALIBRATION PENDING
-**Version:** 1.0-causal-scalp-liquidity
-**Authority:** Liquidity pools, probes, sweeps, reclaim/acceptance, FVG, qualified Order Blocks, premium/discount context, session liquidity and short-horizon path quality.
+**Status:** APPROVED INTELLIGENCE CONTRACT — DOCUMENTATION RECONSTRUCTION / CALIBRATION PENDING
+**Version:** 2.0-scalp-causal-liquidity
+**Authority:** Liquidity pools, equal-high/low clustering, probes/sweeps/reclaims/acceptance, FVG, qualified Order Blocks, premium/discount context, liquidity path and causal event lineage.
 
 ## 1. Purpose
 
-This desk converts observable price behaviour around known levels into auditable liquidity evidence for short-duration Gold trading.
+The Liquidity/SMC desk translates observable price behavior around known levels into causal, testable facts.
 
-SMC terminology is geometry/chronology shorthand, not automatic trade authority.
+SMC terminology is descriptive shorthand—not automatic trading authority.
 
-> A liquidity label matters only when its level existed first and later price behaviour is causally observable.
+> **The important fact is not that a label exists; it is what price did around a pre-existing level, when that behavior became knowable, and whether the active strategy family actually needs it.**
 
-The desk never places orders, sizes money or defines final stop.
+This desk does not:
 
-## 2. Causal dependency
+- place orders;
+- size Risk;
+- set final stops;
+- call every wick a sweep;
+- label every opposite candle an Order Block;
+- force every strategy to require FVG/OB/premium-discount.
 
-```text
-confirmed/protected structure
-→ pre-existing pool/level
-→ later interaction
-→ probe / sweep-reclaim / accepted break
-→ optional FVG / qualified Order Block / path context
-→ LiquidityReport
+## 2. Causal dependency rule
+
+A liquidity fact must have existed before the interaction it claims to explain.
+
+```mermaid
+flowchart TB
+    STRUCT["Confirmed/protected causal structure"] --> POOLS["Pre-existing liquidity pools"]
+    POOLS --> INTERACT["Approach / Probe / Sweep / Accepted Break"]
+    INTERACT --> RECLAIM["Reclaim / failed acceptance"]
+    INTERACT --> FVG["Causal FVG lifecycle"]
+    INTERACT --> OB["Break-linked qualified OB"]
+    INTERACT --> PATH["Nearest liquidity / path quality"]
+    RECLAIM --> REPORT["LiquidityReport"]
+    FVG --> REPORT
+    OB --> REPORT
+    PATH --> REPORT
 ```
 
-A pool cannot be swept before it existed. FVG is known only after third candle closes. Order Block is qualified only after the structural consequence that makes its origin meaningful.
+A pool cannot be “swept” by a candle that occurred before the pool itself was causally known.
 
-## 3. Inputs
+## 3. Knowledge-time semantics
 
-- completed chronological candles;
-- same-timeframe StructureReport;
-- same-timeframe QuantReport/shared ATR;
-- current price and broker tick size;
-- explicitly accepted session-range facts;
-- versioned liquidity configuration.
+MT5 candle timestamps identify bar-open time. Any liquidity fact that needs final high/low/close becomes knowable at that bar's close.
 
-The desk does not recalculate swings/ATR or consume mismatched timeframe reports.
+Examples:
 
-## 4. Published model
+```text
+pool created_at       = latest causal confirmation time of required sources
+sweep event_time      = close time of sweep/reclaim bar
+FVG created_at        = close time of third candle
+OB origin_time        = source candle identity
+OB qualified_at       = causal structural consequence time
+```
 
-May expose:
+This separation is mandatory in replay and learning.
 
-- `LiquidityPool` with side, bounds, provenance, creation time and significance;
-- `LiquidityEvent`: PROBE, SWEEP/RECLAIM or ACCEPTED_BREAK;
-- `FairValueGap` with causal creation/mitigation state;
-- qualified `OrderBlock` tied to meaningful structural event;
-- nearest buy/sell-side pools;
-- path up/down state;
-- bounded BUY/SELL evidence;
-- coverage/freshness inputs;
-- related event-lineage/correlation identity.
+## 4. Liquidity pools
 
-Path vocabulary:
+Primary initial sources include causal confirmed/protected swings and validated equal-high/low clusters.
+
+Cluster tolerance is normalized:
+
+```text
+cluster_tolerance
+= max(min_cluster_ticks × tick_size,
+      ATR × cluster_atr_fraction)
+```
+
+Several nearby highs/lows become one pool, not several independent votes.
+
+A pool records at least:
+
+```text
+pool_id
+side: BUY_SIDE | SELL_SIDE
+scope/timeframe
+lower / upper
+created_at
+source_ids
+source_count
+significance
+state
+```
+
+## 5. Pool lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> UNTOUCHED
+    UNTOUCHED --> APPROACHED: price enters proximity
+    APPROACHED --> PROBED: completed interaction without accepted resolution
+    PROBED --> SWEPT: penetration + failure/recovery evidence
+    SWEPT --> RECLAIMED: accepted return through level/zone
+    PROBED --> ACCEPTED_BEYOND: completed acceptance beyond pool
+    SWEPT --> ACCEPTED_BEYOND: later continuation accepts beyond
+    RECLAIMED --> CONSUMED: later structure consumes relevance
+    ACCEPTED_BEYOND --> CONSUMED: later path confirms consumption
+    UNTOUCHED --> STALE: age/relevance decay
+    APPROACHED --> STALE: no meaningful resolution + age
+```
+
+Exact transitions/decay are calibrated, but causality is not optional.
+
+## 6. Probe, sweep, reclaim and accepted break
+
+Conceptual rules:
+
+```text
+pre-existing pool
++ trade/touch into area
++ no completed acceptance evidence
+→ PROBE
+
+pre-existing pool
++ penetration through boundary
++ completed failure/recovery back through area
+→ SWEEP
+
+SWEEP / failed break
++ completed acceptance back through reference
+→ RECLAIMED
+
+pre-existing pool
++ completed close beyond
++ required acceptance/follow-through
+→ ACCEPTED_BEYOND
+```
+
+A wick alone is insufficient to claim a high-quality sweep.
+
+## 7. Fair Value Gap
+
+Baseline deterministic three-candle geometry:
+
+```text
+bullish FVG: candle3.low  > candle1.high
+bearish FVG: candle3.high < candle1.low
+```
+
+`created_at` = third candle close time.
+
+Lifecycle:
+
+```text
+FRESH
+PARTIAL
+MITIGATED
+INVALIDATED   # if the governing implementation defines/proves it
+```
+
+FVG can be very important to a strategy such as a sweep/reversal or displacement continuation, but absence of FVG is not a universal no-trade rule.
+
+## 8. Qualified Order Block
+
+The desk must not label “last opposite candle” automatically.
+
+An OB is qualified only when the source candle/zone has a traceable causal relationship to a meaningful structural consequence.
+
+Minimum metadata:
+
+```text
+ob_id
+direction
+timeframe
+lower / upper
+origin_time
+qualified_at
+source_break/event_id
+state
+```
+
+Potential states:
+
+```text
+FRESH
+TESTED
+WEAKENING
+INVALIDATED
+CONSUMED
+```
+
+Later state transitions must be chronological.
+
+## 9. Liquidity path
+
+Nearest relevant pools/zones and normalized density produce path context:
 
 ```text
 OPEN
@@ -61,111 +195,184 @@ CROWDED
 UNKNOWN
 ```
 
-## 5. Pool construction
+Path asks:
 
-Primary sources are confirmed/protected swings. Explicit-provenance sources may also include current/previous session highs/lows, prior-day high/low where governed, recent range boundaries, accepted breakout/retest levels and causally qualified displacement origins.
+> **If the active strategy is correct, is there usable structural/liquidity room in that direction?**
 
-Nearby compatible highs/lows may be clustered with tick/ATR-aware tolerance. Similar levels become one pool rather than fake independent votes.
+A pool is not a guaranteed target. TradePlan owns objectives; Executable Quality later accounts for costs/current price.
 
-## 6. Pool lifecycle
+## 10. Premium / discount
 
-```text
-UNTOUCHED
-APPROACHED
-PROBED
-SWEPT
-RECLAIMED
-ACCEPTED_BEYOND
-CONSUMED
-STALE
-```
+Premium/discount is valid only relative to a meaningful, causally known dealing range.
 
-An interaction bar must close after the pool was causally created. Same-bar retroactive interaction is prohibited.
+Do not:
 
-Consumed/accepted-beyond liquidity is not reused as live executable geometry unless a later causal reclaim/new event makes it relevant again.
+- select arbitrary hindsight high/low;
+- treat exact 50% as hard authority;
+- use future-confirmed pivots;
+- convert premium/discount alone into BUY/SELL permission.
 
-For scalping, age matters. A pool can remain historically valid while becoming stale for new entry; creation/interaction time must remain available to Entry Timing.
+It is family-specific location context.
 
-## 7. Sweep versus accepted break
+## 11. Correlation / double counting
+
+One episode can generate:
 
 ```text
-pre-existing pool
-+ penetration
-+ completed close/reclaim back through pool
-→ sweep/reclaim evidence
-
-pre-existing pool
-+ completed close with acceptance beyond
-→ continuation/break evidence
+sweep
+rejection
+MSS candidate
+FVG
+displacement
+qualified OB
 ```
 
-A wick alone is not automatically a sweep. BOS/MSS remains owned by Candle Structure.
+Those labels may share one causal parent.
 
-## 8. Fair Value Gap
+Report/source models should preserve lineage:
 
-Deterministic three-candle FVG geometry may be retained, with creation no earlier than third-candle close.
+```text
+parent_event_id
+pool_id
+structure_event_id
+source_candle_ids
+family interpretation
+```
 
-States may include FRESH, PARTIAL, MITIGATED and STALE.
+Downstream Red-Team/family logic must not treat every label as independent confirmation.
 
-FVG remains optional context. Absence cannot reject an otherwise valid scalp by itself. M1 FVG is diagnostic/research only under current timeframe authority.
+## 12. Strategy-family relevance
 
-## 9. Qualified Order Block
+| Family | Typical high-value liquidity evidence |
+|---|---|
+| Trend Pullback Continuation | supportive pool/zone, unconsumed structure, open continuation path |
+| Breakout Expansion | accepted break, continuation liquidity, displacement/path |
+| Breakout Retest Continuation | broken level/pool, retest, acceptance/reclaim structure |
+| Liquidity Sweep Reversal | pre-existing pool, penetration, reclaim/rejection, opposing path |
+| Failed Breakout Reversal | attempted acceptance beyond structure followed by failure |
+| Compression Expansion | clustered liquidity/range pressure + normalized release |
 
-Not every opposite candle is an Order Block.
+No family requires every liquidity primitive.
 
-Qualified OB preserves direction, timeframe, bounds, origin time, `qualified_at`, source break/event and state. Geometry identity and qualification time remain separate.
-
-## 10. Scalp liquidity path
-
-Short target horizons make path congestion first-class. Publish nearest relevant pools and normalized path density so downstream can assess meaningful room, already-completed objectives, chase risk and whether a nearby pool is objective/obstacle/thesis level.
-
-No pool is a guaranteed target. TradePlan owns objectives and R geometry.
-
-## 11. Session liquidity
-
-Asia range, London expansion, New York continuation/reversal and overlap may create important scalp liquidity context. Session highs/lows become pool sources only through explicit timestamped provenance. Session label itself does not grant direction.
-
-## 12. Correlation / double counting
-
-Sweep, rejection, MSS, FVG and OB may describe one episode. Related lineage is preserved so Fusion bounds correlated evidence.
-
-## 13. Frozen timeframe roles
+## 13. M5 / M1 roles
 
 | Timeframe | Liquidity role |
 |---|---|
-| H4/H1 | major/external pools/context |
-| M15 | opportunity pools, session path and target context |
-| M5 | primary scalp sweep/reclaim/break and entry path |
-| M1 | diagnostic/research micro-liquidity only |
+| H4 | optional broad/external pools |
+| H1 | major structural pools/path |
+| M15 | opportunity pools/location/target path |
+| M5 | primary setup liquidity event |
+| M1 | subordinate micro sweep/reclaim/timing after M5 Opportunity |
 
-M1 production authority is not an open V1 question.
+M1 micro sweep can refine entry timing but cannot establish an independent production setup.
 
-## 14. Restart/replay
+## 14. Restart / replay
 
-Pools/FVG/OB/events rebuild from the same causal prefix. Geometry time and knowledge time remain separate. No interaction/state may use future candles.
+Normal deterministic rebuild:
 
-## 15. Failure behaviour
+```text
+completed prefix
+→ causal structure
+→ pre-existing pools
+→ post-creation interactions
+→ FVG/OB/path
+→ LiquidityReport
+```
+
+Replay must prove:
+
+- pool existed before interaction;
+- no FVG before third candle close;
+- no OB before qualifying consequence;
+- no later fill/test/consumption state visible early;
+- M1 refinement uses only then-known micro facts.
+
+## 15. Failure behavior
 
 | Condition | Result |
 |---|---|
-| no confirmed sources | no fabricated pool |
-| no ATR | reduced coverage/no normalized path claim |
-| no FVG/OB | optional evidence absent, not veto |
-| corrupt chronology | rejected upstream |
-| correlated labels | bounded lineage, not score inflation |
+| no ATR | reduced coverage / no normalized density claim |
+| no confirmed structure | no fabricated pools |
+| no FVG/OB | optional evidence absent |
+| duplicate/correlated labels | preserve lineage; bounded contribution |
+| corrupt chronology | fail upstream / no trusted report |
+| no M1 liquidity data | no fabricated M1 timing support |
 
-## 16. Planned implementation ownership
+## 16. Dashboard example
 
 ```text
-src/gold_scalp_trader/intelligence/liquidity.py
-src/gold_scalp_trader/intelligence/snapshot.py
-src/gold_scalp_trader/strategies/confluence.py
+LIQUIDITY / SMC
+M15 BSL          4348.2–4349.0
+M15 SSL          4311.0–4312.1
+M5 Event         SSL SWEPT + RECLAIMED
+M1 Refinement    MICRO RECLAIM • 1 bar old
+FVG              M5 BULLISH • PARTIAL
+OB               M5 FRESH • break-linked
+Path Up / Down   OPEN / CROWDED
+Coverage         100%
 ```
 
-## 17. Planned proof
+The dashboard does not imply that FVG/OB labels themselves authorize execution.
 
-Tests prove pool-before-sweep chronology, clustering/provenance, pool consumption, sweep versus accepted break, FVG creation/mitigation, OB qualification, event timestamps, path classification, session lineage, M1 non-authority, no double count and replay no-lookahead.
+## 17. Research
 
-## 18. Scalp calibration pending
+Research should measure marginal value of:
 
-Pool clustering tolerance, session/prior-day source weighting, sweep/reclaim quality, event expiry, FVG minimum size, OB qualification/mitigation, premium/discount range definition and path-density thresholds remain evidence questions.
+- pool quality/source count;
+- sweep depth/reclaim speed;
+- FVG size/fill state;
+- OB quality/mitigation;
+- path density;
+- premium/discount;
+- M1 micro-liquidity refinement;
+- session/regime interaction;
+- correlation de-duplication.
+
+Metrics must include Opportunity Recall and false-block effects—not just win rate.
+
+## 18. Planned implementation ownership
+
+```text
+intelligence/liquidity.py
+    pools / interactions / sweeps / FVG / OB / path / lineage
+
+intelligence/candle_structure.py
+    causal structure-event timestamps consumed here
+
+intelligence/snapshot.py
+    report assembly
+```
+
+## 19. Planned proof
+
+Tests cover:
+
+- cluster construction;
+- pool-before-sweep causality;
+- bar-close event timestamps;
+- wick probe versus real sweep;
+- reclaim/accepted-break distinctions;
+- FVG creation/fill chronology;
+- OB qualification linkage;
+- path state;
+- M5/M1 separation;
+- no universal FVG/OB gate;
+- event-lineage de-duplication;
+- replay/restart parity.
+
+## 20. Calibration
+
+Open evidence dimensions:
+
+- cluster tolerance;
+- sweep penetration/reclaim quality;
+- FVG minimum size;
+- OB qualification/weakening;
+- path-density thresholds;
+- dealing-range selection;
+- family-specific contribution weights;
+- M1 micro-liquidity freshness.
+
+## 21. Final invariant
+
+> **Liquidity evidence must be causal, pre-existing, traceable and family-relevant. Labels may make the active strategy more accurate, but they must never become a hindsight SMC checklist or an unrelated universal restriction.**

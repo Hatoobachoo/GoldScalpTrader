@@ -1,32 +1,46 @@
 # GoldScalpTrader — Session Context
 
-**Status:** FROZEN V1 INTELLIGENCE ARCHITECTURE — SESSION-CONDITIONING CALIBRATION / BROKER-SCHEDULE PROOF PENDING
-**Version:** 1.0-scalp-session-context
-**Authority:** Asia, London, New York and overlap context, chronological session ranges, transitions, participation context and soft session evidence.
+**Status:** APPROVED INTELLIGENCE CONTRACT — DOCUMENTATION RECONSTRUCTION / BROKER-SCHEDULE PROOF PENDING
+**Version:** 2.0-soft-session-hard-broker-separation
+**Authority:** Asia/London/New York/overlap context, chronological session ranges, session-performance attribution and separation from broker market-state authority.
 
-## 1. Purpose and boundary
+## 1. Purpose
 
 Session Context answers:
 
-> Which participation window surrounds the current completed candles, what range has that session built, and how does the current scalp sit relative to that range?
+> **Which participation window surrounds the opportunity, what range/liquidity context did it build, and how does the active strategy historically perform in that environment?**
 
-This is soft intelligence. It does not own broker OPEN/CLOSED/PRE_CLOSE state, reopen warmup, daily-loss lock or News blackout. Those are hard authorities downstream.
+Session Context is **soft market intelligence**.
 
-## 2. Session-context flow
+It does not own:
 
-```text
-UTC time + completed candles
-→ DST-safe zone conversion
-→ ASIA / LONDON / NEW_YORK / OVERLAP / OFF_HOURS
-→ current + previous session range
-→ transition/range context
-→ SessionReport
-→ Technical / Liquidity / Strategy / Timing
+- whether Exness/XAU is currently tradeable;
+- PRE_CLOSE;
+- mandatory flatten;
+- daily Risk lock;
+- News permission (News has no hard permission role in current design);
+- broker order acceptance.
+
+## 2. Soft session versus hard broker state
+
+```mermaid
+flowchart TB
+    TIME["UTC timestamp + completed candles"] --> LABEL["Asia / London / NY / overlap"]
+    LABEL --> RANGE["Current/previous session ranges"]
+    RANGE --> PERF["Family/session context + research tags"]
+    PERF --> SOFT["Soft strategy/timing evidence"]
+
+    BROKER["Broker symbol/session/permission facts"] --> HARD["OPEN / PRE_CLOSE / CLOSED / UNKNOWN"]
+    HARD --> EXEC["Hard execution authority"]
+
+    SOFT -. "cannot grant/block by itself" .-> EXEC
 ```
 
-Broker schedule facts flow separately to hard permission state machine.
+A London label cannot prove that the symbol is open. A broker CLOSED fact cannot be overridden by a historically strong London result.
 
-## 3. Session names
+## 3. Session labels
+
+Descriptive labels may include:
 
 ```text
 ASIA
@@ -36,106 +50,243 @@ LONDON_NY_OVERLAP
 OFF_HOURS
 ```
 
-Descriptive session hours remain configurable/DST-aware. They are not universal entry windows or hard vetoes.
+Initial descriptive baselines may follow conventional session windows with timezone/DST-safe conversion, but exact labels/boundaries are research/configuration facts rather than universal trade bans.
 
-## 4. Published facts
+Use timezone-aware rules (`zoneinfo` or equivalent), not manually hardcoded seasonal UTC assumptions for London/New York.
 
-SessionReport exposes where available:
+## 4. Inputs / outputs
 
-- current session label;
-- current high/low/range from known completed candles;
-- previous session/range;
-- overlap flag;
-- transition context;
-- optional holiday/participation caution;
-- coverage;
-- as-of timestamp and config/timezone version.
+Inputs:
 
-## 5. Why sessions matter to a Gold scalper
+- timezone-aware UTC timestamps;
+- completed M5 and, where useful, M15/H1 candles;
+- causal `as_of_utc`;
+- session configuration/version;
+- optional holiday/participation context.
 
-Short-duration Gold behaviour can change around participation transitions. Context may explain Asia compression/range formation, London sweep/expansion, breakout failure/retest, New York continuation/reversal, overlap acceleration, room relative to session extremes and spread/volatility transitions.
+SessionReport may publish:
 
-These are analytical relationships, not guaranteed patterns.
+| Field | Meaning |
+|---|---|
+| current_session | descriptive current window |
+| overlap | London/NY overlap flag |
+| current_high/low/range | range built from then-known completed bars |
+| previous_session | latest previous chronological session |
+| previous_high/low/range | prior session range |
+| session_open_time / elapsed | descriptive context |
+| holiday_context | soft participation label |
+| coverage | evidence availability |
 
-## 6. Session range lifecycle
+## 5. Chronological range construction
 
-For each completed candle:
+At every replay/live decision point:
 
-1. classify time with DST-safe rules;
-2. group only candles knowable by as-of time;
-3. update current-session range;
-4. expose most recent previous-session group;
-5. preserve historical range truth without later-bar leakage.
+1. classify each known completed candle by session;
+2. use only candles known at `as_of_utc`;
+3. build current range from the current known group;
+4. expose the latest prior group where available;
+5. never extend an earlier replay point's session high/low with future candles.
 
-A later candle may extend the live current range; it may not leak backward into earlier replay decisions.
+```mermaid
+sequenceDiagram
+    participant C as Completed candles
+    participant S as Session classifier
+    participant R as SessionReport
 
-## 7. Session extremes as technical/liquidity sources
-
-Current/previous session highs/lows may be consumed only with explicit provenance and creation time. A session extreme is observable range fact, not automatic support/resistance/target.
-
-## 8. Soft session versus hard broker schedule
-
-```text
-Soft Session:      LONDON_NY_OVERLAP
-Hard Market State: OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN
+    C->>S: causal prefix only
+    S->>S: timezone/DST-safe labels
+    S->>R: current range + previous range
+    Note over R: future session bars cannot revise past report
 ```
 
-An analytical London label cannot prove XAUUSDm is executable. Holiday caution does not itself mean market closed.
+## 6. Why session context matters for scalping
 
-Hard state uses the preserved baseline session policy from `SESSION_AND_RISK_STATE_MACHINE.md` while current broker schedule/DST/holiday truth still requires connected proof.
+Session may explain:
 
-## 9. Scalping session specialization
+- Asia range/compression;
+- London expansion/sweep/break;
+- New York continuation/reversal;
+- overlap liquidity/volatility;
+- spread/participation differences;
+- family-specific opportunity frequency;
+- target-room behavior;
+- hold-time distributions;
+- M1 timing quality.
 
-The Strategy Floor may later use bounded session-specific evidence/performance only after replay/holdout proof. Live policy cannot silently prohibit Asia or force London-only trading from descriptive averages.
+But the design does **not** assume:
 
-## 10. Frozen timeframe contribution
+```text
+Asia = no trade
+London = always best
+New York = automatic reversal
+```
 
-| Timeframe | Contribution |
+Those are empirical questions.
+
+## 7. Family-by-session performance
+
+Because exactly one strategy family is live-active at a time, session attribution is especially clean.
+
+Track by family/session:
+
+| Metric | Purpose |
 |---|---|
-| H1 | broad range/regime context |
-| M15 | opportunity location versus session range/extremes |
-| M5 | primary trigger/sweep/retest timing around session development |
-| H4 | optional major context where relevant |
-| M1 | diagnostic/research transition context only |
+| opportunities | strategy availability |
+| actual trades | realized throughput |
+| shadow trades | comparison |
+| win/loss | descriptive only |
+| Net R / expectancy | after-cost quality |
+| entry efficiency | timing quality |
+| capture efficiency | move capture |
+| spread/slippage | session friction |
+| hold time | capital/slot occupancy |
+| false blocks/missed | over-restriction diagnosis |
 
-M1 is not production timing authority under current V1.
+Later evidence may justify bounded family/session adjustments. It does not silently create session bans.
 
-## 11. Holiday and transition context
+## 8. M5/M1 roles around session transitions
 
-Holiday context is descriptive unless hard broker schedule truth confirms altered hours. Session transitions may associate with wider spread/volatility; actual hard spread/drift/market-open checks remain downstream.
+M5 may establish the active-family setup around:
 
-## 12. Restart/replay
+- session range break;
+- sweep/reclaim;
+- compression release;
+- failed break;
+- continuation pullback.
 
-Report rebuilds deterministically from same completed candles, as-of time, timezone database and SessionConfig. Replay uses same classification logic and stores config version.
+M1 may refine the entry after that M5 setup, especially during fast session transitions.
 
-## 13. Failure behaviour
+M1 does not make “London open” an independent signal.
+
+## 9. Holiday / thin participation context
+
+Holiday context can mean:
+
+- reduced liquidity;
+- abnormal range development;
+- unusual spread/volatility;
+- lower historical strategy quality.
+
+But it is **soft context** unless actual broker schedule/permission facts establish CLOSED/PRE_CLOSE/UNKNOWN.
+
+A holiday calendar label does not itself hard-block a trade under the approved News/Fundamental policy.
+
+## 10. Broker session authority is separate
+
+Hard broker/session facts belong to Risk/Execution owners:
+
+```text
+OPEN
+PRE_CLOSE
+CLOSED
+REOPEN_WARMUP / reopen condition
+UNKNOWN
+```
+
+Preserved baseline pending external Exness verification:
+
+```text
+Daily:   T-20 no new entry / T-10 mandatory flatten
+Weekend: T-60 no new entry / T-30 mandatory flatten
+Daily reopen:   1 clean completed M5
+Weekend reopen: 2 clean completed M5 + gap assessment
+```
+
+This document describes session participation. It does not redefine those safety values.
+
+## 11. News relationship
+
+News/event context may be displayed alongside session context for research, but it is not a hard session permission input.
+
+Valid display example:
+
+```text
+Session Context: LONDON_NY_OVERLAP
+Broker State:    OPEN
+News Context:    CPI in 8m
+News Provider:   DEGRADED
+Trading:         governed by strategy/quality/Risk/broker facts — not News label
+```
+
+## 12. Restart / replay
+
+SessionReport is reproducible from:
+
+- causal completed-candle prefix;
+- exact timezone rules/version;
+- session configuration;
+- `as_of_utc`.
+
+Timezone/config changes are versioned evidence changes.
+
+## 13. Failure behavior
 
 | Condition | Result |
 |---|---|
-| naive/non-UTC timestamp | reject |
-| no candles | no range / zero coverage |
-| incomplete current session | valid partial range + coverage |
-| holiday flag | descriptive caution only |
-| broker schedule unavailable | hard permission UNKNOWN elsewhere; soft label may still exist |
+| naive timestamp | reject/normalize only through explicit owner |
+| no candles | no range + zero/low coverage |
+| uncertain soft session label | UNKNOWN/OFF_HOURS context; not fabricated |
+| broker schedule unavailable | hard broker owner decides UNKNOWN; soft session report still descriptive |
+| News provider unavailable | News context degraded; session classification remains usable |
 
-## 14. Dashboard visibility
+## 14. Dashboard
 
-Show Soft Session, current/previous range, transition, holiday context and separate hard Market State. Presentation never derives hard broker schedule from soft session label.
+```text
+SESSION CONTEXT
+Current          LONDON → NEW YORK overlap
+Current Range    4310.2–4338.6
+Previous         ASIA • 4302.8–4314.1
+Active Family    BREAKOUT_RETEST
+Family Session   research: sample / expectancy / cost
+Broker State     OPEN
+News Context     soft only
+```
+
+Do not merge soft session label and hard broker state into one ambiguous “Session OK”.
 
 ## 15. Planned implementation ownership
 
 ```text
-src/gold_scalp_trader/intelligence/session.py
-src/gold_scalp_trader/intelligence/snapshot.py
-src/gold_scalp_trader/risk/permissions.py   # hard market state only
+intelligence/session.py
+    DST-safe labels / chronological ranges / SessionReport
+
+intelligence/snapshot.py
+    attaches session context
+
+risk/permissions.py / broker-session owner
+    hard market state; separate authority
 ```
 
 ## 16. Planned proof
 
-Tests cover DST-aware labels, overlap, chronological current/previous ranges, no-lookahead, holiday separation, session-extreme provenance, frozen timeframe roles and soft-versus-hard state separation.
+Tests cover:
 
-Actual broker schedule/special-holiday behavior remains connected external evidence.
+- timezone-awareness;
+- DST transitions;
+- overlap classification;
+- chronological range construction;
+- replay no-lookahead;
+- holiday context remains soft;
+- session context does not grant broker permission;
+- M1/M5 session-timing separation;
+- family/session research attribution;
+- hard broker session state remains separate.
 
-## 17. Scalp calibration pending
+## 17. Calibration / external proof
 
-Descriptive session boundaries/transition windows where configurable, session-specific strategy conditioning, overlap specialization and prior-session lookback remain evidence questions. Preserved hard PRE_CLOSE/reopen policy is not silently reopened by this soft intelligence document.
+Calibration:
+
+- descriptive session boundaries if needed;
+- family/session performance adjustments;
+- transition labels;
+- range lookbacks.
+
+External proof:
+
+- actual Exness XAU open/close/PRE_CLOSE behavior;
+- DST/holiday schedule behavior;
+- spread/liquidity distributions by session.
+
+## 18. Final invariant
+
+> **Session tells the strategy what participation environment it is in; only actual broker/session facts can say whether the symbol may be traded. Session performance may improve family accuracy, but it must not become an undocumented blanket restriction.**

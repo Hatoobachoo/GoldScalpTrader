@@ -1,186 +1,341 @@
 # GoldScalpTrader — Fundamental and News Intelligence
 
-**Status:** FROZEN V1 NEWS INTELLIGENCE ARCHITECTURE — EVENT-MAPPING / SCALP WINDOW CALIBRATION PENDING
-**Version:** 1.1-preserved-ttl-cache-resilient-news
-**Authority:** Gold/USD macro context, scheduled-event facts, provider health/freshness, last-known-good calendar semantics, blackout inputs and post-event stabilization.
+**Status:** APPROVED SOFT-CONTEXT CONTRACT — DOCUMENTATION RECONSTRUCTION / PROVIDER-RESEARCH PENDING
+**Version:** 2.0-news-context-not-permission
+**Authority:** Scheduled-event facts, provider health/provenance, optional Gold/USD macro context, research tagging and explicit non-authority over trading permission/cooldown.
 
 ## 1. Purpose
 
-News/fundamental information enters through three meanings:
+Fundamental/News exists because macro events can explain Gold behavior and are valuable research dimensions.
 
-1. factual scheduled-event truth;
-2. optional soft macro interpretation;
-3. known event-blackout safety input.
+It does **not** exist to create a blanket no-trade machine.
 
-Provider/intelligence code never places orders. Missing data never becomes fake `NEWS_CLEAR`.
+Current approved rule:
+
+> **News/Fundamentals are soft context, dashboard information and research attribution only. A news event, News UNKNOWN state or provider/API failure does not directly block trading, start a News cooldown or require a post-News warmup.**
+
+Actual event-induced danger is detected from objective market/execution facts.
 
 ## 2. Authority split
 
 | Information | Owner | May influence | Must never do |
 |---|---|---|---|
-| USD/rates/yields/Fed/inflation/risk context | intelligence | explanation/bounded support | override price structure alone |
-| scheduled event fact | intelligence/news | tier/window/research | place trade |
-| provider freshness/scope/cache validity | provider + normalizer | CLEAR/BLACKOUT/UNKNOWN truth | silently mean “no news” |
-| broker session/reopen | session/permissions | hard market state | be inferred from missing event data |
-| known event blackout | risk/permissions | hard new-entry block | bypass event mapping/versioning |
-| final execution permission | central Gate | allow/block action | bypass identity/Risk/controller/execution |
+| scheduled event | News desk | context/tag/research | direct Gate BLOCK merely because event exists |
+| impact/tier/category | News desk | family/session analytics | become hidden mandatory blackout |
+| provider health/freshness | provider layer | dashboard/research confidence | become trading kill switch |
+| macro interpretation | Fundamental desk | bounded strategy context | override contrary causal price structure alone |
+| spread/drift/dislocation | Executable Quality / broker facts | real execution suitability | be fabricated from event label |
+| broker OPEN/CLOSED | broker session authority | hard permission | inferred solely from News absence/presence |
 
-## 3. News safety rule
+## 3. Soft-context topology
 
-```text
-Market CLOSED + News unavailable
-→ entry blocked by Market state
+```mermaid
+flowchart TB
+    SRC["Optional calendar / macro source"] --> NORMAL["Normalize provenance + timestamps + events"]
+    NORMAL --> HEALTH["ProviderHealth"]
+    NORMAL --> EVENTS["ScheduledEventFacts"]
+    EVENTS --> CTX["News/Fundamental Context"]
+    HEALTH --> CTX
+    CTX --> STRAT["Soft family context"]
+    CTX --> DASH["Dashboard"]
+    CTX --> TAG["Trade / episode research tags"]
+    CTX --> POST["Post-trade attribution"]
 
-Market OPEN + fresh accepted provider truth
-→ classify CLEAR / BLACKOUT / POST_NEWS_WARMUP
-
-Market OPEN + refresh failure
-+ accepted LKG calendar remains valid inside original scope/schema/coverage/TTL
-→ use exact cached event truth
-→ Provider Health may be DEGRADED
-
-Market OPEN + refresh failure
-+ no valid current cache
-→ NEWS_SAFETY_UNKNOWN
-→ new scalp entry BLOCK / LIMITED
+    QUOTE["Actual Bid/Ask/spread/velocity"] --> QUALITY["Executable Quality"]
+    BROKER["Actual market/session permissions"] --> HARD["Hard authority"]
+    CTX -. "NO direct permission" .-> HARD
 ```
 
-A cache may preserve already-verified truth; it may never refresh its own timestamp or validity.
+## 4. Provider independence
 
-## 4. Preserved provider TTL baseline
+The bot must not require a paid third-party News API.
 
-GoldSwingTraderAI's baseline remains the starting policy:
+Potential providers may include:
+
+- scoped local file;
+- accepted free calendar source;
+- operator-supplied data;
+- future optional API adapter.
+
+Provider architecture is replaceable and typed. No provider may call the broker writer.
+
+## 5. Provider health
+
+Suggested states:
 
 ```text
-SESSION_NEWS_TTL_SECONDS = 1800
+VERIFIED
+DEGRADED
+STALE
+UNAVAILABLE
+UNKNOWN
 ```
 
-This 1800-second TTL is **not reopened merely because this is a scalper**. A later change requires a direct provider/scalp operational reason and governed affected-graph update.
+Provider health must be displayed/researched truthfully.
 
-Proactive refresh cadence and provider-specific acquisition behavior may be implementation choices, but failed acquisition never extends the original TTL.
+Examples:
 
-## 5. Provider topology
+```text
+Provider UNAVAILABLE
+→ News context unavailable
+→ trading NOT blocked merely for this reason
 
-Candidate zero-cost inputs:
+Provider STALE
+→ old events remain labelled stale
+→ never relabel as current CLEAR
+→ trading governed by market/strategy/Risk/broker facts
+```
 
-- approved local scoped JSON/calendar snapshot;
-- bounded best-effort public economic-calendar adapter;
-- accepted LKG normalized cache;
-- later optional adapters that do not become mandatory paid dependencies.
+## 6. Context cache / LKG
 
-Provider credentials never enter repository or normal backup artifacts.
+A last-known-good cache is useful for continuity of context, dashboard and research.
 
-## 6. Event normalization
+Preserved reference baseline context TTL:
 
-Preserve at least:
+```text
+1800 seconds
+```
+
+Important change:
+
+- TTL expiry affects **context freshness**, not hard trading permission;
+- refresh failure never rewrites original fetch/as-of/event timestamps;
+- cache source/provenance remains visible;
+- an expired cache cannot masquerade as current truth;
+- no News cache is required to place a trade if all actual market/Risk/broker authorities pass.
+
+Exact provider/cache implementation remains an engineering choice.
+
+## 7. Event normalization
+
+A normalized event may include:
 
 ```text
 provider_event_id
 title
 currency
 scheduled_at_utc
-impact/tier
-provider identity/health
+impact/tier/category
+provider
 fetched_at_utc
-as_of_utc
-TTL / valid_until
-coverage window
-mapping/schema version
-source LIVE_FETCH | LOCAL_FILE | LAST_KNOWN_GOOD_CACHE
+source/provenance
+mapping_version
 ```
 
-Malformed, future-dated, stale, unsupported or wrong-scope data is not current event truth.
+All timestamps are timezone-aware UTC.
 
-## 7. LKG cache contract
+Duplicate provider event IDs must be handled deterministically.
 
-Cached calendar is usable after refresh failure only when:
+## 8. Event tiers are research/context labels
 
-- original result was accepted;
-- schema/mapping version remains accepted;
-- scope remains correct;
-- decision time remains inside accepted coverage;
-- original configured TTL/valid-until (baseline 1800s unless governed override) has not expired;
-- integrity is intact;
-- no later known invalidating fact supersedes it.
-
-On failure:
+A deterministic mapping can classify events, e.g.:
 
 ```text
-keep accepted cache unchanged
-record acquisition failure separately
-never rewrite fetched_at/as_of/valid_until
-never extend TTL because provider failed
+TIER_1 / CRITICAL
+TIER_2 / HIGH
+TIER_3 / CONTEXT
+OTHER
 ```
 
-Expired cache becomes stale diagnostic/research context only.
+Examples may include FOMC, CPI, NFP, PCE, GDP, ISM, employment/rates events.
 
-## 8. Event tiers
-
-Conceptual tiers remain:
+But under current approved architecture:
 
 ```text
-TIER_1  critical Gold/USD shock risk
-TIER_2  high-impact USD risk
-TIER_3  contextual event
+TIER_1 ≠ automatic trade block
+TIER_2 ≠ automatic trade block
 ```
 
-Exact title/category mapping remains versioned. Free-text matching cannot silently create new hard policy.
+Tier labels are used to measure whether particular families, spreads, slippage or entry efficiency behave differently around events.
 
-## 9. Blackout / post-news windows
+## 9. No News blackout / cooldown / warmup
 
-The reference blackout/warmup **mechanism** is preserved. Exact durations may be a genuine scalp-specific calibration because short target horizons are more sensitive to immediate spread/slippage/dislocation.
-
-Final scalp evidence may calibrate:
+Historical/reference models that used:
 
 ```text
-pre_event_blackout
-post_event_blackout
-post_news_warmup
-clean completed-M5 requirement
-spread/quote/volatility normalization
+-15/+15 blackout
+-5/+5 blackout
+NEWS_UNKNOWN block
+POST_NEWS_WARMUP
 ```
 
-A scheduled event ending does not prove execution normalized.
+are **superseded for GoldScalpTrader production permission**.
 
-## 10. Optional macro context
-
-DXY/USD direction, yields/rate expectations, Fed policy, inflation/labour/growth and reliable risk/geopolitical context remain optional soft evidence with source/time/TTL/confidence/counter-evidence.
-
-They cannot create broker authority or reverse clear price structure alone. No paid macro API is mandatory.
-
-## 11. Unscheduled shocks
-
-Independent market/execution safety still handles abrupt spread expansion, quote gaps, extreme velocity/dislocation, stale feed, excessive executable drift and broker rejection/requote behavior.
-
-News intelligence never claims complete breaking-news awareness.
-
-## 12. Existing positions
-
-Known blackout or News UNKNOWN primarily blocks **new entry/re-entry**. Existing verified bot-trade protection, governed MODIFY and necessary risk-reducing CLOSE remain action-sensitive.
-
-## 13. Restart/replay
-
-Restart revalidates cached data against original time/scope/schema/coverage/TTL. Replay uses only event/provider/cache truth knowable at simulated timestamp; later revisions never leak backward.
-
-## 14. Dashboard / diagnostics
-
-Show Market State, News State, provider identity/health, LIVE/FILE/LKG source, last success, cache age/valid-until, next event/tier/countdown, refresh error and downstream Entry Permission.
-
-`DEGRADED + VALID CACHE` is not `NEWS_UNKNOWN`.
-
-## 15. Planned implementation ownership
+There is no automatic News-only state transition such as:
 
 ```text
-src/gold_scalp_trader/intelligence/news.py
-src/gold_scalp_trader/app/session_news.py
-src/gold_scalp_trader/risk/permissions.py
-src/gold_scalp_trader/intelligence/snapshot.py
+NEWS event → BLOCK
+NEWS event ends → mandatory wait
 ```
 
-## 16. Planned proof
+The system may still display event countdown and post-event elapsed time for research/operator awareness.
 
-Tests cover normalization/deduplication, preserved 1800s baseline, scope/schema/coverage, LKG reuse, no timestamp laundering, cache expiry → UNKNOWN, known blackout preservation, restart revalidation and replay no-lookahead.
+## 10. Real shock handling
 
-## 17. Pending scalp/external evidence
+News can cause real execution deterioration. The response is governed by actual facts:
 
-Exact Tier mappings, pre/post-event blackout durations, post-news stabilization, default zero-cost provider and provider reliability remain evidence/configuration questions. The 1800-second baseline itself remains preserved until a specifically justified change packet supersedes it.
+```mermaid
+flowchart TB
+    EVENT["Macro event occurs"] --> MARKET["Observed market response"]
+    MARKET --> SPREAD["Spread expansion"]
+    MARKET --> DRIFT["Price drift / chase"]
+    MARKET --> VOL["Velocity / dislocation"]
+    MARKET --> SLIP["Slippage / fill quality"]
+    SPREAD --> QUALITY["Executable Quality"]
+    DRIFT --> QUALITY
+    VOL --> QUALITY
+    SLIP --> RESEARCH["Execution evidence"]
+    QUALITY --> DECIDE{"Opportunity still economically executable?"}
+    DECIDE -->|Yes| CONTINUE["Continue to Risk/hard authorities"]
+    DECIDE -->|No| WAIT["WAIT/MISSED/BLOCK at owning quality stage"]
+```
+
+Thus the system reacts to what the market **actually did**, not simply the event label.
+
+## 11. Optional macro context
+
+Potential soft inputs:
+
+- USD/DXY direction;
+- yields/rates expectations;
+- Fed policy context;
+- inflation/labor/growth context;
+- geopolitical/risk sentiment;
+- other high-quality macro facts.
+
+Every macro adapter must expose:
+
+- source;
+- as-of/fetch time;
+- freshness;
+- confidence/coverage;
+- counter-evidence where appropriate.
+
+Macro context may support/explain a family thesis but cannot override clearly contrary completed price structure or objective broker safety.
+
+## 12. Strategy-family use
+
+Different families may use News context differently.
+
+Examples:
+
+- Breakout Expansion research may tag high-impact event-driven expansion;
+- Failed Breakout Reversal may study false initial event spikes;
+- Trend Pullback may study whether post-event pullbacks behave differently;
+- Compression Expansion may study pre-event compression without automatically avoiding it.
+
+The active strategy may receive bounded context, but News is not a required universal input unless that **specific future family version** explicitly defines it and is approved.
+
+## 13. Session relationship
+
+News and Session are separate:
+
+```text
+Session Context  = Asia/London/NY soft participation
+Broker State     = OPEN/CLOSED/PRE_CLOSE hard fact
+News Context     = event/macro soft context
+```
+
+Do not compose them into one opaque “market permission” state.
+
+## 14. Open-trade behavior
+
+News event/context alone does not:
+
+- force-close;
+- force breakeven;
+- disable protection;
+- prevent safe EXIT;
+- start a special cooldown.
+
+Trade Manager responds to actual price/structure/volatility/execution conditions and PRE_CLOSE/broker safety.
+
+## 15. Restart / replay
+
+### Restart
+
+Provider/cache context reload may continue if valid and truthful. Expired/stale context remains labelled accordingly.
+
+### Replay
+
+Historical event information is usable only when it would have been knowable at the simulated time under the declared dataset methodology.
+
+If replay uses a finalized historical calendar unavailable in real time, evidence must clearly classify that limitation rather than pretending live parity.
+
+## 16. Dashboard
+
+```text
+FUNDAMENTAL / NEWS CONTEXT
+Provider       FILE / FREE_SOURCE / NONE
+Health         VERIFIED / DEGRADED / STALE
+Cache Age      12m • context only
+Next Event     CPI • TIER_1 • 08:14
+Macro Tag      USD HIGH-IMPACT
+Trade Effect   SOFT CONTEXT — NO DIRECT BLOCK
+```
+
+Dashboard must never imply `NEWS_CLEAR` is required for execution.
+
+## 17. Research requirements
+
+News/event research should answer:
+
+- does expectancy change by event tier/category?
+- which strategy families benefit/suffer?
+- what happens to spread/SL and spread/target ratios?
+- how do slippage and decision→send drift change?
+- does M1 refinement improve or worsen event-period entries?
+- what is the effect on entry/capture/exit efficiency?
+- does avoiding certain measured conditions improve Net R without destroying Opportunity Recall?
+
+This creates evidence for later proposals without pre-emptive restriction.
+
+## 18. Planned implementation ownership
+
+```text
+intelligence/news.py
+    normalized events / optional macro context / mapping
+
+app/session_news.py or equivalent provider adapter
+    source acquisition / cache / provenance / health
+
+operator/dashboard
+    context display
+
+research/*
+    event/session segmentation
+```
+
+`risk/permissions.py` must **not** treat News context as a hard new-entry authority under the current design.
+
+## 19. Planned proof
+
+Tests cover:
+
+- UTC normalization;
+- provider health states;
+- cache timestamps not laundered;
+- 1800s baseline freshness labeling;
+- event mapping/tagging;
+- provider unavailable/stale does not direct-block trade;
+- event tier does not direct-block trade;
+- no News cooldown/warmup state;
+- actual spread/drift quality layer remains independent;
+- dashboard labels News as context;
+- replay event chronology/coverage honesty.
+
+## 20. External/calibration evidence
+
+Open evidence:
+
+- free provider reliability;
+- event mapping quality;
+- family/event performance;
+- event-period costs/slippage/latency;
+- macro adapters if later useful.
+
+Paid provider is not a required dependency.
+
+## 21. Final invariant
+
+> **News may explain and help research Gold behavior, but it cannot veto a valid scalp merely because an event exists or a provider failed. GoldScalpTrader reacts to actual executable market conditions, while News remains truthful soft context and evidence.**
