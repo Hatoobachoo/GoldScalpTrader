@@ -12,6 +12,16 @@ The offline architecture is implemented. `python bot.py` now routes by runtime m
 
 DEMO broker writes are fail-closed. The connected MT5 account must explicitly report `ACCOUNT_TRADE_MODE_DEMO`; otherwise the runtime refuses to send an order. The Gate also blocks on stale/incomplete market data, occupied/unknown exposure, unresolved execution intents, controller conflicts, failed persistence, disabled expert trading, or failed broker `order_check`.
 
+The DEMO runtime now also manages verified bot-owned positions through the documented lifecycle:
+
+```text
+OPEN → ManagedTrade → HOLD / PROTECT / TRAIL / RUNNER / EXIT
+     → MODIFY/CLOSE Intent → broker reconciliation
+     → exact exit-deal proof → close receipt + learning queue
+```
+
+A position carrying the configured bot magic but lacking durable ManagedTrade lineage is never silently adopted. Broker-side/manual close is not accepted merely because the position disappeared; complete exit-deal volume proof is required before the ManagedTrade is archived.
+
 ## Live DEMO quick start
 
 Keep MetaTrader 5 open and logged into the intended **demo** account, then:
@@ -28,6 +38,9 @@ The supplied demo profile uses:
 ```text
 MODE=DEMO
 ACTIVE_STRATEGY_FAMILY=TREND_PULLBACK_CONTINUATION
+ACTIVE_STRATEGY_POLICY_VERSION=v1
+BOT_MAGIC=560501
+BOT_COMMENT_PREFIX=GST
 TARGET_RISK_PERCENT=1.00
 DEMO_TRADING_CONFIRM=YES_I_APPROVE_DEMO
 ```
