@@ -1,209 +1,473 @@
 # GoldScalpTrader — Execution and Broker Safety
 
-**Status:** FROZEN V1 EXECUTION ARCHITECTURE — WRITER IMPLEMENTATION / CONNECTED DEMO PROOF PENDING
-**Version:** 1.1-profiled-risk-future-real-one-shot
-**Authority:** READINESS/DRY_RUN/controlled-DEMO safety, future governed REAL gate, account/symbol verification, final permission, fresh broker checks, one-shot requests, controller fencing and broker reconciliation.
+**Status:** APPROVED EXECUTION CONTRACT — DOCUMENTATION RECONSTRUCTION / CONNECTED DEMO PROOF PENDING
+**Version:** 2.0-one-shot-fixed-aware-execution
+**Authority:** Final hard permission, account/symbol verification, fixed+aware execution quality, controller fencing, one-shot Intents, raw MT5 writer confinement, action-sensitive prechecks and broker reconciliation.
 
 ## 1. Purpose
 
-This is the final safety boundary before irreversible MT5 create/modify/close operation.
+This is the final safety boundary before an irreversible MT5 OPEN/MODIFY/CLOSE.
 
-> Analysis can lose a trade. Execution safety must not create duplicate, wrong-account, wrong-symbol, wrong-volume or uncontrolled exposure.
+> **Strategy can be wrong and lose. Execution must not create duplicate, wrong-account, wrong-symbol, wrong-volume, uncontrolled or falsely reconciled exposure.**
 
-Execution does not choose direction, improve score or rewrite structural geometry.
+Execution does not:
 
-## 2. Capability progression
+- choose active strategy;
+- improve a score;
+- rewrite TradePlan invalidation;
+- change preserved Risk bands;
+- hard-block because of News context;
+- adopt unknown external positions.
 
-```text
-READINESS   read-only diagnostic
-→ DRY_RUN   governed analytical/runtime lifecycle with zero irreversible writes
-→ PRIMARY   controlled DEMO writer after implementation + deterministic/recovery gates
-→ REAL      preserved future governed capability after separate DEMO/release/explicit-approval gate
+## 2. Sole broker-write path
+
+```mermaid
+flowchart TB
+    ACTION["Approved OPEN or management action"] --> AUTH["Risk + market/session + identity + exposure + controller + lifecycle"]
+    AUTH --> GATE{"Central Gate ALLOW?"}
+    GATE -->|No / Unknown| STOP["No broker call; persist/report reason"]
+    GATE -->|Yes| INTENT["Persist APPROVED Intent"]
+    INTENT --> PRE["Fresh quote/account/symbol/volume/stops/margin/order_check"]
+    PRE -->|Fail| FAIL0["Persist FAILED • send count 0"]
+    PRE -->|Pass| SUB["Persist SUBMITTING • consume one send allowance"]
+    SUB --> WRITE["Exactly one raw MT5 operation"]
+    WRITE --> ACK{"Broker acknowledgement"}
+    ACK -->|Rejected| FAIL["FAILED with broker reason"]
+    ACK -->|Success-like| RECON["Action-specific reconciliation"]
+    ACK -->|Ambiguous| UNK["ACCEPTED_UNKNOWN → reconcile only"]
+    UNK --> RECON
+    RECON --> VERIFIED["Persist broker-verified lifecycle truth"]
 ```
 
-REAL is not removed, but no hidden environment/config flag may grant it. Its activation requires separate governed release authority.
+Only planned `execution/mt5_writer.py` owns raw irreversible broker calls.
 
-## 3. Sole write path
-
-```text
-approved TradePlan / management action
-→ active Risk profile/overlay + applicable hard authorities
-→ central ExecutionPermissionGate
-→ BLOCK/UNKNOWN: persist reason; no write
-→ ALLOW: persist APPROVED ExecutionIntent
-→ fresh account/terminal/symbol/quote/order prechecks
-→ persist SUBMITTING before irreversible call
-→ sole MT5Writer call
-→ acknowledgement classification
-→ broker reconciliation
-→ persist verified lifecycle only from broker truth
-```
-
-## 4. Ownership boundaries
+## 3. Boundary ownership
 
 | Boundary | Owner | Invariant |
 |---|---|---|
-| analytical approval | decisions/management | idea/action exists |
-| monetary affordability | Risk | active profile/overlay; no strategy authority |
-| session/news/system permission | owning authorities + Gate | BLOCK/UNKNOWN cannot pass |
-| durable Intent | execution/intent_store.py | one Intent has at most one irreversible send allowance |
-| raw broker write | execution/mt5_writer.py | sole irreversible boundary |
-| broker outcome | execution/reconcile.py | acknowledgement is not final truth |
-| controller | execution/controller.py | fresh holder/epoch required |
+| thesis | active strategy / decisions | no money/write authority |
+| structural geometry | TradePlan | no lot/writer authority |
+| current economics | Executable Quality | no structural stop rewrite |
+| affordability | Risk | no strategy/write authority |
+| hard permission | Gate | required BLOCK/UNKNOWN cannot pass |
+| durable one-shot action | IntentStore | one ID → at most one irreversible send |
+| fresh broker precheck | execution checks/writer | uses current broker truth |
+| raw broker write | MT5Writer | sole irreversible boundary |
+| final outcome | Reconciler | acknowledgement is not final truth |
+| controller | controller/coordination | current holder/epoch/lease required |
+
+## 4. Environment / capability progression
+
+Initial target progression:
+
+```text
+READINESS / DRY_RUN
+→ controlled DEMO
+→ future governed REAL
+```
+
+A write-capable stage requires positive identity/capability proof for the intended environment.
+
+REAL remains a future capability requiring separate DEMO/release evidence and explicit operator approval. There is no accidental UI/env shortcut that silently converts DEMO proof into REAL authority.
 
 ## 5. Central Gate inputs
 
-For requested action evaluate applicable:
+For OPEN, applicable hard inputs include:
 
-- runtime capability/mode and DEMO/REAL release identity;
-- exact account/server/symbol;
-- fresh quote;
-- SymbolSpec volume/stops/freeze/filling rules;
-- current spread and adverse drift;
-- TradePlan/event freshness and remaining room;
-- current monetary RiskEvaluation using preserved SMALL/MEDIUM/NORMAL profile or explicitly enabled eligible aggressive overlay;
-- margin/capacity/exposure/ownership;
-- market/session/News policy;
+- runtime/capability stage;
+- account/server identity;
+- resolved Gold symbol;
+- fresh required DataQuality;
+- current market/session state;
+- monetary Risk PASS;
+- capacity/exposure ownership;
 - persistence/recovery state;
-- unresolved Intent/order lifecycle;
-- controller holder/fencing epoch;
-- broker-native action precheck.
+- unresolved Intent state;
+- controller holder/epoch/lease;
+- action-specific execution readiness.
 
-Hard BLOCK/UNKNOWN prevents write.
+**News/Fundamental context is not a hard Gate input.**
 
 ## 6. Upstream stop versus Gate
 
-```text
-TradePlan DEGRADED/INVALID or Risk BLOCK/UNKNOWN
-→ Gate may be NOT EVALUATED
+Possible pre-Gate stops:
 
-actual Gate BLOCK
+```text
+Timing MISSED/INVALID
+TradePlan DEGRADED/INVALID
+Executable Quality unacceptable
+Risk BLOCK/UNKNOWN
+```
+
+Operator truth:
+
+```text
+upstream stop
+→ Gate NOT EVALUATED
+
+actual Gate hard authority BLOCK
 → Gate BLOCKED
-
-actual Gate UNKNOWN
-→ Gate UNKNOWN / reconciling authority
 ```
 
-Dashboard cannot alter this truth.
+`ENTRY_BLOCKED` at the broad cycle level cannot be presented as Gate BLOCKED without evidence.
 
-## 7. Fresh pre-submit barrier
+## 7. Fresh account / terminal / symbol precheck
 
-Immediately before irreversible call recheck official MT5 metadata appropriate to action: trading permission, terminal/EA/API status, symbol mode/direction, account/server/symbol identity, fresh quote and broker-native `order_check` where applicable.
-
-BUY uses Ask context; SELL uses Bid context.
-
-Precheck failure means zero `order_send` attempts for that Intent.
-
-## 8. Scalp-specific execution friction
-
-Revalidate current spread, spread relative to approved healthy baseline if policy uses one, spread relative to original SL/remaining target room, adverse drift from Approved Entry Reference, final trigger/snapshot age and measurable check/send/reconcile timing.
-
-Exact thresholds remain genuine scalp replay + connected DEMO calibration. Execution cannot tighten SL or move target to force acceptable friction.
-
-## 9. TradePlan cost split
-
-TradePlan owns planning-time gross + cost-adjusted room using facts known then. Execution owns last-moment current Bid/Ask/spread/drift validity. Same cost source cannot be charged twice.
-
-## 10. Intent / idempotency
+Immediately before irreversible send, revalidate broker-native facts such as:
 
 ```text
-CREATED
-→ APPROVED
-→ SUBMITTING
-→ ACCEPTED_VERIFIED
-→ ACCEPTED_UNKNOWN
-→ FAILED
+account identity
+account trade allowed / expert allowed
+terminal trade allowed / API enabled
+symbol trade mode
+resolved symbol
+fresh Bid/Ask
+volume min/max/step
+stops/freeze geometry
+filling/order mode
+current margin/order_check
 ```
 
-Persisting `SUBMITTING` consumes the one irreversible send allowance **before** raw call.
+Stable reason codes should distinguish failures.
 
-Ambiguous acknowledgement:
+Examples:
 
 ```text
-ACCEPTED_UNKNOWN / reconciliation-only
-→ inspect broker positions/orders/deals
-→ never blind retry
+ACCOUNT_TRADING_DISABLED
+ACCOUNT_EXPERT_TRADING_DISABLED
+TERMINAL_AUTOTRADING_DISABLED
+TERMINAL_TRADE_API_DISABLED
+SYMBOL_TRADING_DISABLED
+SYMBOL_CLOSE_ONLY
+SYMBOL_DIRECTION_NOT_ALLOWED
+SYMBOL_TRADE_MODE_UNKNOWN
+BROKER_PERMISSION_METADATA_INCOMPLETE
+ORDER_CHECK_FAILED
 ```
 
-A new governed Intent is allowed only after prior truth resolves.
+Failure before SUBMITTING has zero send attempts.
 
-## 11. Reconciliation
+## 8. Fixed + aware spread quality
 
-| Action | Required truth |
+Execution consumes the approved hybrid model.
+
+### Absolute emergency ceiling
+
+Obvious pathological/broken spread can block immediately.
+
+Exact threshold = `CALIBRATE` from Exness evidence.
+
+### Context-aware dimensions
+
+```text
+spread / structural SL distance
+spread / current target room
+spread / recent healthy baseline
+total expected cost / expected reward
+```
+
+The quality owner should expose actual ratios/reasons rather than one opaque “spread too high”.
+
+## 9. Slippage allowance
+
+Before fill, use a realistic estimated slippage allowance for after-cost quality/risk where required and not already represented.
+
+After fill, record actual slippage separately:
+
+```text
+BUY slippage  = actual_fill - expected/reference_buy_price
+SELL slippage = expected/reference_sell_price - actual_fill
+```
+
+Do not double-count slippage in monetary Risk if actual entry geometry already incorporates it.
+
+Calibration should use real DEMO distributions by session/volatility/spread regime where useful.
+
+## 10. Broker deviation
+
+Deviation is what the request permits; slippage is what the fill actually experiences.
+
+Target approach:
+
+```text
+bounded base deviation
+→ possibly adjusted by current verified execution regime
+→ absolute maximum cap
+```
+
+Too tight may reject good scalp entries. Too loose may allow a fill that destroys edge. Current Exness execution-mode behavior requires connected proof.
+
+## 11. Decision→send latency and drift
+
+Record timestamps through the final entry path:
+
+```text
+Opportunity/timing decision
+TradePlan approval
+Executable Quality capture
+Risk/Gate
+Intent persisted
+precheck
+order_send invocation
+acknowledgement
+reconciliation
+```
+
+If decision→send age exceeds the versioned budget:
+
+```mermaid
+flowchart LR
+    OLD["Latency budget exceeded"] --> REFRESH["Fresh quote"]
+    REFRESH --> REPRICE["Recompute drift / spread ratios / cost / actual Risk"]
+    REPRICE --> OK{"Still valid?"}
+    OK -->|Yes| CONT["Continue governed action"]
+    OK -->|No| STOP["WAIT / MISSED / fail current Intent before send"]
+```
+
+Latency alone should not unnecessarily kill a still-valid opportunity after successful fresh revalidation.
+
+## 12. Price drift
+
+Compare Approved Entry Reference / latest approved execution reference to fresh executable side.
+
+Drift is measured in:
+
+- price/ticks;
+- ATR-normalized distance;
+- percentage of SL distance;
+- percentage of target room where useful.
+
+Excessive adverse drift can invalidate current execution economics. It does not alter historical TradePlan geometry.
+
+## 13. Intent lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> CREATED
+    CREATED --> APPROVED
+    APPROVED --> FAILED: permission/precheck fails before send
+    APPROVED --> SUBMITTING: persist + consume send allowance
+    SUBMITTING --> ACCEPTED_VERIFIED: broker truth proves action
+    SUBMITTING --> ACCEPTED_UNKNOWN: acknowledgement/outcome ambiguous
+    SUBMITTING --> FAILED: positive rejection / proven failure
+    ACCEPTED_UNKNOWN --> ACCEPTED_VERIFIED: reconciliation proves action
+    ACCEPTED_UNKNOWN --> FAILED: reconciliation proves absence/failure under contract
+```
+
+Core invariant:
+
+> **One Intent ID causes at most one irreversible broker request.**
+
+A fresh later attempt requires a new governed Intent only after the prior lifecycle is resolved.
+
+## 14. Persist-before-send
+
+Before broker call:
+
+1. persist Intent identity/action/payload lineage;
+2. persist APPROVED;
+3. perform current fresh broker checks;
+4. persist SUBMITTING and consume send allowance;
+5. invoke sole writer once.
+
+A process crash after step 4 is treated as potentially sent—even if local code never observed a response. Recovery reconciles; it does not resend.
+
+## 15. Action-specific reconciliation
+
+| Action | Required proof |
 |---|---|
-| OPEN | resulting position/order/deal lineage, symbol/direction/volume |
-| MODIFY | exact ticket and actual broker SL/TP |
-| CLOSE/PARTIAL CLOSE | verified position reduction/absence and exit-history proof |
+| OPEN | current position/order/deal lineage, symbol/direction/volume/ticket/Intent correlation |
+| MODIFY | exact ticket and actual broker SL/TP/objective change |
+| CLOSE | position reduction/absence plus exact exit deal/volume lineage where required |
 
-Magic/comment support lineage but do not replace broker truth. ManagedTrade changes only after verification.
+Magic/comment help attribution but never substitute for broker truth.
 
-## 12. Known managed position disappears
+## 16. Ambiguous acknowledgement
 
-Reconcile unresolved Intent first, then require exact known ticket + official exit role + complete exit-volume evidence + valid close time before archive/learning/clear. Partial/missing/ambiguous evidence remains RECONCILING.
+Examples:
 
-## 13. Manual/foreign exposure
+- timeout after send;
+- transport exception after broker may have received request;
+- non-final/ambiguous return code;
+- process crash while SUBMITTING.
 
-Unknown external Gold position is visible and blocks new bot entry. Bot never silently adopts/modifies/closes it.
-
-A human close of an already-known bot ManagedTrade preserves bot-entry lineage with EXTERNAL/MIXED close attribution after exact proof.
-
-## 14. Controller / writer scope
-
-One active PRIMARY writer per account/symbol scope. Same-scope active-active is unsupported in current local-state design. Stale epoch is denied. Controller acquisition never substitutes for broker reconciliation.
-
-## 15. Action-sensitive CLOSE
-
-Governed CLOSE requires correct identity/ticket, controller, lifecycle ownership, executable quote, broker permission, one-shot Intent and reconciliation.
-
-Discretionary OPEN friction rules must not automatically trap unwanted exposure when CLOSE is risk-reducing.
-
-## 16. Latency observability
-
-Record snapshot/decision time, Intent approved/submitting, order_check duration, order_send duration, acknowledgement and reconciliation completion where practical.
-
-This is evidence/observability, not HFT capability. If final calibrated freshness rules are exceeded, rebuild/block rather than send late.
-
-## 17. DRY_RUN semantics
-
-DRY_RUN exercises market → bounded analytical desks/families → Opportunity → timing → TradePlan → profiled Risk → permission/Gate diagnostics as safely possible, but never reaches irreversible writer.
-
-It may record “would otherwise proceed” and blockers but cannot fabricate fills/slippage/reconciliation/DEMO proof.
-
-## 18. Dashboard
-
-Show capability stage, account/server/symbol, Bid/Ask/spread/quote age, blocker stage, Gate, active Risk profile/overlay/capacity, Intent/send count, precheck reason, reconciliation, ownership, controller and latency diagnostics.
-
-No dashboard control bypasses Gate or REAL release gate.
-
-## 19. Planned implementation ownership
+Response:
 
 ```text
-src/gold_scalp_trader/execution/models.py
-src/gold_scalp_trader/execution/intent_store.py
-src/gold_scalp_trader/execution/gate.py
-src/gold_scalp_trader/execution/checks.py
-src/gold_scalp_trader/execution/controller.py
-src/gold_scalp_trader/execution/sqlite_coordination.py
-src/gold_scalp_trader/execution/mt5_writer.py
-src/gold_scalp_trader/execution/service.py
-src/gold_scalp_trader/execution/reconcile.py
-src/gold_scalp_trader/app/recovery.py
+ACCEPTED_UNKNOWN
+→ no blind retry
+→ query positions/orders/deals
+→ reconcile exact intended lifecycle
 ```
 
-`mt5_writer.py` remains absent/unimplemented until deliberate controlled-DEMO milestone.
+This is a core financial invariant.
 
-## 20. Planned proof / external evidence
+## 17. Manual/foreign exposure
 
-Tests prove writer confinement, Gate BLOCK/UNKNOWN no-write, one send allowance, persist-before-send, precheck failure zero sends, no blind retry, OPEN/MODIFY/CLOSE/PARTIAL reconciliation, external-position non-adoption, stale-controller denial, startup ordering, DRY_RUN no-write and action-sensitive CLOSE.
+Same symbol is not same owner.
 
-Connected Windows/Exness DEMO separately proves actual AutoTrading metadata, `order_check/order_send`, fill modes, stop/freeze rules, spread/slippage/latency and reconciliation.
+```text
+manual/foreign/unknown Gold position while bot flat
+→ external exposure visible
+→ new bot entry blocked by exposure/capacity
+→ bot never modifies/closes/adopts it
+```
 
-Future REAL release requires separate explicit evidence/approval packet; DEMO proof alone does not auto-enable REAL.
+An already-known ManagedTrade closed manually is handled differently: original trade ownership remains bot lineage, while closing action origin may be EXTERNAL/MIXED after exact deal proof.
 
-## 21. Non-goals
+## 18. Controller / fencing
 
-Execution does not choose strategy, distort TradePlan, increase Risk from confidence, adopt foreign positions, infer zero exposure from failed reads, promise HFT latency, perform runtime Git operations or remove preserved future REAL capability by documentation shorthand.
+Current supported model:
 
-## 22. Scalp calibration pending
+```text
+one active PRIMARY per account/symbol scope
+local durable controller holder
+lease/expiry
+monotonic fencing epoch
+fresh holder/epoch check before every irreversible write
+```
 
-Spread/drift/trigger-age thresholds, healthy-spread baseline, slippage/deviation policy and acceptable decision latency remain genuine scalp evidence questions. Fill-mode/retcode/controller values also require implementation/connected proof.
+Exact lease values are implementation policy; reference 10s renewal/30s TTL can remain a baseline until reconstructed owner/test contracts finalize them.
+
+A stale holder/epoch cannot write.
+
+Same-account active-active multi-machine writer is explicitly deferred. Distributed DB/fencing is explicitly deferred.
+
+## 19. Takeover semantics for future/internal proof
+
+Even in local deterministic tests/future architecture:
+
+```text
+old lease expires
+→ contender gets higher epoch
+→ reconciliation required
+→ durable lifecycle + broker truth reconciled
+→ same holder/epoch reverified
+→ only then write-capable READY
+```
+
+Higher epoch alone is not permission.
+
+## 20. Startup recovery
+
+Recovery performs no broker write until authorities are reconstructed.
+
+Sequence:
+
+```text
+StateStore integrity
+→ current account/server/symbol
+→ unresolved Intent reconciliation
+→ ManagedTrade vs current position
+→ exact broker-side close proof if needed
+→ Risk/session/exposure state
+→ controller acquisition
+→ required authorities PASS
+→ READY
+```
+
+## 21. CLOSE is action-sensitive
+
+Exposure-reducing CLOSE should not be trapped by optional entry-quality restrictions.
+
+It still requires:
+
+- correct ownership/ticket;
+- controller;
+- valid lifecycle;
+- broker capability;
+- executable quote/request;
+- Intent/writer/reconciliation.
+
+But a high entry spread ratio does not automatically veto a mandatory safe flatten merely because OPEN would be unattractive.
+
+## 22. Runtime reason states
+
+Examples:
+
+```text
+READY
+PRE_SUBMIT_BLOCK
+BROKER_REJECTED
+AMBIGUOUS_ACK
+ACCEPTED_VERIFIED
+RECONCILING
+RECONCILIATION_FAILED
+CONTROLLER_FENCED
+STARTUP_RECOVERY_READY
+```
+
+Use stable reason codes for automation/dashboard/research.
+
+## 23. Dashboard
+
+```text
+EXECUTION
+Gate          ALLOW / BLOCKED / NOT EVALUATED
+Intent        INT-... • APPROVED/SUBMITTING/VERIFIED
+Send Count    0/1
+Spread        0.24 • emergency PASS
+Spread/SL     9.4%
+Spread/Target 6.2%
+Cost/Reward   PASS
+Drift         0.08 ATR
+Latency       84 ms
+Controller    PRIMARY • epoch 42
+Broker Check  PASS
+Reconcile     VERIFIED
+```
+
+## 24. Planned source ownership
+
+```text
+execution/models.py
+execution/checks.py
+execution/gate.py
+execution/intent_store.py
+execution/service.py
+execution/mt5_writer.py
+execution/reconcile.py
+execution/controller.py
+execution/sqlite_coordination.py
+app/recovery.py
+```
+
+## 25. Planned deterministic proof
+
+Tests cover:
+
+- one raw writer boundary;
+- persist-before-send;
+- exactly one send per Intent;
+- precheck failure send count 0;
+- account/terminal/symbol modes;
+- fixed emergency spread;
+- spread/SL + spread/target + cost/reward;
+- decision→send revalidation;
+- slippage/deviation semantics;
+- OPEN/MODIFY/CLOSE action sensitivity;
+- ambiguous ack/no retry;
+- action-specific reconciliation;
+- manual/foreign ownership;
+- controller stale epoch denial;
+- restart recovery;
+- News absence from hard Gate.
+
+## 26. External evidence
+
+Controlled Windows/Exness DEMO must prove:
+
+- terminal/account/symbol permission flags;
+- filling mode/order_check;
+- min volume/step/stops/freeze;
+- actual spread distributions;
+- actual fill/slippage/deviation;
+- decision/send/ack/reconcile latency;
+- OPEN/MODIFY/CLOSE/SL/TP;
+- exact manual close attribution;
+- restart/reconciliation;
+- daily/weekend schedule behavior.
+
+## 27. Final invariant
+
+> **Every irreversible broker action is serial, durable, one-shot and reconciled. Analysis may be fast/parallel and imperfect; broker authority may never duplicate exposure, guess unknown state, rewrite structural geometry, or use News context as a hidden permission gate.**

@@ -1,62 +1,103 @@
-# GoldScalpTrader — Session/News Provider Contract
+# GoldScalpTrader — Session / News Provider Contract
 
-**Status:** FROZEN V1 PROVIDER ARCHITECTURE — PRESERVED 1800s BASELINE / EXTERNAL PROVIDER PROOF PENDING
-**Version:** 1.1-lkg-cache-preserved-ttl
-**Authority:** Session/news acquisition, normalization, provider health/freshness, bounded last-known-good cache and permission inputs.
+**Status:** APPROVED PROVIDER BOUNDARY — NEWS SOFT / SESSION HARD / IMPLEMENTATION PENDING
+**Version:** 2.0-provider-separation
+**Authority:** Acquisition/normalization/provenance for broker schedule facts and optional News/Fundamental context; cache freshness; provider failure semantics; explicit separation from final trading permission.
 
 ## 1. Purpose
 
-Session and scheduled-news data enter through governed provider boundaries rather than strategy code.
-
-Providers do not directly authorize broker actions.
-
-Core invariants:
-
-- independently known broker/session truth remains separate from external News availability;
-- known blackout remains hard according to the state machine;
-- missing/stale News is never renamed CLEAR;
-- temporary API/network refresh failure does not erase still-valid previously verified event truth;
-- cache validity is never extended merely because refresh failed;
-- provider credentials never enter repository/runtime-backup artifacts;
-- final broker action still requires every other hard authority.
-
-## 2. Provider resolution
+Provider code may obtain two very different fact classes:
 
 ```text
-explicit injected provider for tests/integration
-→ configured local scoped session/news snapshot file
-→ approved zero-cost/best-effort public calendar adapter
-→ accepted last-known-good normalized cache when live refresh fails and cache remains valid
+A) broker/session schedule facts
+B) News/Fundamental context
 ```
 
-Normal Exness/XAU session truth remains a separate broker-schedule concern.
+They may share transport/configuration infrastructure, but they **must not share authority semantics**.
 
-A paid provider is not required.
+Current approved rule:
 
-## 3. Ownership
+```text
+Session schedule UNKNOWN → may hard-block because broker tradeability is unknown
+News context UNKNOWN     → soft context unavailable; does NOT hard-block
+```
 
-| Responsibility | Planned owner |
-|---|---|
-| provider resolution | app/main.py / config |
-| session/news acquisition | app/session_news.py |
-| local snapshot validation | app/session_news.py |
-| LKG cache persistence/validation | app/session_news.py |
-| event normalization/tier mapping | intelligence/news.py |
-| hard market/pre-close/reopen permission | risk/permissions.py |
-| News CLEAR/BLACKOUT/UNKNOWN composition | risk/permissions.py |
-| final permission | execution Gate |
+## 2. Ownership topology
 
-Providers cannot call the broker writer.
+```mermaid
+flowchart TB
+    SCHEDSRC["Broker / accepted schedule source"] --> PROVIDER["Provider adapter"]
+    NEWSSRC["Optional free/file/news source"] --> PROVIDER
+    PROVIDER --> SESSION["BrokerSessionFacts"]
+    PROVIDER --> NEWSC["NewsContextFacts"]
+    SESSION --> PERM["Hard market/session permission"]
+    NEWSC --> DASH["Dashboard"]
+    NEWSC --> RESEARCH["Research / attribution"]
+    NEWSC --> STRAT["Soft family context"]
+    NEWSC -. "NO direct hard permission" .-> PERM
+```
 
-## 4. Scope validation
+## 3. Provider resolution
 
-Every accepted provider snapshot/cache must match its intended account/server/resolved Gold symbol scope where scope applies, or the explicitly defined provider-global event scope.
+Implementation may support:
 
-Wrong-scope data is rejected.
+```text
+explicit injected provider/test adapter
+→ configured scoped file override
+→ built-in Exness XAU schedule adapter
+→ optional best-effort News/calendar source
+```
 
-## 5. Provider health versus usable event truth
+No paid News provider is mandatory.
 
-Provider health vocabulary:
+Exact provider order is an implementation detail as long as:
+
+- operator override is explicit;
+- scope is validated;
+- failures are typed;
+- session and News authority stay separate.
+
+## 4. Session facts
+
+`BrokerSessionFacts` may include:
+
+```text
+provider/source
+scope: account/server/symbol
+observed_at_utc
+schedule_verified
+tradeable
+market_state
+next_close_utc / close_kind
+reopened_at_utc / reopen_kind
+clean_completed_m5_since_reopen
+weekend_gap_assessed
+execution_normalized
+unresolved_gap_or_reconciliation
+special_schedule_context
+```
+
+Session state can be hard because it answers whether current broker operation is expected to be possible/safe.
+
+## 5. News context facts
+
+`NewsContextFacts` may include:
+
+```text
+provider/source
+provider_health
+fetched_at_utc
+cache/source provenance
+scheduled events[]
+macro/event tags
+coverage/freshness
+```
+
+News state is soft. Missing/stale/unavailable context must remain visible but does not hard-block new entry.
+
+## 6. Provider health
+
+Common typed states:
 
 ```text
 VERIFIED
@@ -66,204 +107,251 @@ UNAVAILABLE
 UNKNOWN
 ```
 
-Provider health and News truth are not identical.
+Do not collapse provider health into “safe/unsafe to trade”.
+
+Examples:
 
 ```text
-latest HTTP refresh failed
-+ accepted cache remains valid
-→ Provider Health = DEGRADED
-→ News truth = accepted cached CLEAR/BLACKOUT/warmup state
+Session VERIFIED OPEN + News UNAVAILABLE
+→ hard session may PASS
+→ dashboard shows News UNAVAILABLE
+→ strategies may lack soft macro context
+→ trade still governed by all non-News authorities
 
-latest refresh failed
-+ cache expired/invalid/missing
-→ provider unavailable/degraded
-→ NEWS_SAFETY_UNKNOWN
+Session UNKNOWN + News VERIFIED
+→ hard market/session UNKNOWN
+→ no new entry
 ```
 
-## 6. Preserved TTL baseline
+## 7. Context cache / LKG
 
-GoldSwingTraderAI's reference provider TTL baseline is preserved:
+A last-known-good News/context cache is useful for continuity but is not permission authority.
+
+Preserved baseline context TTL:
 
 ```text
-SESSION_NEWS_TTL_SECONDS = 1800
+1800 seconds
 ```
 
-This is an initial policy/configuration baseline, not a claim that every provider must update exactly every 30 minutes forever.
+Rules:
 
-A later change requires a direct provider/scalp operational reason and governed documentation update.
+- original `fetched_at`/event timestamps never rewritten to fake freshness;
+- refresh failure leaves the previous cache unchanged;
+- cache provenance is visible;
+- cache expiry means context `STALE`, not hard trading block;
+- cache does not override actual broker schedule facts;
+- no cache is required for a trade if other authorities pass.
 
-## 7. Normalized event/cache fields
+## 8. Optional scoped file schema
 
-Preserve where applicable:
+A future implementation may use a schema-versioned atomic file such as:
 
 ```text
-provider identity
-provider event ID
-title/currency/scheduled UTC time
-impact/tier
+{
+  schema_version,
+  provider,
+  scope: { account_login, server, symbol },
+  session: { ... },
+  news: {
+      provider_health,
+      fetched_at_utc,
+      events: [...]
+  }
+}
+```
+
+Validation must cover:
+
+- schema version;
+- exact scope;
+- bounded size;
+- timezone-aware timestamps;
+- future-clock corruption;
+- data types;
+- event IDs;
+- provider identity without credentials.
+
+A scope mismatch is rejected, not used opportunistically.
+
+## 9. Atomic file publication
+
+External/local producer protocol:
+
+```text
+acquire data
+→ validate complete candidate snapshot
+→ write same-directory temporary file
+→ flush/close
+→ atomic replace
+```
+
+On acquisition failure:
+
+- leave prior valid file unchanged;
+- do not rewrite timestamp;
+- report provider health/failure;
+- allow runtime to classify session vs News consequences separately.
+
+## 10. Built-in Exness schedule adapter
+
+If implemented, it must be narrowly scoped:
+
+- accepted Exness server identity;
+- resolved XAUUSD/XAUUSDm-like symbol scope;
+- timezone/DST-safe schedule logic;
+- Friday/weekend semantics;
+- daily rollover semantics;
+- daily/weekend reopen conditions;
+- special schedule uncertainty explicit.
+
+Reference schedule formulas are **not current broker certification**. Connected proof must verify current behavior before release.
+
+## 11. News source contract
+
+An optional public calendar adapter should:
+
+- use HTTPS;
+- use bounded timeout/response size;
+- validate content type/schema;
+- normalize UTC;
+- deduplicate stable event IDs;
+- expose event tier/category as context;
+- mark stale/unavailable honestly;
+- never hold GitHub/broker credentials;
+- never create a hard News blackout in current policy.
+
+If data fails:
+
+```text
+NewsContext = UNAVAILABLE/STALE/UNKNOWN
+→ continue without macro context
+```
+
+## 12. Event normalization
+
+Normalized event:
+
+```text
+provider_event_id
+currency
+title
+scheduled_at_utc
+impact/tier/category
+provider
 fetched_at_utc
-as_of_utc
-coverage_start / coverage_end
-TTL / valid_until
-scope
-provider health
-schema/mapping version
-source LIVE_FETCH | LOCAL_FILE | LAST_KNOWN_GOOD_CACHE
-payload/checksum identity where useful
+mapping_version
 ```
 
-Future fetch times or malformed timezones are rejected.
+Tier mapping is useful for research, not permission.
 
-An empty event list means “no relevant events” only when a valid accepted provider positively supplied that result for the current coverage window.
+## 13. Session schedule failure
 
-## 8. LKG cache rules
-
-A successful accepted calendar may be cached locally.
-
-It is usable after refresh failure only if:
-
-1. original provider result was valid;
-2. schema/mapping version remains accepted;
-3. scope remains correct;
-4. current time lies inside accepted coverage;
-5. original 1800-second/default configured TTL or valid-until has not expired;
-6. payload integrity is intact;
-7. no later positively known invalidating fact supersedes it.
-
-On failure:
+If hard session facts are genuinely unavailable/ambiguous:
 
 ```text
-keep prior accepted cache unchanged
-record refresh failure separately
-never rewrite fetched_at/as_of/valid_until
-never extend TTL because the API failed
+BrokerSessionFacts = UNKNOWN
+→ new OPEN fails closed at session authority
 ```
 
-Expired cache becomes stale diagnostic/research context only.
+Do not use News availability to fill the gap.
 
-## 9. Atomic publication
-
-Any external/local producer should:
-
-1. acquire/validate data;
-2. build complete schema-versioned object;
-3. write same-directory temporary UTF-8 file;
-4. flush/close;
-5. atomically replace accepted file/cache only after validation;
-6. leave last accepted file untouched on acquisition failure;
-7. never rewrite old timestamps to look fresh;
-8. keep credentials outside file/repository.
-
-## 10. Bounded network behaviour
-
-Approved public adapter uses:
-
-- HTTPS;
-- bounded timeout;
-- bounded response size;
-- strict schema validation;
-- UTC normalization;
-- current-coverage validation;
-- stable event IDs;
-- bounded cache;
-- at most small documented retry for specific stale-edge cases;
-- no aggressive polling/retry loop.
-
-## 11. Session versus News failure semantics
+If normal schedule independently proves CLOSED:
 
 ```text
-known Market CLOSED + calendar failure
-→ Market CLOSED preserved
-→ cached News may independently remain usable or become UNKNOWN
-→ entry blocked by market state
-
-known Market OPEN + refresh failure + valid cache
-→ Market OPEN preserved
-→ accepted cached News truth used
-→ Provider Health may be DEGRADED
-
-known Market OPEN + refresh failure + invalid/expired/no cache
-→ Market OPEN preserved
-→ NEWS_SAFETY_UNKNOWN
-→ scalp new-entry BLOCK / LIMITED
-
-known blackout in accepted fresh/cache truth
-→ BLACKOUT preserved
+Market CLOSED + News UNKNOWN
+→ hard block because Market CLOSED
 ```
 
-Provider failure never erases independent session truth.
-
-## 12. Preserved normal session safety baseline
-
-The provider/permission layer preserves these reference policy inputs unless current broker truth or a later specifically justified change supersedes them:
+## 14. News failure
 
 ```text
-Daily PRE_CLOSE     T-20 no new entry / T-10 mandatory flatten
-Weekend PRE_CLOSE   T-60 no new entry / T-30 mandatory flatten
-Daily reopen        1 clean completed M5
-Weekend reopen      2 clean completed M5 + gap assessment
+Market OPEN + News UNKNOWN
+→ News remains visibly UNKNOWN
+→ no hard News block
+→ continue to strategy/quality/Risk/hard broker checks
 ```
 
-Normal Exness Gold schedule hours/DST/special holidays are external broker facts and must be verified during connected proof.
+This is an explicit approved design, not degraded safety.
 
-If exact altered holiday hours are unknown, session authority becomes UNKNOWN rather than inventing hours.
+## 15. No News blackout/warmup contract
 
-## 13. Restart/recovery
+Provider may still expose event countdown/elapsed time.
+
+But provider output must not automatically produce:
+
+```text
+NEWS_BLACKOUT hard permission
+POST_NEWS_WARMUP hard permission
+News cooldown
+```
+
+If actual market shock occurs, Market Data/Executable Quality can detect:
+
+- spread expansion;
+- quote staleness;
+- dislocation;
+- drift/chase;
+- slippage/latency deterioration.
+
+## 16. Restart
 
 On restart:
 
-- provider/session data is re-read/re-fetched where configured;
-- existing LKG cache is revalidated from original timestamps/coverage;
-- stale cache cannot become current merely because it exists;
-- broker exposure is reconciled separately.
+- refresh current hard session facts;
+- load/revalidate cached News context if present;
+- never treat old cached News as current;
+- never require News fetch success to become READY;
+- do not restore broker session OPEN from stale local cache when current session truth is required.
 
-## 14. Research/replay
-
-Record provider identity/health, source type, cache age/coverage, known blackout, UNKNOWN intervals and live/replay coverage differences.
-
-Historical replay may use only event/cache truth causally available at the simulated time.
-
-## 15. Failure matrix
-
-| Condition | Result |
-|---|---|
-| current valid live/file calendar | accepted current event truth |
-| refresh fails + valid LKG cache | use cache; provider DEGRADED |
-| refresh fails + expired/invalid cache | NEWS UNKNOWN |
-| known blackout in accepted truth | BLACKOUT |
-| file invalid/scope mismatch + no fallback | UNKNOWN |
-| future fetch time | reject |
-| session schedule ambiguous | Session UNKNOWN independently |
-| known altered holiday, no exact hours | Session UNKNOWN independently |
-
-## 16. Dashboard
-
-Show separately where practical:
+## 17. Dashboard
 
 ```text
-provider identity
-provider health
-source LIVE / FILE / CACHE
-last successful refresh
-cache age / valid-until
-last refresh error
-Market State
-News State
-next accepted event/countdown
+SESSION / NEWS SOURCES
+Market Source   Exness schedule adapter
+Market State    OPEN • schedule verified
+News Source     FILE / FREE / NONE
+News Health     STALE
+News Age        37m • SOFT CONTEXT ONLY
+Next Event      CPI 08:30 UTC
 ```
 
-Valid cached truth must not render UNKNOWN merely because newest refresh failed.
-
-## 17. Planned implementation ownership
+## 18. Planned ownership
 
 ```text
-src/gold_scalp_trader/app/session_news.py
-src/gold_scalp_trader/intelligence/news.py
-src/gold_scalp_trader/risk/permissions.py
+app/session_news.py or split provider modules
+intelligence/news.py
+risk/permissions.py        # session permission only; News not hard
+config/settings.py
+operator/dashboard.py
 ```
 
-## 18. Planned proof
+## 19. Planned proof
 
-Tests cover provider resolution, 1800-second baseline/config override semantics, schema/scope/TTL, atomic publication, live-success cache creation, refresh failure with valid cache, cache expiry → UNKNOWN, no timestamp laundering, known blackout preservation, restart revalidation, bounded retry and secret exclusion.
+Tests cover:
 
-Connected evidence separately validates real provider reliability and current broker schedule behaviour.
+- provider resolution;
+- scope mismatch;
+- schema/type/timestamp validation;
+- 1800-second context freshness labeling;
+- no timestamp laundering;
+- atomic previous-cache preservation;
+- Session UNKNOWN hard behavior;
+- News UNKNOWN soft behavior;
+- News event tier no hard block;
+- no News cooldown/warmup;
+- known CLOSED remains CLOSED if News fails;
+- public source failure does not create fake CLEAR;
+- restart revalidation.
+
+## 20. External proof
+
+Before release:
+
+- current Exness XAU schedule/DST/holiday behavior;
+- intended account/server/symbol scope;
+- any selected News source reliability if used;
+- no paid News dependency required.
+
+## 21. Final invariant
+
+> **Provider transport may fail without deciding the trade. Session facts and News context can travel through similar infrastructure, but only actual broker/session truth is hard authority; News remains honest soft context even when unavailable.**
