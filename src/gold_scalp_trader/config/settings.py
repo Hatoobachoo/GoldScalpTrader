@@ -38,6 +38,9 @@ class Settings:
     preferred_symbol: str = "XAUUSDm"
     symbol_aliases: tuple[str, ...] = ("XAUUSDm", "XAUUSD")
     active_strategy_family: StrategyFamily | None = None
+    active_strategy_policy_version: str = "v1"
+    bot_magic: int = 560501
+    bot_comment_prefix: str = "GST"
     max_open_positions: int = 1
     aggressive_small_account: bool = False
     manual_daily_loss_reset_enabled: bool = False
@@ -120,6 +123,9 @@ def load_settings() -> Settings:
         preferred_symbol=preferred,
         symbol_aliases=aliases,
         active_strategy_family=_family_env(),
+        active_strategy_policy_version=os.getenv("ACTIVE_STRATEGY_POLICY_VERSION", "v1").strip(),
+        bot_magic=int(os.getenv("BOT_MAGIC", "560501")),
+        bot_comment_prefix=os.getenv("BOT_COMMENT_PREFIX", "GST").strip(),
         max_open_positions=int(os.getenv("MAX_OPEN_POSITIONS", "1")),
         aggressive_small_account=_bool_env("AGGRESSIVE_SMALL_ACCOUNT", False),
         manual_daily_loss_reset_enabled=_bool_env("MANUAL_DAILY_LOSS_RESET_ENABLED", False),
@@ -147,6 +153,12 @@ def validate_settings(settings: Settings) -> None:
         raise ValueError("SYMBOL cannot be empty")
     if not settings.symbol_aliases:
         raise ValueError("at least one symbol alias is required")
+    if settings.active_strategy_family is not None and not settings.active_strategy_policy_version:
+        raise ValueError("ACTIVE_STRATEGY_POLICY_VERSION cannot be empty")
+    if settings.bot_magic <= 0:
+        raise ValueError("BOT_MAGIC must be positive")
+    if not settings.bot_comment_prefix or len(settings.bot_comment_prefix) > 8:
+        raise ValueError("BOT_COMMENT_PREFIX must contain 1-8 characters")
     if settings.max_open_positions != 1:
         raise ValueError("MAX_OPEN_POSITIONS is preserved at 1")
     if settings.max_consecutive_losses != 3:

@@ -48,6 +48,15 @@ def _print_result(result: RuntimeResult, state_path: Path) -> None:
         print(f"Send count   : {result.intent.send_count}")
         if result.intent.broker_ticket is not None:
             print(f"Broker ticket: {result.intent.broker_ticket}")
+    if result.managed_trade is not None:
+        trade = result.managed_trade
+        print(f"Managed      : #{trade.ticket} • {trade.family.value}")
+        print(f"Entry / SL   : {trade.entry:.3f} / {trade.current_sl:.3f}")
+        print(f"Primary      : {trade.primary_target:.3f}")
+        if trade.expansion_target is not None:
+            print(f"Expansion    : {trade.expansion_target:.3f}")
+    if result.management_action is not None:
+        print(f"Management   : {result.management_action.value}")
     print("-" * 78)
     print("Ctrl+C = safe local stop + checkpoint. REAL trading remains disabled.")
 
@@ -74,7 +83,7 @@ def run_live_demo(
             except Mt5ReadError as exc:
                 _clear_screen()
                 print(f"MT5 READ DEGRADED: {exc}")
-                print("No broker write attempted this cycle.")
+                print("No new broker write attempted this cycle.")
                 completed += 1
                 if max_cycles is None or completed < max_cycles:
                     sleep_fn(settings.loop_interval_seconds)

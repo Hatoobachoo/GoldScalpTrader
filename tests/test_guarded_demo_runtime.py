@@ -18,6 +18,7 @@ class Api:
     TIMEFRAME_H1 = 60
     TIMEFRAME_H4 = 240
     TRADE_ACTION_DEAL = 1
+    TRADE_ACTION_SLTP = 6
     ORDER_TYPE_BUY = 0
     ORDER_TYPE_SELL = 1
     TRADE_RETCODE_DONE = 10009
@@ -30,6 +31,7 @@ class Api:
         self.sent = 0
         self.opened = False
         self.account_trade_mode = account_trade_mode
+        self.last_request = None
 
     def account_info(self):
         return SimpleNamespace(
@@ -86,19 +88,19 @@ class Api:
         return rows
 
     def positions_get(self, symbol=None):
-        if not self.opened:
+        if not self.opened or self.last_request is None:
             return []
         return [
             SimpleNamespace(
                 ticket=88,
                 symbol="XAUUSDm",
                 type=0,
-                volume=.01,
-                price_open=100.02,
-                sl=99,
-                tp=101,
-                magic=0,
-                comment="",
+                volume=float(self.last_request.get("volume", .01)),
+                price_open=float(self.last_request.get("price", 100.02)),
+                sl=float(self.last_request.get("sl", 99.0)),
+                tp=float(self.last_request.get("tp", 101.0)),
+                magic=int(self.last_request.get("magic", 0)),
+                comment=str(self.last_request.get("comment", "")),
             )
         ]
 
@@ -107,6 +109,7 @@ class Api:
 
     def order_send(self, request):
         self.sent += 1
+        self.last_request = dict(request)
         self.opened = True
         return SimpleNamespace(retcode=10009, order=88, deal=99, comment="done")
 
@@ -127,6 +130,9 @@ def test_demo_path_never_writes_without_a_complete_trade_setup():
     if api.sent == 1:
         assert result.intent is not None
         assert result.intent.state.value == "ACCEPTED_VERIFIED"
+        assert result.managed_trade is not None
+        assert result.managed_trade.ticket == 88
+        assert api.last_request["magic"] == _settings().bot_magic
 
 
 def test_non_demo_account_is_hard_refused():
