@@ -1,52 +1,116 @@
 # GoldScalpTrader — Governed Strategy Discovery
 
-**Status:** FROZEN V1 RESEARCH GOVERNANCE — DISCOVERY IS NOT PRODUCTION
-**Version:** 1.0-preservation-first-scalp-discovery
-**Authority:** Parameter discovery, declarative strategy-recipe discovery, candidate comparison and evidence-driven scalp-behaviour discovery.
+**Status:** APPROVED CONTINUOUS DISCOVERY CONTRACT — DISCOVERY IS NOT PRODUCTION
+**Version:** 2.0-active-backend-strategy-isolation
+**Authority:** Parameter discovery, declarative strategy-recipe discovery, market-behaviour clustering, candidate comparison, active/shadow strategy evidence and durable discovery liveness.
 
 ## 1. Purpose
 
-Discovery searches for improvements while preserving production semantics, chronology, transaction-cost realism and hard safety.
+Discovery continuously searches for evidence-backed improvements while preserving production attribution and hard safety.
 
-It proposes candidates. It does not directly change the Strategy Floor, preserved Risk/session defaults or broker runtime.
+It may discover:
 
-## 2. Discovery pipeline / liveness
+- better parameter combinations;
+- better M1 timing policies;
+- better management policies;
+- variants of the six current families;
+- materially new strategy-family hypotheses;
+- better session/regime conditioning;
+- useful ML-assisted candidate features.
 
-```text
-ResearchEpisodeRecord — actual / missed / blocked / exit / fault
-→ audited primitive mapping
-→ recurring independent cluster
-→ eligible + novel?
-   yes → declarative StrategyCandidate
-   no  → durable suppression/rejection reason
-→ validation/promotion stages
-→ discovery health
+It does not directly change production or write to the broker.
+
+## 2. Discovery pipeline
+
+```mermaid
+flowchart TB
+    ACTUAL["Active-family actual episodes"] --> JOURNAL["ResearchEpisodeRepository"]
+    SHADOW["5 shadow-family counterfactuals"] --> JOURNAL
+    MISSED["Missed / false-block / weak capture"] --> JOURNAL
+    FAULT["Broker/system faults"] --> JOURNAL
+    JOURNAL --> MAP["Audited primitive mapping"]
+    MAP --> CLUSTER["Recurring independent episode clusters"]
+    CLUSTER --> NOVEL{"Eligible / novel / sufficiently independent?"}
+    NOVEL -->|No| SUPPRESS["Durable suppression reason"]
+    NOVEL -->|Yes| CAND["Typed StrategyCandidate"]
+    CAND --> PROMO["Validation / promotion lifecycle"]
 ```
 
-Eligible recurring evidence must produce either candidate or explicit machine-readable suppression reason.
+Liveness rule:
 
-## 3. Evidence feed
+```text
+eligible evidence
+→ durable candidate
+OR
+→ durable machine-readable suppression/rejection reason
+```
 
-Episodes preserve attribution for actual reconciled trades, meaningful missed moves, poor/false entries, late/chased entries, transaction-cost failure, premature/weak-capture exits, blocked/capacity-suppressed opportunities and broker/system faults.
+If eligible evidence repeatedly disappears without either outcome, discovery is DEGRADED.
 
-System faults are not evidence that strategy logic should change.
+## 3. Episode attribution
+
+Discovery inputs remain separated:
+
+```text
+ACTUAL_ACTIVE_TRADE
+ACTIVE_OPPORTUNITY_NOT_TRADED
+SHADOW_COUNTERFACTUAL
+MISSED_MEANINGFUL_MOVE
+FALSE_BLOCK_CANDIDATE
+PREMATURE_EXIT / WEAK_CAPTURE
+HARD_SAFE_BLOCK
+SYSTEM_OR_BROKER_FAULT
+```
+
+A broker/system fault cannot be “learned” as a new trading strategy.
+
+A hard-safe block may be studied for opportunity cost, but production safety is not ordinary strategy-search space.
 
 ## 4. Discovery levels
 
-### Level A — bounded parameter/policy discovery
-May research genuine scalp-sensitive analytical/timing/management values such as event freshness, cost-room, chase distance, time-efficiency and optional confluence.
+### Level A — parameter discovery
 
-It may not silently treat preserved non-scalp defaults as ordinary tunable variables.
+Researchable examples:
+
+- family qualification thresholds;
+- within-family evidence weights;
+- M1 pattern/freshness thresholds;
+- M5 event age/chase/drift;
+- minimum gross/net quality;
+- spread/SL and spread/target thresholds;
+- cost/reward;
+- time-efficiency/protection/trailing/Runner rules;
+- session/regime conditioning.
+
+Preserved monetary Risk bands/ceilings are **not ordinary automatic search parameters**.
 
 ### Level B — strategy recipe discovery
-Combines approved primitives into declarative hypotheses with required behavior, optional support, timing/freshness profile, invalidation, target and preferred regime/session.
+
+Combines approved primitives into a typed hypothesis:
+
+```text
+required behavior
+optional support/opposition
+preferred regime/session
+timing profile
+invalidation model
+target model
+management profile
+```
 
 ### Level C — market-behaviour discovery
-Clusters recurring independent episodes to identify behavior not represented well by current six families.
 
-The objective is falsifiable recurring behavior, not unlimited random combinations.
+Looks for repeated behaviors not adequately represented by current six families.
+
+A genuine `NEW_FAMILY` requires materially distinct causal behavior, not merely one extra RSI/FVG/Fib filter.
+
+### Level D — model-assisted discovery
+
+ML/statistical methods may rank clusters/features/candidates but cannot generate hidden broker authority or untraceable executable code.
 
 ## 5. Approved primitive vocabulary
+
+Initial/expected audited primitive categories include:
 
 ```text
 STRUCTURE_TREND
@@ -66,84 +130,235 @@ EMA_FLOW
 RSI_MOMENTUM
 ATR_VOLATILITY
 SESSION_CONTEXT
+NEWS_CONTEXT
 TARGET_PATH
-ENTRY_TIMING
-EVENT_FRESHNESS
-SPREAD_COST_CONTEXT
-HOLD_TIME_EFFICIENCY
+M5_SETUP
+M1_ENTRY_TIMING
+EXECUTABLE_COST
+MANAGEMENT_EFFICIENCY
 ```
 
-Event freshness, cost context and hold-time efficiency are accepted scalp-specific primitives. Their exact thresholds remain researchable.
+Exact enum names are implementation details, but arbitrary strings/code/safety overrides are rejected.
 
-M1 may appear as diagnostic/research data but not as hidden production primitive with broker authority.
+News is a research context primitive, not hard permission.
 
-Unknown strings, executable source and hard-safety concepts are rejected.
-
-## 6. Candidate discipline
-
-Each candidate retains typed identity/version/type, parent family where applicable, trigger/hypothesis, required/optional primitives, regime/session/timing/freshness profile, invalidation/target model, evidence IDs/chronology, cost assumptions, semantic fingerprint and state/rejection/suppression reason.
-
-Independent Episode IDs are required; repeated observations of one episode cannot inflate evidence.
-
-## 7. Preservation-first classification
-
-A candidate affecting an inherited feature/default must carry one of:
+## 6. Candidate types
 
 ```text
-SCALP_SPECIFIC_CHANGE
-OPERATOR_DIRECTED_CHANGE
-REFERENCE_DEFECT_CORRECTION
+VARIANT
+NEW_FAMILY
+ENTRY_POLICY
+EXIT_POLICY
+QUALITY_POLICY
+REGIME_POLICY
+MODEL_ASSISTED_POLICY
 ```
 
-before it can enter promotion toward production. Otherwise the inherited baseline remains preserved.
+Every candidate retains:
 
-Examples not silently searchable away include account Risk-profile architecture/bands, manual reset default, one-fresh-reentry baseline, three-loss cooldown baseline, PRE_CLOSE/reopen defaults, one-shot Intent, reconciliation and future REAL release governance.
+- stable ID/version;
+- parent family where applicable;
+- trigger/hypothesis;
+- required/optional primitives;
+- timing/invalidation/target/management model;
+- evidence episode IDs;
+- active/shadow baseline identity;
+- complexity/similarity;
+- fingerprint;
+- stage;
+- suppression/rejection reason.
 
-## 8. Similarity / durable memory
+## 7. Strategy Isolation advantage
 
-Candidates close to existing family are variants. Materially distinct recurring behavior may qualify as new family. Small timing/management changes are ENTRY_POLICY/EXIT_POLICY.
-
-Fingerprints and similarity suppress duplicates. Rejected-candidate memory survives restart/local backup.
-
-## 9. Complexity / anti-filter-soup rule
-
-Recipes containing every available feature are presumed overfit until ablation, Opportunity Recall, cost-adjusted expectancy, drawdown and frequency evidence justify complexity.
-
-Optional confluence remains bounded support rather than automatic mandatory checklist.
-
-## 10. Hard exclusions
-
-Discovery cannot optimize away broker/runtime identity, closed-candle/no-lookahead, required UNKNOWN handling, structural-stop integrity, one-shot submission, reconciliation, controller fencing, unknown-exposure fail-safe, original-R immutability, secret/backup integrity or sole-writer confinement.
-
-Canonical non-scalp Risk/session defaults require explicit governed reclassification before research can propose production replacement.
-
-## 11. Candidate evaluation / production boundary
-
-Promotion governance owns stages. Locked fingerprint change creates new candidate/version. Final holdout is one-shot. Explicit approval required before production policy.
-
-Production runtime reads approved policy only; it never invents strategy logic inside live broker cycle.
-
-Future REAL authority is separately gated and cannot be granted by discovery/promotion alone.
-
-## 12. Persistence / dashboard
-
-Restore episode journal, clusters, CandidateRegistry, fingerprints, rejection memory, stage and health from verified StateStore/checkpoint.
-
-Dashboard shows Discovery Health, eligible clusters, candidate count, latest ID/type/stage, suppression reason and Broker Authority `NONE`.
-
-## 13. Planned implementation ownership
+Because only one family produces actual live trades at a time, discovery receives clean comparative evidence:
 
 ```text
-src/gold_scalp_trader/research/episode_journal.py
-src/gold_scalp_trader/research/discovery.py
-src/gold_scalp_trader/research/invention.py
-src/gold_scalp_trader/research/promotion.py
+actual active-family outcome
+vs
+same-time shadow-family hypotheses
 ```
 
-## 14. Planned proof
+This helps answer:
 
-Tests cover evidence feed, candidate types, primitive validation, duplicate suppression, preservation classification, restart memory, complexity bounds, promotion handoff and hard-safety exclusions.
+- should a shadow family become active next?
+- does active family miss too many valid moves?
+- which family produces better after-cost expectancy?
+- which family has better M1 entry efficiency?
+- which family works by session/regime?
+- which family causes long slot occupancy?
 
-## 15. Research questions
+Family rotation proposals enter the normal candidate/promotion path.
 
-Per-trigger sample sizes, similarity/complexity limits, resource scheduling, regime/session clustering, latency/cost pattern clustering and optional-confluence retention remain research/calibration items. Preserved non-scalp feature/default policy is not automatically reopened.
+## 8. Similarity and durable memory
+
+Candidate fingerprints prevent duplicate reinvention.
+
+A similar rejected candidate should not reappear every restart unless:
+
+- materially new independent evidence exists;
+- its semantics genuinely differ;
+- discovery policy/version explicitly justifies reconsideration.
+
+Persist rejected/suppressed memory.
+
+## 9. Complexity control / anti-filter-soup
+
+A candidate that requires every available clue is presumed fragile until evidence proves otherwise.
+
+Especially:
+
+- EMA;
+- RSI;
+- FVG;
+- OB;
+- Trendline;
+- Fibonacci;
+- POC;
+- session context;
+- News context
+
+may be useful primitives, but more conditions are not automatically better.
+
+Research must compare:
+
+```text
+Net expectancy
+Opportunity Recall
+false blocks
+throughput
+entry/capture efficiency
+complexity
+out-of-sample stability
+```
+
+## 10. 120/day benchmark in discovery
+
+Discovery should investigate throughput loss without forcing trades.
+
+Useful triggers:
+
+```text
+high-quality missed clusters
+M1 timing misses
+repeated cost rejects that later move favorably
+long slot-occupancy suppressions
+family/session opportunity scarcity
+over-restrictive optional evidence
+```
+
+A candidate that increases trade count but destroys after-cost expectancy fails.
+
+## 11. Hard exclusions
+
+Discovery cannot optimize away:
+
+- account/server/symbol identity;
+- no-lookahead/chronology;
+- preserved Risk ceilings/daily lock;
+- one-shot Intent;
+- reconciliation/no blind retry;
+- controller ownership/fencing;
+- unknown exposure fail-safe;
+- original-R immutability;
+- persistence/secret safety;
+- explicit final operator production approval.
+
+## 12. Automated research progression
+
+Discovery may automatically create candidates and hand them to promotion governance.
+
+It may also schedule/recommend:
+
+- replay;
+- walk-forward;
+- ablation;
+- stress;
+- shadow;
+- controlled candidate DEMO.
+
+It cannot skip evidence stages or self-authorize production.
+
+## 13. Liveness / health
+
+```text
+IDLE       no eligible recurring evidence
+HEALTHY    every eligible cluster produced candidate or explicit suppression
+DEGRADED   eligible work cannot be processed/persisted correctly
+FAULTED    integrity/schema/evidence failure requiring intervention
+```
+
+Import success alone is not HEALTHY.
+
+## 14. Persistence / restart
+
+Restore:
+
+- episode journal;
+- cluster identities;
+- candidate registry;
+- fingerprints/similarity;
+- suppression/rejection memory;
+- discovery cursor/status;
+- evidence lineage;
+- promotion stage.
+
+Loss of memory is a degraded/fault condition, not a reason to re-invent from scratch silently.
+
+## 15. Operator/dashboard
+
+```text
+DISCOVERY
+Health             HEALTHY
+Active Family      Breakout Retest
+Actual Episodes    418
+Shadow Episodes    2,090
+Eligible Clusters  7
+Candidates         4
+Latest             CAND-044 • ENTRY_POLICY • SHADOW
+Suppressed         3 • explicit reasons
+Broker Authority   NONE
+```
+
+## 16. Planned implementation ownership
+
+```text
+research/episode_journal.py
+research/discovery.py
+research/invention.py
+research/promotion.py
+research/metrics.py
+```
+
+## 17. Planned proof
+
+Tests cover:
+
+- automatic episode feed;
+- active/shadow attribution;
+- independent source IDs;
+- primitive validation;
+- candidate type/classification;
+- similarity/duplicate suppression;
+- rejection memory across restart;
+- hard-safety exclusion;
+- optional confluence not universalized;
+- 120/day throughput metrics;
+- liveness health;
+- automated handoff to promotion;
+- no MT5 writer/production mutation.
+
+## 18. Calibration
+
+Open research policy:
+
+- minimum independent episode counts;
+- cluster similarity;
+- complexity limits;
+- scheduling/CPU budgets;
+- family-rotation evidence requirements;
+- ML clustering/ranking methods;
+- candidate retention/pruning.
+
+## 19. Final invariant
+
+> **Discovery should be curious, persistent and automatic, but not reckless. It may search broadly for better Scalp behavior while preserving causal evidence, clean active/shadow attribution and hard safety; every promising discovery still has to earn production through governed evidence and operator approval.**

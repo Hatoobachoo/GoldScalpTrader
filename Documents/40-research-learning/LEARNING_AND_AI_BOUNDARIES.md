@@ -1,239 +1,371 @@
 # GoldScalpTrader — Learning and AI Boundaries
 
-**Status:** FROZEN V1 LEARNING GOVERNANCE — RESEARCH THRESHOLDS / IMPLEMENTATION EVIDENCE PENDING
-**Version:** 1.0-preservation-first-scalp-learning
-**Authority:** StrategyMemory, entry/exit learning, bounded adaptive influence, AI limits, evidence isolation, persistence/local backup and per-scope ownership.
+**Status:** APPROVED CONTINUOUS-LEARNING CONTRACT — DOCUMENTATION RECONSTRUCTION / IMPLEMENTATION PROOF PENDING
+**Version:** 2.0-active-backend-approval-gated-production
+**Authority:** StrategyMemory, actual/shadow/missed/blocked evidence, bounded adaptive research, autonomous invention/ML boundaries, production-policy immutability and approval-gated promotion.
 
 ## 1. Purpose
 
-Learning may observe verified experience, remember it, explain it and propose bounded changes. It must not turn the live scalper into a self-mutating broker client.
+GoldScalpTrader is designed to learn continuously without becoming an unstable self-modifying broker client.
 
-> Learning may observe, remember, research and propose. Production changes only through governed promotion.
+> **Learning may observe, remember, compare, invent, tune, train and test automatically. Production/live behavior may change only through governed evidence and explicit operator approval.**
 
-Hard monetary Risk, account/runtime identity, market/news safety, controller fencing, reconciliation, broker execution safety, preservation-first constraints and UNKNOWN fail-closed semantics cannot be learned away.
-
-## 2. One-way influence
+This distinction is central:
 
 ```text
-verified actual/counterfactual evidence
-→ versioned StrategyMemory
-→ bounded recommendation
-→ declarative challenger
-→ chronological validation / holdout / stress / shadow / DEMO canary
-→ explicit governed approval
-→ versioned production policy
+backend autonomy = ACTIVE
+production self-mutation = FORBIDDEN
 ```
 
-No learning record/candidate/AI explanation may call MT5Writer or grant broker authority.
+## 2. One-way authority model
 
-## 3. Preservation-first learning boundary
+```mermaid
+flowchart TB
+    ACTUAL["Verified active-family actual outcomes"] --> MEM["StrategyMemory"]
+    SHADOW["5 shadow-family counterfactuals"] --> LAB["Research episode journal"]
+    MISSED["Missed / false-block / blocked episodes"] --> LAB
+    FAULT["System/broker faults"] --> LAB
+    MEM --> DISC["Discovery / tuning / invention / ML"]
+    LAB --> DISC
+    DISC --> CAND["Typed candidate"]
+    CAND --> EVID["Replay → validation → holdout → stress → shadow → DEMO"]
+    EVID --> ASK["APPROVAL_REQUIRED"]
+    ASK -->|explicit operator approval| PROD["Versioned production policy"]
 
-Learning may propose a change to an inherited Swing feature/default, but it does not automatically convert that proposal into a Scalp difference.
-
-A production change to a preserved reference feature/default still requires:
-
-```text
-direct scalp-specific justification or explicit operator decision
-→ affected-graph documentation change
-→ validation/promotion evidence
-→ explicit approval
+    SAFE["Hard Risk / execution / reconciliation / controller / chronology"] -. "cannot be learned away" .-> PROD
 ```
 
-Hard safety cannot be made an ordinary search parameter.
+No learning, AI, ML or research object may call `MT5Writer`, grant controller authority, turn UNKNOWN into PASS or bypass Risk/execution safety.
 
-## 4. Allowed influence levels
+## 3. Evidence classes
 
-| Level | Output | Direct broker authority |
+Evidence classes are never silently merged:
+
+| Class | Meaning | Broker P/L? |
 |---|---|---:|
-| L0 observation | metrics/explanation/journal | none |
-| L1 recommendation | hypothesis/candidate idea | none |
-| L2 validated bounded adjustment | ranking/timing input | none until promotion |
-| L3 Shadow | hypothetical result | none |
-| L4 DEMO Canary | governed candidate | ordinary gates only |
-| L5 approved policy | explicit versioned config | no safety bypass |
+| ACTUAL_ACTIVE | verified trade from current `ACTIVE_EXECUTION` family | yes |
+| SHADOW_COUNTERFACTUAL | what a `SHADOW_ONLY` family would have done | no |
+| MISSED_OPPORTUNITY | valid/meaningful move not traded | no |
+| UPSTREAM_REJECTED | strategy/timing/quality/Risk stopped | no |
+| HARD_BLOCKED | objective broker/account/session/lifecycle block | no |
+| SYSTEM_FAULT | data/execution/persistence/controller failure | no |
+| EXTERNAL_MANUAL | manual/foreign activity | not bot performance |
 
-Future REAL remains a separately governed runtime capability; research/promotion does not itself authorize REAL.
+A manual close of an already-known ManagedTrade remains an actual bot trade outcome with close origin labelled EXTERNAL/MIXED; an unknown manual position is never adopted.
 
-## 5. Evidence identities remain separate
+## 4. Strategy Isolation and learning
 
-Never silently combine:
+Strategy Isolation creates unusually clean research evidence:
 
 ```text
-actual reconciled broker outcome
-counterfactual MISSED / BLOCKED outcome
-system/broker fault episode
-REPLAY
-VALIDATION
-FINAL_HOLDOUT
-SHADOW
-DEMO_CANARY
-MAIN_DEMO
+1 active family → real production outcome
+5 shadow families → same-time counterfactual comparisons
 ```
 
-Counterfactual R is never broker P/L. System/broker failure is not evidence that strategy logic needs changing. Unknown manual exposure is never bot learning evidence.
+Every relevant episode records:
 
-## 6. StrategyMemory durability
+- active family + policy version;
+- shadow family reports;
+- M5 setup/event IDs;
+- M1 timing state;
+- TradePlan geometry;
+- executable-cost facts;
+- Risk and blocker facts;
+- actual/shadow outcomes;
+- session/News soft context;
+- code/data/config identity.
 
-Primary durable namespace:
+Old evidence is never relabelled after the active family changes.
+
+## 5. StrategyMemory
+
+StrategyMemory stores deterministic, durable observations and summaries.
+
+Baseline namespace concept:
 
 ```text
 strategy_learning_memory
 ```
 
-A scoped record contains LearningConfig/policy identity, chronological raw observations, deterministic summaries, stable source IDs, account/symbol scope where applicable, environment identity and code/data/policy lineage.
+Each observation has a stable `source_id` and complete evidence identity.
 
-```text
-same source + same evidence → idempotent no-op
-same source + changed evidence → explicit integrity conflict
-```
+Rules:
 
-Summaries are recomputed/verified from raw observations. Policy/config changes never rewrite historical evidence.
+- same source + identical evidence = idempotent;
+- same source + different evidence = integrity conflict;
+- summaries recompute/verify from raw observations;
+- policy/config/code/environment identity is stored;
+- changing the current policy never rewrites historical observations;
+- small samples cannot become strong evidence merely due attractive win rate.
 
-## 7. Small samples and confidence
+## 6. Actual entry learning
 
-Small sample does not become strong evidence because win rate looks high. Minimum evidence, shrinkage/confidence and context grouping remain research-policy questions.
+Entry learning should study:
 
-Scalping may produce more trades, but correlated trades from one session/regime/episode are not automatically independent observations.
-
-## 8. Bounded adaptive influence
-
-A validated memory effect may eventually produce a small, versioned analytical ranking/timing adjustment, for example:
-
-```text
-base opportunity score
-+ bounded validated family/session adjustment
-```
-
-It must not create silent hard rules such as “one weak London sample → never trade London again.”
-
-Adaptive influence requires explicit bounds, minimum samples, policy identity and OFF/DEGRADED state.
-
-## 9. Scalp entry learning
-
-May study:
-
-- approved entry reference versus actual fill;
-- adverse slippage / spread at signal-check-send-fill;
-- early/optimal/late/chased classification;
-- distance/time since causal event;
-- pullback/retest depth;
-- breakout acceptance timing;
+- Approved Entry Reference vs actual fill;
+- M5 Opportunity age;
+- M1 refinement pattern/freshness;
+- early/efficient/late/chased classification;
+- Approved Entry→Executable Price drift;
+- spread/SL;
+- spread/target;
+- cost/reward;
+- expected vs actual slippage;
+- decision→send latency;
 - MFE/MAE after entry;
-- preserved one-fresh-reentry outcomes;
-- MISSED opportunity cost;
-- family/session/regime performance;
-- optional confluence marginal value;
-- decision/check/send/ack latency diagnostics.
+- same-episode re-entry outcomes;
+- session/regime/family context.
 
-Learning may propose an Entry Policy Challenger but cannot directly rewrite live thresholds or the preserved one-reentry baseline.
+Recurring evidence may create an Entry Policy candidate. It cannot directly rewrite live thresholds.
 
-## 10. Scalp exit/management learning
+## 7. Exit / management learning
 
-May study MFE versus realized R, MAE, Capture Efficiency, premature-exit cost, trade duration/M5 bars, time-efficiency exits, structural protect/trail quality, Primary/Expansion/Runner outcomes, optional broker-valid partial-management outcomes, profit giveback and exit spread/slippage.
+Study:
 
-One outcome never justifies self-modification.
+- realized R;
+- MFE/MAE;
+- Capture Efficiency;
+- Exit Efficiency;
+- premature exit cost;
+- profit giveback;
+- time-to-MFE / time-to-target;
+- time-efficiency EXIT quality;
+- protection/trailing timing;
+- Runner outcomes;
+- partial-close outcomes where applicable;
+- slot-occupancy opportunity cost;
+- PRE_CLOSE behavior.
 
-## 11. Frozen production identities consumed by learning
+A profitable trade can still reveal poor management. A normal losing trade can still be a valid setup.
 
-Current architecture assumes:
+## 8. Opportunity-recall learning
 
-```text
-H1   broad soft context
-M15  opportunity/location/path
-M5   primary setup/timing/management
-H4   optional major context
-M1   diagnostic/research only
-```
+Because the product is not meant to become overrestrictive, research must measure what **did not trade**.
 
-Learning can study M1 diagnostics, but cannot silently promote M1 into production authority.
-
-Monetary policy consumed by learning includes the preserved SMALL/MEDIUM/NORMAL DayStartEquity profile identity plus whether the explicit disabled-by-default aggressive overlay was enabled. Historical policy identity is immutable after the trade.
-
-## 12. Actual DEMO learning identity
-
-When governed DEMO execution exists, verified OPEN freezes at least family, approved entry reference, policy/profile/overlay identity, direction, original R, actual fill, ticket and TradePlan/Opportunity/Episode IDs.
-
-Later policy edits may not relabel the trade. Missing legacy identity is not invented.
-
-## 13. Close durability and exactly-once ingestion
+Required dimensions include:
 
 ```text
-verified close
-→ persist closed_trade_learning_queue
-→ persist managed_trade_closure_receipt
-→ clear active ManagedTrade safely
-→ reconstruct broker/path outcome
-→ save exactly one MAIN_DEMO observation
-→ remove queue only after durable StrategyMemory success
+Qualified Opportunity Recall
+Opportunity Capture Rate
+False Block Rate
+Missed Opportunity Cost
+capacity_suppressed_opportunities
+timing_missed_opportunities
+cost_rejected_opportunities
+Risk/cooldown blocks
+broker/session hard blocks
+system-fault episodes
 ```
 
-Unresolved `SUBMITTING`/`ACCEPTED_UNKNOWN` Intent reconciles first.
+The operator-approved ~120 trades/day figure is a throughput benchmark, not a target that can weaken standards.
 
-## 14. Causal path metrics
+## 9. News/Fundamental learning
 
-For completed-bar path estimates:
+News is soft context only.
+
+Research may study:
+
+- event tier/category;
+- spread/slippage/latency around events;
+- family-specific event performance;
+- M1 timing quality around events;
+- false-break/expansion behavior;
+- capture efficiency.
+
+Research may later propose evidence-backed changes, but the current live system does not have a News hard block/cooldown/warmup.
+
+## 10. AI supervisor boundary
+
+AI may:
+
+- explain stored decisions/outcomes;
+- identify recurring evidence clusters;
+- propose declarative strategies;
+- tune candidate parameters;
+- train/test ML candidates;
+- compare active/shadow families;
+- draft research recommendations;
+- automatically advance candidates through allowed evidence stages.
+
+AI may not:
+
+- call raw MT5/broker writer;
+- change live Risk bands/ceilings;
+- silently change active strategy family;
+- silently change production thresholds;
+- turn UNKNOWN into PASS;
+- hide failed experiments/holdout results;
+- execute arbitrary generated production code;
+- self-approve production promotion.
+
+## 11. Advanced ML boundary
+
+Advanced ML is an **active backend research capability**.
+
+Permitted roles may include:
+
+- candidate ranking;
+- regime classification;
+- timing-quality estimation;
+- cost/slippage/latency modelling;
+- opportunity-quality research;
+- management-policy research;
+- anomaly/fault detection.
+
+Requirements:
+
+- causal features only;
+- explicit train/validation/holdout boundaries;
+- versioned feature schema/model/data identity;
+- no hidden online production mutation;
+- interpretable reason/uncertainty where used in decision support;
+- deterministic/reproducible evaluation where possible;
+- production activation only after the same governed promotion path.
+
+## 12. Bounded adaptive production influence
+
+A future approved production policy may contain a bounded adaptive adjustment derived from validated memory, but it must be:
+
+- versioned;
+- capped;
+- evidence-minimum gated;
+- reversible;
+- observable;
+- disabled safely when evidence unavailable.
+
+It cannot create permanent universal hard filters from short-term underperformance.
+
+## 13. Promotion handoff
+
+```mermaid
+stateDiagram-v2
+    [*] --> CANDIDATE
+    CANDIDATE --> RESEARCH
+    RESEARCH --> VALIDATED
+    VALIDATED --> LOCKED
+    LOCKED --> HOLDOUT
+    HOLDOUT --> STRESS
+    STRESS --> SHADOW
+    SHADOW --> DEMO_CANDIDATE
+    DEMO_CANDIDATE --> APPROVAL_REQUIRED
+    APPROVAL_REQUIRED --> PRODUCTION: operator approves
+    APPROVAL_REQUIRED --> REJECTED: reject/defer
+```
+
+Automatic backend work may progress to `APPROVAL_REQUIRED`. It stops there until explicit operator approval.
+
+## 14. Hard-safety non-search space
+
+Research/AI does not optimize away:
+
+- account/server/symbol identity;
+- completed-candle/no-lookahead rules;
+- preserved monetary Risk bands/ceilings;
+- daily loss lock;
+- one-shot Intent;
+- no blind retry;
+- reconciliation;
+- controller/fencing;
+- unknown exposure fail-safe;
+- original-R immutability;
+- persistence integrity;
+- secret protection.
+
+News hard-block logic is absent because current approved architecture removed it—not because AI learned it away.
+
+## 15. Environment isolation
+
+Do not silently combine:
 
 ```text
-bar_open >= verified entry time
-AND
-bar_close <= verified exit time
+REPLAY
+DEVELOPMENT
+VALIDATION
+FINAL_HOLDOUT
+SHADOW
+DEMO_CANDIDATE
+MAIN_DEMO / PRODUCTION
 ```
 
-Boundary bars containing pre-entry/post-exit action are excluded unless future tick-accurate evidence proves exact slicing. Exact broker exit remains independent truth.
+Environment is part of evidence identity. So are active-family policy, code revision, data version and chronology assumptions.
 
-## 15. Learning metrics
+## 16. Persistence / backup
 
-Where evidence supports it store realized R, entry efficiency, MFE_R, MAE_R, capture efficiency, duration/M5 bars, signal-to-fill drift, spread/slippage/latency diagnostics, session/regime/family/policy identity and close origin BOT/EXTERNAL/MIXED.
-
-Missing measurements remain missing, never zero.
-
-## 16. AI supervisor boundary
-
-AI may explain stored facts, summarize audits/research, identify labelled clusters, propose declarative candidates and draft documentation/research recommendations.
-
-AI may not call broker writer, alter hard Risk directly, turn UNKNOWN into PASS, execute arbitrary generated production Python, self-promote candidates, hide failed evidence, adopt unknown manual trades or perform Git operations from trading runtime.
-
-AI output remains untrusted research input until schema/provenance/chronology/governance checks pass.
-
-## 17. Discovery handoff
+Durable research namespaces include at least:
 
 ```text
-actual/counterfactual evidence
-→ ResearchEpisodeRecord / StrategyMemory
-→ recurring independent cluster
-→ declarative Candidate
-→ validation / holdout / stress / shadow / canary
-→ explicit approval
-→ versioned production policy
+strategy_learning_memory
+closed_trade_learning_queue
+managed_trade_closure_receipt
+research_episode_journal
+strategy_candidate_registry
+discovery_cycle_status
+candidate_promotion_registry
+model/feature metadata where implemented
 ```
 
-Safety/system faults remain separately attributed.
+Full runtime checkpoint preserves the canonical durable state. Focused learning/research packages may be derived for review, but they do not replace full machine-recovery authority.
 
-## 18. Local persistence / backup / scope ownership
+## 17. Multi-machine boundary
 
-Learning lives in canonical StateStore and complete local checkpoints/recovery packages. Key namespaces include memory, learning queue, closure receipt, episode journal, candidate registry, discovery status and promotion registry.
-
-There is no automatic GitHub publication on shutdown. Same account/symbol scope has one production learning writer. Same-scope machine movement is sequential handoff only.
-
-## 19. Dashboard
-
-Show Strategy Memory, Entry/Exit Learning, Discovery Health, Champion/Challenger, Adaptive Impact and Broker Authority `NONE` for research/shadow. Research recommendation must never render as active policy before promotion.
-
-## 20. Planned implementation ownership
+Current architecture:
 
 ```text
-src/gold_scalp_trader/research/learning.py
-src/gold_scalp_trader/research/live_learning.py
-src/gold_scalp_trader/research/episode_journal.py
-src/gold_scalp_trader/research/discovery.py
-src/gold_scalp_trader/research/invention.py
-src/gold_scalp_trader/research/promotion.py
-src/gold_scalp_trader/management/*
-src/gold_scalp_trader/persistence/*
+one active production writer per account/symbol scope
 ```
 
-## 21. Planned proof / research calibration
+Different independent accounts/scopes may run independently. Same-scope active-active/distributed production is deferred.
 
-Tests prove idempotent/conflicting-source handling, summary recomputation, evidence-environment isolation, frozen entry/profile identity, close queue/receipt, causal path boundaries, exactly-once ingestion, no self-promotion, no broker authority and backup preservation.
+Research may run on separate copied datasets/databases, but it must not mutate the live production StateStore concurrently.
 
-Open research values include memory windows, minimum samples, confidence/shrinkage, maximum adaptive effect, clustering, latency/cost metrics and context-specific confluence value. These do not reopen hard Risk/session/execution invariants by default.
+## 18. Dashboard
+
+```text
+LEARNING / AI
+Actual Learning      ACTIVE / PENDING / DEGRADED
+Active Family        Breakout Retest v3
+Shadow Families      5 collecting counterfactuals
+Discovery            HEALTHY • 3 candidates
+ML Research          RUNNING / IDLE
+Best Challenger      CAND-... • SHADOW
+Promotion            APPROVAL_REQUIRED
+Broker Authority     NONE for research
+```
+
+A candidate recommendation must never be displayed as already-live policy.
+
+## 19. Planned source ownership
+
+```text
+research/learning.py
+research/live_learning.py
+research/episode_journal.py
+research/discovery.py
+research/invention.py
+research/promotion.py
+research/models.py or equivalent ML boundary
+management/store.py
+persistence/store.py
+persistence/checkpoint.py
+```
+
+## 20. Planned proof
+
+Tests cover:
+
+- actual/shadow/missed/blocked/fault separation;
+- idempotent/conflicting StrategyMemory sources;
+- active-family attribution;
+- M1/cost/latency learning fields;
+- no counterfactual broker P/L;
+- AI/research has no MT5 writer authority;
+- preserved Risk cannot be tuned live;
+- candidate parameter changes stay candidate-only;
+- advanced ML evidence identity;
+- automated progression stops at APPROVAL_REQUIRED;
+- restart/backup preserves research state;
+- same-scope production research writer uniqueness.
+
+## 21. Final invariant
+
+> **GoldScalpTrader should learn aggressively in the lab and conservatively in production. Backend intelligence may explore continuously; live money remains governed by fixed approved policy until evidence is complete and the operator explicitly approves the change.**

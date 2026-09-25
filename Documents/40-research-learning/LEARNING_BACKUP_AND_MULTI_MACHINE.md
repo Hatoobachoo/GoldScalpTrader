@@ -1,228 +1,278 @@
 # GoldScalpTrader — Learning Backup and Multi-Machine Contract
 
-**Status:** FROZEN V1 LOCAL RECOVERY / SOURCE-BACKUP ARCHITECTURE — RETENTION / EXTERNAL RESTORE PROOF PENDING
-**Version:** 1.1-profiled-risk-local-first
-**Authority:** Durable runtime/learning backup, preserved Risk identity, local recovery packages, development/source backup workflow, closure receipts, laptop handoff and per-scope multi-machine boundary.
+**Status:** APPROVED LOCAL-FIRST DURABILITY CONTRACT — SAME-SCOPE SINGLE-PRIMARY
+**Version:** 2.0-sequential-handoff-research-safe
+**Authority:** Full-state backup, learning/research lineage, graceful shutdown checkpoints, focused learning exports, same-scope machine safety and cross-machine recovery boundaries.
+
+Canonical recovery architecture: [`../BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md`](../BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md).
 
 ## 1. Purpose
 
-GoldScalpTrader must not lose runtime lifecycle, Risk-day/profile state, broker-operation lineage, pending/completed learning, discovery or promotion state across restart or machine migration.
+GoldScalpTrader must preserve production and learning state across restart and laptop replacement without creating two independent authorities for the same broker scope.
 
-Separately, development/source work should remain easy to keep locally with minimal GitHub usage.
+> **One production PRIMARY writer per account/symbol scope. Different independent scopes may run independently. Same-scope laptop handoff is sequential.**
 
-## 2. Hard runtime rule
+Distributed active-active coordination is explicitly deferred.
 
-Trading runtime has:
+## 2. Durability layers
 
-```text
-NO automatic Git commit
-NO automatic Git push
-NO automatic Git pull/fetch requirement
-NO GitHub credential dependency
+```mermaid
+flowchart LR
+    PROD["Production + learning producers"] --> STORE["Checksum-protected local StateStore"]
+    STORE --> ROLL["Rolling verified checkpoints"]
+    STORE --> SHUT["Graceful-stop checkpoint"]
+    SHUT --> FULL["Full runtime recovery package"]
+    SHUT --> LEARN["Focused learning/research export"]
+    FULL --> OFF["Optional offline/Drive recovery storage"]
+    LEARN --> OFF
+    FULL --> HAND["Sequential machine handoff"]
 ```
 
-Graceful shutdown remains safe when GitHub/network is unavailable.
+No backup grants broker permission by itself.
 
-## 3. Runtime backup layers
+## 3. Full checkpoint content
 
-```text
-transactional StateStore
-→ rolling local full checkpoints
-→ graceful-shutdown final verified local checkpoint
-→ optional focused learning artifact
-→ portable runtime recovery package for deliberate handoff
-```
+The full checkpoint preserves all canonical StateStore records/events including, when present:
 
-Full checkpoint/recovery package is runtime recovery authority. Focused learning export alone is not full-machine recovery.
-
-## 4. Full checkpoint completeness
-
-Preserve all required durable namespaces, including where present:
-
-- Risk-day ID / DayStartEquity;
-- fixed `SMALL / MEDIUM / NORMAL` profile identity;
-- `AGGRESSIVE_SMALL_ACCOUNT` enabled/disabled state + policy identity;
-- Account Safety P/L / cash-flow baseline / loss lock;
-- governed reset count/state;
-- consecutive-loss counter / cooldown / same-episode re-entry state;
-- Opportunity/Episode/TradePlan;
+- risk-day/profile/aggressive mode;
+- cash-flow/daily lock/reset/streak/cooldown/re-entry state;
+- active strategy family/policy/evaluation window;
+- Opportunity / TradePlan / timing lifecycle;
 - ExecutionIntent lifecycle;
-- ManagedTrade, objective stage and remaining volume;
-- verified partial-management lineage where applicable;
-- closed-trade learning queue + closure receipt;
-- StrategyMemory observations/summaries;
+- ManagedTrade;
+- learning queue and closure receipt;
+- StrategyMemory;
 - research episode journal;
-- candidate/discovery/promotion/rollback state;
-- configuration/policy/schema identities;
-- every other canonical durable namespace.
+- active/shadow family evidence lineage;
+- candidate/discovery/invention state;
+- ML feature/model metadata required for research reproducibility;
+- promotion/holdout/rollback/disable state;
+- controller/fencing metadata needed for recovery interpretation;
+- every other authoritative local namespace.
 
-Do not rebuild a “full” backup from a convenient subset.
+Full recovery never rebuilds from a hand-picked subset when the canonical StateStore can be exported consistently.
 
-## 5. Credential boundary
+## 4. Credential boundary
 
-Automatic/shareable artifacts exclude:
-
-```text
-broker password/token
-GitHub PAT/access token
-API/client secret
-auth/refresh token
-SSH/private/recovery key
-credential-bearing remote URL
-real .env secrets
-```
-
-Secret/integrity scan fails closed before an artifact is called portable/shareable.
-
-## 6. Runtime backup root
-
-Conceptual root outside repository:
+Never include authority-bearing credentials:
 
 ```text
-C:\GoldScalpTrader_Backups\runtime\
-C:\GoldScalpTrader_Backups\learning\
-C:\GoldScalpTrader_Backups\recovery-packages\
-C:\GoldScalpTrader_Backups\source-zips\
+broker passwords/tokens
+GitHub tokens
+private keys
+API/client secrets
+refresh/auth tokens
+recovery keys
 ```
 
-Path is configurable. Optional second physical HDD/SSD/USB can improve device-failure resilience.
+Secrets are provisioned separately on the recovery machine.
 
-## 7. Development/source backup — operator-preferred workflow
+Non-secret account/symbol/policy identity may be required for correct scope/reconciliation and should not be removed merely for convenience, subject to the project's publication/privacy policy.
 
-After a major coherent documentation/code bulk:
+## 5. Graceful shutdown
+
+At safe stop:
 
 ```text
-one remote fast-forward commit
-→ operator runs git pull --ff-only
-→ local working clone contains latest project + complete Git history
+stop new entry scheduling
+→ preserve current lifecycle obligations
+→ flush transactional state
+→ create/verify local checkpoint
+→ create requested full/focused recovery artifacts
+→ secret-scan artifacts
+→ release controller
+→ release MT5 resources
 ```
 
-The local clone is primary development/source backup. Do not require a pull after every tiny patch.
+No Git command occurs in runtime shutdown.
 
-## 8. Optional source ZIP
+A prior execution/runtime failure remains authoritative; backup success does not clear it.
 
-An important milestone may create a Windows-friendly secret-clean ZIP.
+Abrupt power/task kill cannot guarantee a final shutdown package. SQLite durability + rolling checkpoints remain the crash boundary.
 
-Default archive includes current source/Documents/config samples/tests/scripts while excluding:
+## 6. Focused learning/research export
+
+A focused export may contain audited learning namespaces for analysis/review:
 
 ```text
-.env / secret files
-.venv / venv
-__pycache__ / test caches
-logs
-runtime SQLite/checkpoints
-nested backup directories
-credentials/private keys
+StrategyMemory
+pending learning queue
+research episodes
+active/shadow comparison records
+candidate/discovery/invention state
+promotion evidence
+ML metadata/results where selected
 ```
 
-Including `.git` inside ZIP is unnecessary by default because the pulled clone already preserves history.
+It is **not** complete machine recovery authority unless it is explicitly the full checkpoint/package.
 
-## 9. Git bundle boundary
+Do not merge focused exports back into live production state by “newest wins”.
 
-A history-bearing Git bundle is optional advanced/manual backup only. It is not required after every bulk and trading runtime never invokes it.
-
-## 10. Focused learning package
-
-May contain StrategyMemory, pending learning queue, episode journal, candidate/discovery/promotion records and evidence/config fingerprints.
-
-It is not a substitute for full checkpoint because lifecycle/Risk/Intent/receipt state may be required for safe recovery.
-
-## 11. Closure receipt / learning queue
+## 7. Production learning ownership
 
 ```text
-closed_trade_learning_queue   → pending post-close learning
-managed_trade_closure_receipt → durable proof managed lifecycle ended
+Account A / XAUUSDm → one production learning writer
+Account B / XAUUSDm → may have its own independent production writer
+same Account A / same scope on second laptop → NOT concurrent
 ```
 
-Queue may disappear after successful exactly-once ingestion. Closure receipt remains lifecycle proof. Full backup preserves both while applicable.
+Idempotent source IDs protect duplicate evidence; they do not make two divergent SQLite histories mergeable.
 
-## 12. Production learning ownership
+Blind union, last-write-wins and newest-file-wins are prohibited same-scope merge strategies.
 
-One writer per account/symbol production scope. Different independent scopes may have separate runtime state. Two same-scope independent databases cannot safely evolve as one bot.
+## 8. Research machine separation
 
-Blind union, newest-file-wins and last-write-wins are not accepted merge strategies.
+Offline/research work may run on another machine using copied immutable datasets/checkpoints.
 
-## 13. Same-scope split-brain boundary
+It may:
 
-File sync/GitHub/Drive/Dropbox is archival transport, not real-time controller fencing or transactional coordination.
+- replay;
+- tune candidates;
+- train ML models;
+- invent candidates;
+- generate evidence packages.
 
-Same-scope simultaneous PRIMARY writers are unsupported.
+It may not mutate the active production StateStore or controller lease.
 
-## 14. Sequential laptop handoff
+Research outputs return as **candidate/evidence packages**, not raw merged production databases.
+
+## 9. Sequential same-scope handoff
+
+```mermaid
+sequenceDiagram
+    participant A as Old PRIMARY
+    participant P as Verified package
+    participant N as New machine
+    participant M as MT5
+
+    A->>A: stop new writes safely
+    A->>P: create full checkpoint/recovery package
+    Note over A,N: A remains stopped for this scope
+    P->>N: transfer source/state separately
+    N->>N: restore into new local DB/path
+    N->>N: configure secrets separately
+    N->>M: connect intended account/symbol
+    M-->>N: current positions/deals/quote/account
+    N->>N: reconcile Risk/Intent/ManagedTrade/learning
+    N->>N: acquire new controller epoch
+    N-->>N: READY only after authorities pass
+```
+
+If the old machine cannot be positively known to be stopped, takeover remains blocked until the incident is safely resolved.
+
+## 10. Why active-active is deferred
+
+Two laptops with independent local state can each believe they are PRIMARY:
+
+```mermaid
+flowchart TB
+    A["Laptop A local DB/controller"] --> SPLIT["same account/symbol split-brain risk"]
+    B["Laptop B local DB/controller"] --> SPLIT
+    SPLIT --> E["duplicate/divergent Intents/exposure"]
+    SPLIT --> L["divergent learning/candidate history"]
+```
+
+True active-active would require shared atomic fencing and globally ordered durable lifecycle/learning state. Distributed DB/fencing infrastructure is operator-approved **DEFERRED**.
+
+## 11. Backend candidate/ML recovery
+
+A restored research package must preserve:
+
+- Candidate ID/version/fingerprint;
+- evidence-source IDs;
+- current stage;
+- holdout consumption;
+- stress/shadow/DEMO evidence references;
+- rejection/suppression memory;
+- model/feature/data versions;
+- rollback target;
+- `APPROVAL_REQUIRED` state.
+
+Recovery cannot turn a candidate into production or reset a consumed final holdout.
+
+## 12. Active-family production policy recovery
+
+Full recovery preserves the exact production active-family policy/version.
+
+Do not:
+
+- default to Family 1 when policy state is corrupt;
+- rotate active family during restore;
+- relabel old actual trades;
+- merge shadow results into actual StrategyMemory.
+
+Unknown/corrupt active-family authority blocks new production entry until repaired through governed configuration/recovery.
+
+## 13. Local source/history backup relationship
+
+Source backup is separate from runtime state:
 
 ```text
-Laptop A PRIMARY
-→ stop new work
-→ safe shutdown / controller release
-→ final verified local checkpoint/package
-→ deliberate transfer
-→ Laptop B restore into NEW runtime DB
-→ configure credentials separately
-→ connect intended account/symbol
-→ fresh broker positions/deals/quote/identity
-→ reconcile lifecycle/Risk/learning
-→ verify fixed risk-day profile/aggressive-overlay state
-→ acquire controller
-→ READY only after all authorities pass
+coherent Git commit
+→ GitHub source/history remote
+→ operator git pull --ff-only
+→ optional clean source ZIP/off-site copy
 ```
 
-If old-machine writer status is uncertain, new machine remains blocked until single-writer safety is established.
+Runtime backup contains state. A source ZIP does not contain broker authority or current lifecycle truth.
 
-## 15. Learning durability path
+## 14. Optional Drive/off-site storage
 
-```text
-verified OPEN
-→ ManagedTrade freezes learning + Risk-policy identity
-→ verified close mechanism
-→ learning queue + closure receipt
-→ causal outcome
-→ exactly one MAIN_DEMO StrategyMemory observation
-→ queue consumed after durable save
-→ rolling/full local backup preserves state
-```
+Off-site recovery may store immutable verified artifacts, but:
 
-No repository mutation is part of this path.
+- do not run the bot from the synced recovery folder;
+- do not sync the active SQLite/WAL family;
+- verify hashes/manifests;
+- retain previous verified package until new package is complete;
+- no cloud availability is required for safe runtime shutdown.
 
-## 16. Failure semantics
+## 15. Failure matrix
 
-| Failure | Required behaviour |
+| Failure | Required behavior |
 |---|---|
-| corrupt durable record | reject/degraded; never clean empty state |
-| duplicate identical learning source | idempotent |
-| duplicate conflicting source | explicit conflict |
-| incomplete exit evidence | recovery/queue pending |
-| verified checkpoint unavailable | no guessed restore |
-| secret detected | package/source ZIP fails shareable check |
-| backup collision | no destructive overwrite |
-| backup disk unavailable/full | explicit failure; preserve last good state |
-| abrupt machine loss | final shutdown backup not guaranteed; transactional state + rolling checkpoints remain crash boundary |
-| same-scope second writer | block |
-| restored aggressive mode inconsistent with config/eligibility | recovery/Risk validation blocks affected new entry |
+| StateStore corrupt | reject/restore verified copy to new path; no invented clean state |
+| checkpoint unavailable | no guessed restoration |
+| secret detected in export | fail artifact publication |
+| pending learning exists | preserve it; never drop to simplify handoff |
+| candidate registry missing/corrupt | research DEGRADED; no promotion |
+| old machine still potentially active same scope | new PRIMARY blocked |
+| two divergent same-scope DBs | do not auto-merge |
+| independent account/scope on another laptop | allowed with isolated state/authority |
+| off-site storage unavailable | runtime/local checkpoint remains independent |
 
-## 17. Planned implementation ownership
+## 16. Planned implementation ownership
 
 ```text
-src/gold_scalp_trader/persistence/store.py
-src/gold_scalp_trader/persistence/checkpoint.py
-src/gold_scalp_trader/persistence/backup.py
-src/gold_scalp_trader/persistence/local_recovery_package.py
-src/gold_scalp_trader/research/learning.py
-src/gold_scalp_trader/research/live_learning.py
-src/gold_scalp_trader/management/store.py
-src/gold_scalp_trader/execution/controller.py
-src/gold_scalp_trader/execution/sqlite_coordination.py
+persistence/store.py
+persistence/checkpoint.py
+persistence/backup.py
+persistence/local_recovery_package.py
+research/learning.py
+research/episode_journal.py
+research/discovery.py
+research/promotion.py
+management/store.py
+execution/controller.py
 ```
 
-Optional source-ZIP helper may live under `scripts/`; it has no broker/runtime authority.
+## 17. Planned proof
 
-## 18. Planned proof
+Tests/drills cover:
 
-Tests prove full-state preservation including Risk profile/overlay/reset/cooldown/re-entry identity, queue/receipt survival, secret exclusion, idempotency/conflict, backup integrity/catalog, same-scope single-writer, sequential handoff, no auto-merge and absence of runtime Git operations.
+- full checkpoint completeness;
+- focused learning export classification;
+- pending queue/receipt preservation;
+- active family policy restoration;
+- candidate/holdout/promotion restoration;
+- secret scanning;
+- corrupt artifact rejection;
+- same-scope second-primary denial;
+- different-scope independence;
+- restore into new path;
+- fresh MT5 reconciliation;
+- sequential handoff;
+- no Git/cloud dependency in runtime shutdown.
 
-Fresh-machine connected proof separately validates real restore/reconciliation.
+## 18. Final invariant
 
-## 19. Implementation/external choices pending
-
-Runtime backup cadence/retention, disk-space thresholds, optional encryption, secondary-drive copy and exact source-ZIP helper remain later implementation/evidence choices.
-
-Source pull workflow, no-runtime-Git rule, profile/overlay durability and sequential same-scope handoff are frozen.
+> **Learning is valuable state, but broker safety outranks convenience. Preserve complete production/research lineage, keep research machines isolated from live authority, and move the same broker scope between laptops only through a stopped, verified, reconciled sequential handoff.**

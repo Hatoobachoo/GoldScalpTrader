@@ -1,152 +1,226 @@
-# GoldScalpTrader — Live DEMO Trade Learning Pipeline
+# GoldScalpTrader — Live DEMO Learning Pipeline
 
-**Status:** FROZEN V1 DEMO-LEARNING SOFTWARE CONTRACT — IMPLEMENTATION / CONNECTED PROOF PENDING
-**Version:** 1.0-causal-exactly-once-learning
-**Authority:** Automatic verified DEMO trade outcome capture, broker-side close recovery, passive post-close learning, evidence quality and exactly-once StrategyMemory ingestion.
+**Status:** APPROVED LIVE-LEARNING CONTRACT — CONNECTED DEMO PROOF PENDING
+**Version:** 2.0-active-family-exactly-once-learning
+**Authority:** Verified actual trade outcome capture, broker-side/manual close recovery, entry/path/exit efficiency, active-family attribution, exactly-once StrategyMemory ingestion and learning failure semantics.
 
 ## 1. Purpose
 
-When governed DEMO execution exists, an actual bot trade must not disappear into only a P/L number after close.
+Every verified live/DEMO bot trade should become a durable learning sample instead of disappearing into a P/L number.
 
-Preserve family/thesis, Opportunity/TradePlan lineage, approved reference versus fill, original R, market path, duration, spread/slippage/latency evidence, entry/exit efficiency and policy/Risk-profile identity.
+The system must remember:
 
-> Learn only from an already-known bot ManagedTrade whose close is positively proven from broker lineage and whose context can be reconstructed causally.
+- which active family produced it;
+- which policy/version was live;
+- which M5 setup and M1 refinement created the entry;
+- what structural TradePlan existed;
+- what actual executable costs occurred;
+- what price path followed;
+- how management performed;
+- how the trade closed;
+- how much qualified edge was captured or missed.
 
-Learning cannot create broker authority, relax Risk or convert UNKNOWN into PASS.
+Learning remains downstream of broker truth.
 
-## 2. Supported close paths
+> **Learn only from an already-known ManagedTrade whose full lifecycle can be proved. Never invent a close, family, fill, path or P/L to complete a sample.**
 
-Known ManagedTrade may close by governed bot EXIT, broker SL, broker TP, manual/operator close of that exact known position, or multi-deal/partial execution that eventually proves full volume closed.
+## 2. Supported actual close paths
 
-Unknown external positions are never adopted into learning. Manual close of known bot trade preserves bot-entry lineage and records EXTERNAL/MIXED close origin where proven.
+For a known ManagedTrade:
+
+- governed bot `EXIT`;
+- broker stop-loss;
+- broker take-profit;
+- exact operator/manual close of that already-known position;
+- broker-side close/multi-deal exit where matched exit volume proves full closure.
+
+Unknown manual/foreign positions are never adopted into learning.
 
 ## 3. Authority flow
 
-```text
-READY TradePlan
-→ active preserved Risk profile/optional overlay
-→ verified broker OPEN
-→ durable ManagedTrade + frozen learning identity
-→ governed EXIT or broker-side verified close
-→ durable close archive
-→ learning queue + closure receipt
-→ safe active-state clear
-→ re-verify broker outcome
-→ reconstruct causal H1/M15/M5 path/context
-→ one MAIN_DEMO LearningObservation
-→ StrategyMemory
-→ local verified backup
+```mermaid
+flowchart TB
+    OPEN["Verified active-family OPEN"] --> TRADE["Durable ManagedTrade + frozen learning identity"]
+    TRADE --> BOT["Governed EXIT"]
+    TRADE --> SIDE["SL / TP / exact external close"]
+    BOT --> ARCH["Verified close archive"]
+    SIDE --> PROVE["Exact ticket + complete exit-volume proof"]
+    PROVE --> ARCH
+    ARCH --> Q["closed_trade_learning_queue"]
+    ARCH --> REC["managed_trade_closure_receipt"]
+    ARCH --> CLEAR["clear active trade lifecycle after durable proof"]
+    Q --> DEALS["Broker deal re-verification"]
+    Q --> PATH["Causal M5/M1/H1 path reconstruction"]
+    DEALS --> OBS["Actual LearningObservation"]
+    PATH --> OBS
+    OBS --> MEM["StrategyMemory"]
+    MEM --> JOURNAL["Research episode / family comparison"]
+    JOURNAL --> DISC["Discovery / invention / ML"]
 ```
 
-No learning step calls broker writer.
+Research has no broker authority.
 
-## 4. Learning identity frozen at entry
+## 4. Frozen learning identity at entry
 
-Freeze at least:
+At verified OPEN, freeze at least:
 
 ```text
-strategy_family
-approved_entry_reference
-policy_version
-risk_profile SMALL / MEDIUM / NORMAL
-aggressive_overlay_enabled true/false
+trade_id / position_ticket
+active_strategy_family
+active_family_policy_version
+Opportunity / Episode / TradePlan IDs
 direction
-original_r_price
-actual entry price
-position ticket
-TradePlan ID
-Opportunity ID
-Episode ID
-entry timestamp
-session/regime identifiers
+Approved Entry Reference
+actual entry/fill
+original SL / original R
+M5 source event IDs + age
+M1 timing profile/event/freshness
+executable-quality snapshot
+Risk profile / actual risk
+session/context tags
+code/config versions
 ```
 
-Later policy edits cannot relabel history. Missing legacy facts are never invented.
+Later strategy changes do not relabel the trade.
+
+If a legacy/pre-upgrade record lacks critical identity, manage/recover it safely but do not fabricate missing learning fields.
 
 ## 5. Crash-safe close archive
 
+Financial close truth is more important than learning success.
+
+Required ordering:
+
 ```text
-1. persist closed_trade_learning_queue item
-2. persist managed_trade_closure_receipt
-3. clear active ManagedTrade after verified close
-4. retire matching TradePlan/Opportunity safely
-5. later build StrategyMemory observation
-6. remove queue only after durable observation save
+1. persist closed-trade learning queue item
+2. persist durable closure receipt
+3. clear verified active ManagedTrade
+4. clear matching plan/opportunity lifecycle where appropriate
+5. later reconstruct complete learning observation
+6. persist StrategyMemory exactly once
+7. remove queue item only after durable learning save
 ```
 
-Restart repeats idempotently from durable identity.
+```mermaid
+sequenceDiagram
+    participant B as Broker/Reconciler
+    participant M as ManagedTradeStore
+    participant Q as LearningQueue
+    participant L as LearningProcessor
+    participant S as StrategyMemory
 
-## 6. Closure receipt
+    B-->>M: verified full close
+    M->>Q: persist immutable source
+    M->>M: persist closure receipt
+    M->>M: clear active trade
+    L->>Q: load pending source
+    L->>L: verify deals + causal path
+    L->>S: save actual observation
+    S-->>L: durable success
+    L->>Q: consume queue item
+```
 
-Receipt persists after learning queue consumption and retains lifecycle identity, position ticket, plan/opportunity/episode IDs, symbol, close time and close origin/reason.
+## 6. ExecutionIntent precedence
 
-Same source with conflicting closure evidence is integrity failure.
-
-## 7. ExecutionIntent precedence
+Passive missing-position close recovery cannot bypass unresolved execution.
 
 ```text
 SUBMITTING / ACCEPTED_UNKNOWN Intent
-→ reconcile Intent first
-→ unresolved → RECONCILING / stop
-→ resolved → inspect ManagedTrade/broker close state
+→ reconcile that Intent first
+→ if unresolved: remain RECONCILING
+→ only then infer/verify broker-side close
 ```
 
-Passive close inference never hides ambiguous broker write.
+This prevents an ambiguous broker request being hidden by a later missing-position inference.
 
-## 8. Broker-side close proof
+## 7. Full close proof
 
-Require exact durable position ticket, official exit role, positive finite deal volume, summed exit volume equal to original managed volume within strict tolerance and trustworthy UTC deal timestamp.
-
-Origin across matched exits:
+For broker-side/manual close recovery require, as applicable:
 
 ```text
-all bot identity → BOT
-none             → EXTERNAL
-mixture          → MIXED
+exact known position ticket
+valid broker exit role(s)
+positive valid deal volume
+sum of matched exits == managed original/remaining position volume within strict tolerance
+trusted UTC deal timestamps
+ownership/origin attribution
 ```
 
-Incomplete history/volume/role remains RECONCILING.
-
-## 9. Partial-management boundary
-
-Preserved broker-valid partial management may generate intermediate exit deals, but **full-close learning is not emitted until full managed volume is positively reconciled closed**.
-
-Intermediate partial actions may be stored as management evidence. An indivisible minimum-lot position simply has no partial action; learning correctness never depends on partial close.
-
-## 10. Pending learning queue
-
-Stable source identity such as:
+Origin:
 
 ```text
-managed-trade:<immutable-trade-id>
+all matched exits bot magic → BOT
+none bot magic             → EXTERNAL
+mixed                      → MIXED
 ```
 
-Rules: same source/same evidence idempotent; same source/different evidence conflict; corruption never empty queue; queue removed only after durable memory save; checkpoints preserve pending queue.
+EXTERNAL/MIXED is acceptable only because the original ManagedTrade is already known to be bot-owned.
 
-## 11. Broker outcome re-verification
+Partial exit ≠ full close.
 
-Before final observation, re-read normalized DealFacts and re-prove ticket/full exit volume/roles/origin. Derive volume-weighted exit price and broker net trade money from complete exit set.
+## 8. Exactly-once source identity
 
-## 12. Realized R
-
-Where money geometry is valid:
+Suggested:
 
 ```text
-risk_money = (original_r_price / tick_size) × tick_value × volume
-realized_R = broker_net_trade_result / risk_money
+source_id = managed-trade:<immutable_trade_id>
 ```
 
-Otherwise verified price-R may be used when supported. Account-level equity change is never substituted for missing trade-level evidence.
+Rules:
 
-## 13. Entry/execution quality
+- identical source/evidence retry = idempotent;
+- same source with changed evidence = integrity conflict;
+- queue corruption ≠ empty queue;
+- StrategyMemory success must be durable before queue consumption.
 
-Retain where observable approved-reference-to-fill drift, spread at signal/check/send/fill, adverse slippage, check/send/reconcile timings, trigger age and cost as fraction of gross target/original R.
+## 9. Realized R
 
-Missing measurements remain missing.
+Where tick-money geometry is valid:
 
-## 14. MFE / MAE causal boundary
+```text
+structural_risk_money
+= original_R_price / tick_size × tick_value × actual volume
 
-Completed-bar excursion estimate uses only bars causally contained in trade interval:
+realized_R
+= verified broker net trade money / structural_risk_money
+```
+
+Broker net money includes the correctly attributed profit/commission/swap/fee components under the normalized deal contract.
+
+Where monetary geometry is unavailable, price-R fallback may be used only if exact entry/exit/original-R price geometry is trustworthy.
+
+No account-level P/L is substituted for missing trade evidence.
+
+## 10. Entry Efficiency
+
+Conceptual adverse fill metric:
+
+```text
+BUY adverse_entry_R
+= max(0, actual_fill - ApprovedEntryReference) / original_R_price
+
+SELL adverse_entry_R
+= max(0, ApprovedEntryReference - actual_fill) / original_R_price
+
+EntryEfficiency
+= clamp(1 - adverse_entry_R, 0, 1)
+```
+
+Also record:
+
+- decision→send latency;
+- expected slippage allowance;
+- actual slippage;
+- spread/SL;
+- spread/target;
+- total cost/reward;
+- M1 trigger age;
+- M5 setup age;
+- chase/drift.
+
+## 11. MFE / MAE / path chronology
+
+MT5 rates use candle-open timestamps. Excursion calculations must use only completed candles fully contained within the actual trade interval.
 
 ```text
 bar_open >= verified entry time
@@ -154,64 +228,155 @@ AND
 bar_close <= verified close time
 ```
 
-Boundary bars are excluded unless future tick-accurate data proves exact path. M1 remains diagnostic/research only and cannot be used as hidden production authority simply because it is available for analysis.
+Boundary candles containing pre-entry or post-exit price action are excluded rather than leaking path extremes.
 
-## 15. Scalp duration metrics
+Actual exit price is handled independently.
 
-Track seconds/minutes in trade, completed M5 bars fully inside trade, time to MFE, time to research thresholds, stagnant duration, time-efficiency EXIT and accidental swing-conversion indicators.
-
-Interpretation remains research, not live self-editing.
-
-## 16. Causal session/regime at entry
-
-Entry session/regime uses immutable entry timestamp and only facts knowable then. Later-completed bars never retroactively improve stored context.
-
-## 17. Exactly-once StrategyMemory
-
-Current actual governed DEMO environment identity:
+For BUY:
 
 ```text
-MAIN_DEMO
+MFE_R = max(high - entry) / original_R
+MAE_R = max(entry - low) / original_R
 ```
 
-First valid source save → one observation; identical retry → idempotent; conflicting retry → integrity error; queue removed after durable success only.
+SELL reverses direction.
 
-Future governed REAL capability may later define a distinct approved evidence environment; DEMO records are never relabelled REAL.
+M1 path may be used for timing-specific research only when causal/complete and available; it must not falsify the M5 management record.
 
-## 18. Failure semantics
+## 12. Capture / Exit Efficiency
 
-| Condition | Behaviour |
+Baseline concepts:
+
+```text
+CaptureEfficiency
+= realized positive R / available verified favorable excursion R
+```
+
+Exit Efficiency should additionally account for:
+
+- objective stage reached;
+- profit giveback;
+- premature exit cost;
+- time-efficiency decision;
+- remaining structural room;
+- management action path.
+
+Exact formulas are research policy and versioned.
+
+## 13. Entry regime / session / News context
+
+Entry context is reconstructed only from facts knowable at entry:
+
+- H1 bar must have closed by entry to influence entry regime;
+- M15/M5/M1 contexts preserve causal timestamps;
+- session label derives from entry time;
+- News/event tags are soft context and research labels;
+- later event information cannot retroactively improve entry context.
+
+## 14. Active vs shadow comparison
+
+For the same episode, the research journal may attach:
+
+```text
+actual active-family decision/outcome
+shadow family hypothetical decision/timing/plan/outcome
+```
+
+Shadow outcome remains counterfactual and never becomes actual broker P/L.
+
+This comparison is central to one-strategy-at-a-time efficiency testing.
+
+## 15. Missed / blocked context around actual trades
+
+Learning should preserve whether adjacent opportunities were suppressed because:
+
+- position capacity occupied;
+- cooldown;
+- M1 timing missed;
+- cost quality failed;
+- broker/session hard authority;
+- system fault.
+
+This helps quantify the opportunity cost of long holds and management choices.
+
+## 16. Failure semantics
+
+| Condition | Behavior |
 |---|---|
 | unresolved Intent | reconcile first |
-| known position missing/no complete exit proof | retain ManagedTrade, RECONCILING |
-| partial exit | no full-close observation yet |
-| exact manual close | learn original bot trade with EXTERNAL/MIXED origin |
-| unknown manual position | never adopt |
-| path data unavailable/corrupt | pending or explicit reduced-quality evidence |
-| required frozen identity missing | never invent |
-| StrategyMemory write fails | keep queue |
-| duplicate conflicting source | integrity error |
+| no complete exit proof | keep ManagedTrade/learning pending |
+| partial exit volume | no final observation |
+| unknown external position | never adopt |
+| critical learning identity missing | keep pending/degraded; never invent |
+| broker history unavailable | keep pending |
+| causal path history unavailable/corrupt | keep pending/degraded |
+| StrategyMemory write fails | keep queue item |
+| duplicate identical source | idempotent |
+| conflicting source | integrity error |
+| M1 history unavailable | omit/mark timing submetrics UNKNOWN; do not fabricate |
 
-## 19. Local backup / laptop handoff
+## 17. Backup / handoff
 
-Queue, receipt and StrategyMemory live in canonical StateStore/full local checkpoints. No learning publication to GitHub occurs at shutdown.
-
-Same-scope handoff is sequential stop → verified checkpoint/package → new DB restore → fresh broker reconciliation → controller acquisition → READY.
-
-## 20. Planned implementation ownership
+Full runtime checkpoints preserve:
 
 ```text
-src/gold_scalp_trader/management/models.py
-src/gold_scalp_trader/management/store.py
-src/gold_scalp_trader/management/execution.py
-src/gold_scalp_trader/execution/reconcile.py
-src/gold_scalp_trader/app/recovery.py
-src/gold_scalp_trader/research/live_learning.py
-src/gold_scalp_trader/research/learning.py
+closed_trade_learning_queue
+managed_trade_closure_receipt
+StrategyMemory
+research journal/candidate/promotion state
 ```
 
-## 21. Planned proof / evidence boundary
+Same-scope machine handoff remains sequential. A second same-account/symbol production writer cannot merge an independent learning history safely.
 
-Tests cover frozen family/profile/overlay identity, EXIT/SL/TP/manual close recovery, partial-to-full-volume handling, Intent precedence, queue/receipt durability, delayed restart, causal path boundaries, realized R, efficiency/MFE/MAE/duration and exactly-once memory.
+## 18. Dashboard
 
-Connected Exness DEMO proves real deal-history timing/fields. Correct learning mechanics do not prove profitable adaptation.
+```text
+LIVE LEARNING
+Pending Closes      1
+Last Actual Trade   Breakout Retest • +1.42R
+Entry Efficiency    0.91
+MFE / MAE           +2.10R / -0.28R
+Capture Efficiency  0.68
+M1 Pattern          micro reclaim
+Actual Slippage     0.04
+Shadow Comparison   Sweep +0.7R hypothetical
+Learning Status     SAVED / PENDING / DEGRADED
+```
+
+## 19. Planned implementation ownership
+
+```text
+management/store.py
+execution/reconcile.py
+research/live_learning.py
+research/learning.py
+research/episode_journal.py
+market_data/mt5_reader.py
+persistence/store.py
+```
+
+## 20. Planned proof
+
+Tests cover:
+
+- frozen active-family identity;
+- governed EXIT archive;
+- SL/TP/manual exact close recovery;
+- BOT/EXTERNAL/MIXED origin;
+- full-volume requirement;
+- unresolved Intent precedence;
+- queue/receipt crash windows;
+- delayed history reconstruction;
+- causal M5/H1/M1 path boundaries;
+- realized R;
+- entry/slippage/latency efficiency;
+- MFE/MAE/capture;
+- actual vs shadow separation;
+- exactly-once StrategyMemory ingestion;
+- backup persistence.
+
+Connected DEMO proof later validates actual Exness deal visibility, timing and lifecycle latency.
+
+## 21. Final invariant
+
+> **Only a fully verified known bot trade becomes actual learning. Learning must preserve the exact active strategy, entry timing, costs, path and close lineage, survive crashes exactly once, and remain incapable of changing production or broker authority by itself.**

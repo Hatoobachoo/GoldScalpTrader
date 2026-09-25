@@ -1,35 +1,72 @@
 # GoldScalpTrader — Autonomous Strategy Invention
 
-**Status:** FROZEN V1 RESEARCH GOVERNANCE — DECLARATIVE PROPOSAL ONLY
-**Version:** 1.0-preservation-first-declarative-invention
-**Authority:** Safe automatic creation of declarative scalp hypotheses from audited research evidence.
+**Status:** APPROVED AUTONOMOUS RESEARCH CONTRACT — PROPOSAL/TUNING ACTIVE, PRODUCTION APPROVAL REQUIRED
+**Version:** 2.0-bounded-autonomy-scalp
+**Authority:** Automatic creation of declarative strategy hypotheses, parameter/timing/management/model candidates, durable invention liveness and hard boundaries against uncontrolled production mutation.
 
-## 1. Purpose / hard boundary
+## 1. Purpose and hard boundary
 
-Autonomous invention turns recurring evidence into bounded declarative candidates.
+Autonomous Strategy Invention converts recurring verified research evidence into bounded candidates that can be tested automatically.
 
-It does not write executable production code, change live Strategy Floor, set monetary Risk, bypass hard safety or acquire broker authority.
+> **Autonomy may invent hypotheses, tune candidates and build evidence. It may not invent broker permission or self-authorize production.**
 
-> Autonomy may invent hypotheses. It may not invent permission.
+This is an active backend capability, not a future placeholder.
 
-Every candidate stops at governed validation/promotion.
+Invention may automatically create:
 
-## 2. Pipeline
+- variants of the six preserved strategy families;
+- M1 entry-timing policy candidates;
+- quality/cost threshold candidates;
+- management/exit candidates;
+- session/regime conditioning variants;
+- materially new family hypotheses;
+- ML-assisted candidate policies/models.
 
-```text
-outcome-labelled research episodes
-→ durable episode journal
-→ approved primitive mapping
-→ recurring independent cluster
-→ declarative hypothesis
-→ chronology/similarity/complexity/preservation checks
-→ CandidateRegistry or explicit suppression
-→ governed validation/promotion
+It may not silently alter the current `ACTIVE_EXECUTION` production family, preserved Risk policy or broker-safety architecture.
+
+## 2. Working pipeline
+
+```mermaid
+flowchart TB
+    EVID["Actual + shadow + missed + blocked research evidence"] --> MAP["Approved primitive mapping"]
+    MAP --> CLUSTER["Recurring independent behavior cluster"]
+    CLUSTER --> HYP["Bounded declarative hypothesis"]
+    HYP --> SIM["Similarity / complexity / chronology checks"]
+    SIM --> TYPE["VARIANT / NEW_FAMILY / ENTRY / EXIT / QUALITY / MODEL"]
+    TYPE --> REG["Durable CandidateRegistry"]
+    REG --> TUNE["Automatic candidate-only tuning where allowed"]
+    TUNE --> PROMO["Governed validation / holdout / stress / shadow / DEMO"]
+    PROMO --> ASK["APPROVAL_REQUIRED"]
+    ASK -->|operator approves| PROD["Versioned production policy"]
 ```
 
-Eligible evidence must end in candidate or explicit suppression reason; otherwise invention health is DEGRADED.
+Healthy invention requires the whole evidence→candidate/suppression→registry path, not merely an importable class.
 
-## 3. Approved primitive registry
+## 3. Evidence sources
+
+Automatic invention may consume clearly separated episode classes:
+
+```text
+ACTUAL_ACTIVE_TRADE
+SHADOW_COUNTERFACTUAL
+MISSED_MEANINGFUL_MOVE
+FALSE_ENTRY_CLUSTER
+FALSE_BLOCK_CANDIDATE
+PREMATURE_EXIT
+WEAK_CAPTURE
+HIGH_CAPTURE
+TIME_EFFICIENCY_FAILURE
+COST_REJECTED_OPPORTUNITY
+CAPACITY_SUPPRESSED_OPPORTUNITY
+REGIME_DETERIORATION
+SYSTEM_OR_BROKER_FAULT
+```
+
+System/broker faults remain fault evidence. They cannot be relabelled as strategy failure merely to create a candidate.
+
+## 4. Approved primitive registry
+
+Candidates may use only audited typed primitives, expected to include categories such as:
 
 ```text
 STRUCTURE_TREND
@@ -49,105 +86,379 @@ EMA_FLOW
 RSI_MOMENTUM
 ATR_VOLATILITY
 SESSION_CONTEXT
+NEWS_CONTEXT
 TARGET_PATH
-ENTRY_TIMING
-EVENT_FRESHNESS
-SPREAD_COST_CONTEXT
-HOLD_TIME_EFFICIENCY
+M5_SETUP
+M1_ENTRY_TIMING
+EXECUTABLE_COST
+MANAGEMENT_EFFICIENCY
 ```
 
-`EVENT_FRESHNESS`, `SPREAD_COST_CONTEXT` and `HOLD_TIME_EFFICIENCY` are accepted scalp-specific primitives; their numerical thresholds remain researchable.
+Exact enum names belong to implementation.
 
-M1 information may be used only as diagnostic/research input under current V1; invention cannot promote it into production authority without separate governed design change.
+Unknown strings, `eval`, generated executable Python, MT5 calls, credential handling or hard-permission overrides are rejected.
 
-Unknown strings, arbitrary Python, MT5 operations and hard-safety concepts are rejected.
+## 5. Candidate format
 
-## 4. Candidate format
-
-Each candidate records ID/version/type (`VARIANT`, `NEW_FAMILY`, `ENTRY_POLICY`, `EXIT_POLICY`), parent family, trigger/hypothesis, required/optional primitives, preferred regime/session/timing, invalidation/target, freshness/cost assumptions, evidence Episode IDs, semantic fingerprint/similarity and state/rejection reason.
-
-Recipes are data only. They contain no `eval`, `exec`, generated production Python, Risk ceilings, broker requests or permission overrides.
-
-## 5. Evidence triggers
-
-Potential triggers include meaningful missed scalp moves, false/poor entries, late/chased entries, transaction-cost clusters, weak-capture/premature exits, high-capture examples, time-efficiency clusters, regime/session deterioration and analytically attributable blocked episodes.
-
-System/broker safety faults remain separate. Duplicate observations from one Episode ID cannot inflate evidence.
-
-## 6. Variant versus new family
-
-Small parameter/timing/primitive change is `VARIANT` or policy challenger. `NEW_FAMILY` requires materially distinct recurring behavior not already expressed by the six production families.
-
-Adding one RSI/FVG/Fib/POC condition does not create a new family.
-
-## 7. Preservation-first invention rule
-
-Invention may propose changing a preserved Swing feature/default, but candidate cannot progress toward production until the difference is explicitly classified as a genuine scalp-specific change, operator-directed change or proven reference defect correction.
-
-Therefore invention cannot silently optimize away or treat as free parameters:
-
-- SMALL/MEDIUM/NORMAL Risk architecture/bands;
-- disabled-by-default aggressive overlay semantics;
-- disabled-by-default manual reset;
-- one fresh same-episode re-entry baseline;
-- three-loss cooldown baseline;
-- PRE_CLOSE/reopen defaults;
-- provider TTL baseline;
-- bounded analytical concurrency capability;
-- future governed REAL release path;
-- one-shot/reconciliation/controller safety.
-
-## 8. Complexity control
-
-Required/optional primitive counts are bounded. Filter-soup candidates are presumed overfit until ablation, Opportunity Recall, frequency, cost-adjusted expectancy and out-of-sample evidence justify complexity.
-
-Scalp cost/freshness primitives should reduce unrealistic entries, not merely eliminate trades.
-
-## 9. Duplicate / rejection memory
-
-Candidate fingerprints/similarity suppress repeated proposals. Rejected candidates/suppression reasons survive restart/local backup. Similar rejected idea may return only with materially new evidence or explicit versioned policy change.
-
-## 10. Hard exclusions
-
-Invention cannot modify/optimize away runtime/broker identity, completed-candle/no-lookahead, hard Risk/session/execution authority, UNKNOWN fail-safe, one-shot Intent, reconciliation, controller fencing, unknown exposure, original-R immutability, secret handling, backup integrity or central Gate ownership.
-
-## 11. Promotion / runtime boundary
-
-Invention creates `PROPOSED` research candidates only.
+Each candidate is typed and declarative. Minimum fields:
 
 ```text
-PROPOSED
-→ RESEARCHING / VALIDATING
-→ LOCKED
-→ one-shot FINAL HOLDOUT
-→ STRESS
-→ SHADOW
-→ DEMO_CANARY
-→ PROMOTION_READY
-→ explicit approval
+candidate_id
+version
+candidate_type
+parent_family if applicable
+discovery trigger
+falsifiable hypothesis
+required primitives
+optional/supportive primitives
+opposing evidence rules
+preferred regime/session
+timing profile
+invalidation model
+target model
+management model
+parameter/model search space where applicable
+evidence episode IDs
+chronology/data identity
+active/shadow baseline identity
+fingerprint
+similarity/complexity metadata
+current stage
+suppression/rejection reason
 ```
 
-Production runtime reads only approved versioned policy. Future REAL capability remains separately gated; invention/promotion does not authorize it.
+Candidate recipe is data, not arbitrary executable source.
 
-## 12. Persistence / dashboard
-
-Restore invention journal, registry, fingerprints, rejection memory and liveness from canonical StateStore/checkpoint.
-
-Display Discovery Health, eligible clusters, Candidate Count, latest candidate ID/type/stage, suppression reason and Broker Authority `NONE`.
-
-## 13. Planned implementation ownership
+## 6. Candidate types
 
 ```text
-src/gold_scalp_trader/research/episode_journal.py
-src/gold_scalp_trader/research/discovery.py
-src/gold_scalp_trader/research/invention.py
-src/gold_scalp_trader/research/promotion.py
+VARIANT
+NEW_FAMILY
+ENTRY_POLICY
+EXIT_POLICY
+QUALITY_POLICY
+REGIME_POLICY
+MODEL_ASSISTED_POLICY
 ```
 
-## 14. Planned proof
+### VARIANT
 
-Tests cover candidate creation/classification, primitive validation, preservation classification, complexity bounds, journal feed, duplicate/rejection memory, restart persistence, stage locks and self-promotion denial.
+Small bounded change to an existing family/parameter set.
 
-## 15. Research calibration
+### NEW_FAMILY
 
-Sample thresholds, similarity distance, cluster definitions, scheduling/CPU budget, recipe complexity, session/freshness/cost primitive value and optional-confluence evidence threshold remain research questions.
+Requires materially distinct causal market behavior not already represented by the six preserved families.
+
+A trivial extra RSI/FVG/Fib/POC/Trendline condition is not enough.
+
+### ENTRY_POLICY
+
+M1 refinement, event-age, chase, drift or timing-profile change.
+
+### EXIT_POLICY
+
+Protection/trailing/time-efficiency/Runner/partial-management research change.
+
+### QUALITY_POLICY
+
+Gross/net quality, spread/SL, spread/target, cost/reward or latency/drift research candidate.
+
+### REGIME_POLICY
+
+Session/volatility/regime conditioning.
+
+### MODEL_ASSISTED_POLICY
+
+Versioned ML/statistical model whose role and feature schema remain bounded and auditable.
+
+## 7. Strategy Isolation advantage
+
+One-live-strategy-at-a-time creates a strong invention dataset:
+
+```text
+active family = actual production outcome
+five shadow families = same-context counterfactual outcomes
+```
+
+Invention may detect patterns such as:
+
+- shadow family repeatedly outperforming active family in a regime;
+- active family finding too few opportunities;
+- M1 timing systematically late;
+- optional indicator improving one family but harming Opportunity Recall elsewhere;
+- cost thresholds rejecting favorable moves unnecessarily;
+- management holding too long and occupying the only position slot.
+
+It may propose a candidate or active-family rotation, but production rotation still follows promotion governance.
+
+## 8. Automatic candidate-only tuning
+
+The operator approved active backend tuning.
+
+Permitted tuning may search bounded candidate parameters such as:
+
+- strategy qualification thresholds;
+- evidence weights/correlation caps;
+- M1 timing/freshness;
+- M5 event age;
+- chase/drift thresholds;
+- gross/net quality thresholds;
+- spread/SL and spread/target limits;
+- cost/reward;
+- protection/trailing/time-efficiency rules;
+- session/regime modifiers;
+- model hyperparameters/features within an approved schema.
+
+Tuning must occur only in candidate/research state.
+
+It may not mutate current production parameters in place.
+
+## 9. Preserved hard exclusions
+
+Invention/tuning cannot search away or weaken:
+
+- account/server/symbol identity;
+- completed-candle/no-lookahead chronology;
+- preserved monetary Risk profile bands and ceilings;
+- daily loss lock;
+- one-shot Intent;
+- no-blind-retry reconciliation;
+- controller ownership/fencing;
+- unknown exposure fail-safe behavior;
+- original-R immutability;
+- persistence integrity;
+- financial-secret protection;
+- final explicit operator production approval.
+
+News hard blocking is not a protected safety parameter because the current approved architecture intentionally removed News from hard trading permission.
+
+## 10. Complexity control
+
+Prefer coherent causal behavior over filter soup.
+
+A candidate with many conditions must earn stronger evidence.
+
+Particularly:
+
+```text
+EMA + RSI + FVG + OB + Trendline + Fibonacci + POC + Session + News
+```
+
+is not automatically superior to a simpler strategy.
+
+Evaluate complexity against:
+
+- after-cost expectancy;
+- Opportunity Recall;
+- false blocks;
+- throughput;
+- drawdown;
+- stability;
+- ablation;
+- out-of-sample evidence.
+
+## 11. Independence and sample integrity
+
+Candidate creation/tuning uses independent episode IDs.
+
+Repeated copies of one episode cannot inflate evidence.
+
+Where several labels come from one causal event, lineage/correlation control prevents fake confirmation counts.
+
+Active and shadow episodes retain separate evidence class labels.
+
+## 12. Liveness states
+
+```text
+IDLE
+HEALTHY
+DEGRADED
+FAULTED
+```
+
+### IDLE
+
+No eligible recurring evidence.
+
+### HEALTHY
+
+Every eligible cluster produced either:
+
+- a durable candidate; or
+- a durable explicit suppression/rejection reason.
+
+### DEGRADED
+
+Eligible work exists but cannot complete processing/persistence.
+
+### FAULTED
+
+Integrity/schema/state failure prevents trustworthy operation.
+
+## 13. Candidate memory
+
+Candidate fingerprints, rejected ideas and suppression reasons persist across restart/handoff.
+
+A substantially similar rejected candidate cannot silently reappear unless:
+
+- materially new independent evidence exists;
+- semantics are genuinely different; or
+- a versioned policy explicitly allows reconsideration.
+
+This prevents endless rediscovery loops.
+
+## 14. Advanced ML candidates
+
+ML research may be used for:
+
+- regime classification;
+- candidate ranking;
+- entry-efficiency estimation;
+- cost/slippage/latency estimation;
+- management-quality estimation;
+- anomaly/fault detection;
+- feature interaction research.
+
+Requirements:
+
+```text
+causal feature construction
+versioned feature schema
+versioned model/data/code identity
+train/validation/holdout separation
+reproducible evaluation
+uncertainty/coverage reporting where relevant
+no hidden online production retraining
+same promotion path as non-ML candidate
+```
+
+An ML model cannot directly acquire `MT5Writer` access.
+
+## 15. Automatic progression
+
+Invention may automatically hand candidates to governed stages and continue through evidence stages allowed by policy:
+
+```text
+candidate
+→ replay
+→ walk-forward
+→ validation
+→ semantic lock
+→ one-shot holdout
+→ stress
+→ shadow
+→ controlled DEMO candidate
+→ APPROVAL_REQUIRED
+```
+
+At `APPROVAL_REQUIRED`, automation stops for live production promotion.
+
+## 16. 120-trades/day benchmark
+
+Invention should treat the benchmark as a diagnostic objective:
+
+> Can qualified opportunity capture increase without destroying after-cost expectancy or safety?
+
+Potential candidate triggers include:
+
+- high false-block rate;
+- strong missed moves after optional evidence rejection;
+- frequent M1 timing misses;
+- excessive hold-time slot occupancy;
+- active-family opportunity scarcity versus shadow alternatives;
+- overly conservative cost thresholds with positive counterfactual outcomes.
+
+It must never lower standards simply to manufacture 120 trades.
+
+## 17. Runtime boundary
+
+Normal production runtime loads only the approved production policy.
+
+Autonomous invention may run:
+
+- offline;
+- on copied immutable evidence;
+- as a bounded background research service isolated from broker authority.
+
+It must not perform uncontrolled heavy optimization in the critical broker cycle or mutate the live StateStore in a way that changes current production semantics.
+
+## 18. Restart / backup
+
+Persist:
+
+- episode journal cursor;
+- cluster identities;
+- candidate registry;
+- fingerprints;
+- tuning runs/results;
+- rejected/suppressed memory;
+- promotion stage/evidence references;
+- model/feature/data metadata.
+
+Full checkpoint preserves recovery lineage. Focused research exports may be used for review but are not production authority.
+
+## 19. Dashboard
+
+```text
+AUTONOMOUS R&D
+Health             HEALTHY
+Eligible Clusters  6
+Candidates         4
+Tuning Jobs        2
+ML Research        ACTIVE
+Latest             CAND-052 • QUALITY_POLICY
+Stage              STRESS_PASSED
+Suppressed         2 • explicit reasons
+Production Change  NONE
+Broker Authority   NONE
+```
+
+## 20. Planned implementation ownership
+
+```text
+research/episode_journal.py
+research/discovery.py
+research/invention.py
+research/promotion.py
+research/models.py
+research/optimization.py or equivalent
+research/evidence.py
+persistence/store.py
+```
+
+## 21. Planned proof
+
+Tests cover:
+
+- automatic episode feed;
+- active/shadow attribution;
+- candidate type/classification;
+- approved primitive validation;
+- duplicate/similarity suppression;
+- independent episode counting;
+- candidate-only parameter tuning;
+- production immutability during tuning;
+- hard-safety exclusions;
+- complexity limits/ablation hooks;
+- ML schema/model/data identity;
+- liveness states;
+- restart candidate memory;
+- automated progression stops at APPROVAL_REQUIRED;
+- no MT5 writer or production self-promotion.
+
+## 22. Calibration
+
+Open research-governance variables:
+
+- minimum independent sample counts;
+- similarity thresholds;
+- complexity limits;
+- optimization budgets;
+- compute scheduling;
+- candidate retention/pruning;
+- family-rotation evidence requirements;
+- model classes/features worth testing.
+
+## 23. Final invariant
+
+> **Autonomous invention should continuously search for a better Gold scalper without becoming an uncontrolled live trader. It may create and tune hypotheses aggressively, but all candidates remain declarative, evidence-bound, safety-bounded and unable to reach production without explicit operator approval.**
