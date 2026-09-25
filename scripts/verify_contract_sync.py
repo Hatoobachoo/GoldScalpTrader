@@ -1,16 +1,15 @@
 """Verify that implementation still matches the frozen GoldScalpTrader contracts.
 
 This is a local/static guard. It does not replace connected Exness DEMO proof.
-It intentionally checks architectural invariants that are easy to regress while
-coding: document topology, required ownership files, preserved Risk constants,
-REAL hard-disable, one-active/setup routing boundaries, and forbidden broker
-imports from analytical/research/presentation layers.
+It checks architectural invariants that are easy to regress while coding:
+document topology, canonical source/test/script ownership, preserved Risk
+constants, REAL hard-disable, market-first setup/isolation boundaries, and
+forbidden broker imports from analytical/research/presentation/evidence layers.
 """
 from __future__ import annotations
 
 import ast
 from pathlib import Path
-import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src" / "gold_scalp_trader"
@@ -37,7 +36,9 @@ REQUIRED_SOURCE_PATHS = (
     "diagnostics/reasons.py",
     "diagnostics/health.py",
     "diagnostics/metrics.py",
+    "diagnostics/connected_demo.py",
     "security/financial_secrets.py",
+    "market_data/account_mode.py",
     "market_data/mt5_reader.py",
     "market_data/activity.py",
     "market_data/snapshot.py",
@@ -76,6 +77,7 @@ REQUIRED_SOURCE_PATHS = (
     "management/models.py",
     "management/manager.py",
     "management/execution.py",
+    "management/closure.py",
     "management/store.py",
     "persistence/store.py",
     "persistence/runtime_state.py",
@@ -114,6 +116,8 @@ REQUIRED_SOURCE_PATHS = (
     "app/dashboard.py",
     "app/live_presentation.py",
     "app/session_news.py",
+    "app/demo_runner.py",
+    "app/graphical_demo_runner.py",
 )
 
 REQUIRED_ROOT_PATHS = (
@@ -122,6 +126,21 @@ REQUIRED_ROOT_PATHS = (
     "graphical_dashboard/controls.py",
     "graphical_dashboard/server.py",
     "graphical_dashboard/__main__.py",
+)
+
+REQUIRED_SCRIPTS = (
+    "scripts/run_walk_forward.py",
+    "scripts/acquire_mt5_dataset.py",
+    "scripts/report_demo_learning_evidence.py",
+    "scripts/certify_connected_demo.py",
+    "scripts/monitor_connected_demo.py",
+    "scripts/restore_runtime_checkpoint.py",
+    "scripts/create_local_recovery_package.py",
+    "scripts/create_source_zip.py",
+    "scripts/scan_financial_secrets.py",
+    "scripts/verify_documents_manual.py",
+    "scripts/verify_contract_sync.py",
+    "scripts/verify_offline_release.py",
 )
 
 CRITICAL_TESTS = (
@@ -133,15 +152,21 @@ CRITICAL_TESTS = (
     "tests/test_risk_state.py",
     "tests/test_execution_intent.py",
     "tests/test_gate.py",
+    "tests/test_controller.py",
     "tests/test_guarded_demo_runtime.py",
     "tests/test_management_lifecycle.py",
     "tests/test_action_reconciliation.py",
+    "tests/test_deal_history_reader.py",
+    "tests/test_writer_attribution.py",
+    "tests/test_demo_launcher.py",
+    "tests/test_dashboard_controls.py",
     "tests/test_graphical_runtime.py",
     "tests/test_research_governance.py",
     "tests/test_research_integrity.py",
     "tests/test_checkpoint.py",
     "tests/test_full_checkpoint.py",
     "tests/test_recovery_package.py",
+    "tests/test_connected_demo_evidence.py",
 )
 
 ANALYTICAL_NO_BROKER_DIRS = (
@@ -149,6 +174,7 @@ ANALYTICAL_NO_BROKER_DIRS = (
     SRC / "strategies",
     SRC / "research",
     SRC / "operator",
+    SRC / "diagnostics",
     ROOT / "graphical_dashboard",
 )
 
@@ -163,6 +189,12 @@ STALE_POLICY_TERMS = (
     "POST_NEWS_WARMUP",
     "M1 diagnostic-only",
     "M1 diagnostic only",
+)
+
+CONNECTED_EVIDENCE_PATHS = (
+    ROOT / "scripts" / "certify_connected_demo.py",
+    ROOT / "scripts" / "monitor_connected_demo.py",
+    SRC / "diagnostics" / "connected_demo.py",
 )
 
 
@@ -204,7 +236,7 @@ def check_required_paths(errors: list[str]) -> None:
     for rel in REQUIRED_SOURCE_PATHS:
         if not (SRC / rel).is_file():
             _fail(errors, f"missing canonical source owner: src/gold_scalp_trader/{rel}")
-    for rel in REQUIRED_ROOT_PATHS + CRITICAL_TESTS:
+    for rel in REQUIRED_ROOT_PATHS + REQUIRED_SCRIPTS + CRITICAL_TESTS:
         if not (ROOT / rel).is_file():
             _fail(errors, f"missing required implementation/proof file: {rel}")
 
@@ -263,6 +295,22 @@ def check_architecture_boundaries(errors: list[str]) -> None:
         _fail(errors, "strategy isolation no longer visibly separates active and shadow states")
 
 
+def check_connected_evidence_is_read_only(errors: list[str]) -> None:
+    for path in CONNECTED_EVIDENCE_PATHS:
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "order_send(" in text or "execution.mt5_writer" in text:
+            _fail(errors, f"connected evidence tooling gained broker-write authority: {path.relative_to(ROOT)}")
+        if "REAL_RELEASE_ENABLED = True" in text:
+            _fail(errors, f"connected evidence tooling attempts REAL enablement: {path.relative_to(ROOT)}")
+    monitor = ROOT / "scripts" / "monitor_connected_demo.py"
+    if monitor.is_file():
+        text = monitor.read_text(encoding="utf-8")
+        if "--interval-seconds" not in text or "at least 5 seconds" not in text:
+            _fail(errors, "connected DEMO monitor lost bounded sampling interval guard")
+
+
 def check_no_legacy_policy_code(errors: list[str]) -> None:
     for path in SRC.rglob("*.py"):
         text = path.read_text(encoding="utf-8")
@@ -277,6 +325,7 @@ def main() -> int:
     check_required_paths(errors)
     check_preserved_policy(errors)
     check_architecture_boundaries(errors)
+    check_connected_evidence_is_read_only(errors)
     check_no_legacy_policy_code(errors)
 
     print("DOCUMENT / CODE CONTRACT SYNC AUDIT")
@@ -286,10 +335,11 @@ def main() -> int:
         print(f"CONTRACT SYNC: FAIL ({len(errors)} issue(s))")
         return 1
     print("  PASS  66-document topology")
-    print("  PASS  canonical source ownership paths")
+    print("  PASS  canonical source / script / proof ownership paths")
     print("  PASS  preserved Risk / cooldown / REAL-disable policy")
     print("  PASS  setup-detection / isolation boundaries")
     print("  PASS  sole-writer / no-broker analytical boundaries")
+    print("  PASS  connected-DEMO evidence tooling remains read-only")
     print("CONTRACT SYNC: PASS")
     print("CONNECTED DEMO FACTS: NOT PROVEN BY THIS STATIC AUDIT")
     return 0
