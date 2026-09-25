@@ -1,7 +1,7 @@
 # GoldScalpTrader — Build Phases
 
-**Status:** APPROVED BUILD MODEL — DOCUMENTATION RECONSTRUCTION / IMPLEMENTATION NOT STARTED
-**Version:** 2.0-institutional-dependency-build
+**Status:** ACTIVE IMPLEMENTATION STATUS — PHASES 0–12 IMPLEMENTED / 13–14 INTEGRATION / CONNECTED DEMO CERTIFICATION PENDING
+**Version:** 2.1-institutional-dependency-build
 **Authority:** Dependency order, phase ownership, implementation sequencing, evidence gates and release progression.
 
 Canonical recovery architecture: [`BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md`](../BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md).
@@ -501,11 +501,28 @@ CANONICAL DOCS COMPLETE
 + NO KNOWN CRITICAL CONTRADICTION
 ```
 
-## 21. Current status
+## 21. Current implementation status
 
-At this documentation-reconstruction stage:
+Current repository status after the documentation-first implementation packets:
 
-- Phase 0 is **IN PROGRESS**;
-- the current small Python scaffold is provisional and not canonical implementation proof;
-- Phases 1–16 are not claimed complete;
-- coding must not advance ahead of the reconstructed/frozen documentation baseline.
+| Phase | Current status | Evidence class |
+|---|---|---|
+| 0 — Documentation / architecture | **COMPLETE / FROZEN** | 66-document canonical manual + challenge audit |
+| 1 — Package/config/domain | **IMPLEMENTED** | source + deterministic tests |
+| 2 — MT5 reads/snapshot | **IMPLEMENTED OFFLINE; CONNECTED FACTS PENDING** | normalized reader/tests; real Exness facts remain Phase 15 |
+| 3 — Intelligence | **IMPLEMENTED** | source + deterministic tests |
+| 4 — Six families/isolation/setup detection | **IMPLEMENTED** | source + no-forcing/isolation tests |
+| 5 — Opportunity/M1 timing | **IMPLEMENTED** | integrated decision pipeline/tests |
+| 6 — TradePlan/executable quality | **IMPLEMENTED** | source + quality tests |
+| 7 — Risk/session/exposure | **IMPLEMENTED** | preserved Risk/state/tests; broker schedule external proof pending |
+| 8 — Persistence/recovery | **IMPLEMENTED OFFLINE** | SQLite/checkpoint/recovery tests; fresh-machine connected drill pending |
+| 9 — DRY_RUN | **IMPLEMENTED** | integrated read-only path |
+| 10 — DEMO execution/reconciliation | **IMPLEMENTED; CONNECTED CERTIFICATION PENDING** | guarded DEMO runtime + Intent/writer/reconciliation tests |
+| 11 — Trade Manager/close recovery | **IMPLEMENTED; CONNECTED CERTIFICATION PENDING** | managed lifecycle/action reconciliation tests |
+| 12 — Operator/graphical dashboard | **IMPLEMENTED** | approved one-screen GUI + interaction/runtime tests |
+| 13 — Research/learning/ML | **IMPLEMENTED FOUNDATION; INTEGRATION/DEPTH ACTIVE** | memory, replay/research, invention/promotion source; offline completion audit continues |
+| 14 — Backup/handoff | **IMPLEMENTED OFFLINE; CONNECTED HANDOFF PENDING** | checkpoint/recovery package/source backup tooling |
+| 15 — Connected DEMO certification | **IN PROGRESS / EXTERNAL EVIDENCE REQUIRED** | must run on intended Windows + Exness DEMO environment |
+| 16 — REAL release gate | **NOT STARTED / HARD DISABLED** | `REAL_RELEASE_ENABLED = False`; explicit future approval required |
+
+This table is status only; it does not change any canonical behavior or numeric policy above. Connected broker evidence must never be inferred from offline code/tests.

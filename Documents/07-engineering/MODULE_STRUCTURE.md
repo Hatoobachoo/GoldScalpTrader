@@ -1,8 +1,8 @@
 # GoldScalpTrader — Module Structure and File Map
 
-**Status:** FINAL PLANNED MODULE MAP — IMPLEMENTATION PENDING
-**Version:** 2.0-institutional-scalp
-**Authority:** Planned package/file ownership, dependency direction, setup-detection/isolation boundaries, serial financial authority and research/presentation separation.
+**Status:** IMPLEMENTED ARCHITECTURE MAP — CONNECTED DEMO CERTIFICATION PENDING
+**Version:** 2.1-institutional-scalp-implementation
+**Authority:** Actual package/file ownership, dependency direction, setup-detection/isolation boundaries, serial financial authority and research/presentation separation.
 
 ## 1. Dependency direction
 
@@ -40,20 +40,20 @@ Broker/financial authority remains serial even if analytical work is physically 
 | `domain` | enums, typed IDs/DTOs, units/states | MT5 calls |
 | `diagnostics` | structured logs, reason/health models, metrics | trading authority |
 | `security` | secret detection/redaction | secret storage |
-| `market_data` | sole normalized analytical MT5 read boundary and activity normalization | raw irreversible writes |
+| `market_data` | sole normalized analytical MT5 read boundary, account-mode verification and activity normalization | raw irreversible writes |
 | `intelligence` | causal descriptive structure/technical/liquidity/quant/session/News context | money/Gate |
 | `strategies` | six family definitions, market-first setup detection, Strategy Isolation, analytical scheduler | Risk/broker writes |
 | `decisions` | active-family BUY/SELL/Red Team, Opportunity, M1 timing, TradePlan, executable quality | raw MT5 write |
 | `risk` | preserved profiles, monetary sizing, daily state, cooldown/re-entry/capacity | strategy rewrite |
 | `execution` | Gate, controller, Intent, checks, sole writer, reconciliation | strategy invention |
-| `management` | ManagedTrade and HOLD/PROTECT/TRAIL/RUNNER/EXIT decisions | raw writer |
+| `management` | ManagedTrade, close-proof lineage and HOLD/PROTECT/TRAIL/RUNNER/EXIT decisions | raw writer |
 | `persistence` | strict local state/checkpoints/recovery packages | current broker truth |
-| `app` | startup/recovery/runtime composition/cadence/DTO assembly | duplicate policy ownership |
+| `app` | startup/recovery/runtime composition/cadence/DTO assembly, guarded DEMO runners | duplicate policy ownership |
 | `operator` | read-only terminal/graphical view models/renderers | authority recomputation |
 | `graphical_dashboard` | approved one-screen interactive local UI | trading mutation |
 | `research` | replay, learning, discovery, invention, ML, promotion evidence | production broker authority |
 
-## 3. Planned package tree
+## 3. Implemented package tree
 
 ```text
 src/gold_scalp_trader/
@@ -72,6 +72,7 @@ src/gold_scalp_trader/
 ├── security/
 │   └── financial_secrets.py
 ├── market_data/
+│   ├── account_mode.py
 │   ├── mt5_reader.py
 │   ├── activity.py
 │   └── snapshot.py
@@ -116,6 +117,7 @@ src/gold_scalp_trader/
 │   ├── models.py
 │   ├── manager.py
 │   ├── execution.py
+│   ├── closure.py
 │   └── store.py
 ├── persistence/
 │   ├── store.py
@@ -158,7 +160,9 @@ src/gold_scalp_trader/
     ├── loop.py
     ├── dashboard.py
     ├── live_presentation.py
-    └── session_news.py
+    ├── session_news.py
+    ├── demo_runner.py
+    └── graphical_demo_runner.py
 
 graphical_dashboard/
 ├── ui.py
@@ -168,7 +172,7 @@ graphical_dashboard/
 └── __main__.py
 ```
 
-Exact physical files may be adjusted during implementation if ownership remains identical and the file/test catalog is synchronized.
+Physical files may be refactored only when ownership remains identical and this map plus the file/test catalog are synchronized in the same change packet.
 
 ## 4. Setup Detector ownership
 
@@ -206,7 +210,7 @@ qualified candidate belongs only to SHADOW_ONLY family
 
 ## 5. Analytical scheduler
 
-`strategies/scheduler.py` or equivalent owns physical scheduling only.
+`strategies/scheduler.py` owns physical scheduling only.
 
 Correct optimization order:
 
@@ -241,6 +245,8 @@ M5
 bounded M1 for subordinate entry refinement
 quote/tick
 ```
+
+`market_data/account_mode.py` is the narrow environment guard used by the DEMO runtime to prove the connected MT5 account reports DEMO before any write-capable path proceeds.
 
 M1 is production-relevant only as subordinate timing after a valid M5 Opportunity; it cannot independently create a setup.
 
@@ -338,6 +344,8 @@ HOLD / PROTECT / TRAIL / RUNNER / EXIT
 
 `management/execution.py` turns approved management actions into the same governed execution service/Intent path.
 
+`management/closure.py` owns exact known-trade close proof/archival handoff; it cannot adopt an unknown external Gold position.
+
 Management never imports raw MT5 writer directly.
 
 ## 12. Persistence / recovery
@@ -356,9 +364,25 @@ Research may run computationally heavier/offline workloads, but cannot mutate li
 
 `research/promotion.py` stops at `APPROVAL_REQUIRED` before production promotion.
 
-`research/models.py` or equivalent isolates advanced ML feature/model identity and reproducible evidence.
+`research/models.py` isolates advanced ML feature/model identity and reproducible evidence.
 
-## 14. Graphical dashboard ownership
+## 14. Application / DEMO runner ownership
+
+`app/demo_runner.py` and `app/graphical_demo_runner.py` compose the governed DEMO runtime only. They do not create alternative trading policy.
+
+They must preserve:
+
+```text
+explicit DEMO account proof
+→ persistent StateStore
+→ one fixed runtime cadence
+→ governed cycle / management lifecycle
+→ local checkpoint on safe shutdown
+```
+
+The graphical runner supplies immutable/read-only presentation snapshots to the GUI. Chart buttons cannot trigger broker cycles or writes.
+
+## 15. Graphical dashboard ownership
 
 Approved Swing-style Scalp graphical dashboard is local and presentation-only.
 
@@ -370,7 +394,7 @@ Approved Swing-style Scalp graphical dashboard is local and presentation-only.
 
 No dashboard module imports Risk engine or MT5 writer to recalculate/mutate authority.
 
-## 15. Planned scripts
+## 16. Implemented scripts
 
 ```text
 scripts/run_walk_forward.py
@@ -381,11 +405,13 @@ scripts/create_local_recovery_package.py
 scripts/create_source_zip.py
 scripts/scan_financial_secrets.py
 scripts/verify_documents_manual.py
+scripts/verify_contract_sync.py
+scripts/verify_offline_release.py
 ```
 
-Additional scripts enter this map only when genuinely needed and documented.
+`verify_contract_sync.py` statically enforces high-value frozen-document invariants against the source tree. It is part of the offline release audit and does not replace connected broker proof.
 
-## 16. Forbidden dependency directions
+## 17. Forbidden dependency directions
 
 ```text
 intelligence/strategy worker → MT5Writer                    NO
@@ -402,7 +428,7 @@ trading runtime → Git commit/push/pull                     NO
 backup package → credentials                               NO
 ```
 
-## 17. Source-map synchronization
+## 18. Source-map synchronization
 
 Any source/test rename, ownership change or new package updates:
 
@@ -411,3 +437,5 @@ Any source/test rename, ownership change or new package updates:
 - owning topic contract;
 - affected tests/audits/operator docs;
 - final release traceability.
+
+The local offline release verifier must fail when a high-value frozen contract and source tree drift in a way covered by `verify_contract_sync.py`.

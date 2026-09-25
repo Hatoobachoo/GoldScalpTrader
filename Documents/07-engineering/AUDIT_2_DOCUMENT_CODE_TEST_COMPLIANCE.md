@@ -1,14 +1,22 @@
 # GoldScalpTrader — Audit 2: Document → Code → Test Compliance
 
-**Status:** FINAL COMPLIANCE AUDIT PROTOCOL — NOT RUN AGAINST IMPLEMENTATION
-**Version:** 2.0-institutional-scalp
-**Authority:** Post-build traceability audit from canonical contract to source owner to deterministic/integration/connected evidence.
+**Status:** OFFLINE COMPLIANCE PASS WITH CONNECTED-PROOF EXCEPTIONS
+**Version:** 2.1-implementation-trace
+**Authority:** Traceability audit from canonical contract to source owner to deterministic/integration evidence, with connected DEMO evidence explicitly separated.
 
 ## 1. Purpose
 
-Audit 2 is run after implementation exists. It asks:
+Audit 2 asks:
 
-> **Can every material documented behavior be traced to one implementation owner and sufficient proof, with no undocumented production behavior?**
+> **Can every material documented behavior be traced to an implementation owner and appropriate proof, with no known undocumented production behavior?**
+
+Current answer:
+
+```text
+OFFLINE DOCUMENT → CODE → TEST TRACEABILITY     PASS / PARTIAL BY AREA
+CONNECTED EXNESS BROKER FACTS                   EXTERNAL_PROOF_PENDING
+FUTURE REAL RELEASE                             NOT APPROVED / HARD DISABLED
+```
 
 ## 2. Traceability model
 
@@ -20,178 +28,268 @@ flowchart LR
     EXT --> OP["Operator/dashboard truth"]
 ```
 
-A missing link is a finding.
+A missing offline link is a compliance finding. A broker fact that inherently needs real Exness/Windows evidence is not converted into an offline PASS.
 
-## 3. Required trace fields
+## 3. Machine-enforced sync guard
 
-For each material requirement record:
-
-```text
-requirement ID / wording
-canonical document + section
-source module/function/class
-unit test(s)
-integration test(s)
-external/replay/DEMO evidence if applicable
-operator/dashboard representation
-status
-exception/limitation
-```
-
-## 4. High-risk trace requirements
-
-Audit explicitly traces:
-
-- one normalized MT5 read boundary;
-- completed-candle/knowledge-time semantics;
-- market-first Setup Detector;
-- active family cannot force chart setup;
-- exactly one active + five shadow;
-- shadow cannot create production Opportunity/Intent;
-- M5 Opportunity before M1 timing;
-- M1 cannot create production trade alone;
-- family-aware TradePlan;
-- Executable Quality owner;
-- preserved Risk profiles and exact values;
-- aggressive mode default false;
-- News soft-context-only;
-- PRE_CLOSE/reopen hard session authority;
-- upstream blocker vs Gate state;
-- one-shot Intent / sole writer / no blind retry;
-- manual/foreign exposure separation;
-- ManagedTrade/verified close;
-- exactly-once learning;
-- autonomous invention/ML promotion approval boundary;
-- no runtime Git publication;
-- graphical dashboard read-only authority.
-
-## 5. Setup Detector compliance examples
-
-### Required implementation trace
+The repository now includes:
 
 ```text
-Contract: chart/market determines setup; active family cannot be forced
-→ strategies/setup_detector.py
-→ test_active_family_not_forced.py
-→ integration: detector + isolation + Opportunity
-→ dashboard: Detected Setup / Active Test Family / Shadow status
+scripts/verify_contract_sync.py
 ```
 
-### Failure finding
-
-If code does:
+It is executed by:
 
 ```text
-if active_family == BREAKOUT_RETEST:
-    score_breakout_retest(...)
-    ignore whether any other setup is actually detected
+scripts/verify_offline_release.py
 ```
 
-and presents every market as that family, Audit 2 is BLOCKED.
+and checks selected high-value frozen-document invariants:
+
+- final 66-document `01–08` topology;
+- canonical source-owner paths;
+- preserved SMALL/MEDIUM/NORMAL Risk constants;
+- disabled-by-default aggressive mode/manual reset;
+- 3-loss / 30-minute cooldown baseline;
+- one-position baseline;
+- `REAL_RELEASE_ENABLED = False`;
+- setup-detector + active/shadow separation presence;
+- analytical/research/operator layers cannot import raw MT5 writer;
+- raw `order_send` remains confined to the sole writer;
+- legacy News blackout/post-News warmup terms are absent from current code.
+
+This is a regression guard, not a substitute for design review or connected certification.
+
+## 4. Current high-risk trace matrix
+
+| Requirement | Canonical owner | Implementation owner | Current proof | Status |
+|---|---|---|---|---|
+| one normalized MT5 read boundary | Market Data/System Contract | `market_data/mt5_reader.py` | `test_mt5_reader.py`, deal/activity tests | COMPLIANT offline; connected facts pending |
+| market-first Setup Detector | Strategy Floor | `strategies/setup_detector.py` | `test_cycle_no_forcing.py`, `test_strategy_isolation.py` | COMPLIANT |
+| active family cannot force setup | Strategy Floor | detector + isolation + cycle | no-forcing/isolation tests | COMPLIANT |
+| exactly one active / shadow separation | Strategy Floor | `strategies/isolation.py` | `test_strategy_isolation.py` | COMPLIANT |
+| M5 Opportunity before M1 timing | Entry Timing | opportunity/timing/cycle | `test_decision_pipeline.py` | COMPLIANT |
+| M1 cannot create standalone production trade | Entry Timing | timing/cycle | decision/no-forcing tests | COMPLIANT |
+| family-aware TradePlan | TradePlan + family extensions | `decisions/trade_plan.py`, `family_trade_plan.py` | decision/quality tests | PARTIAL — more family-specific edge tests desirable |
+| fixed+aware executable quality | TradePlan/Execution | `decisions/executable_quality.py` | `test_executable_quality.py` | COMPLIANT offline; real costs pending |
+| preserved Risk profiles | Risk Contract | `config/settings.py`, `risk/engine.py` | risk tests + contract-sync verifier | COMPLIANT |
+| aggressive mode default false / 8–16 ceilings | Risk Contract | config/risk engine | risk tests + static guard | COMPLIANT |
+| News soft-context-only | News/Session contracts | `intelligence/news.py`, permissions/runtime | `test_news_context.py` + static guard | COMPLIANT |
+| broker OPEN/CLOSED/PRE_CLOSE authority | Session/Risk | session/permissions/runtime | offline logic | EXTERNAL_PROOF_PENDING for current Exness schedule |
+| upstream blocker vs Gate distinction | Execution/Dashboard | cycle/runtime/presentation | Gate/runtime/dashboard tests | COMPLIANT offline |
+| one-shot Intent / no blind retry | Execution | intent store/service/reconcile/writer | intent/action-reconcile tests | COMPLIANT offline; ambiguous real ack drill pending |
+| sole raw writer | Execution | `execution/mt5_writer.py` | static guard + writer tests | COMPLIANT |
+| manual/foreign exposure not adopted | Broker Activity | reader/runtime/closure | deal/action reconciliation tests | COMPLIANT offline; real manual-close drill pending |
+| ManagedTrade lifecycle | Trade Manager | `management/*`, runtime | management lifecycle/store tests | COMPLIANT offline; live MODIFY/CLOSE proof pending |
+| exactly-once learning | Learning | research learning + close archive | research integrity/governance tests | PARTIAL — connected closed-trade evidence pending |
+| autonomous invention/ML cannot self-promote | Research governance | invention/promotion/models | research governance tests | COMPLIANT offline |
+| no runtime Git publication | GitHub/Recovery policy | runtime/app tree | architecture/static review | COMPLIANT |
+| graphical dashboard read-only | Operator docs | operator + graphical dashboard + runner | graphical runtime/controls tests | COMPLIANT offline |
+| REAL disabled | System/Release | `config/settings.py` | contract-sync verifier | COMPLIANT |
+
+## 5. Setup Detector compliance
+
+Required behavior:
+
+```text
+chart/market facts
+→ Setup Detector
+→ actual qualifying family candidate(s)
+→ Strategy Isolation policy
+```
+
+Not:
+
+```text
+active family selected
+→ force that family onto every chart
+```
+
+Current source/test trace includes:
+
+```text
+strategies/setup_detector.py
+strategies/isolation.py
+app/cycle.py
+app/runtime.py
+tests/test_cycle_no_forcing.py
+tests/test_strategy_isolation.py
+```
+
+Current offline verdict: **COMPLIANT**.
 
 ## 6. M1 compliance
 
-Required trace:
+Required flow:
 
 ```text
-M5 active-family setup
+active-family M5 setup
 → Opportunity
-→ M1 refinement
+→ subordinate M1 refinement
 ```
 
-Audit searches for any path:
+Current implementation is traced through `decisions/opportunity.py`, `decisions/timing.py` and the integrated cycle/runtime path.
 
-```text
-M1 fact
-→ production Opportunity / Intent without M5 thesis
-```
+No approved path exists from M1 alone to a production Intent.
 
-Any such hidden path is HIGH/CRITICAL depending on broker reachability.
+Current offline verdict: **COMPLIANT**.
 
 ## 7. News compliance
 
-Audit must find no current production path where:
+The current code must not implement:
 
 ```text
 News event/provider unavailable
-→ hard new-entry block solely because of News
+→ hard block solely because of News
 ```
 
-News context may enter strategy/research/dashboard only.
+`verify_contract_sync.py` rejects legacy current-code terms `NEWS_BLACKOUT` and `POST_NEWS_WARMUP` and prevents analytical News modules from gaining broker-writer authority.
 
-Hard session/broker state must have its own typed owner.
+Current offline verdict: **COMPLIANT**.
+
+Current provider reliability/event-performance calibration remains research evidence, not permission authority.
 
 ## 8. Risk compliance
 
-Compare exact code/config/test values against canonical profile table.
+Machine/static and deterministic tests compare current code against the preserved canonical table:
 
-Audit fails if implementation:
+```text
+SMALL   3.0–4.5 / >4.5–6.5 / hard 7 / daily 12
+MEDIUM  2.0–3.0 / >3.0–4.5 / hard 5 / daily 9
+NORMAL  1.0–2.0 / >2.0–3.5 / hard 4 / daily 7
+```
 
-- replaces profiles with one `STANDARD` policy;
-- changes bands without governed documentation;
-- auto-enables aggressive mode;
-- treats 8% as target;
-- modifies structural stop to make minimum volume fit;
-- resets cooldown/daily state on restart.
+Also guarded:
+
+```text
+Aggressive disabled by default
+8% single-trade ceiling — not target
+16% aggregate/day
+one independent position
+3 consecutive closed losses / >=30m cooldown
+manual reset disabled by default
+```
+
+Current offline verdict: **COMPLIANT**.
 
 ## 9. Execution compliance
 
-Search source imports/calls so raw irreversible MT5 calls exist only in sole writer.
-
-Trace:
+Required irreversible path:
 
 ```text
 Gate
 → Intent persisted
 → fresh precheck/order_check
 → SUBMITTING persisted
-→ one send
+→ one writer send
 → ack classification
 → reconciliation
 ```
 
-Any blind retry or second raw writer is CRITICAL.
-
-## 10. Dashboard compliance
-
-Trace displayed fields to backend-owned DTOs.
-
-Audit fails if dashboard:
-
-- recomputes Risk/Gate;
-- changes active strategy directly without governed policy path;
-- hides shadow-only status;
-- displays upstream stop as Gate BLOCKED;
-- shows unknown facts as zero;
-- chart controls are decorative/non-functional while docs claim functionality.
-
-## 11. Research/AI compliance
-
-Audit import/dependency graph for any route from research/ML to raw writer or production config mutation.
-
-Candidate stage must stop at `APPROVAL_REQUIRED` unless explicit operator approval artifact exists.
-
-## 12. File/Test Catalog compliance
-
-Compare actual tree with:
-
-- `MODULE_STRUCTURE.md`;
-- `FILE_AND_TEST_CATALOG.md`.
-
-Unexpected file is not automatically wrong, but ownership must be documented. Planned-but-unimplemented files stay clearly classified.
-
-## 13. Audit result categories
+Current ownership:
 
 ```text
-COMPLIANT
-PARTIAL
-MISSING
-CONTRADICTORY
-UNTESTED
-EXTERNAL_PROOF_PENDING
-CRITICAL_VIOLATION
+execution/gate.py
+execution/intent_store.py
+execution/checks.py
+execution/service.py
+execution/mt5_writer.py
+execution/reconcile.py
+execution/controller.py
 ```
 
-## 14. Current status
+The static contract verifier also scans analytical/research/presentation directories for forbidden writer imports/raw sends.
 
-This protocol is complete. It is **NOT RUN** because the canonical implementation does not yet exist. No source/test compliance PASS is claimed.
+Current offline verdict: **COMPLIANT**.
+
+Real broker return modes, slippage/deviation and ambiguous acknowledgement drill remain **EXTERNAL_PROOF_PENDING**.
+
+## 10. Management / close compliance
+
+Current managed lifecycle:
+
+```text
+verified OPEN
+→ ManagedTrade
+→ HOLD / PROTECT / TRAIL / RUNNER / EXIT
+→ governed MODIFY/CLOSE Intent
+→ reconciliation
+→ exact close proof
+```
+
+Implementation includes `management/closure.py` as the exact close-proof boundary in addition to manager/execution/store.
+
+Current offline verdict: **COMPLIANT** for modeled/tested behavior.
+
+Real broker/manual close visibility remains **EXTERNAL_PROOF_PENDING**.
+
+## 11. Dashboard compliance
+
+Approved graphical UI is implemented through:
+
+```text
+operator/graphical_snapshot.py
+graphical_dashboard/ui.py
+chart.py
+controls.py
+app/graphical_demo_runner.py
+```
+
+Current controls are functional presentation controls; broker cycles remain timer-driven.
+
+Current offline verdict: **COMPLIANT**.
+
+Exact visual polish remains operator-review evidence rather than a safety claim.
+
+## 12. Research / AI compliance
+
+Current research modules have no raw broker authority. Candidate promotion remains evidence-bound and ends at `APPROVAL_REQUIRED` before production.
+
+Current offline verdict: **COMPLIANT for authority boundary; PARTIAL for research depth/connected evidence**.
+
+Research depth can continue improving without changing production authority.
+
+## 13. File/Test Catalog compliance
+
+`MODULE_STRUCTURE.md` and `FILE_AND_TEST_CATALOG.md` are synchronized to current implementation additions including:
+
+```text
+market_data/account_mode.py
+app/demo_runner.py
+app/graphical_demo_runner.py
+management/closure.py
+scripts/verify_contract_sync.py
+scripts/verify_offline_release.py
+```
+
+Unexpected future material source/test ownership must update both engineering maps in the same coherent packet.
+
+## 14. Connected evidence exceptions
+
+The following cannot receive a PASS from source/static tests alone:
+
+- actual Exness SymbolSpec/filling/stops/margin behavior;
+- actual daily/weekend/DST/holiday schedule;
+- real spread/slippage/deviation distributions;
+- decision→send→ack→reconcile latency;
+- live OPEN/MODIFY/CLOSE/SL/TP lifecycle;
+- manual close of a known bot trade;
+- ambiguous acknowledgement/no duplicate drill where safely exercisable;
+- restart during real active lifecycle;
+- fresh-machine restore/handoff;
+- statistically meaningful active/shadow DEMO learning evidence.
+
+These remain **Phase 15 EXTERNAL_PROOF_PENDING**.
+
+## 15. Current Audit 2 verdict
+
+```text
+DOCUMENT TREE / CANONICAL POLICY        PASS
+SOURCE OWNERSHIP MAP                    PASS
+HIGH-RISK STATIC CONTRACT SYNC          PASS when verify_contract_sync.py passes locally
+DETERMINISTIC/INTEGRATION TEST MAP      PASS/PARTIAL by row above
+CONNECTED EXNESS EVIDENCE               PENDING
+FUTURE REAL RELEASE                     HARD DISABLED
+```
+
+No profitability claim is made.

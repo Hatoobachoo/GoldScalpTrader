@@ -23,16 +23,18 @@ def main() -> int:
     checks: list[tuple[str, bool]] = []
     checks.append(("compileall", compileall.compile_dir(str(ROOT / "src"), quiet=1) and compileall.compile_dir(str(ROOT / "graphical_dashboard"), quiet=1)))
     checks.append(("documents", run("documents", [sys.executable, "scripts/verify_documents_manual.py"])))
+    checks.append(("contract-sync", run("contract-sync", [sys.executable, "scripts/verify_contract_sync.py"])))
     checks.append(("secrets", run("secrets", [sys.executable, "scripts/scan_financial_secrets.py", "."])))
     checks.append(("pytest", run("pytest", [sys.executable, "-m", "pytest", "-q"])))
     failed = [name for name, passed in checks if not passed]
     print("\nOFFLINE RELEASE AUDIT")
     for name, passed in checks:
-        print(f"  {name:<12} {'PASS' if passed else 'FAIL'}")
+        print(f"  {name:<14} {'PASS' if passed else 'FAIL'}")
     if failed:
         print(f"OFFLINE STATUS: FAIL ({', '.join(failed)})")
         return 1
     print("OFFLINE STATUS: PASS")
+    print("DOCUMENT/CODE CONTRACT SYNC: PASS")
     print("CONNECTED DEMO / EXNESS CERTIFICATION: STILL REQUIRED")
     return 0
 
