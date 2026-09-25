@@ -25,6 +25,7 @@ def _report(*, spread: float = 0.20, age: float = 0.10, open_: str = "PENDING", 
             "verified_open_observed": open_,
             "verified_modify_observed": modify,
             "verified_close_observed": close,
+            "broker_side_close_visibility": "PENDING",
             "actual_learning_observed": learning,
             "unresolved_intent_clear": unresolved,
             "manual_known_trade_close_drill": "PENDING_OPERATOR_DRILL",
@@ -54,6 +55,20 @@ def test_accumulator_keeps_lifecycle_evidence_without_false_full_pass() -> None:
     assert summary["full_connected_certification"] == "INCOMPLETE"
     assert summary["quote"]["spread_min"] == pytest.approx(0.20)
     assert summary["quote"]["spread_max"] == pytest.approx(0.30)
+
+
+def test_external_drills_accumulate_only_after_explicit_pass() -> None:
+    first = _report()
+    second = _report()
+    second["captured_at_utc"] = "2026-09-25T12:01:00+00:00"
+    second["phase15"]["broker_side_close_visibility"] = "PASS"
+    second["phase15"]["manual_known_trade_close_drill"] = "PASS"
+
+    summary = aggregate_connected_demo_reports([first, second])
+
+    assert summary["phase15"]["broker_side_close_visibility"] == "PASS"
+    assert summary["phase15"]["manual_known_trade_close_drill"] == "PASS"
+    assert summary["phase15"]["restart_during_active_lifecycle"].startswith("PENDING")
 
 
 def test_latest_unresolved_intent_state_is_not_laundered() -> None:

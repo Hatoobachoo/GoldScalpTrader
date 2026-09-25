@@ -18,6 +18,7 @@ from gold_scalp_trader.app.startup import mt5_session
 from gold_scalp_trader.config import load_settings
 from gold_scalp_trader.domain.enums import IntentState, RuntimeMode
 from gold_scalp_trader.execution.intent_store import NS as INTENT_NS, unresolved
+from gold_scalp_trader.management.closure import RECEIPT_NS
 from gold_scalp_trader.management.store import NS as MANAGED_TRADE_NS
 from gold_scalp_trader.market_data.account_mode import demo_account_verified
 from gold_scalp_trader.market_data.mt5_reader import Mt5Reader
@@ -50,14 +51,24 @@ def _state_evidence(path: Path) -> dict[str, object]:
             "managed_trades": 0,
             "learning_observations": 0,
             "research_episodes": 0,
+            "closure_receipts": 0,
+            "closure_origins": {},
             "verified_open": False,
             "verified_modify": False,
             "verified_close": False,
+            "broker_side_close_observed": False,
+            "manual_known_close_observed": False,
         }
     store = StateStore(path)
     try:
         intents = store.list_records(INTENT_NS)
         unresolved_rows = unresolved(store)
+        receipts = store.list_records(RECEIPT_NS)
+        origins = Counter(str(row.payload.get("close_origin", "UNKNOWN")) for row in receipts)
+        broker_side_close_observed = any(row.payload.get("close_intent_id") in {None, ""} for row in receipts)
+        manual_known_close_observed = any(
+            str(row.payload.get("close_origin", "UNKNOWN")) in {"EXTERNAL", "MIXED"} for row in receipts
+        )
         return {
             "database_present": True,
             "integrity": "PASS" if store.integrity_check() else "FAIL",
@@ -68,9 +79,13 @@ def _state_evidence(path: Path) -> dict[str, object]:
             "managed_trades": len(store.list_records(MANAGED_TRADE_NS)),
             "learning_observations": len(store.list_records(LEARNING_NS)),
             "research_episodes": len(store.list_events(EPISODE_NS)),
+            "closure_receipts": len(receipts),
+            "closure_origins": dict(origins),
             "verified_open": _intent_observed(intents, "OPEN"),
             "verified_modify": _intent_observed(intents, "MODIFY"),
             "verified_close": _intent_observed(intents, "CLOSE"),
+            "broker_side_close_observed": broker_side_close_observed,
+            "manual_known_close_observed": manual_known_close_observed,
         }
     finally:
         store.close()
@@ -104,9 +119,12 @@ def collect() -> dict[str, object]:
         "verified_open_observed": _status(bool(state.get("verified_open"))),
         "verified_modify_observed": _status(bool(state.get("verified_modify"))),
         "verified_close_observed": _status(bool(state.get("verified_close"))),
+        "broker_side_close_visibility": _status(bool(state.get("broker_side_close_observed"))),
         "actual_learning_observed": _status(int(state.get("learning_observations", 0)) > 0),
         "unresolved_intent_clear": _status(int(state.get("unresolved_intents", 0)) == 0),
-        "manual_known_trade_close_drill": "PENDING_OPERATOR_DRILL",
+        "manual_known_trade_close_drill": _status(bool(state.get("manual_known_close_observed")))
+        if state.get("database_present")
+        else "PENDING_OPERATOR_DRILL",
         "ambiguous_ack_no_duplicate_drill": "PENDING_SAFE_CONNECTED_DRILL",
         "restart_during_active_lifecycle": "PENDING_CONNECTED_DRILL",
         "fresh_machine_restore_handoff": "PENDING_CONNECTED_DRILL",
@@ -115,37 +133,26 @@ def collect() -> dict[str, object]:
         "latency_distribution": "PENDING_SAMPLE",
     }
 
-    full_complete = all(
-        value == "PASS"
-        for value in (
-            lifecycle["connected_demo_identity"],
-            lifecycle["symbol_spec_observed"],
-            lifecycle["fresh_quote_observed"],
-            lifecycle["state_integrity"],
-            lifecycle["verified_open_observed"],
-            lifecycle["verified_modify_observed"],
-            lifecycle["verified_close_observed"],
-            lifecycle["actual_learning_observed"],
-            lifecycle["unresolved_intent_clear"],
-        )
-    ) and all(
+    required_core_keys = {
+        "connected_demo_identity",
+        "symbol_spec_observed",
+        "fresh_quote_observed",
+        "state_integrity",
+        "verified_open_observed",
+        "verified_modify_observed",
+        "verified_close_observed",
+        "broker_side_close_visibility",
+        "actual_learning_observed",
+        "unresolved_intent_clear",
+    }
+    full_complete = all(lifecycle[key] == "PASS" for key in required_core_keys) and all(
         not str(value).startswith("PENDING")
         for key, value in lifecycle.items()
-        if key not in {
-            "connected_demo_identity",
-            "symbol_spec_observed",
-            "fresh_quote_observed",
-            "state_integrity",
-            "verified_open_observed",
-            "verified_modify_observed",
-            "verified_close_observed",
-            "actual_learning_observed",
-            "unresolved_intent_clear",
-        }
+        if key not in required_core_keys
     )
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "captured_at_utc": captured.isoformat(),
         "mode": settings.mode.value,
         "broker_write_performed_by_this_tool": False,

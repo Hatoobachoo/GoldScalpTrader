@@ -24,6 +24,7 @@ ALWAYS_PASS_KEYS = (
     "state_integrity",
 )
 EXTERNAL_DRILL_KEYS = (
+    "broker_side_close_visibility",
     "manual_known_trade_close_drill",
     "ambiguous_ack_no_duplicate_drill",
     "restart_during_active_lifecycle",
@@ -94,7 +95,7 @@ def aggregate_connected_demo_reports(reports: Sequence[dict[str, Any]]) -> dict[
     full_complete = core_complete and all(phase15[key] == "PASS" for key in EXTERNAL_DRILL_KEYS)
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "scope_sha256": str(reports[0]["account_scope_sha256"]),
         "symbol": str(reports[0]["symbol"]),
         "mode": "DEMO",
