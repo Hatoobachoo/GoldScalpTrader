@@ -1,4 +1,6 @@
+from __future__ import annotations
 from dataclasses import dataclass
+from typing import Any
 from gold_scalp_trader.domain.market import AccountFacts,Quote,SymbolSpec
 @dataclass(frozen=True,slots=True)
 class PrecheckResult:passed:bool; reasons:tuple[str,...]
@@ -11,3 +13,11 @@ def evaluate(account:AccountFacts,spec:SymbolSpec,quote:Quote,volume:float)->Pre
     if abs(normalized-volume)>1e-8:reasons.append("VOLUME_STEP_INVALID")
     if quote.age_seconds< -2:reasons.append("QUOTE_FUTURE_CORRUPT")
     return PrecheckResult(not reasons,tuple(reasons) or ("PASS",))
+def broker_order_check(api:Any,request:dict)->PrecheckResult:
+    fn=getattr(api,"order_check",None)
+    if fn is None:return PrecheckResult(False,("ORDER_CHECK_UNAVAILABLE",))
+    try:result=fn(request)
+    except Exception as exc:return PrecheckResult(False,(f"ORDER_CHECK_EXCEPTION:{type(exc).__name__}",))
+    if result is None:return PrecheckResult(False,("ORDER_CHECK_RETURNED_NONE",))
+    ret=getattr(result,"retcode",None); ok={0,getattr(api,"TRADE_RETCODE_DONE",10009),getattr(api,"TRADE_RETCODE_PLACED",10008)}
+    return PrecheckResult(ret in ok,("PASS",) if ret in ok else (f"ORDER_CHECK_FAILED:{ret}",))
