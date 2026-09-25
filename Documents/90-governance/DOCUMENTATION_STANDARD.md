@@ -1,199 +1,405 @@
 # GoldScalpTrader — Documentation Standard
 
-**Status:** ACTIVE DOCUMENTATION GOVERNANCE — PRESERVATION-FIRST / PRE-IMPLEMENTATION FREEZE PREPARATION
-**Version:** 1.0-preservation-first-governance
-**Authority:** Documentation ownership, reference preservation, synchronization, quality, change control and reconstructability.
+**Status:** APPROVED DOCUMENTATION GOVERNANCE — INSTITUTIONAL RECONSTRUCTION STANDARD
+**Version:** 2.0-expert-baseline
+**Authority:** Canonical documentation depth, visual explanation, ownership, synchronization, naming, reconstruction, change control and AI/developer handoff rules.
 
-## 1. Canonical authority
+## 1. Documents are the project baseline
 
-`Documents/` is the sole current documentation authority for GoldScalpTrader.
+`Documents/` is the durable project contract and build guide for:
 
-Chat memory, provisional source, dashboard wording, test fixtures and GoldSwingTraderAI reference files cannot silently override current Scalp contracts.
+- the operator;
+- a new developer;
+- a future AI with no chat history;
+- an auditor/reviewer;
+- implementation/test/recovery work.
 
-GoldSwingTraderAI nevertheless remains the **default feature/default preservation baseline**.
-
-## 2. Preservation-first rule
-
-An inherited reference feature/default may differ in GoldScalpTrader only when at least one is true:
-
-1. a direct scalping requirement justifies it;
-2. the operator explicitly instructs the difference;
-3. a separately proven reference defect requires correction.
-
-A simpler design, smaller implementation or personal design preference is not enough.
-
-If classification is uncertain:
+The source code must implement the documents; it must not silently become a newer design authority than the documents.
 
 ```text
-preserve reference behaviour now
-→ record proposed difference/question
-→ discuss during final documentation review
-→ change only through governed affected-graph packet
+DOCUMENTED CONTRACT
+→ IMPLEMENTATION
+→ TEST / EVIDENCE
+→ DOCUMENTATION SYNC
 ```
 
-## 3. Delta classification
+## 2. Reference reconstruction rule
 
-Every material reference difference is classified as one of:
+Latest verified GoldSwingTraderAI `Published_B/Documents` contains **66 Markdown documents** and is the current structural/depth reference for reconstruction.
+
+GoldScalpTrader may differ when:
+
+- scalping genuinely requires a different design;
+- the operator explicitly approved a difference;
+- a reference defect/obsolete external fact is identified;
+- GoldScalpTrader requires additional detail that Swing did not need.
+
+Reference sections must not be silently dropped merely to make a shorter manual.
+
+For each meaningful reference section, the reconstruction decision is one of:
 
 ```text
-PRESERVED REFERENCE DEFAULT
-SCALP-SPECIFIC CHANGE
-OPERATOR-DIRECTED CHANGE
-REFERENCE DEFECT CORRECTION
-EXTERNAL FACT UPDATE
+PRESERVE
+ADAPT_FOR_SCALP
+OPERATOR_CHANGED
+REFERENCE_DEFECT_CORRECTION
+EXTERNAL_FACT_UPDATE
+NOT_APPLICABLE_WITH_REASON
+ADD_NEW_SCALP_REQUIREMENT
 ```
 
-`DOCUMENTATION_COMPARISON.md` is the durable explicit delta ledger. `PRESERVATION_LEDGER.md` records preservation status.
+## 3. Canonical document tree target
 
-An `EXTERNAL FACT UPDATE` such as a broker schedule/spec change is not automatically a strategy/policy redesign.
-
-## 4. One behavioural rule = one owner
-
-Examples:
-
-- timeframe authority → Architecture / Market/Decision contracts;
-- monetary profile bands/aggressive mode → `RISK_CONTRACT.md`;
-- News cache/provider acquisition → `SESSION_NEWS_PROVIDER_CONTRACT.md`;
-- permission composition → `SESSION_AND_RISK_STATE_MACHINE.md` / Risk permissions;
-- execution one-shot rules → execution contract;
-- Trade Manager actions → `TRADE_MANAGER_AND_EXIT.md`;
-- source ownership → Module Structure/File-Test Catalog.
-
-Summary/manual files must reflect, not redefine, topic owners.
-
-## 5. Material change affected graph
-
-For a material change inspect/update as applicable:
+The approved final folder numbering is sequential/readable:
 
 ```text
-topic owner
+Documents/
+├── README.md
+├── GLOSSARY.md
+├── GITHUB_STRICT_USE_POLICY.md
+├── BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md
+├── CODER_GUIDE.md
+├── PROJECT_BUILD_AND_RECOVERY_GUIDE.md
+├── FINAL_BUILD_PROMPT.md
+├── USER_MANUAL.md
+├── SETUP_AND_RUN_GUIDE.md
+├── 01-foundation/
+├── 02-market-intelligence/
+├── 03-trading-decisions/
+├── 04-risk-execution/
+├── 05-research-learning/
+├── 06-operator/
+├── 07-engineering/
+└── 08-governance/
+```
+
+During staged reconstruction, current legacy folder paths may temporarily remain until the atomic rename/cross-link packet is ready. Final freeze cannot retain broken/duplicate numbering.
+
+## 4. Document quality bar
+
+A substantive contract must be **complete enough that a capable reader can implement it without relying on chat history**.
+
+Where applicable it must explain:
+
+1. purpose;
+2. scope;
+3. authority;
+4. non-authority;
+5. assumptions;
+6. typed inputs;
+7. typed outputs;
+8. IDs/units/timezones;
+9. invariants;
+10. lifecycle/state machine;
+11. chronology/knowledge time;
+12. normal/happy path;
+13. WAIT/degraded path;
+14. failure/UNKNOWN path;
+15. restart/recovery path;
+16. idempotency/duplicate behavior;
+17. concurrency/order/thread-safety;
+18. performance/latency concerns;
+19. broker/account implications;
+20. monetary Risk implications;
+21. persistence/state implications;
+22. operator/dashboard meaning;
+23. research/learning meaning;
+24. security/secrets implications;
+25. source/module ownership;
+26. deterministic unit tests;
+27. integration tests;
+28. connected/DEMO proof;
+29. calibration variables;
+30. external-proof variables;
+31. cross-document dependencies;
+32. reference-preserved behavior;
+33. Scalp-specific differences;
+34. operator-approved differences;
+35. known non-goals/deferred architecture.
+
+Not every file requires 35 literal headings. Every **relevant concept** requires explicit coverage.
+
+## 5. Visual explanation standard
+
+Expert documentation is not prose-only.
+
+### 5.1 Required visual types
+
+Use the most appropriate representation:
+
+- Mermaid `flowchart` for dependencies/authority topology;
+- Mermaid `stateDiagram-v2` for lifecycle/state machines;
+- Mermaid `sequenceDiagram` for ordered interactions/crash/recovery/broker workflows;
+- Mermaid class/entity diagrams where they clarify typed ownership;
+- Markdown tables for contracts, comparisons, matrices and thresholds;
+- ASCII geometry diagrams for price/SL/target/sweep structures where clearer;
+- real charts after actual replay/DEMO evidence exists.
+
+### 5.2 Visual requirement
+
+A document needs diagrams when the concept contains non-trivial:
+
+- dependency flow;
+- state transition;
+- sequence ordering;
+- authority boundary;
+- recovery path;
+- data lineage;
+- strategy/trade geometry;
+- deployment/backup topology.
+
+Do not add decorative diagrams that communicate nothing.
+
+### 5.3 Charts
+
+Never fabricate performance charts using made-up data.
+
+Before empirical evidence exists, use:
+
+- conceptual diagrams;
+- tables;
+- formulas;
+- sample schemas clearly labeled examples.
+
+After replay/DEMO evidence exists, relevant research/audit documents should include or link reproducible charts for:
+
+- expectancy;
+- drawdown;
+- family comparison;
+- entry/capture efficiency;
+- spread/slippage/latency;
+- session/regime segmentation;
+- throughput/opportunity recall;
+- shadow versus active strategy results.
+
+## 6. One owner, many explained mirrors
+
+Reducing duplicate **authority** does not mean reducing useful explanation.
+
+Example:
+
+```text
+RISK_CONTRACT.md
+= canonical numerical owner
+
+USER_MANUAL.md
+= readable explanation of those exact values
+
+CODER_GUIDE.md
+= implementation consequences
+
+DASHBOARD_AND_UX.md
+= display requirements
+```
+
+A mirror may repeat an important number for readability, but must identify the canonical owner and be validated/synchronized when that owner changes.
+
+## 7. Trading-design documentation principles
+
+The reconstructed manual must explicitly preserve approved product philosophy:
+
+- maximize qualified opportunity recall and entry efficiency;
+- exactly one live trade-producing strategy family at a time during strategy-isolation evaluation;
+- remaining families shadow/analyze/research;
+- M5 setup authority + subordinate M1 entry refinement;
+- important indicators may strongly support the relevant family but must not become unrelated universal restrictions;
+- News/Fundamentals remain context/research, not hard trade block/cooldown;
+- fixed emergency spread safety + context-aware spread/SL, spread/target and cost/reward evaluation;
+- current monetary Risk bands/percentages remain unchanged;
+- broker/account/lifecycle hard safety remains objective and serial;
+- backend invention/tuning/ML remains active but production promotion requires operator approval;
+- 120 trades/day is a research throughput benchmark, not a forced quota.
+
+## 8. Code documentation standard
+
+When code implementation begins, source must be expert-level, clean, typed and deeply understandable.
+
+### 8.1 Module documentation
+
+Every material module documents:
+
+- purpose;
+- authority boundary;
+- key dependencies;
+- state/concurrency model;
+- what the module must never do.
+
+### 8.2 Function/class documentation
+
+Document where non-trivial:
+
+- input/output semantics;
+- units/timezone;
+- side effects;
+- failure/UNKNOWN behavior;
+- idempotency;
+- concurrency/thread-safety;
+- broker/persistence implications;
+- invariant or mathematical meaning.
+
+### 8.3 Inline comments
+
+Comments explain **why**, especially:
+
+- chronology/no-lookahead protections;
+- MT5/broker quirks;
+- safety invariants;
+- recovery ordering;
+- numerical formulas;
+- cost/risk reasoning;
+- non-obvious optimization decisions.
+
+Avoid useless syntax narration such as `# increment x` above `x += 1`.
+
+### 8.4 Code quality
+
+Expected practices:
+
+- full useful type hints;
+- dataclasses/immutable DTOs where appropriate;
+- explicit enums/reason codes;
+- no hidden magic numbers;
+- centralized versioned policy/config;
+- dependency injection at external boundaries;
+- narrow interfaces;
+- structured logging;
+- deterministic behavior;
+- measured optimization;
+- comprehensive focused/integration tests;
+- safety-critical code receives particularly explicit comments and proof.
+
+## 9. Strategy-isolation documentation rule
+
+Any strategy-related document must distinguish:
+
+```text
+family analytical availability
+family ACTIVE_EXECUTION authority
+family SHADOW_ONLY evaluation
+research candidate status
+production policy version
+```
+
+Do not say “six strategies trade together” when only one family is allowed to originate live trades.
+
+## 10. Evidence wording
+
+Use precise statuses:
+
+```text
+DOCUMENTED
+APPROVED DESIGN
+IMPLEMENTATION PENDING
+IMPLEMENTED
+DETERMINISTIC PROOF PENDING/PASS
+CALIBRATION PENDING
+EXTERNAL PROOF PENDING/PASS
+CONNECTED DEMO PENDING/PASS
+APPROVAL_REQUIRED
+DEFERRED
+NOT RUN
+```
+
+Architecture approval is not implementation proof. Green unit tests are not DEMO proof. DEMO proof is not profitability proof.
+
+## 11. Affected-graph synchronization
+
+For any material change inspect/update as applicable:
+
+```text
+canonical topic owner
+→ SYSTEM_CONTRACT / Architecture / Trading Floor
 → DESIGN_DECISIONS / OPEN_QUESTIONS
-→ DOCUMENTATION_COMPARISON / PRESERVATION_LEDGER if inherited behaviour changes
-→ SYSTEM_CONTRACT / Architecture / lifecycle
+→ DOCUMENTATION_COMPARISON / PRESERVATION_LEDGER
 → Module Structure / File-Test Catalog
-→ Coder / Build / Setup / User / Final Build manuals
-→ operator/research/recovery consequences
+→ Coder / Build / Setup / User / Final Build guides
+→ operator/dashboard/recovery consequences
 → Testing / Release / Audit surfaces
 → Content Coverage / Documentation Audit
 ```
 
-A material change is incomplete while any affected canonical surface states old behavior.
+A change is incomplete while a canonical consumer states the old behavior.
 
-## 6. Reference-delta change packet
+## 12. Folder/file-name parity audit
 
-A proposed inherited-behaviour change must state:
+Before final freeze, compare latest verified reference tree against Scalp tree at:
 
-```text
-reference behaviour/default
-current Scalp behaviour
-classification (scalp/operator/defect/external fact)
-reason/evidence
-authority owner
-risk/execution consequence
-persistence/restart consequence
-operator consequence
-research consequence
-test/evidence route
-rollback/supersession impact
-```
+- root folder names;
+- direct files;
+- every subfolder;
+- every filename;
+- case/spelling;
+- expected canonical additions.
 
-Without this classification, preserve the reference behavior.
-
-## 7. Scalp-specific calibration discipline
-
-Only genuinely scalp-sensitive values should be automatically treated as scalp calibration questions, for example:
-
-- event/trigger age and chase distance;
-- gross vs cost-adjusted target quality;
-- spread/slippage/drift thresholds;
-- latency thresholds;
-- time-efficiency EXIT rules;
-- Runner/Expansion scalp policy;
-- session conditioning of scalp expectancy;
-- event blackout/post-news stabilization where scalp evidence specifically justifies a change.
-
-Non-scalp reference defaults are not reopened just because the product is a scalper.
-
-## 8. Evidence/status discipline
-
-Use truthful states such as:
+Current verified reference finding that triggered this reconstruction:
 
 ```text
-DRAFT
-FROZEN
-PRESERVED REFERENCE DEFAULT
-SCALP CALIBRATION PENDING
-IMPLEMENTATION PENDING
-IMPLEMENTED
-DETERMINISTIC PROOF PENDING/PASS
-EXTERNAL PROOF PENDING
-NOT RUN
+Published_B reference Documents = 66 Markdown files
+prior GoldScalpTrader tree       = 64
+missing top-level files          = 2
+  GITHUB_STRICT_USE_POLICY.md
+  BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md
 ```
 
-Do not mark implementation/test/DEMO evidence complete merely because architecture is frozen.
+Final audit must be generated from the actual trees, not remembered counts.
 
-## 9. Metadata requirements
+## 13. Cross-link integrity
 
-Every substantive document should include:
+All relative document links must resolve after the approved folder renaming. Final freeze includes a link/path validation pass.
 
-```text
-Status
-Version
-Authority
+No document may reference obsolete `00/10/20/...` paths after migration to `01/02/03/...`.
+
+## 14. Reconstructability test
+
+A new developer/AI with no chat history must be able to answer:
+
+- what exactly the bot is optimizing;
+- which family can trade now and why;
+- how other strategies are evaluated;
+- what M1 may and may not do;
+- what evidence is soft/hard;
+- what can block a broker action;
+- how News is treated;
+- exact Risk profiles/aggressive mode/cooldown/re-entry;
+- how spread/cost/latency are evaluated;
+- how one-shot execution works;
+- how state/recovery works;
+- how research/ML can progress;
+- where operator approval is mandatory;
+- what is implemented versus only documented;
+- which facts still need calibration/external proof.
+
+If chat history is required for a material answer, documentation is incomplete.
+
+## 15. Documentation review sequence
+
+Before final freeze:
+
+```mermaid
+flowchart TB
+    TREE["Reference tree parity"] --> DEPTH["Section/depth reconstruction"]
+    DEPTH --> DELTA["Approved Scalp/operator deltas"]
+    DELTA --> VIS["Diagrams/tables/examples"]
+    VIS --> OWNER["Canonical ownership/cross-links"]
+    OWNER --> CHALLENGE["100+ challenge audit"]
+    CHALLENGE --> COMPARE["Reference→Scalp coverage matrix"]
+    COMPARE --> OP["Operator final review"]
+    OP -->|Approve| FREEZE["DOCUMENTATION FROZEN"]
+    OP -->|Change| DELTA
 ```
 
-Metadata must reflect the current project stage. Legacy `DRAFT PRE-CHALLENGE` headers must be normalized before documentation freeze when Audit 1 has already accepted/preserved their architecture.
+## 16. GitHub/document editing discipline
 
-## 10. Reconstructability rule
+Use large coherent documentation packets rather than micro-patching every sentence remotely.
 
-A capable new developer/AI with no chat history must be able to determine from the repository:
+Before each packet:
 
-- project purpose/non-goals;
-- preserved Swing features/defaults;
-- genuine Scalp deltas;
-- operator-directed differences;
-- unresolved scalp calibration/external proof;
-- exact authority/source/test ownership;
-- runtime/source recovery process;
-- current implementation/evidence state.
+- re-read current `main` ref;
+- prepare all interconnected changes;
+- ensure no code is accidentally included;
+- use one fast-forward commit where practical;
+- verify exact changed paths after commit.
 
-If chat history is needed to know a material rule, documentation is incomplete.
+## 17. Final standard
 
-## 11. No code ahead of documents
-
-```text
-contract / decision
-→ affected-graph sync
-→ implementation
-→ deterministic proof
-→ connected proof where required
-→ documentation/evidence update
-```
-
-Code may not become the de facto design source because a document was inconvenient.
-
-## 12. Low-GitHub-use development workflow
-
-Documentation/code work should be grouped into large coherent logical packets when practical:
-
-```text
-many related file changes
-→ one consolidated fast-forward Git commit
-→ one operator git pull --ff-only checkpoint
-```
-
-Avoid noisy microcommits/pulls merely for convenience.
-
-Trading runtime itself performs no Git operation.
-
-## 13. Final documentation review
-
-Before implementation freeze:
-
-1. full affected graph is synchronized;
-2. metadata/cross-links are normalized;
-3. `DOCUMENTATION_AUDIT.md` reconstructability checks are clean;
-4. operator is shown the remaining **genuinely scalp-specific** changes/threshold questions;
-5. non-scalp features/defaults are not reopened unless operator explicitly chooses to discuss/change them.
-
-Only then is documentation freeze declared complete.
+> **A GoldScalpTrader document is acceptable only when it is accurate, deeply explained, visually clear where appropriate, authority-safe, implementation-ready, testable, recoverable without chat history and synchronized with every affected canonical surface. “Short” is not a quality goal; clarity, completeness and reconstructability are.**

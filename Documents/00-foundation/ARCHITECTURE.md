@@ -1,270 +1,509 @@
 # GoldScalpTrader — Runtime Architecture
 
-**Status:** FROZEN V1 ARCHITECTURE — PRESERVATION-FIRST CORRECTION / CONNECTED PROOF PENDING
-**Version:** 1.1-preserved-parallel-risk-features
-**Authority:** System topology, bounded analytical concurrency, ordered lifecycle authority, recovery, presentation, persistence and runtime capability boundaries.
+**Status:** APPROVED TARGET ARCHITECTURE — DOCUMENTATION RECONSTRUCTION / IMPLEMENTATION PROOF PENDING
+**Version:** 2.0-hybrid-fast-accurate-scalp
+**Authority:** Whole-system topology, dependency DAG, performance model, strategy isolation, ordered financial authority, runtime/recovery boundaries and presentation/research separation.
 
-## 1. Core rule
+Canonical recovery architecture: [`BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md`](../BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md).
 
-GoldScalpTrader is a **bounded-parallel analytical system with a strictly serial financial/broker authority spine**.
+## 1. Purpose
 
-GoldSwingTraderAI remains the default architecture/feature baseline. A feature is not removed merely because the Scalp implementation could be simpler.
+This document explains how GoldScalpTrader fits together as one runtime. Detailed topic contracts own their local rules; this architecture owns:
 
-Bounded physical concurrency for dependency-independent desks/families is preserved as a target capability. A deterministic one-worker path remains mandatory for fallback/testing and must produce the same semantic result.
+- dependency order;
+- reusable shared facts;
+- what may run independently;
+- where physical parallelism is useful;
+- where execution must remain serial;
+- active-family versus shadow-family behavior;
+- M5→M1 entry sequence;
+- executable-quality revalidation;
+- startup/recovery/liveness;
+- trade management and verified-close flow;
+- learning/research background work;
+- source/runtime backup boundaries;
+- presentation isolation.
 
-## 2. Scalp timeframe model
+## 2. Architectural objective
 
-| Role | Timeframe | Authority |
-|---|---|---|
-| broad regime | H1 | soft directional/volatility context |
-| optional major context | H4 | soft/optional, never universal scalp veto |
-| opportunity/location/path | M15 | structural/liquidity/session context |
-| primary setup/timing/management | M5 | completed-bar production authority |
-| micro diagnostics/research | M1 | no independent production trigger authority |
-| executable current market | quote/tick | Bid/Ask/spread/drift/freshness, not structural-history authority |
+GoldScalpTrader must be both **fast and accurate**.
+
+The system therefore does not choose between “serial” and “parallel” globally. It uses a **hybrid dependency DAG**:
+
+- parallelize only dependency-independent analytical work when profiling proves useful;
+- share/calculate reusable facts once;
+- preserve deterministic result ordering;
+- keep money, lifecycle and broker authority strictly ordered;
+- measure latency rather than assume concurrency is faster.
 
 ## 3. Whole-system topology
 
-```text
-MT5 account/symbol/quote/candles/positions/deals
-                ↓
-      one immutable MarketSnapshot
-                ↓
-       causal core intelligence
-                ↓
- dependency-independent specialist desks
-       bounded-parallel where applicable
-                ↓
- six independent scalp family hypotheses
-       bounded-parallel where applicable
-                ↓
- BUY Team ↔ SELL Team ↔ Red Team/Debate
-                ↓
-          Floor Manager
-                ↓
- persistent Opportunity + completed-M5 Entry Timing
-                ↓
- family-aware structural TradePlan
- + gross / cost-adjusted room truth
-                ↓
- profiled monetary Risk
- SMALL / MEDIUM / NORMAL
- + optional explicit aggressive overlay
-                ↓
- session/news/system/account/controller authority
-                ↓
-   central ExecutionPermissionGate
-                ↓
-   durable one-shot ExecutionIntent
-                ↓
-      MT5Writer — sole raw write
-                ↓
-         reconciliation
-          ↙            ↘
-      active           closed
-        ↓                ↓
- Trade Manager      close receipt/queue
-        └──────────────→ verified learning
+```mermaid
+flowchart TB
+    MT5["MT5 account/symbol/quote/candles/positions/deals"] --> READ["One normalized read boundary"]
+    READ --> SNAP["Immutable MarketSnapshot"]
+
+    SNAP --> H1["H1 regime/context"]
+    SNAP --> M15["M15 location/path"]
+    SNAP --> M5["M5 structure/setup facts"]
+    SNAP --> IND["EMA / RSI / ATR / volatility"]
+    SNAP --> LIQ["Liquidity / SMC / zones / confluence"]
+    SNAP --> SESS["Session + Fundamental/News context"]
+
+    H1 --> MERGE["Deterministic IntelligenceSnapshot"]
+    M15 --> MERGE
+    M5 --> MERGE
+    IND --> MERGE
+    LIQ --> MERGE
+    SESS --> MERGE
+
+    MERGE --> F1["Trend Pullback"]
+    MERGE --> F2["Breakout Expansion"]
+    MERGE --> F3["Breakout Retest"]
+    MERGE --> F4["Liquidity Sweep Reversal"]
+    MERGE --> F5["Failed Breakout Reversal"]
+    MERGE --> F6["Compression Expansion"]
+
+    F1 --> ISO["Strategy Isolation Controller"]
+    F2 --> ISO
+    F3 --> ISO
+    F4 --> ISO
+    F5 --> ISO
+    F6 --> ISO
+
+    ISO --> ACTIVE["Exactly 1 ACTIVE_EXECUTION family"]
+    ISO --> SHADOW["5 SHADOW_ONLY families"]
+    ACTIVE --> DEBATE["BUY/SELL thesis + Red Team"]
+    SHADOW --> RESEARCH["Shadow attribution / challenge / research"]
+
+    DEBATE --> OPP["Persistent M5 Opportunity"]
+    OPP --> M1R["Subordinate M1 refinement"]
+    M1R --> PLAN["Structural TradePlan"]
+    PLAN --> QUAL["Executable Quality Engine"]
+    QUAL --> RISK["Monetary Risk"]
+    RISK --> HARD["Broker/account/session/exposure/controller authority"]
+    HARD --> GATE["ExecutionPermissionGate"]
+    GATE --> INTENT["Durable one-shot Intent"]
+    INTENT --> CHECK["Fresh broker/order prechecks"]
+    CHECK --> WRITE["Sole MT5Writer"]
+    WRITE --> RECON["Broker reconciliation"]
+    RECON --> TRADE["ManagedTrade"]
+    TRADE --> TM["HOLD / PROTECT / TRAIL / RUNNER / EXIT"]
+    TM --> RECON
+    TM --> CLOSE["Verified close"]
+    CLOSE --> LEARN["Actual learning"]
+    RESEARCH --> RD["Discovery / invention / ML"]
+    LEARN --> RD
+    RD --> PROMO["Evidence stages → APPROVAL_REQUIRED"]
 ```
 
-Dashboard/research/backup remain downstream and cannot create broker permission.
+## 4. Data ownership and read boundaries
 
-## 4. Independent versus ordered lanes
+### 4.1 One analytical MT5 boundary
 
-| Lane | Owns | Must never do |
-|---|---|---|
-| MT5 read | normalized broker/account/symbol/quote/candle/position/deal facts | raw write |
-| intelligence | causal structure/quant/technical/liquidity/session/news/cost context | broker permission |
-| strategy families | six independent scalp hypotheses | monetary sizing/write |
-| fusion / Opportunity | BUY/SELL debate, thesis identity | broker write |
-| Entry Timing | completed-M5 executable readiness/freshness | monetary sizing |
-| TradePlan | entry/invalidation/objectives/gross+cost-room geometry | alter monetary policy |
-| Risk | profile/overlay affordability, volume, exposure, risk-day state | invent setup |
-| permissions/Gate | action-specific final permission | mutate strategy thesis |
-| Intent | durable one-shot action identity | duplicate send |
-| MT5Writer | one normalized broker request | strategy/risk decisions |
-| reconciliation | current broker outcome | guess success |
-| Trade Manager | post-entry management thesis | create a new entry thesis |
-| Persistence | durable state/lineage | override broker truth |
-| Learning/research | evidence/memory/proposals | production broker authority |
-| Dashboard | operator visibility | recalculate permission/policy |
-| Local backup | recoverable state/source copies | live broker authority |
+`market_data/mt5_reader.py` (planned owner) is the normal source for:
 
-## 5. Preserved bounded analytical concurrency
+- account/server identity;
+- symbol specification;
+- bid/ask/current tick;
+- completed H1/M15/M5 and optional H4/M1 history;
+- positions/orders/deals as required;
+- terminal/account/symbol trade permissions.
 
-Dependency-independent desks/families may execute concurrently after their inputs are ready.
+### 4.2 Immutable MarketSnapshot
 
-Requirements:
+Analytical workers consume the same normalized snapshot. This prevents:
 
-- immutable common input;
-- bounded worker count/resources;
-- dependency-aware staging;
+- different desks seeing different candle cutoffs;
+- repeated MT5 latency;
+- hidden read-side race conditions;
+- one strategy using information unavailable to another in the same cycle.
+
+### 4.3 Legitimate fresh reads
+
+The architecture permits fresh broker reads when **current** truth is required:
+
+- final executable quote;
+- spread/drift revalidation;
+- margin/order-check;
+- reconciliation;
+- recovery;
+- active-position management.
+
+These fresh reads do not rewrite the causal historical snapshot.
+
+## 5. Timeframe topology
+
+```mermaid
+flowchart LR
+    H1["H1: broad regime"] --> M15["M15: location/path"]
+    M15 --> M5["M5: primary setup/thesis"]
+    M5 --> OPP["Opportunity"]
+    OPP --> M1["M1: subordinate entry refinement"]
+    M1 --> Q["Fresh Bid/Ask"]
+    H4["H4 optional major context"] -. soft .-> H1
+```
+
+M1 cannot independently create a production trade. It may improve timing only after a valid active-family M5 Opportunity exists.
+
+## 6. Analytical dependency DAG
+
+### Stage A — reusable primitives
+
+Potentially independent work from immutable inputs:
+
+- H1/M15/M5 candle/structure primitives;
+- EMA/RSI/ATR/volatility calculations;
+- session clock/context;
+- optional News/Fundamental acquisition/context;
+- M1 microstructure snapshot for already-armed opportunities.
+
+### Stage B — dependent specialist intelligence
+
+Consumes Stage A:
+
+- technical zones/location;
+- liquidity/sweeps/reclaims/FVG/OB;
+- trendline/Fibonacci;
+- volume/POC context;
+- target-room/path analysis.
+
+### Stage C — family evaluation
+
+All six family analyzers may evaluate independently from one `IntelligenceSnapshot`.
+
+### Stage D — isolation + ordered decision
+
+The versioned strategy-isolation policy identifies exactly one trade-producing family. Shadow families remain non-authoritative for production entry.
+
+## 7. Physical parallelism policy
+
+Physical concurrency is not a correctness requirement.
+
+Optimization order:
+
+```text
+1. avoid duplicate calculations
+2. use efficient vectorized operations
+3. cache immutable reusable values
+4. profile end-to-end latency
+5. parallelize only measured bottlenecks
+6. re-test semantic parity
+```
+
+```mermaid
+flowchart TB
+    PROFILE["Profile latency"] --> BOT{"Bottleneck independent?"}
+    BOT -->|No| SERIAL["Keep serial / optimize algorithm"]
+    BOT -->|Yes| PAR["Bounded worker execution"]
+    PAR --> PARITY["1-worker vs parallel semantic parity"]
+    PARITY -->|Fail| REJECT["Reject optimization"]
+    PARITY -->|Pass| KEEP["Keep measured improvement"]
+```
+
+Constraints:
+
+- immutable worker inputs;
+- bounded worker count;
 - deterministic canonical result order;
-- no worker persistence, Risk, lifecycle or broker mutation;
-- explicit worker failure/degradation;
-- deterministic one-worker fallback;
-- parity tests between one-worker and bounded-parallel paths.
+- exceptions/degradation visible;
+- no worker-side broker writes;
+- no worker-side lifecycle mutation;
+- no different answer merely because scheduling changed.
 
-Worker count may be tuned by profiling, but the bounded-parallel capability itself is not removed as a non-scalp simplification.
+## 8. Strategy Isolation Controller
 
-Broker/financial authority never runs as competing writers.
+The isolation controller is an analytical/governance component, not a broker writer.
 
-## 6. Startup order
+Stored policy identity includes at least:
 
-1. load validated configuration/policy identities;
-2. initialize diagnostics/logging;
-3. open/validate durable state;
-4. connect/read MT5;
-5. verify account/server/resolved Gold symbol;
-6. read exposure/deals as required;
-7. reconcile pending Intents/ManagedTrade;
-8. recover broker-side closures;
-9. rebuild/validate risk-day profile/overlay state;
-10. validate session/news provider + LKG cache;
-11. acquire/validate controller authority for write-capable mode;
-12. mark unresolved required truth UNKNOWN/BLOCKED;
-13. only then permit normal new-entry cycles.
+- `active_family`;
+- policy/version ID;
+- activation time/effective evaluation window;
+- reason/approval lineage;
+- optional benchmark/research episode ID.
 
-Restart never assumes flat exposure because local state is absent.
+```mermaid
+stateDiagram-v2
+    [*] --> ACTIVE_A
+    ACTIVE_A --> REVIEW: evaluation period/evidence review
+    REVIEW --> ACTIVE_A: continue current family
+    REVIEW --> APPROVAL_REQUIRED: propose active-family switch
+    APPROVAL_REQUIRED --> ACTIVE_B: operator approves
+    APPROVAL_REQUIRED --> ACTIVE_A: reject / defer
+```
 
-## 7. New-entry cycle
+A family switch must not rewrite old trade attribution.
+
+## 9. Entry branch
 
 ```text
-fresh snapshot
-→ staged bounded-parallel intelligence
-→ six family reports
-→ BUY/SELL debate
-→ persistent Opportunity
-→ completed-M5 timing / event freshness
-→ TradePlan gross + cost-room geometry
-→ SMALL/MEDIUM/NORMAL Risk
-   + optional explicit aggressive overlay
-→ session/news + hard authorities
+fresh immutable MarketSnapshot
+→ IntelligenceSnapshot
+→ all six family analyses
+→ active-family BUY/SELL + Red Team
+→ persistent M5 Opportunity
+→ subordinate M1 refinement
+→ TradePlan
+→ fresh executable quote
+→ fixed + aware spread/cost/drift/latency quality
+→ monetary Risk
+→ objective hard authorities
 → central Gate
-→ persist Intent
-→ fresh pre-submit broker checks
+→ durable Intent
+→ fresh broker/order checks
 → sole writer
-→ reconcile
+→ reconciliation
+→ ManagedTrade only after verified OPEN
 ```
 
-## 8. Open-trade cycle
+### 9.1 Why M1 is subordinate
+
+M1 is valuable because waiting for another completed M5 bar can make a scalp late. But M1 noise is dangerous if allowed to invent standalone theses. The architecture therefore uses M1 for **precision**, not **permission to invent opportunity**.
+
+## 10. Executable Quality Engine
+
+This layer answers:
+
+> “The structural trade idea is valid; is it still economically executable now?”
+
+Inputs include:
+
+- Approved Entry Reference;
+- current Bid/Ask;
+- absolute spread;
+- spread/SL ratio;
+- spread/target ratio;
+- recent healthy spread baseline;
+- estimated slippage allowance;
+- cost/reward ratio;
+- decision age / decision→send latency;
+- price drift/chase;
+- M1 trigger freshness;
+- remaining target room.
+
+Output is typed, reason-rich and separate from monetary Risk.
+
+Excess latency/drift generally triggers revalidation. It becomes terminal only when the underlying Opportunity/geometry is no longer efficient or valid.
+
+## 11. News/Fundamental lane
+
+```mermaid
+flowchart LR
+    NEWS["Economic calendar / macro context"] --> CTX["Soft context"]
+    CTX --> DASH["Dashboard"]
+    CTX --> TAG["Trade/event tags"]
+    CTX --> RSRCH["Research segmentation"]
+    NEWS -. "NO direct hard gate" .-> GATE["Execution Gate"]
+```
+
+Provider failure affects News-context health, not broker permission. Real event-induced bad conditions are caught through measurable price/execution facts.
+
+## 12. Session lane
+
+Session has two meanings:
+
+1. **analytical session context** — Asia/London/NY/overlap performance, soft;
+2. **broker market/session safety** — OPEN/CLOSED/PRE_CLOSE/reopen conditions, hard.
+
+These must not be conflated.
+
+## 13. Risk/execution serial authority
+
+From structural plan onward, ordering is explicit:
+
+```mermaid
+sequenceDiagram
+    participant P as TradePlan
+    participant Q as ExecutableQuality
+    participant R as Risk
+    participant H as HardAuthorities
+    participant G as Gate
+    participant I as IntentStore
+    participant B as BrokerChecks
+    participant W as MT5Writer
+    participant X as Reconciler
+
+    P->>Q: structural plan
+    Q->>R: executable plan/context
+    R->>H: approved monetary proposal
+    H->>G: typed authority results
+    G->>I: ALLOW → persist Intent
+    I->>B: fresh quote/margin/order_check
+    B->>I: persist SUBMITTING
+    I->>W: exactly one request
+    W->>X: acknowledgement/result
+    X->>X: verify broker truth
+```
+
+No physical parallelism is allowed to reorder this sequence.
+
+## 14. Startup and recovery topology
+
+```mermaid
+flowchart TB
+    CFG["Validate settings/policy"] --> MT5["Initialize MT5 read boundary"]
+    MT5 --> FACTS["Account/symbol/quote/history/exposure"]
+    FACTS --> STATE["Open/verify StateStore"]
+    STATE --> RISK["Restore/reconcile Risk day/cash flow/cooldown"]
+    RISK --> ISO["Restore active strategy policy"]
+    ISO --> CTRL["Acquire controller for write-capable runtime"]
+    CTRL --> REC["Reconcile Intent + ManagedTrade + broker close truth"]
+    REC --> READY{"Ready?"}
+    READY -->|Recoverable wait| WAIT["Dashboard + bounded re-probe"]
+    READY -->|Unsafe/corrupt| BLOCK["Fail closed"]
+    READY -->|Yes| LOOP["Runtime loop"]
+    WAIT --> FACTS
+```
+
+Restored state is context. MT5 is current exposure authority.
+
+## 15. Runtime liveness matrix
+
+| Condition | Process | Analysis | New entry | Management | Dashboard |
+|---|---|---|---|---|---|
+| healthy/open | alive | active+shadow | governed | governed | full |
+| News provider unavailable | alive | yes, News context degraded | **not blocked by News alone** | governed | show degraded |
+| stale required market data | alive/wait | paused/limited | blocked by data owner | safe management as possible | exact reason |
+| broker CLOSED | alive | research/context may continue | blocked | governed close/none as broker permits | full |
+| PRE_CLOSE | alive | entry disabled | blocked | required flatten policy | full |
+| unresolved Intent | alive/reconciling | optional read-only | blocked | reconciliation first | exact lifecycle |
+| persistence corruption | fail/recover | paused | blocked | recovery-safe only | fault |
+| active trade exists | alive | shadow research may continue | capacity governed | managed | full |
+
+## 16. ManagedTrade branch
 
 ```text
-fresh broker truth + snapshot
-→ reconcile exposure
-→ management intelligence
+fresh position/broker truth
+→ restore/verify ManagedTrade identity
+→ current structure + executable facts
 → HOLD / PROTECT / TRAIL / RUNNER / EXIT
-→ optional broker-valid partial management where divisible
-→ action-specific hard authorities
-→ durable MODIFY/CLOSE Intent
+→ any MODIFY/CLOSE becomes a governed Intent
 → sole writer
-→ reconcile
-→ verified close when terminal
+→ broker verification
+→ update local lifecycle only after verification
 ```
 
-Time/efficiency can be a scalp-specific EXIT reason. Runner is exceptional.
+Time-efficiency is first-class for scalping: an unproductive trade may EXIT rather than silently become a swing. Exact timing is calibrated.
 
-## 9. Risk architecture
+## 17. Broker-side/manual close recovery
 
-Profile resolved once from positive DayStartEquity per UTC risk day:
+```mermaid
+sequenceDiagram
+    participant R as Recovery
+    participant I as IntentStore
+    participant B as Broker deals
+    participant M as ManagedTrade
+    participant L as LearningQueue
+
+    R->>I: unresolved submit/ambiguous intent?
+    alt yes
+        I-->>R: reconcile first
+    else no
+        R->>B: exact known position-ticket exit lineage
+        B-->>R: roles/volume/deals
+        alt incomplete/ambiguous
+            R->>M: keep RECONCILING
+        else exact full close
+            R->>L: persist verified-close evidence
+            R->>M: persist closure receipt / clear active trade
+        end
+    end
+```
+
+Unknown external positions are never adopted.
+
+## 18. Learning/research architecture
+
+Background learning/research may run independently of broker authority and may use compute parallelism appropriate to the workload.
+
+Research lanes include:
+
+- actual active-family trades;
+- shadow-family counterfactuals;
+- missed opportunities;
+- blocked opportunities with exact blocker;
+- invalidated setups;
+- system-fault episodes;
+- session/event tags;
+- cost/latency/entry/exit efficiency;
+- candidate invention/tuning/ML.
+
+Production promotion remains approval-gated.
+
+## 19. Dashboard architecture
+
+Terminal dashboard is the primary operational view. Optional graphical dashboard is secondary/read-only.
+
+Presentation consumes immutable/atomic DTOs and cannot:
+
+- recalculate Risk;
+- change active strategy;
+- grant Gate permission;
+- call MT5 writer;
+- promote research candidates.
+
+Dashboard updates may run at a faster read-only pulse than the strategy decision cycle.
+
+## 20. Backup/recovery architecture
+
+Runtime GitHub activity is zero.
+
+Source/history:
 
 ```text
-SMALL < $300
-MEDIUM $300–$999.99
-NORMAL >= $1,000
+coherent development packet
+→ Git commit/remote
+→ operator git pull --ff-only
+→ local full-history clone
+→ optional clean ZIP/Drive recovery package
 ```
 
-Reference target/elevated/hard/daily bands remain canonical through `RISK_CONTRACT.md`.
-
-`AGGRESSIVE_SMALL_ACCOUNT` is a preserved explicit option, disabled by default:
-
-```text
-8% max monetary SL risk per trade — not target
-16% max aggregate open risk
-16% daily loss ceiling
-```
-
-## 10. News / session architecture
-
-Market schedule and News remain separate authorities.
-
-```text
-OPEN + NEWS_CLEAR       → may proceed
-OPEN + NEWS_BLACKOUT    → BLOCK
-OPEN + NEWS_UNKNOWN     → new-entry BLOCK / LIMITED
-```
-
-A refresh failure with still-valid accepted LKG cache keeps that cached News truth. Failed acquisition never refreshes cache timestamps/validity.
-
-Preserved baselines:
-
-```text
-Provider TTL 1800s
-Daily   T-20 no-entry / T-10 flatten
-Weekend T-60 no-entry / T-30 flatten
-Daily reopen   1 clean M5
-Weekend reopen 2 clean M5 + gap assessment
-```
-
-Actual broker schedule/DST/holiday facts remain external proof.
-
-## 11. Cost / freshness architecture
-
-Scalping explicitly observes quote age, event age, Opportunity age, entry drift, spread, target room and decision/send/reconcile latency.
-
-TradePlan retains gross and cost-adjusted planning truth. Execution owns final fresh quote/spread/drift recheck. Costs are never double counted and geometry is never rewritten merely to pass a threshold.
-
-## 12. Persistence / recovery
-
-V1 uses local transactional SQLite unless implementation proof discovers a blocking issue.
-
-Corruption/unknown state is explicit, not silently replaced with empty defaults. Current broker truth outranks restored context.
-
-## 13. Runtime local backup
+Runtime:
 
 ```text
 transactional StateStore
-→ rolling local checkpoint
-→ graceful-shutdown final verified local checkpoint
-→ optional portable runtime recovery package outside repo
+→ rolling checkpoints
+→ shutdown checkpoint
+→ optional portable runtime/learning package
 ```
 
-Safe shutdown/local checkpoint does not depend on GitHub/network.
+See the canonical backup document for cross-machine and off-site details.
 
-## 14. Development/source backup
+## 21. Performance budgets and telemetry
 
-```text
-one coherent remote bulk commit
-→ operator git pull --ff-only
-→ local clone has complete source + Git history
-→ optional secret-clean ZIP milestone copy
-```
+Performance must be measured by stage, not guessed.
 
-Trading runtime never commits, pushes or pulls Git.
+Planned telemetry categories:
 
-## 15. Multi-machine boundary
+| Stage | Example metrics |
+|---|---|
+| MT5 read | snapshot acquisition ms |
+| intelligence | per-desk ms, total critical path |
+| families | per-family ms, active-family ms |
+| fusion/Opportunity | decision ms |
+| M1 refinement | trigger age / evaluation ms |
+| TradePlan/quality/Risk | evaluation ms |
+| final revalidation | quote age/drift ms |
+| writer | request latency |
+| reconciliation | broker-confirmation latency |
+| dashboard | render ms, isolated from strategy latency |
+| research | asynchronous/offline throughput |
 
-One PRIMARY writer per account/symbol scope. Different independent scopes may run separately. Same-scope simultaneous writers are unsupported without a future deliberate shared-fencing architecture.
+Concurrency is accepted only if it improves measured critical-path latency without semantic drift.
 
-## 16. Runtime capability stages
+## 22. Current deferred architecture
 
-```text
-READINESS  read-only diagnostic
-DRY_RUN    governed analytical lifecycle with zero irreversible writes
-PRIMARY    controlled DEMO writer after implementation/evidence gates
-REAL       preserved future governed capability; disabled until DEMO/release/explicit approval gate
-```
+Explicitly deferred:
 
-REAL is not removed and is not a hidden configuration shortcut.
+- same-account active-active multi-machine broker writers;
+- distributed DB/shared consensus/fencing infrastructure;
+- sophisticated partial-close optimization as a release dependency;
+- paid News API requirement;
+- GitHub Actions/cloud compute dependency.
 
-## 17. Research / dashboard boundary
+These are deferred, not accidentally omitted.
 
-Research, learning, terminal dashboard and browser dashboard are downstream. They cannot create execution permission or silently select/change Risk profile/overlay.
+## 23. Final architecture invariant
 
-## 18. Evidence pending
-
-Scalp calibration: gross/net target quality, event freshness, spread/drift, time-efficiency, runner rules and latency thresholds.
-
-Implementation/performance: worker count while preserving bounded-parallel capability.
-
-External proof: current Exness SymbolSpec/schedule/order metadata, DEMO execution/reconciliation, spread/slippage/latency, close recovery and fresh-machine restore.
+> **Parallelize facts and hypotheses only where it makes the measured critical path faster; serialize money and broker authority; let exactly one strategy family produce live trades at a time for clean efficiency attribution; use M1 to sharpen a valid M5 opportunity rather than invent one; and let real executable market facts—not News labels—decide whether a scalp remains economically tradeable.**

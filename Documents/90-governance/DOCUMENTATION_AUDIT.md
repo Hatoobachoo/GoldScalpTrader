@@ -1,193 +1,278 @@
 # GoldScalpTrader — Documentation Audit
 
-**Status:** DOCUMENTATION-ONLY SEMANTIC / RECONSTRUCTABILITY PASS COMPLETE — OPERATOR SCALP-DELTA DISCUSSION PENDING
-**Version:** 1.0-final-doc-review-ready
-**Authority:** Structural and expert-level review of the canonical `Documents/` manual before final operator decisions and documentation freeze.
+**Status:** ACTIVE 66-DOCUMENT RECONSTRUCTION AUDIT — NOT FROZEN
+**Version:** 1.0-reference-tree-depth-rebuild
+**Authority:** Documentation inventory, reference parity, reconstruction completeness, visual-depth requirements, contradiction tracking and final freeze readiness.
 
-## 1. Audit purpose
+## 1. Why this audit was reopened
 
-This audit checks whether the 64-file manual is complete, internally consistent, reconstructable without chat history and faithful to the preservation-first requirement.
+A prior documentation pass incorrectly treated a **64-file name-matched manual** as structurally complete. A deeper check against the later verified GoldSwingTraderAI `Published_B/Documents` snapshot found:
 
-It does not claim implementation, deterministic code proof, connected DEMO proof, future REAL authorization or profitability.
+1. the true latest reference tree contains **66 Markdown documents**;
+2. two top-level files were missing from GoldScalpTrader;
+3. many current Scalp contracts were materially shorter/shallower than their reference counterparts;
+4. Mermaid/state/sequence diagrams were largely absent from current Scalp docs;
+5. several earlier design assumptions have since been explicitly changed/approved by the operator.
 
-## 2. Structural inventory — PASS
+Therefore the previous “final review ready” status is superseded.
 
-```text
-Top level                  7
-00-foundation              5
-10-market-intelligence     7
-20-trading-decisions       7
-30-risk-execution          6
-40-research-learning       7
-50-operator                3
-60-engineering            14
-90-governance              8
-TOTAL                      64 Markdown documents
-```
+## 2. Verified tree parity
 
-## 3. Governing preservation test — PASS
-
-Every material Swing→Scalp difference must be one of:
+### Reference `Published_B/Documents`
 
 ```text
-SCALP-SPECIFIC CHANGE
-OPERATOR-DIRECTED CHANGE
-REFERENCE DEFECT CORRECTION
-EXTERNAL FACT UPDATE
+Top-level Markdown documents     9
+00-foundation                    5
+10-market-intelligence           7
+20-trading-decisions             7
+30-risk-execution                6
+40-research-learning             7
+50-operator                      3
+60-engineering                  14
+90-governance                    8
+TOTAL                           66
 ```
 
-Otherwise GoldSwingTraderAI feature/default remains preserved. If uncertain, preserve now and discuss before freeze.
-
-## 4. Preserved reference defaults — PASS AT DOCUMENT OWNER LEVEL
-
-Current canonical owners preserve:
-
-- automatic SMALL/MEDIUM/NORMAL DayStartEquity profiles and canonical Risk bands;
-- `AGGRESSIVE_SMALL_ACCOUNT` operational option disabled by default;
-- 8% maximum monetary SL-risk ceiling as ceiling, **not target**;
-- 16% aggregate-open-risk and daily-loss ceilings when aggressive mode is explicitly enabled/eligible;
-- governed manual daily-loss reset capability disabled by default;
-- one genuinely fresh same-episode re-entry;
-- three consecutive closed bot losses → at least 30 minutes cooldown + required fresh/healthy release conditions;
-- bounded physical analytical concurrency + deterministic one-worker fallback/parity;
-- provider TTL baseline 1800 seconds;
-- Daily PRE_CLOSE T-20 no entry / T-10 flatten;
-- Weekend PRE_CLOSE T-60 / T-30;
-- daily reopen one clean completed M5;
-- weekend reopen two clean completed M5 + gap assessment;
-- optional broker-valid partial management where volume is divisible;
-- future governed REAL capability with separate DEMO/release/explicit-approval gate.
-
-## 5. Genuine scalp-specific deltas — PASS AS DOCUMENTED DESIGN
-
-Retained intentional deltas:
-
-- H1 broad / M15 opportunity-location-path / M5 primary completed setup-timing-management / H4 optional / M1 diagnostic-research only;
-- stronger event/trigger freshness and anti-chase;
-- gross + cost-adjusted room;
-- no automatic inherited 1.20R hard scalp entry floor;
-- stronger spread/slippage/drift/latency observability;
-- true News UNKNOWN new-entry block;
-- valid LKG News cache resilience without timestamp laundering;
-- exceptional Runner;
-- time/efficiency as first-class EXIT reason;
-- scalp-specific cost/latency/duration/capture research.
-
-Their remaining numerical policy choices are discussed with operator before freeze where still classified as genuine scalp calibration.
-
-## 6. Explicit operator-directed differences — PASS
-
-- no trading-runtime Git commit/push/pull;
-- development source backup through coherent remote bulk → `git pull --ff-only` → optional clean ZIP;
-- runtime-state backup independently local/network-free;
-- aggressive small-account mode retained as disabled-by-default operational capability.
-
-## 7. Reviewed documentation domains — PASS FOR DOCUMENTATION SEMANTICS
-
-### Foundation / governance
-Preservation-first rule, architectural spine, exact reference-delta ledger and affected-graph discipline agree.
-
-### Market Intelligence
-All seven owners use frozen timeframe authority. M1 is not an unresolved V1 production question. News owner preserves 1800-second TTL while genuine event-window questions remain scalp calibration.
-
-### Trading Decisions
-Six-family floor, bounded concurrency, Opportunity/Timing, one-fresh-reentry baseline, TradePlan geometry, family-specific event geometry and management semantics agree.
-
-### Risk / Execution / Recovery
-Profiled Risk/aggressive mode, session/reopen/provider defaults, one-shot execution, future REAL gate, broker activity accounting, persistence/profile durability and source/runtime backup separation agree.
-
-### Research / Learning
-Learning/replay/DEMO learning/promotion/discovery/invention consume frozen production identities and cannot silently optimize away preserved defaults or acquire broker/REAL authority.
-
-### Operator
-Terminal/live/graphical surfaces are read-only and present profile/overlay/provider/cache/blocker/Gate truth without becoming owners.
-
-### Engineering / audit protocols
-Coding/testing/health/release docs reflect current preservation-first architecture. Audits 2–7 are frozen protocols but remain **NOT RUN** until implementation/connected evidence reaches their stage.
-
-## 8. Final manual-wide contradiction / reconstructability pass
-
-The final documentation-only pass combined:
-
-- verified 64-file structural inventory;
-- direct owner review across all canonical domains;
-- affected-graph synchronization across the preservation correction packets;
-- targeted searches for known stale phrases/assumptions;
-- direct verification of high-risk owners such as TradePlan, backup/recovery and README;
-- final cross-check of preservation/delta/coverage/governance records.
-
-Targeted search results returned no old `DRAFT PRE-CHALLENGE`, `STANDARD Risk`, `physical concurrency is optional`, stale M1-promotion branch or `REAL outside/deferred` phrase; the search API reported incomplete indexing, so these results were treated only as supplemental evidence rather than sole proof.
-
-The pass also caught and corrected:
-
-- a formatting/newline defect in `PROJECT_VISION.md` preservation rule;
-- missing explicit Risk-profile/aggressive-overlay identity in `LEARNING_BACKUP_AND_MULTI_MACHINE.md` full-checkpoint list;
-- stale stage wording in the canonical README/coverage/audit summaries.
-
-### Result
+### Prior GoldScalpTrader
 
 ```text
-BLOCKING DOCUMENTATION ARCHITECTURE CONTRADICTION: NONE FOUND
-BROKEN CANONICAL TOPOLOGY: NONE FOUND
-KNOWN UNJUSTIFIED FEATURE REMOVAL: NONE REMAINING IN CURRENT DOCUMENTED DESIGN
-FINAL OPERATOR DECISION STEP: STILL REQUIRED
+Top-level Markdown documents     7
+all eight subfolder counts       matched reference
+TOTAL                           64
 ```
 
-This is a documentation/reconstructability result, not an automated link-check/code result.
-
-## 9. Reconstructability — PASS FOR DOCUMENTATION-ONLY REVIEW
-
-A capable developer/AI with no chat history can determine from repository alone:
-
-- project purpose/non-goals;
-- preserved Swing features/defaults;
-- genuine Scalp deltas;
-- operator-directed differences;
-- exact Risk profiles/aggressive/reset/re-entry/cooldown semantics;
-- exact preserved session/provider baselines;
-- timeframe/freshness/cost rules;
-- bounded analytical concurrency vs serial broker authority;
-- DEMO progression and future REAL gate;
-- runtime/source backup/recovery methods;
-- learning/research authority;
-- what remains genuine scalp calibration/external proof;
-- which implementation/audit evidence is still NOT RUN.
-
-## 10. Evidence truth
+### Missing top-level documents
 
 ```text
-64-file structural coverage              PASS
-preservation-first documentation design  PASS
-semantic/metadata normalization          PASS for documentation-only review
-manual reconstructability                PASS for documentation-only review
-implementation proof                     NOT AVAILABLE
-automated Documents verifier             NOT IMPLEMENTED / NOT RUN
-replay/calibration evidence               PENDING
-current Exness/provider external proof    PENDING
-controlled DEMO lifecycle proof           PENDING
-future REAL release proof                 NOT STARTED
-profitability claim                       NONE
+GITHUB_STRICT_USE_POLICY.md
+BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md
 ```
 
-## 11. Audit 2–7 truth
+Both are required in the reconstructed manual.
 
-Audits 2–7 have **not been run**. Their documents are protocols/templates only. They require future code/runtime evidence and cannot be pre-filled PASS.
+## 3. Folder/file-name parity result
 
-## 12. Current documentation result
+Direct subfolder inventories were checked against latest `Published_B`:
+
+| Area | Ref count | Prior Scalp count | Filename parity |
+|---|---:|---:|---|
+| Foundation | 5 | 5 | PASS |
+| Market Intelligence | 7 | 7 | PASS |
+| Trading Decisions | 7 | 7 | PASS |
+| Risk/Execution | 6 | 6 | PASS |
+| Research/Learning | 7 | 7 | PASS |
+| Operator | 3 | 3 | PASS |
+| Engineering | 14 | 14 | PASS |
+| Governance | 8 | 8 | PASS |
+| Top level | 9 | 7 | **FAIL: 2 missing** |
+
+No hidden extra subfolder filename gap was found in the eight numbered categories during this tree-level audit.
+
+## 4. Content-depth finding
+
+Filename parity is not content parity.
+
+Representative prior Scalp docs were materially compressed relative to reference depth. Examples observed in the earlier comparison included Architecture, Trading Floor, Build Phases, Entry Timing, Strategy Floor, File/Test Catalog and corrective audit files.
+
+This audit therefore uses **coverage**, not byte count, as the acceptance criterion.
+
+Required result:
+
+> Every useful reference contract section is preserved/adapted or explicitly classified as not applicable, and every new Scalp requirement is added with equal or greater implementation/test/recovery detail.
+
+## 5. Visual-documentation finding
+
+Repository search on the prior Scalp default branch found no meaningful `mermaid`/`flowchart` usage while reference Architecture/Foundation documents used Mermaid diagrams extensively.
+
+This is a quality gap.
+
+Reconstruction requirement:
+
+- flow diagrams for dependency/authority topology;
+- state diagrams for lifecycle;
+- sequence diagrams for execution/recovery ordering;
+- tables for contracts/matrices/thresholds;
+- formulas/examples where useful;
+- empirical charts only after real replay/DEMO evidence exists.
+
+## 6. Approved architecture changes to integrate
+
+The reconstruction must incorporate these operator-approved decisions:
+
+### News / Fundamentals
+
+- remove News from hard trading permission;
+- remove News-triggered cooldown;
+- remove mandatory post-News warmup;
+- provider/API outage is context-health degradation, not a trading kill switch;
+- event impact may still be detected through actual spread/drift/dislocation/quote/cost/broker facts;
+- News remains dashboard/research/attribution context.
+
+### Timeframes / entry
+
+- M5 remains primary setup/thesis authority;
+- M1 becomes subordinate entry refinement after a valid M5 Opportunity;
+- M1 cannot create independent production trades;
+- M1 patterns/freshness, M5 event age, chase distance and Approved Entry→Executable Price drift are calibration variables.
+
+### Strategy evaluation isolation
+
+- all six families may analyze;
+- exactly one family is `ACTIVE_EXECUTION` at a time;
+- remaining five are `SHADOW_ONLY` for clean efficiency comparison;
+- shadow families cannot originate live trades;
+- active-family switching is versioned/governed;
+- live attribution must remain clean.
+
+### Performance architecture
+
+- logical specialist independence preserved;
+- physical analytical parallelism profiling-driven;
+- shared calculations/vectorization/caching first;
+- financial/broker authority remains serial.
+
+### Spread/cost
+
+Approved hybrid design:
 
 ```text
-STRUCTURAL INVENTORY                 PASS
-PRESERVATION-FIRST GOVERNANCE        PASS
-SEMANTIC NORMALIZATION               PASS — documentation-only review
-MANUAL-WIDE CONTRADICTION PASS       PASS — no blocking contradiction found
-RECONSTRUCTABILITY                   PASS — documentation-only review
-OPERATOR SCALP-DELTA DISCUSSION      PENDING
-DOCUMENTATION FREEZE                 NOT YET COMPLETE
-IMPLEMENTATION                       NOT STARTED
+absolute emergency spread ceiling
++ spread/SL
++ spread/target
++ recent healthy spread comparison
++ total cost/reward
 ```
 
-## 13. Next dependency
+### Risk
 
-The next step is **not implementation**.
+Do not change current SMALL/MEDIUM/NORMAL base percentages/bands.
 
-Present the remaining genuinely scalp-specific design/calibration differences to the operator, discuss/resolve them, update the affected graph if any decision changes, then declare documentation freeze. Only after that may implementation start.
+Preserve current 3-loss/30-minute cooldown and one same-episode re-entry; later research may propose calibrated alternatives.
+
+### Research/AI
+
+Autonomous strategy invention, candidate parameter tuning, automatic evidence-stage progression and advanced ML remain active backend improvement capabilities. They may not silently change production; final live promotion requires operator approval.
+
+### Deferred
+
+Operator approved deferral of:
+
+- same-account active-active/distributed writer;
+- distributed DB/fencing infrastructure;
+- sophisticated partial-close optimization as a release dependency;
+- mandatory paid third-party News API;
+- GitHub Actions/cloud compute dependency.
+
+### Throughput
+
+120 trades/day is an approved **research throughput benchmark**, never a forced execution quota.
+
+## 7. Approved documentation-quality changes
+
+- documents must be deeply explained and expert/institutional level;
+- diagrams/tables/state machines are required where meaningful;
+- code later must be optimized, clean, typed and deeply reason-commented;
+- useful detail must not be removed merely to reduce duplication;
+- exact authority should have one canonical owner while mirrors remain explanatory;
+- final numbered folders should become `01` through `08` rather than `00/10/.../90`;
+- rename must be atomic with cross-link verification.
+
+## 8. Repository-visibility finding
+
+Reference GitHub policy used a private-repository lock. Current GoldScalpTrader is public. The operator explicitly chose **not to change repository visibility now**.
+
+Therefore current reconstruction must document the fact truthfully and must not perform a visibility mutation.
+
+## 9. Current reconstruction packets
+
+### Packet A — Foundation/policies
+
+Target scope:
+
+- add/adapt `GITHUB_STRICT_USE_POLICY.md`;
+- add/adapt `BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md`;
+- deeply reconstruct Project Vision;
+- System Contract;
+- Architecture;
+- Trading Floor Architecture;
+- Build Phases;
+- Documentation Standard;
+- README;
+- this Audit.
+
+This packet establishes the canonical design that later topic documents must follow.
+
+### Later packets
+
+1. Market Intelligence;
+2. Trading Decisions;
+3. Risk/Execution;
+4. Research/Learning;
+5. Operator;
+6. Engineering/audits/source-test catalog;
+7. Governance/manuals/handoff;
+8. atomic folder rename/link migration;
+9. reference-section coverage matrix;
+10. 100+ post-rebuild challenge.
+
+## 10. Acceptance criteria per document
+
+A document is reconstructed only if relevant coverage includes:
+
+```text
+purpose / scope / authority / non-authority
+inputs / outputs / states / units / IDs
+invariants and state machine
+chronology / knowledge time
+happy / wait / degraded / failure / unknown
+restart / recovery / idempotency
+concurrency / ordering / performance
+risk / broker / persistence implications
+operator / dashboard meaning
+research / learning effect
+security / secrets
+source ownership
+unit / integration / connected proof
+calibration / external proof
+cross-links
+diagrams / tables / examples
+reference-preserved + Scalp/operator deltas
+```
+
+## 11. Final freeze gates
+
+```mermaid
+flowchart TB
+    TREE["66-file tree complete"] --> DEEP["Reference-equivalent-or-better depth"]
+    DEEP --> VIS["Visual/state/sequence coverage"]
+    VIS --> LINKS["01–08 rename + links resolve"]
+    LINKS --> OWNER["Single canonical ownership"]
+    OWNER --> CONTRA["No known cross-doc contradictions"]
+    CONTRA --> MATRIX["Reference→Scalp coverage matrix complete"]
+    MATRIX --> C100["100+ challenge audit"]
+    C100 --> OP["Operator final review"]
+    OP -->|Approve| FREEZE["DOCUMENTATION FROZEN"]
+```
+
+## 12. Current verdict
+
+```text
+LATEST REFERENCE TREE IDENTIFIED           PASS
+66-DOC TARGET CONFIRMED                    PASS
+MISSING TOP-LEVEL DOCS IDENTIFIED          PASS
+SUBFOLDER FILENAME PARITY                  PASS
+CONTENT-DEPTH PARITY                       IN PROGRESS
+VISUAL DOCUMENTATION PARITY                IN PROGRESS
+APPROVED SCALP DELTAS IN FOUNDATION        IN PROGRESS
+ALL 66 DOCS RECONSTRUCTED                  NO
+FOLDER NUMBERING MIGRATED                  NO
+FULL CROSS-LINK VALIDATION                 NO
+POST-REBUILD 100+ CHALLENGE                NO
+OPERATOR FINAL APPROVAL                    NO
+DOCUMENTATION FREEZE                       NO
+IMPLEMENTATION AUTHORIZED                  NO
+```
+
+## 13. Final audit invariant
+
+> **No future “documentation complete” statement may be based on filename count or high-level semantic consistency alone. It requires complete tree parity, reference-section coverage, institutional depth, visual clarity, resolvable cross-links, authority ownership, challenge testing and explicit operator final approval.**

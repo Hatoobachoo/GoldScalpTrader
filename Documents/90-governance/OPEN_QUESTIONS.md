@@ -1,276 +1,354 @@
 # GoldScalpTrader — Open Questions and Closure Plan
 
-**Status:** POST-AUDIT-1 QUESTION REGISTER — PRESERVATION-FIRST CORRECTION APPLIED
-**Version:** 1.2-preserved-reference-defaults
-**Authority:** Unresolved implementation choices, genuinely scalp-specific calibration, external proof and future governed capabilities.
+**Status:** ACTIVE RECONSTRUCTION QUESTION REGISTER — APPROVED ARCHITECTURE SEPARATED FROM CALIBRATION
+**Version:** 2.0-post-operator-approval
+**Authority:** Remaining calibration, implementation choices, external proof and deferred architecture. Approved decisions are not reopened here.
 
 ## 1. Classification
 
 ```text
-CLOSED ARCHITECTURE
-PRESERVED REFERENCE DEFAULT
+CLOSED / APPROVED
+PRESERVED DEFAULT
 IMPLEMENTATION CHOICE
-SCALP CALIBRATION
+CALIBRATION
 EXTERNAL PROOF
-FUTURE GOVERNED CAPABILITY
+DEFERRED
+APPROVAL_REQUIRED
 ```
 
-Rule: a reference feature/default is not made open merely because a simpler architecture exists. If no direct scalp reason or explicit operator instruction justifies a change, preserve it.
+## 2. CLOSED / APPROVED architecture
 
-## 2. CLOSED ARCHITECTURE
+The following are no longer open questions:
 
-### OQ-001 — Final timeframe authority — CLOSED
+### OQ-C01 — News hard trading authority
 
-```text
-H1   broad soft regime / major directional-volatility context
-M15  opportunity location/path/session/liquidity context
-M5   primary completed-bar setup, entry timing and normal management structure
-H4   optional major context only
-M1   diagnostic/research only
-quote current executable Bid/Ask/spread/drift/health only
-```
+**CLOSED:** News/Fundamentals are soft context/research only. News event/API/UNKNOWN does not directly block new trading, trigger News cooldown or require post-News warmup.
 
-### OQ-002 — Strategy-family decomposition — CLOSED
+### OQ-C02 — M1 role
 
-Retain six independent reference families. Manage overlap with explicit event-lineage/correlation bounding.
+**CLOSED:** M5 owns primary setup/thesis; M1 may refine entry only after a valid M5 Opportunity. M1 cannot create a standalone production trade.
 
-### OQ-003 — `OPEN + News UNKNOWN` policy — CLOSED
+### OQ-C03 — Strategy Isolation Mode
 
-True `NEWS_SAFETY_UNKNOWN` blocks new entries. Existing-position management/protection/mandatory CLOSE remains action-sensitive.
+**CLOSED:** Exactly one family is `ACTIVE_EXECUTION`; remaining five are `SHADOW_ONLY` for live efficiency attribution/research.
 
-Temporary provider/API failure with a still-valid accepted last-known-good cache is not automatically UNKNOWN.
+### OQ-C04 — Physical analytical concurrency
 
-### OQ-004 — Structural R / cost-room architecture — CLOSED
+**CLOSED:** logical independence mandatory; physical concurrency profiling-driven. Financial/broker authority strictly serial.
 
-TradePlan preserves gross structural quality plus explicit cost-adjusted executable-room diagnostics. Swing 1.20R is not a hard inherited scalp floor. Exact scalp thresholds remain calibration.
+### OQ-C05 — Spread architecture
 
-### OQ-005 — Risk-policy shape — CLOSED / CORRECTED
+**CLOSED:** fixed + aware hybrid: absolute emergency ceiling + spread/SL + spread/target + recent baseline + total cost/reward.
 
-Preserve automatic reference profiles:
+### OQ-C06 — Risk profile percentages/bands
 
-```text
-SMALL   positive DayStartEquity < $300
-MEDIUM  $300–$999.99
-NORMAL  >= $1,000
-```
+**CLOSED:** preserve existing SMALL/MEDIUM/NORMAL bands/percentages. Do not change during this reconstruction.
 
-Preserve their reference target/elevated/hard-ceiling/daily-loss bands.
+### OQ-C07 — 120 trades/day
 
-Also preserve operator-requested `AGGRESSIVE_SMALL_ACCOUNT` as an explicit operational option disabled by default:
+**CLOSED:** approved as research throughput benchmark, never mandatory quota.
 
-```text
-eligible baseline < $1,000
-8% max monetary SL risk ceiling — NOT target
-16% max aggregate open risk
-16% daily loss ceiling
-```
+### OQ-C08 — AI/invention/ML
 
-It is never silently auto-enabled merely because equity is small.
+**CLOSED:** active backend research/testing capabilities. Candidate/shadow parameters may evolve under research governance. Final production/live promotion requires explicit operator approval.
 
-### OQ-006 — Runtime mode scope — CLOSED / CORRECTED
+### OQ-C09 — Distributed same-account architecture
 
-```text
-READINESS / DRY_RUN
-→ controlled governed DEMO writer after deterministic proof
-→ future governed REAL capability remains preserved
-```
+**CLOSED:** same-account active-active writer and distributed DB/fencing are deferred. Sequential handoff remains supported target.
 
-REAL is disabled/unavailable until DEMO evidence, release gates and explicit operator approval satisfy a separate REAL policy. The feature is not removed.
+### OQ-C10 — Repository visibility
 
-### OQ-007 — Trade Manager time action — CLOSED
+**CLOSED CURRENT DECISION:** do not change visibility now. Current public state remains until operator explicitly changes it later.
 
-No separate `TIME_EXIT` action. Time/efficiency is a first-class reason that may produce normal `EXIT`.
+### OQ-C11 — Documentation structure/depth
 
-### OQ-008 — Physical analytical concurrency — CLOSED / CORRECTED
+**CLOSED:** reconstruct latest 66-doc baseline to reference-equivalent-or-better institutional depth; diagrams/tables/state machines required where meaningful; final folders target `01`–`08`.
 
-Preserve bounded physical concurrency for dependency-independent analysis as a target reference feature. A deterministic one-worker fallback is mandatory and must be parity-equivalent.
+## 3. PRESERVED DEFAULTS — research may study, production unchanged
 
-### OQ-009 — Development/source backup — CLOSED
+### PRD-001 — Monetary Risk profile table
 
-```text
-major remote bulk commit
-→ operator git pull --ff-only
-→ local clone becomes source + Git-history backup
-→ optional secret-clean ZIP milestone copy
-```
-
-No runtime Git operation.
-
-### OQ-010 — News API/provider outage and cache semantics — CLOSED
-
-```text
-refresh fails + valid LKG cache
-→ keep accepted cached event truth
-→ provider may be DEGRADED
-→ never rewrite fetch/as-of/valid-until
-
-refresh fails + no valid cache
-→ NEWS_SAFETY_UNKNOWN
-→ new-entry BLOCK / LIMITED
-```
-
-## 3. PRESERVED REFERENCE DEFAULTS — NOT OPEN BY DEFAULT
-
-### PRD-001 — Account risk bands
-
-| Profile | Normal / target | Elevated | Hard ceiling | Daily lock |
+| Profile | Normal | Elevated | Hard ceiling | Daily lock |
 |---|---:|---:|---:|---:|
-| SMALL | 3.0%–4.5% | >4.5%–6.5% | 7% | 12% |
-| MEDIUM | 2.0%–3.0% | >3.0%–4.5% | 5% | 9% |
-| NORMAL | 1.0%–2.0% | >2.0%–3.5% | 4% | 7% |
+| SMALL | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
+| MEDIUM | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
+| NORMAL | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
 
-A future change requires a specific scalp justification and documentation discussion.
+No change approved.
 
-### PRD-002 — Cooldown / same-episode re-entry
+### PRD-002 — Aggressive mode
 
-Preserve one genuinely fresh same-episode re-entry and the reference three-consecutive-loss / at-least-30-minute global cooldown plus freshness/health release requirements.
+Disabled by default; 8% max single-trade SL-risk ceiling (not target), 16% aggregate and daily ceilings.
 
-### PRD-003 — Manual daily-loss reset
+### PRD-003 — Cooldown / re-entry
 
-Capability preserved but disabled by default. If explicitly enabled later, it remains bounded/auditable/persistent and cannot clear unrelated faults.
+Preserve:
+
+- one genuinely fresh same-episode re-entry;
+- three consecutive closed bot losses → at least 30m cooldown plus release conditions.
+
+Research may compare alternatives; production default stays until a later approved change.
 
 ### PRD-004 — PRE_CLOSE / reopen
 
+Preserve baseline while current Exness facts are verified:
+
 ```text
-Daily:   T-20 no new entry, T-10 mandatory flatten
-Weekend: T-60 no new entry, T-30 mandatory flatten
+Daily:   T-20 no entry / T-10 flatten
+Weekend: T-60 no entry / T-30 flatten
 Daily reopen:   1 clean completed M5
 Weekend reopen: 2 clean completed M5 + gap assessment
 ```
 
-These remain subject to current broker schedule proof; a proven broker schedule change is not a scalp-policy change.
+### PRD-005 — Runtime Git
 
-### PRD-005 — Provider TTL
+No trading-runtime Git operation.
 
-Use the reference 1800-second baseline unless a direct provider/scalp reason is later approved.
+## 4. CALIBRATION — approved dimensions, values still open
 
-### PRD-006 — Bounded analytical concurrency
+These dimensions are approved. The open question is **their evidence-backed value/shape**, not whether they exist.
 
-Target feature preserved. Implementation must also provide deterministic one-worker fallback/parity.
+### CAL-001 — M1 entry-refinement patterns
 
-## 4. IMPLEMENTATION CHOICES
+Determine which micro-patterns add after-cost value after a valid M5 Opportunity:
 
-### OQ-020 — Python/package layout
+- reclaim;
+- rejection;
+- pullback completion;
+- micro continuation;
+- micro failed break;
+- other candidate patterns from governed research.
 
-Verify current MetaTrader5/Python compatibility, choose supported Python version and replace provisional launch/import layout with a simple installable package.
+Need chronological replay + shadow/DEMO evidence.
 
-### OQ-021 — SQLite detail
+### CAL-002 — M1 trigger freshness
 
-Choose WAL/synchronous/checksum/schema/migration implementation while preserving transactional/crash-safe semantics.
+Maximum age of M1 evidence before revalidation/WAIT/MISSED.
 
-### OQ-022 — Analytical scheduler implementation
+### CAL-003 — M5 event age
 
-Implement the preserved bounded analytical scheduler with immutable inputs, bounded workers, deterministic canonical output order and one-worker fallback/parity. Exact worker count is an implementation/performance choice, not permission to remove concurrency as a feature.
+Family/event-specific age/number-of-bars validity.
 
-### OQ-023 — Dashboard stack
+### CAL-004 — Chase distance
 
-Confirm Rich/wcwidth dependency and implementation timing of optional browser dashboard.
+Maximum movement from structural trigger/approved entry before current entry becomes inefficient.
 
-### OQ-024 — Secret scanner / Documents verifier
+### CAL-005 — Approved Entry → Executable Price drift
 
-Choose smallest dependable local scripts/tests; no cloud/Actions requirement.
+Allowed drift may vary with family, stop geometry, target room, spread and volatility.
 
-### OQ-025 — Local runtime backup implementation
+### CAL-006 — Absolute emergency spread ceiling
 
-Choose SQLite backup API/export method, manifest/checksum format, catalog naming, free-space handling and optional second-drive copy.
+Circuit-breaker threshold for obviously abnormal/broken conditions. Must not be tuned so low that normal valid scalps are unnecessarily rejected.
 
-### OQ-026 — Local source ZIP helper
+### CAL-007 — Spread / SL ratio
 
-Decide whether to provide a repository script/PowerShell helper. Default archive excludes `.env`, credentials, virtualenvs, logs, runtime DB/checkpoints and nested backup folders.
+Approved dimension. Calibrate acceptable ranges by family/volatility and actual outcome evidence.
 
-### OQ-027 — News LKG cache implementation
+### CAL-008 — Spread / target ratio
 
-Use the preserved 1800-second baseline TTL initially; choose cache file/path, atomic replacement, integrity marker and restart loading. Original timestamps/coverage may never be extended on failure.
+Approved dimension. Calibrate acceptable ranges by remaining target room and family.
 
-### OQ-028 — Aggressive small-account configuration surface
+### CAL-009 — Cost / reward ratio
 
-Choose explicit config name/confirmation/visibility for the preserved disabled-by-default 8%/16% overlay. It must never auto-enable from balance alone.
+Approved dimension. Must include the agreed transaction-cost components without double counting.
 
-## 5. SCALP CALIBRATION
+### CAL-010 — Slippage allowance
 
-These remain open because they directly concern short-horizon scalp behaviour:
+Estimate realistic expected/upper-bound fill deterioration from controlled DEMO fills, segmented where useful by:
 
-### OQ-040 — Event freshness
-Family/event-specific M5 age, distance-travelled and extension thresholds.
+- session;
+- volatility;
+- spread regime;
+- direction/order type;
+- broker execution mode.
 
-### OQ-041 — Entry/chase policy
-Maximum acceptable drift from approved entry, trigger age and processing delay.
+### CAL-011 — Broker deviation
 
-### OQ-042 — Spread / execution friction
-Healthy baseline method, spread-to-stop/target thresholds, slippage reserve and broker deviation policy.
+Determine bounded request deviation compatible with current Exness execution mode. Too tight may reject valid entries; too loose may damage edge.
 
-### OQ-043 — Structural target quality
-Minimum gross R, cost-adjusted room/Net-R equivalent and objective hierarchy thresholds. Swing 1.20R is not automatically the hard scalp floor.
+### CAL-012 — Decision→send latency
 
-### OQ-044 — Session specialization
-Whether Asia/London/NY/overlap conditioning improves out-of-sample net expectancy after costs.
+Measure stage latency and define when stale processing forces fresh quote/geometry/Risk revalidation. Threshold should not automatically kill a still-valid opportunity.
 
-### OQ-045 — News blackout/post-event stabilization
-Only changes specifically justified by scalp event sensitivity are open. The provider/session mechanisms themselves remain preserved.
+### CAL-013 — Minimum gross R
 
-### OQ-046 — Trade Manager time efficiency
-Normal hold-duration distribution, time-efficiency EXIT conditions and protection timing.
+Scalp-specific minimum structural target quality. Swing 1.20R is not automatically the hard answer.
 
-### OQ-047 — Runner/Expansion policy
-How often a scalp may extend beyond Primary and what fresh evidence is required.
+### CAL-014 — Minimum net/cost-adjusted quality
 
-### OQ-048 — Optional confluence
-FVG/OB/Fib/Trendline/POC/M1/macro marginal value by ablation.
+Define the after-cost opportunity threshold using real spread/slippage/target behavior.
 
-### OQ-049 — Research sample/confidence thresholds
-Walk-forward/holdout sizes, minimum samples, shrinkage/confidence and Monte Carlo/bootstrap methodology.
+### CAL-015 — Family qualification thresholds
 
-### OQ-050 — Discovery/invention limits
-Cluster/sample/similarity/complexity/resource thresholds.
+Each strategy retains its own causal definition. Tune thresholds using out-of-sample evidence without turning every family into the same filter soup.
 
-## 6. EXTERNAL PROOF
+### CAL-016 — Fusion/Red-Team weights
 
-### OQ-070 — Exness symbol facts
-Verify intended XAUUSDm digits/point/tick size/tick value/min/max/step/stops/freeze/filling/margin behaviour.
+Because one family is live-active at a time, weights primarily govern evidence aggregation inside the active family/Red Team and research comparisons—not cross-family live vote-counting.
 
-### OQ-071 — Broker schedule
-Verify current normal daily/weekend hours, DST handling and special-holiday behaviour. External broker fact may supersede an outdated reference schedule without being a strategy change.
+Need transparent bounded weights; no opaque “score=probability” claim.
 
-### OQ-072 — Execution metadata
-Verify AutoTrading/trade API/account/symbol permission surfaces and actual `order_check`/retcode semantics.
+### CAL-017 — Family/event correlation caps
 
-### OQ-073 — Spread/slippage/latency
-Observe real DEMO distributions across sessions/news/reopen conditions.
+Prevent one causal event from appearing as multiple independent confirmations. Tune de-duplication strength without suppressing genuinely distinct evidence.
 
-### OQ-074 — Connected lifecycle
-Natural governed OPEN/MODIFY/CLOSE, broker SL/TP, known manual close and restart/reconciliation.
+### CAL-018 — EMA/RSI/Fib/FVG/OB/Trendline/POC contribution
 
-### OQ-075 — Fresh-machine recovery
-Prove recovery package → new DB/path → fresh broker reconciliation/controller → READY without duplicate exposure.
+Some may be highly important to certain families. Determine required/supportive/neutral/opposing roles by family and ablation. Missing optional evidence is not a universal block.
 
-### OQ-076 — Actual learning
-Verify exact-close queue/receipt and exactly-once approved-environment observation from real broker history.
+### CAL-019 — Session performance
 
-### OQ-077 — News provider/cache behaviour
-Verify zero-cost provider failure modes, LKG survival, 1800-second baseline TTL behaviour, expiry handling and coverage validation.
+Measure each family separately in Asia/London/New York/overlap for opportunity count, cost, expectancy, entry/capture efficiency and false-block/missed rates.
 
-## 7. FUTURE GOVERNED CAPABILITIES
+### CAL-020 — Time-efficiency EXIT
 
-Preserved future capabilities are not silently deleted merely because initial implementation is narrower:
+Determine how long each family/regime normally needs to make meaningful progress and when lack of progress becomes EXIT evidence.
 
-- REAL trading after DEMO/release/explicit approval;
-- broker-valid partial management when volume is divisible;
-- future M1/tick-history production authority only if separately justified;
-- future same-scope distributed fencing only if a proper shared authority architecture is added;
-- optional provider adapters without making paid services mandatory.
+### CAL-021 — Protection/trailing timing
 
-## 8. Closure discipline
+Determine when protection/trailing improves after-cost expectancy versus creating premature exits.
 
-Every later change must update:
+### CAL-022 — Runner conditions
 
-```text
-this register
-DESIGN_DECISIONS
-owning topic contract
-Architecture/Module/Coder/Testing docs if affected
-operator/research/persistence consequences
-reference Comparison + Preservation Ledger
-relevant tests/evidence plan
-```
+Runner is optional. Research fresh continuation, remaining structural objective, protection state, volatility/cost and divisible volume.
 
-At final documentation review, remaining genuine scalp-specific differences are discussed explicitly with the operator before implementation begins.
+### CAL-023 — Partial-close expectancy
+
+Basic partial-close capability remains where broker-valid. Research whether/when it improves outcomes. Sophisticated optimization is deferred as release dependency.
+
+### CAL-024 — PRE_CLOSE exact timing
+
+Verify/calibrate against current Exness normal/holiday/DST schedule while preserving safe default until evidence.
+
+### CAL-025 — Reopen/gap thresholds
+
+Determine normalized spread/quote/gap/clean-M5 conditions that safely resume entry.
+
+### CAL-026 — 120/day throughput benchmark
+
+Measure whether the architecture can approach this level under suitable conditions **without degrading after-cost expectancy or safety**.
+
+Report where throughput is lost:
+
+- opportunity scarcity;
+- strategy qualification;
+- timing;
+- cost;
+- Risk/cooldown;
+- position occupancy;
+- broker/session;
+- latency/system faults.
+
+## 5. IMPLEMENTATION choices
+
+### IMP-001 — Python/package version
+
+Choose a currently supported Python + MetaTrader5 package combination during implementation proof.
+
+### IMP-002 — SQLite durability details
+
+Choose WAL/synchronous/checkpoint/checksum/migration details consistent with recovery contract.
+
+### IMP-003 — Analytical scheduler
+
+Implement deterministic serial baseline first; profile; add bounded concurrency only where beneficial.
+
+### IMP-004 — Strategy isolation storage/API
+
+Define typed active-family policy storage, versioning and switch workflow with restart-safe attribution.
+
+### IMP-005 — Executable Quality owner/module shape
+
+Decide whether it is a dedicated `decisions/executable_quality.py` or an equivalent explicitly bounded module. It must remain separate from structural TradePlan and monetary Risk even if implementation packages differ.
+
+### IMP-006 — Dashboard libraries
+
+Choose terminal/rendering implementation while preserving read-only semantics and rich fallback behavior.
+
+### IMP-007 — Local checkpoint/backup format
+
+Choose SQLite snapshot/export, manifest/hash/catalog implementation under the backup architecture.
+
+### IMP-008 — Documentation verifier
+
+Implement local validator for:
+
+- 66-doc inventory;
+- final `01`–`08` folders;
+- required metadata;
+- broken relative links;
+- stale legacy folder names;
+- owner/mirror consistency markers where practical;
+- Mermaid code-block syntax presence/quality checks where feasible.
+
+## 6. EXTERNAL proof
+
+### EXT-001 — Exness SymbolSpec
+
+Verify digits, point, tick size/value, min/max/step, stops/freeze, filling mode and margin behavior for intended symbol/account.
+
+### EXT-002 — Broker schedule
+
+Verify actual current weekday/weekend/DST/holiday behavior.
+
+### EXT-003 — Spread/slippage/deviation
+
+Collect real DEMO distributions across sessions/regimes and around high-volatility conditions.
+
+### EXT-004 — Latency
+
+Measure snapshot→decision→send→ack→reconcile timings on actual Windows/MT5 environment.
+
+### EXT-005 — Controlled lifecycle
+
+Prove OPEN/MODIFY/SL/TP/CLOSE/manual-known-close/restart/reconciliation without duplicates.
+
+### EXT-006 — Recovery
+
+Prove checkpoint/package→new DB/path→fresh MT5 reconciliation→controller→READY on a fresh/replacement machine.
+
+### EXT-007 — Learning attribution
+
+Prove exact active-family trade lineage, shadow evidence separation and exactly-once verified-close learning.
+
+## 7. DEFERRED — deliberately not current dependencies
+
+### DEF-001 — Same-account active-active multi-machine writer
+
+Deferred by operator approval.
+
+### DEF-002 — Distributed DB/fencing/consensus infrastructure
+
+Deferred by operator approval. Sequential handoff/local state is current architecture.
+
+### DEF-003 — Sophisticated partial-close optimizer
+
+Deferred as a release dependency; basic valid partial management remains preserved.
+
+### DEF-004 — Mandatory paid News/macro API
+
+Not required.
+
+### DEF-005 — GitHub Actions/cloud compute
+
+Not required.
+
+## 8. APPROVAL_REQUIRED future changes
+
+Explicit operator approval is mandatory before:
+
+- live/production promotion of a new strategy/candidate/ML policy;
+- switching production policy where governance says approval is required;
+- enabling future REAL trading;
+- changing preserved monetary Risk profile bands/percentages;
+- changing repository visibility;
+- adding same-account active-active execution;
+- adding distributed DB/fencing architecture;
+- introducing paid/cloud mandatory dependencies.
+
+## 9. Closure discipline
+
+An open item closes only when the owning document, implementation/test/evidence plan and decision ledger agree.
+
+No calibration result silently changes production. Evidence produces a proposal; governed approval changes production.

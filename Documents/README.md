@@ -1,74 +1,117 @@
 # GoldScalpTrader — Canonical Documentation Manual
 
-**Status:** FINAL DOCUMENTATION REVIEW READY — OPERATOR SCALP-DELTA DISCUSSION PENDING; IMPLEMENTATION NOT STARTED
-**Version:** 1.3-final-reconstructability-pass
-**Authority:** Entry point, reading order, document ownership and design-before-code boundary.
+**Status:** 66-DOCUMENT INSTITUTIONAL RECONSTRUCTION IN PROGRESS — IMPLEMENTATION NOT STARTED
+**Version:** 2.0-reference-depth-rebuild
+**Authority:** Documentation entry point, current reconstruction status, reading order, design-before-code boundary and project-wide approved architecture summary.
 
 ## 1. What this manual is
 
-`Documents/` is the sole current design, implementation and verification authority for GoldScalpTrader.
+`Documents/` is the durable design/implementation/proof baseline for GoldScalpTrader.
 
-GoldScalpTrader is the scalping-specialized sibling of GoldSwingTraderAI. The reference project's feature set, engineering boundaries, safety model, learning/recovery system and governance remain the default baseline.
+A future developer or AI must be able to rebuild the project from this manual without relying on chat history.
 
-Governing preservation rule:
+The manual is being reconstructed against the latest verified GoldSwingTraderAI `Published_B/Documents` reference tree because the prior Scalp manual had correct high-level concepts but materially compressed many institutional details and omitted two top-level reference documents.
 
-> **Keep the GoldSwingTraderAI feature/default unless a direct scalping requirement, an explicit operator instruction, or a separately proven reference defect justifies changing it.**
+## 2. Verified reference-tree finding
 
-A simpler implementation is not permission to remove an inherited feature. If a possible difference is uncertain, preserve the reference behaviour and discuss it during final documentation review.
-
-## 2. Project method / current stage
+Latest verified reference inventory:
 
 ```text
-64-file canonical manual                         COMPLETE
-Fresh-Zero Audit 1                              COMPLETE
-preservation-first correction                    COMPLETE
-semantic / metadata normalization               COMPLETE for documentation-only review
-manual-wide contradiction / reconstructability  COMPLETE for documentation-only review
-operator discussion of genuine scalp deltas      NEXT
-final documentation freeze                       PENDING that discussion
-implementation                                   NOT STARTED
-Documents → Code → Tests/Evidence audit          FUTURE
-connected DEMO / recovery proof                  FUTURE
-future governed REAL                             only after separate gate
+Top-level Markdown documents     9
+00-foundation                    5
+10-market-intelligence           7
+20-trading-decisions             7
+30-risk-execution                6
+40-research-learning             7
+50-operator                      3
+60-engineering                  14
+90-governance                    8
+TOTAL                           66
 ```
 
-Code must not outrun the canonical manual.
-
-## 3. Canonical inventory
+Prior GoldScalpTrader manual contained 64 files and was missing:
 
 ```text
-Top level                  7
-00-foundation              5
-10-market-intelligence     7
-20-trading-decisions       7
-30-risk-execution          6
-40-research-learning       7
-50-operator                3
-60-engineering            14
-90-governance              8
-TOTAL                      64
+GITHUB_STRICT_USE_POLICY.md
+BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md
 ```
 
-## 4. Canonical reading order
+Both are now part of the reconstruction target.
 
-1. `README.md` + `GLOSSARY.md`;
-2. `00-foundation/PROJECT_VISION.md`;
-3. `00-foundation/SYSTEM_CONTRACT.md`;
-4. `00-foundation/ARCHITECTURE.md`;
-5. `00-foundation/TRADING_FLOOR_ARCHITECTURE.md`;
-6. `00-foundation/BUILD_PHASES.md`;
-7. all `10-market-intelligence/` contracts;
-8. all `20-trading-decisions/` contracts;
-9. all `30-risk-execution/` contracts;
-10. all `40-research-learning/` contracts;
-11. all `50-operator/` contracts;
-12. `60-engineering/*`;
-13. all `90-governance/` files;
-14. `CODER_GUIDE.md`;
-15. `PROJECT_BUILD_AND_RECOVERY_GUIDE.md`;
-16. `SETUP_AND_RUN_GUIDE.md`;
-17. `USER_MANUAL.md`;
-18. `FINAL_BUILD_PROMPT.md`.
+## 3. Current project stage
+
+```mermaid
+flowchart LR
+    REF["Latest 66-doc reference tree verified"] --> REBUILD["Deep institutional reconstruction"]
+    REBUILD --> LINKS["Folder rename + cross-link verification"]
+    LINKS --> CHALLENGE["100+ challenge audit"]
+    CHALLENGE --> OP["Operator final review"]
+    OP -->|Approve| FREEZE["DOCUMENTS FROZEN"]
+    FREEZE --> CODE["Implementation begins"]
+```
+
+Current status:
+
+```text
+reference tree parity audit                  COMPLETE
+missing-document identification              COMPLETE
+operator architecture decisions              APPROVED
+Foundation/policy reconstruction             IN PROGRESS
+Market/Decision/Risk/Research/Operator docs  PENDING RECONSTRUCTION
+Engineering/audit depth restoration          PENDING RECONSTRUCTION
+folder numbering migration                   PENDING ATOMIC RENAME
+full 66-doc cross-link audit                 PENDING
+100+ post-rebuild challenge                  PENDING
+operator final documentation approval        PENDING
+implementation                               NOT STARTED
+```
+
+The prior “64-file manual complete” claim is superseded.
+
+## 4. Approved final folder numbering
+
+Final target:
+
+```text
+Documents/
+├── README.md
+├── GLOSSARY.md
+├── GITHUB_STRICT_USE_POLICY.md
+├── BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md
+├── CODER_GUIDE.md
+├── PROJECT_BUILD_AND_RECOVERY_GUIDE.md
+├── FINAL_BUILD_PROMPT.md
+├── USER_MANUAL.md
+├── SETUP_AND_RUN_GUIDE.md
+├── 01-foundation/
+├── 02-market-intelligence/
+├── 03-trading-decisions/
+├── 04-risk-execution/
+├── 05-research-learning/
+├── 06-operator/
+├── 07-engineering/
+└── 08-governance/
+```
+
+The old `00/10/20/...` paths remain temporarily only while reconstruction is staged. Final freeze requires one atomic rename/cross-link migration with no broken links.
+
+## 5. Current reading order during reconstruction
+
+Until final rename:
+
+1. `README.md`;
+2. `GITHUB_STRICT_USE_POLICY.md`;
+3. `BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md`;
+4. `GLOSSARY.md`;
+5. `00-foundation/PROJECT_VISION.md`;
+6. `00-foundation/SYSTEM_CONTRACT.md`;
+7. `00-foundation/ARCHITECTURE.md`;
+8. `00-foundation/TRADING_FLOOR_ARCHITECTURE.md`;
+9. `00-foundation/BUILD_PHASES.md`;
+10. topic-owner contracts;
+11. `90-governance/DOCUMENTATION_STANDARD.md`;
+12. engineering source/test/audit maps;
+13. operator/manual/handoff guides.
 
 Conflict order:
 
@@ -76,183 +119,241 @@ Conflict order:
 SYSTEM_CONTRACT
 → owning topic contract
 → active DESIGN_DECISIONS
-→ OPEN_QUESTIONS / preserved-default register
+→ OPEN_QUESTIONS
 → Architecture / Trading Floor
 → engineering/operator summaries
 ```
 
-## 5. Preserved architectural spine
+## 6. Approved product philosophy
 
-```text
-one MT5 read boundary
-→ immutable MarketSnapshot
-→ causal market intelligence
-→ bounded-parallel independent analytical desks/families
-→ six independent strategy-family hypotheses
-→ independent BUY / SELL fusion + Red Team
-→ persistent Opportunity
-→ completed-M5 Entry Timing + event freshness
-→ family-aware structural TradePlan
-→ gross + cost-adjusted room truth
-→ profiled monetary Risk (SMALL / MEDIUM / NORMAL)
-   + optional explicit disabled-by-default aggressive small-account overlay
-→ hard session/news/system/account/controller authorities
-→ central ExecutionPermissionGate
-→ durable one-shot ExecutionIntent
-→ sole MT5Writer
-→ reconciliation against broker truth
-→ ManagedTrade / Trade Manager
-→ verified close
-→ durable learning/research evidence
-→ local backup/recovery
+GoldScalpTrader is:
+
+> **Opportunity-First, Evidence-Weighted, Precision-Timed, Cost-Aware, Execution-Disciplined and Continuously-Learning.**
+
+The system should maximize qualified opportunities and entry efficiency without weakening objective broker/account safety.
+
+## 7. Approved trading architecture
+
+```mermaid
+flowchart TB
+    MT5["One normalized MT5 read boundary"] --> SNAP["Immutable MarketSnapshot"]
+    SNAP --> INTEL["Causal intelligence"]
+    INTEL --> SIX["Six independent strategy analyses"]
+    SIX --> ISO["Exactly 1 ACTIVE_EXECUTION + 5 SHADOW_ONLY"]
+    ISO --> THESIS["Active-family BUY/SELL + Red Team"]
+    THESIS --> OPP["Persistent M5 Opportunity"]
+    OPP --> M1["Subordinate M1 entry refinement"]
+    M1 --> PLAN["Structural TradePlan"]
+    PLAN --> QUAL["Fixed + aware executable quality"]
+    QUAL --> RISK["Preserved monetary Risk"]
+    RISK --> HARD["Objective hard authorities"]
+    HARD --> GATE["Central Gate"]
+    GATE --> INTENT["Durable one-shot Intent"]
+    INTENT --> WRITE["Sole MT5Writer"]
+    WRITE --> RECON["Broker reconciliation"]
+    RECON --> MANAGE["ManagedTrade"]
+    MANAGE --> LEARN["Learning / research / invention / ML"]
+    LEARN --> ASK["Production promotion → operator approval"]
 ```
 
-Financial/broker authority remains serial even when analytical work is bounded-parallel.
+## 8. Strategy Isolation Mode
 
-## 6. Frozen scalp timeframe roles
-
-```text
-H1   broad soft regime / major directional-volatility context
-M15  opportunity location, path, liquidity/session context
-M5   primary completed-bar setup, entry timing and normal management
-H4   optional major context only
-M1   diagnostic/research only
-quote current executable Bid/Ask/spread/drift/health only
-```
-
-## 7. Preserved strategy floor
+The operator approved live strategy efficiency testing one family at a time.
 
 ```text
-Trend Pullback Continuation
-Breakout Expansion
-Breakout Retest Continuation
-Liquidity Sweep Reversal
-Failed Breakout Reversal
-Compression Expansion
+Six families analyze every eligible episode
+Exactly one family may originate live trades
+Remaining five are shadow/research only
 ```
 
-Correlation/event-lineage control prevents one episode being counted repeatedly as independent confirmation.
+This prevents blended voting from hiding which family actually has edge.
 
-## 8. Genuine scalp geometry / freshness changes
+The six preserved families remain:
 
-GoldScalpTrader strengthens event/trigger age, chase distance, stale-for-entry classification, Approved Entry Reference versus live quote, gross plus cost-adjusted room, spread/slippage/drift/latency observability and short-horizon time efficiency.
+1. Trend Pullback Continuation
+2. Breakout Expansion
+3. Breakout Retest Continuation
+4. Liquidity Sweep Reversal
+5. Failed Breakout Reversal
+6. Compression Expansion
 
-Swing's 1.20R Primary floor is not automatically imposed as the hard scalp floor. Exact scalp gross/net/cost thresholds remain evidence/calibration questions.
-
-## 9. Preserved Risk architecture
+## 9. Timeframe roles
 
 ```text
-SMALL   positive DayStartEquity < $300
-MEDIUM  $300–$999.99
-NORMAL  >= $1,000
+H4   optional major context
+H1   broad regime/directional context
+M15  opportunity location/path/target context
+M5   primary setup/thesis + management structure
+M1   subordinate entry refinement after valid M5 Opportunity
+quote/tick current executable Bid/Ask/spread/drift truth
 ```
 
-| Profile | Normal / target | Elevated | Hard ceiling | Daily loss lock |
-|---|---:|---:|---:|---:|
-| SMALL | 3.0%–4.5% | >4.5%–6.5% | 7% | 12% |
-| MEDIUM | 2.0%–3.0% | >3.0%–4.5% | 5% | 9% |
-| NORMAL | 1.0%–2.0% | >2.0%–3.5% | 4% | 7% |
+M1 cannot create an independent production trade.
 
-The provisional 0.50% Python scaffold is not canonical policy.
+## 10. News/Fundamental policy
 
-### Aggressive small-account option
+Approved change:
+
+> **News/Fundamentals are soft context, dashboard and research attribution only.**
+
+News/event/API status does not directly:
+
+- hard-block a trade;
+- trigger a News cooldown;
+- require a post-News warmup;
+- force-close an otherwise valid trade.
+
+Actual event-induced market problems are handled by measurable spread, cost, drift, quote health, dislocation, slippage/latency and broker facts.
+
+## 11. Spread / cost policy
+
+Approved hybrid model:
 
 ```text
-disabled by default
-eligibility baseline: positive DayStartEquity < $1,000
-8%  = maximum monetary SL-risk ceiling per trade, NOT target
-16% = maximum aggregate open risk
-16% = daily loss ceiling
+absolute emergency spread ceiling
++
+spread / structural SL
++
+spread / target room
++
+spread versus recent healthy baseline
++
+total expected cost / reward
 ```
 
-It never auto-enables merely from equity. Manual daily-loss reset capability is preserved but disabled by default.
+Spread/SL and spread/target dimensions are approved. Exact thresholds remain calibration evidence.
 
-Preserved cooldown/re-entry baseline: one genuinely fresh same-episode re-entry; three consecutive closed bot losses trigger at least 30 minutes global cooldown plus required fresh/healthy release conditions.
+## 12. Preserved monetary Risk
 
-## 10. Session / News
+Do **not** change the existing profile percentages/bands.
+
+| Profile | DayStartEquity | Normal | Elevated | Hard ceiling | Daily lock |
+|---|---:|---:|---:|---:|---:|
+| SMALL | positive < $300 | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
+| MEDIUM | $300–$999.99 | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
+| NORMAL | >= $1,000 | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
+
+Preserved aggressive small-account option, disabled by default:
 
 ```text
-OPEN + accepted News CLEAR       → may proceed to remaining authorities
-OPEN + accepted News BLACKOUT    → BLOCK
-OPEN + true NEWS_SAFETY_UNKNOWN  → new-entry BLOCK / LIMITED
+8% maximum single-trade monetary SL-risk ceiling — NOT target
+16% maximum aggregate open risk
+16% daily loss ceiling
 ```
 
-Temporary provider refresh failure may reuse still-valid accepted LKG cache under its original scope/schema/coverage/TTL. Failure never rewrites timestamps or extends TTL.
+Preserved baseline, later research/calibration allowed:
 
-Preserved baselines:
+- one genuinely fresh same-episode re-entry;
+- three consecutive closed bot losses → at least 30-minute cooldown.
+
+## 13. 120 trades/day benchmark
+
+Approved as a **research throughput benchmark**, never a forced quota.
+
+The bot must diagnose whether low throughput is caused by:
+
+- lack of genuine opportunities;
+- active strategy quality;
+- M1 timing;
+- chase/drift;
+- spread/cost burden;
+- Risk/min-lot/margin;
+- cooldown;
+- position occupancy;
+- actual broker closure/permissions;
+- system latency/fault.
+
+The objective is maximum qualified after-cost edge captured, not maximum raw trade count.
+
+## 14. Continuous learning / invention / ML
+
+The following are active backend capabilities once their evidence inputs exist:
+
+- autonomous strategy invention;
+- candidate parameter tuning;
+- advanced ML research;
+- automated candidate evidence-stage progression.
+
+They may test/iterate in research, replay, holdout, shadow and controlled DEMO lanes.
+
+**Production/live promotion requires explicit operator approval.**
+
+## 15. Performance architecture
+
+Logical analytical independence is mandatory. Physical analytical concurrency is profiling-driven.
 
 ```text
-Provider TTL        1800 seconds
-Daily PRE_CLOSE     T-20 no entry / T-10 mandatory flatten
-Weekend PRE_CLOSE   T-60 no entry / T-30 mandatory flatten
-Daily reopen        1 clean completed M5
-Weekend reopen      2 clean completed M5 + gap assessment
+share calculations
+→ vectorize/cache
+→ profile
+→ bounded-parallelize only measured independent bottlenecks
 ```
 
-Current broker schedule/holiday truth remains external proof.
-
-## 11. Execution capability progression
+Financial/broker authority remains serial:
 
 ```text
-READINESS / DRY_RUN
-→ controlled governed DEMO writer
-→ future governed REAL capability
+TradePlan
+→ Executable Quality
+→ Risk
+→ hard authorities
+→ Gate
+→ Intent
+→ broker checks
+→ sole writer
+→ reconciliation
 ```
 
-REAL is preserved as a future feature but disabled/unavailable until DEMO evidence, release gates and explicit operator approval satisfy its separate policy.
+## 16. Documentation quality rule
 
-## 12. Management
+Every relevant contract must be deeply explained with the appropriate mix of:
 
-Actions remain:
+- Mermaid topology/flow diagrams;
+- state diagrams;
+- sequence diagrams;
+- tables/matrices;
+- formulas;
+- examples;
+- explicit owner/non-authority;
+- failure/recovery cases;
+- source/test/evidence mapping.
 
-```text
-HOLD
-PROTECT
-TRAIL
-RUNNER
-EXIT
-```
+Performance charts use real replay/DEMO data only; fake empirical charts are prohibited.
 
-Scalp-specific changes: Runner is exceptional and time/efficiency weakness is first-class EXIT evidence. Broker-valid partial management remains an optional preserved capability where volume is divisible; minimum-lot correctness never depends on it.
+Code, when implementation begins, must be clean, typed, optimized, reason-rich and heavily documented where reasoning/safety is non-obvious.
 
-## 13. GitHub / backup — explicit operator changes
+## 17. GitHub / recovery policy
 
-GitHub is source control/remote source backup only. Trading runtime has no GitHub credential and performs no Git commit/push/pull.
+GitHub stores source/history only and is never trading-runtime authority. Current repository visibility remains unchanged because the operator explicitly said **not now** regarding privacy.
 
-```text
-one coherent remote bulk commit
-→ operator git pull --ff-only
-→ local clone contains latest source + full Git history
-→ optional secret-clean ZIP milestone copy
-```
+Runtime uses local durable state/checkpoints. Development uses coherent commits and operator `git pull --ff-only` checkpoints. Optional independent clean/off-site recovery packages remain separate from live runtime state.
 
-Runtime-state backup remains local/network-independent.
-
-## 14. Permanent reference-delta record
-
-`90-governance/DOCUMENTATION_COMPARISON.md` separates preserved reference behaviour, genuine scalp-specific changes, explicit operator-directed changes and earlier unintended simplifications that were restored.
-
-## 15. Evidence boundary
+## 18. Evidence boundary
 
 Keep separate:
 
 ```text
-FROZEN DOCUMENTED ARCHITECTURE
-PRESERVED REFERENCE DEFAULT
-SCALP CALIBRATION PENDING
-DETERMINISTIC SOFTWARE PROOF
-REPLAY / RESEARCH EVIDENCE
-CONNECTED READ-ONLY PROOF
-CONNECTED DEMO LIFECYCLE PROOF
-FUTURE REAL RELEASE PROOF
-LOCAL RECOVERY PROOF
-EXTERNAL PROOF PENDING
+APPROVED DOCUMENTED DESIGN
+DOCUMENTATION RECONSTRUCTION COMPLETE
+IMPLEMENTATION COMPLETE
+DETERMINISTIC TEST PASS
+REPLAY / CALIBRATION EVIDENCE
+CONNECTED READ EVIDENCE
+CONTROLLED DEMO EVIDENCE
+RECOVERY/HANDOFF EVIDENCE
+PRODUCTION PROMOTION APPROVAL
+FUTURE REAL RELEASE APPROVAL
+PROFITABILITY CLAIM
 ```
 
-No documented policy or green deterministic suite proves profitability.
+No earlier evidence class automatically proves the later one.
 
-## 16. Final documentation review boundary
+## 19. Next step
 
-The documentation-only semantic/reconstructability pass found no remaining blocking architecture contradiction after the preservation-first normalization packets. An automated code-era Documents verifier still remains future implementation evidence.
+Complete the 66-document institutional reconstruction first. Then perform:
 
-The next step is **not coding**. The next step is to present the remaining genuinely scalp-specific differences/calibration choices to the operator, resolve them, update affected owners if needed and only then declare documentation freeze.
+1. atomic folder-numbering/cross-link migration;
+2. full section-level reference→Scalp coverage matrix;
+3. new 100+ challenge audit;
+4. final operator review;
+5. documentation freeze;
+6. only then implementation.

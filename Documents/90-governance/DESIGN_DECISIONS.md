@@ -1,182 +1,257 @@
 # GoldScalpTrader — Design Decision Ledger
 
-**Status:** POST-AUDIT-1 DECISION LEDGER — PRESERVATION-FIRST CORRECTION ACTIVE
-**Version:** 1.2-preserve-swing-unless-scalp-specific
-**Authority:** Durable project decisions, supersession and rationale. Topic contracts own exact behaviour.
+**Status:** ACTIVE RECONSTRUCTION DECISION LEDGER — OPERATOR-APPROVED ARCHITECTURE RECORDED
+**Version:** 2.0-institutional-rebuild-decisions
+**Authority:** Durable approved project decisions, supersession, calibration classification and explicit operator changes. Topic contracts own exact implementation details.
 
 ## 1. Status vocabulary
 
 ```text
-ACTIVE       approved current architecture/policy
-SUPERSEDED   retained history; later decision owns current behaviour
-CALIBRATE    architecture fixed; numerical value needs evidence
-EXTERNAL     real broker/machine/provider proof required
-DEFERRED     deliberately outside current enabled scope, not necessarily removed as a future capability
+ACTIVE        approved current architecture/policy
+PRESERVED     reference behavior explicitly retained
+SUPERSEDED    historical decision replaced by later decision
+CALIBRATE     architecture/dimension approved; numerical/empirical threshold needs evidence
+EXTERNAL      current broker/platform/environment fact requires connected proof
+DEFERRED      deliberately outside current enabled architecture/release dependency
+APPROVAL      production/live change requires explicit operator approval
 ```
 
-## 2. Product / process
+## 2. Documentation / process decisions
 
-| ID | Decision | Rationale / consequence | Status |
-|---|---|---|---|
-| DEC-001 | Documentation is designed/challenged before implementation expansion | prevent code-driven undocumented behaviour | ACTIVE |
-| DEC-002 | `Documents/` is sole current documentation authority | one reconstructable truth surface | ACTIVE |
-| DEC-003 | GoldSwingTraderAI is the default feature/behaviour baseline; GoldScalpTrader changes it only for a direct scalping requirement, an explicit operator instruction, or a separately proven reference defect | preserve requested functionality and avoid convenience-driven simplification | ACTIVE |
-| DEC-004 | Maintain reference-equivalent 64-file canonical manual | no documentation/component surface silently omitted | ACTIVE |
-| DEC-005 | Fresh-zero review may challenge inherited behaviour but cannot silently remove a non-scalp feature merely because a simpler design is possible | challenge must respect preservation requirement | ACTIVE |
-| DEC-006 | Every material change follows full affected-graph synchronization | docs/code/tests/operator/recovery/research stay aligned | ACTIVE |
-| DEC-007 | No trading-runtime Git commit/push/pull | explicit operator requirement; remove credential/network coupling and GitHub account risk | ACTIVE |
-| DEC-008 | Required infrastructure target remains zero-cost/local-first | no mandatory paid API/cloud/Actions/Codespaces/LFS | ACTIVE |
-| DEC-009 | When it is unclear whether a reference difference is genuinely scalp-specific, preserve the Swing behaviour/default and record the possible scalp change for final documentation discussion instead of changing it early | preservation-first tie-breaker | ACTIVE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-001 | Documents are designed/challenged before implementation expansion; code must not outrun them | ACTIVE |
+| DEC-002 | `Documents/` is the durable reconstructable project baseline | ACTIVE |
+| DEC-003 | Latest verified GoldSwingTraderAI `Published_B/Documents` is the structural/depth reference for reconstruction | ACTIVE |
+| DEC-004 | Canonical reference target is **66 Markdown docs**, not 64 | ACTIVE |
+| DEC-005 | Missing `GITHUB_STRICT_USE_POLICY.md` and `BACKUP_SYNC_AND_RECOVERY_ARCHITECTURE.md` must exist in Scalp | ACTIVE |
+| DEC-006 | Every useful reference section is preserved/adapted/classified; no silent compression/removal for convenience | ACTIVE |
+| DEC-007 | Substantive docs use diagrams/tables/state/sequence visuals where meaningful | ACTIVE |
+| DEC-008 | Empirical charts use real replay/DEMO evidence only; fake performance charts prohibited | ACTIVE |
+| DEC-009 | Final folder numbering becomes `01`–`08` in one atomic rename/link migration | ACTIVE |
+| DEC-010 | One canonical authority owner per rule; consumer docs remain deeply explanatory mirrors | ACTIVE |
+| DEC-011 | Final freeze requires reference→Scalp coverage, cross-link validation, 100+ challenge and operator approval | ACTIVE |
 
-## 3. Runtime / parallel-serial architecture
+## 3. Product objective
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-020 | One normalized MT5 read boundary | prevent contradictory broker truth | ACTIVE |
-| DEC-021 | One immutable MarketSnapshot per analytical cycle | shared deterministic facts | ACTIVE |
-| DEC-022 | Preserve bounded physical concurrency for dependency-independent analytical desks/families as a target feature; keep deterministic one-worker fallback/parity | concurrency is a reference engineering feature, not a scalp-specific feature to remove | ACTIVE |
-| DEC-023 | One-worker analytical execution must be semantically identical to bounded-parallel execution | deterministic fallback / testability | ACTIVE |
-| DEC-024 | Broker/lifecycle authority is strictly serial | money/exposure cannot race | ACTIVE |
-| DEC-025 | One active PRIMARY writer per account/symbol scope | avoid split brain | ACTIVE |
-| DEC-026 | Same-scope multi-laptop is sequential handoff unless a future shared-fencing architecture is deliberately added | local state cannot globally fence another machine | ACTIVE |
-| DEC-027 | Different independent account/symbol scopes may run separately | independent exposure/state | ACTIVE |
-| DEC-028 | UNKNOWN required financial/broker/lifecycle truth fails closed | missing truth is not safe zero | ACTIVE |
-| DEC-029 | Current broker truth outranks restored local context | restore cannot invent exposure | ACTIVE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-020 | Product philosophy = Opportunity-First, Evidence-Weighted, Precision-Timed, Cost-Aware, Execution-Disciplined, Continuously-Learning | ACTIVE |
+| DEC-021 | Optimize qualified after-cost edge captured, not merely win rate or low trade count | ACTIVE |
+| DEC-022 | Avoid unnecessary analytical restrictions; hard blocks reserved for objective required Risk/broker/lifecycle facts | ACTIVE |
+| DEC-023 | 120 trades/day is a research throughput benchmark/capability question, never a forced quota | ACTIVE |
+| DEC-024 | Track Opportunity Recall, Capture Rate, Net Expectancy, Entry/Capture/Exit Efficiency, false blocks, missed opportunity cost, cost burden and throughput | ACTIVE |
 
-## 4. Scalping timeframes / data
+## 4. Market/timeframe decisions
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-040 | Structural/indicator authority uses completed candles + causal knowledge time | no forming-bar/lookahead authority | ACTIVE |
-| DEC-041 | H1 = broad soft regime; M15 = opportunity/location/path; M5 = primary completed setup/timing/management | direct scalp-horizon change | ACTIVE |
-| DEC-042 | H4 is optional major context, never universal scalp veto | direct scalp-horizon change | ACTIVE |
-| DEC-043 | M1 is diagnostic/research only in V1 | retained after challenge; avoids hidden micro-timeframe authority without evidence | ACTIVE |
-| DEC-044 | Quote/current tick is executable condition/health, not structural-history authority | separate current market from causal history | ACTIVE |
-| DEC-045 | Tick-history intelligence is outside initial implementation scope | complexity not required by preserved reference feature set | DEFERRED |
-| DEC-046 | Event/trigger freshness is first-class entry evidence | stale events can destroy scalp efficiency | ACTIVE |
-| DEC-047 | Exact freshness/chase thresholds are family/event specific calibration | numerical evidence required | CALIBRATE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-040 | Completed-candle + causal knowledge-time rules remain mandatory | PRESERVED |
+| DEC-041 | H1 = broad regime/context | ACTIVE |
+| DEC-042 | M15 = opportunity location/path/target context | ACTIVE |
+| DEC-043 | M5 = primary setup/thesis + normal management structure | ACTIVE |
+| DEC-044 | H4 = optional major context, never universal veto | ACTIVE |
+| DEC-045 | **M1 becomes subordinate entry refinement after a valid M5 Opportunity** | ACTIVE |
+| DEC-046 | M1 cannot independently originate a production trade | ACTIVE |
+| DEC-047 | Quote/tick = current executable condition; cannot retroactively prove historical structure | ACTIVE |
+| DEC-048 | M1 patterns/freshness, M5 event age, chase distance and Approved Entry→Executable Price drift are calibration dimensions | CALIBRATE |
+| DEC-049 | Production tick-history authority remains unchanged from preserved reference unless separately approved | PRESERVED |
 
-## 5. Strategy / decisions
+## 5. Strategy-floor / isolation decisions
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-060 | Retain six independent families: Trend Pullback, Breakout Expansion, Breakout Retest, Liquidity Sweep Reversal, Failed Breakout Reversal, Compression Expansion | preserve reference feature set; narratives remain distinct at scalp horizon | ACTIVE |
-| DEC-061 | Correlated family evidence must be bounded and preserve event lineage | prevent one episode becoming fake multi-confirmation | ACTIVE |
-| DEC-062 | BUY and SELL theses remain independent | visible opposition/conflict | ACTIVE |
-| DEC-063 | No unanimity/filter-soup requirement | protect Opportunity Recall | ACTIVE |
-| DEC-064 | Persistent Opportunity is distinct from executable timing | strong idea can wait for efficient entry | ACTIVE |
-| DEC-065 | Terminal Opportunity cannot re-arm without genuinely fresh causal event | prevent repeated chasing | ACTIVE |
-| DEC-066 | TradePlan owns structural geometry before monetary Risk | account cannot distort invalidation | ACTIVE |
-| DEC-067 | Family-specific event/retest invalidation only from exact proven causal geometry | tighter scalp geometry without arbitrary stops | ACTIVE |
-| DEC-068 | Swing's 1.20R Primary floor is not inherited as a hard scalp entry floor | direct scalp cost/target-horizon difference | SUPERSEDED |
-| DEC-069 | TradePlan must retain both gross structural quality and explicit cost-adjusted room diagnostics | gross chart R alone is insufficient for scalping | ACTIVE |
-| DEC-070 | Exact scalp gross/net/cost-room thresholds require replay/stress/holdout | calibration, not architecture | CALIBRATE |
-| DEC-071 | Runner is exceptional, not default scalp objective | direct scalp hold-horizon change | ACTIVE |
-| DEC-072 | Time/efficiency weakness is a first-class EXIT reason, not a separate TIME_EXIT lifecycle action | direct scalp management semantics | ACTIVE |
-| DEC-073 | Preserve optional broker-valid partial-management capability where executable volume is divisible; minimum-lot correctness must not depend on partial close | preserve feature without making 0.01 unmanageable | ACTIVE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-060 | Preserve six families: Trend Pullback, Breakout Expansion, Breakout Retest, Liquidity Sweep Reversal, Failed Breakout Reversal, Compression Expansion | PRESERVED |
+| DEC-061 | **Exactly one family is `ACTIVE_EXECUTION` at a time for live trade production** | ACTIVE |
+| DEC-062 | Remaining five families are `SHADOW_ONLY`; they analyze/research but cannot originate live trades | ACTIVE |
+| DEC-063 | Active family evaluates BUY/SELL independently | ACTIVE |
+| DEC-064 | Red Team challenges active-family thesis; shadow signals cannot vote a trade into existence | ACTIVE |
+| DEC-065 | Active-family switching is versioned/governed and preserves historical attribution | ACTIVE |
+| DEC-066 | Persistent Opportunity remains distinct from entry timing | PRESERVED |
+| DEC-067 | Terminal Opportunity requires genuinely fresh causal event to re-arm | PRESERVED |
+| DEC-068 | Correlated evidence retains event lineage and cannot become fake independent confirmation | PRESERVED |
+| DEC-069 | Exact family qualification thresholds | CALIBRATE |
+| DEC-070 | Fusion/analytical weights may be used transparently/bounded; exact weights require evidence | CALIBRATE |
+| DEC-071 | Family correlation caps/de-duplication dimensions require calibration; de-duplication itself is mandatory | CALIBRATE |
 
-## 6. Monetary Risk
+## 6. Indicators/confluence/session context
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-080 | Monetary Risk is independent hard authority | confidence cannot silently increase financial permission | ACTIVE |
-| DEC-081 | Preserve automatic `SMALL / MEDIUM / NORMAL` account profiles resolved from positive DayStartEquity and fixed for the UTC risk day | operator requested preservation; not a scalp-specific feature to remove | ACTIVE |
-| DEC-082 | Preserve Swing baseline profile boundaries and bands unless a later scalp-specific governed decision changes them: SMALL < $300, MEDIUM $300–$999.99, NORMAL >= $1,000 | baseline continuity | ACTIVE |
-| DEC-083 | Dynamic sizing uses broker min/max/step/tick geometry and actual normalized-volume risk | executable reality | ACTIVE |
-| DEC-084 | Raw lot below minimum triggers evaluation of real minimum-lot risk | truthful small-account handling | ACTIVE |
-| DEC-085 | Structural SL is never tightened merely to make 0.01 affordable | preserve thesis integrity | ACTIVE |
-| DEC-086 | One independent Gold risk position per scope in initial V1 | bounded exposure | ACTIVE |
-| DEC-087 | No martingale, uncontrolled grid or averaging-down rescue | bounded risk | ACTIVE |
-| DEC-088 | Current scaffold 0.50% is provisional implementation seed only and does not supersede the preserved profile contract | existing scaffold is not canonical risk truth | ACTIVE |
-| DEC-089 | Preserve the operator-requested `AGGRESSIVE_SMALL_ACCOUNT` mode as an operational capability, disabled by default and never auto-enabled merely by balance | requested feature must not be removed | ACTIVE |
-| DEC-090 | When explicitly enabled for eligible sub-$1,000 account operation, 8% is a **maximum monetary SL-risk ceiling, not a target**; maximum aggregate open risk is 16% and daily-loss ceiling is 16%, while all structural/session/execution safeguards remain | preserve requested 8%/16% semantics without making them default | ACTIVE |
-| DEC-091 | Preserve governed manual daily-loss reset capability but keep it disabled by default | requested/reference behaviour; prevents casual lock bypass | ACTIVE |
-| DEC-092 | Preserve Swing baseline loss-streak/cooldown/re-entry policy unless later scalp evidence justifies a change: one genuinely fresh same-episode re-entry; three consecutive closed bot losses trigger at least 30 minutes global cooldown plus freshness/health release conditions | non-scalp default restored | ACTIVE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-080 | EMA/RSI/Fib/FVG/OB/Trendline/POC may be very important to relevant families but are not unrelated universal hard vetoes | ACTIVE |
+| DEC-081 | A family may require evidence central to its own definition without forcing the same evidence on other families | ACTIVE |
+| DEC-082 | London/NY/Asia performance is tracked per family and may influence future evidence-based tuning, not blanket session bans by default | CALIBRATE |
+| DEC-083 | Session analytical context is soft; actual broker OPEN/CLOSED/PRE_CLOSE remains hard factual authority | ACTIVE |
 
-### 6.1 Preserved baseline profile table
+## 7. Physical parallelism / performance decisions
 
-| Profile | DayStartEquity | Normal / target risk | Elevated acceptable | New-entry hard ceiling | Daily loss lock |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-100 | One normalized MT5 analytical read boundary + immutable snapshot | PRESERVED |
+| DEC-101 | Logical specialist/family independence is mandatory | ACTIVE |
+| DEC-102 | **Physical analytical parallelism is profiling-driven, not mandatory** | ACTIVE |
+| DEC-103 | Optimization order: shared calculations → vectorize/cache → profile → bounded parallelism only if faster | ACTIVE |
+| DEC-104 | One-worker and parallel modes must be semantically identical and deterministic | ACTIVE |
+| DEC-105 | Financial/broker authority remains strictly serial | PRESERVED |
+| DEC-106 | Track critical-path latency by stage, including decision→send | ACTIVE |
+
+## 8. TradePlan / executable-quality decisions
+
+| ID | Decision | Status |
+|---|---|---|
+| DEC-120 | TradePlan freezes structural geometry before monetary Risk | PRESERVED |
+| DEC-121 | Structural SL is never tightened merely to make minimum lot affordable | PRESERVED |
+| DEC-122 | Swing 1.20R floor is not automatically imposed as hard Scalp entry floor | ACTIVE |
+| DEC-123 | Minimum gross R requires evidence | CALIBRATE |
+| DEC-124 | Minimum net/cost-adjusted opportunity quality requires evidence | CALIBRATE |
+| DEC-125 | Fixed + aware spread architecture is approved | ACTIVE |
+| DEC-126 | Absolute emergency spread ceiling retained as circuit breaker; exact ceiling | CALIBRATE |
+| DEC-127 | Spread/SL ratio is an approved executable-quality dimension | ACTIVE |
+| DEC-128 | Spread/target ratio is an approved executable-quality dimension | ACTIVE |
+| DEC-129 | Total cost/reward ratio is an approved executable-quality dimension | CALIBRATE |
+| DEC-130 | Slippage allowance is calibrated from real/DEMO broker evidence rather than an arbitrary huge constant | CALIBRATE |
+| DEC-131 | Broker deviation is bounded/dynamic by execution mode and broker evidence | CALIBRATE |
+| DEC-132 | Decision→send latency outside budget normally triggers fresh quote/geometry/Risk revalidation, not automatic permanent rejection | CALIBRATE |
+
+## 9. Monetary Risk decisions — do not change baseline
+
+| ID | Decision | Status |
+|---|---|---|
+| DEC-140 | Monetary Risk remains independent hard authority | PRESERVED |
+| DEC-141 | Preserve SMALL/MEDIUM/NORMAL automatic profiles | PRESERVED |
+| DEC-142 | Preserve exact existing risk bands/percentages; do not change them during this reconstruction | PRESERVED |
+| DEC-143 | Dynamic broker-aware sizing/min-lot actual-risk check remains | PRESERVED |
+| DEC-144 | No arbitrary $100 minimum-account eligibility floor | PRESERVED |
+| DEC-145 | One independently risk-bearing Gold position per scope initially | PRESERVED |
+| DEC-146 | No martingale/grid/averaging-down rescue | PRESERVED |
+| DEC-147 | Aggressive small-account mode remains operational capability, disabled by default | PRESERVED |
+| DEC-148 | Aggressive semantics: 8% max single-trade SL-risk ceiling (not target), 16% aggregate, 16% daily | PRESERVED |
+| DEC-149 | Manual daily-loss reset capability preserved, disabled by default | PRESERVED |
+| DEC-150 | One genuinely fresh same-episode re-entry baseline preserved; future alternatives researchable | PRESERVED / CALIBRATE |
+| DEC-151 | Three consecutive closed bot losses → at least 30m cooldown baseline preserved; future alternatives researchable | PRESERVED / CALIBRATE |
+| DEC-152 | Current UTC risk-day behavior stays baseline; typed/configurable policy identity may be architected but cannot be used to reset losses casually | PRESERVED |
+
+### Canonical preserved profile table
+
+| Profile | DayStartEquity | Normal | Elevated | Hard ceiling | Daily loss lock |
 |---|---:|---:|---:|---:|---:|
-| SMALL | positive and < $300 | 3.0%–4.5% | >4.5%–6.5% | 7% | 12% |
-| MEDIUM | $300–$999.99 | 2.0%–3.0% | >3.0%–4.5% | 5% | 9% |
-| NORMAL | >= $1,000 | 1.0%–2.0% | >2.0%–3.5% | 4% | 7% |
+| SMALL | positive < $300 | 3.0–4.5% | >4.5–6.5% | 7% | 12% |
+| MEDIUM | $300–$999.99 | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
+| NORMAL | >= $1,000 | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
 
-These are inherited policy defaults, not profitability promises. A future scalp-specific change must be explicit and discussed through the governed documentation process.
+## 10. News/Fundamental decisions — superseding prior hard-block model
 
-## 7. Session / News
+| ID | Decision | Status |
+|---|---|---|
+| DEC-160 | Fundamental/News remains soft context, dashboard and research attribution | ACTIVE |
+| DEC-161 | **Known News event no longer directly hard-blocks trading** | ACTIVE |
+| DEC-162 | **News UNKNOWN/provider/API failure no longer directly hard-blocks trading** | ACTIVE |
+| DEC-163 | **News-based cooldown and mandatory post-News warmup are removed** | ACTIVE |
+| DEC-164 | Actual event-induced bad market conditions are governed by spread/drift/dislocation/quote/cost/slippage/latency/broker facts | ACTIVE |
+| DEC-165 | Provider health/provenance remains visible and truthful; missing News is not renamed CLEAR | ACTIVE |
+| DEC-166 | Mandatory paid third-party News API is not required | DEFERRED |
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-100 | Soft session context and hard broker market state remain separate | labels do not prove tradeability | ACTIVE |
-| DEC-101 | Known high-impact blackout is hard new-entry BLOCK | event shock risk | ACTIVE |
-| DEC-102 | News UNKNOWN never becomes CLEAR | truthful uncertainty | ACTIVE |
-| DEC-103 | `Session OPEN + News UNKNOWN` blocks **new entry** while management/protection/mandatory CLOSE remain action-sensitive | direct scalp event-sensitivity decision | ACTIVE |
-| DEC-104 | Preserve Swing PRE_CLOSE defaults unless later scalp-specific evidence changes them: daily T-20 no new entry / T-10 mandatory flatten; weekend T-60 / T-30 | non-scalp safety default restored | ACTIVE |
-| DEC-105 | Preserve Swing reopen defaults unless later scalp-specific evidence changes them: daily one clean completed M5; weekend two clean completed M5 plus gap assessment | non-scalp safety default restored | ACTIVE |
-| DEC-106 | A temporary News API/provider refresh failure may reuse last-known-good event truth only while original scope/schema/coverage/TTL remain valid; failure never refreshes timestamps, and expired/invalid cache becomes News UNKNOWN | explicit operator-requested resilience with truthful stale-data boundary | ACTIVE |
-| DEC-107 | Preserve Swing provider TTL baseline of 1800 seconds until a specific scalp/provider reason justifies changing it | reference default restored | ACTIVE |
+Historical News hard-block decisions are superseded by DEC-160–166.
 
-## 8. Execution / lifecycle
+## 11. Broker/session/execution decisions
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-120 | READINESS/DRY_RUN precede any irreversible writer | no accidental broker execution | ACTIVE |
-| DEC-121 | Controlled DEMO is first broker-write target after deterministic proof | external proof boundary | ACTIVE |
-| DEC-122 | Preserve a future governed REAL capability; it remains disabled/unavailable until DEMO evidence, release gates and explicit operator approval satisfy the separate REAL policy | preserve feature without creating a hidden shortcut | ACTIVE |
-| DEC-123 | Central Gate does not replace upstream TradePlan/Risk owners | truthful authority | ACTIVE |
-| DEC-124 | Persist one-shot Intent before irreversible send | duplicate protection | ACTIVE |
-| DEC-125 | Sole MT5Writer owns raw irreversible operations | one write boundary | ACTIVE |
-| DEC-126 | Ambiguous acknowledgement means reconciliation, never blind retry | avoid duplicate exposure | ACTIVE |
-| DEC-127 | Execution rechecks current spread/drift/trigger age/fresh broker facts | scalp edge can expire quickly | ACTIVE |
-| DEC-128 | Mandatory risk-reducing CLOSE is action-sensitive and not mechanically vetoed by discretionary OPEN friction rules | avoid trapping unwanted risk | ACTIVE |
-| DEC-129 | Latency is measured/observable but is not an HFT design claim | scalp freshness evidence before threshold | ACTIVE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-180 | Actual broker OPEN/CLOSED/symbol tradeability remains hard factual authority | PRESERVED |
+| DEC-181 | Daily PRE_CLOSE T-20/T-10 baseline preserved; exact schedule evidence/calibration approved | PRESERVED / CALIBRATE |
+| DEC-182 | Weekend PRE_CLOSE T-60/T-30 baseline preserved; exact schedule evidence/calibration approved | PRESERVED / CALIBRATE |
+| DEC-183 | Daily reopen one clean M5 and weekend two clean M5 + gap baseline preserved; thresholds researchable | PRESERVED / CALIBRATE |
+| DEC-184 | Central Gate remains distinct from upstream TradePlan/Quality/Risk blockers | PRESERVED |
+| DEC-185 | Persist one-shot Intent before irreversible broker request | PRESERVED |
+| DEC-186 | Sole MT5Writer owns raw irreversible operations | PRESERVED |
+| DEC-187 | Ambiguous acknowledgement → reconciliation, never blind retry | PRESERVED |
+| DEC-188 | Controlled DEMO precedes future governed REAL | PRESERVED |
+| DEC-189 | REAL production activation requires its separate evidence/release gates and explicit operator approval | APPROVAL |
 
-## 9. Persistence / source backup / multi-machine
+## 12. Management decisions
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-140 | SQLite is V1 local transactional storage | simple zero-cost state authority | ACTIVE |
-| DEC-141 | Full checkpoint is transportable context, not broker truth | restore safety | ACTIVE |
-| DEC-142 | Automatic runtime backup root is outside active repo | prevent recursion/bloat/accidental commits | ACTIVE |
-| DEC-143 | Graceful shutdown creates final verified **local** checkpoint; no Git operation | explicit operator requirement / network-independent safety | ACTIVE |
-| DEC-144 | Normal development backup is major bulk commit → user `git pull --ff-only` | explicit operator workflow; minimizes GitHub operations while preserving local Git history | ACTIVE |
-| DEC-145 | Local working clone is primary source/history backup after pull | simple and complete | ACTIVE |
-| DEC-146 | Optional local ZIP source snapshot may be created after milestone with secrets/runtime artifacts excluded | simple offline copy | ACTIVE |
-| DEC-147 | Git bundle is optional advanced/manual tooling only, not normal runtime/development requirement | operator-preferred simplicity | ACTIVE |
-| DEC-148 | Portable runtime recovery package excludes secrets and restores to new DB/path | safe handoff | ACTIVE |
-| DEC-149 | Optional second HDD/SSD/USB copy is supported | physical-device resilience | ACTIVE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-200 | Management actions remain HOLD/PROTECT/TRAIL/RUNNER/EXIT | PRESERVED |
+| DEC-201 | Time/efficiency weakness is a first-class EXIT reason | ACTIVE / CALIBRATE |
+| DEC-202 | Protection/trailing timing is evidence-calibrated | CALIBRATE |
+| DEC-203 | Runner remains optional/exceptional; exact continuation conditions | CALIBRATE |
+| DEC-204 | Basic broker-valid partial-management capability preserved where divisible | PRESERVED |
+| DEC-205 | Partial-close expectancy/optimization is researched; sophisticated optimization is not release dependency | CALIBRATE / DEFERRED |
+| DEC-206 | Correctness at broker minimum lot cannot depend on partial close | PRESERVED |
 
-## 10. Learning / research
+## 13. Learning / AI / invention / promotion decisions
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-160 | Learning is downstream and cannot create broker authority | stable live trader | ACTIVE |
-| DEC-161 | Actual/counterfactual/system-fault evidence remain distinct | no fake performance | ACTIVE |
-| DEC-162 | Verified close uses queue + closure receipt + exactly-once StrategyMemory | crash-safe learning | ACTIVE |
-| DEC-163 | Scalp research explicitly models costs, latency, duration and min-lot affordability | realistic short-horizon evidence | ACTIVE |
-| DEC-164 | Autonomous invention is declarative proposal only | no generated-code authority | ACTIVE |
-| DEC-165 | Candidate cannot self-promote | approval/evidence governance | ACTIVE |
-| DEC-166 | Final holdout is one-shot after semantic lock | anti-overfitting | ACTIVE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-220 | Learning remains downstream from verified evidence | PRESERVED |
+| DEC-221 | Actual, missed, blocked, shadow/counterfactual and system-fault evidence remain distinguishable | ACTIVE |
+| DEC-222 | Autonomous strategy invention remains an active backend capability | ACTIVE |
+| DEC-223 | AI/candidate parameter optimization remains active backend capability | ACTIVE |
+| DEC-224 | Advanced ML research remains active backend capability | ACTIVE |
+| DEC-225 | Candidates may automatically progress through governed evidence stages where contracts allow | ACTIVE |
+| DEC-226 | Candidate research may change candidate/shadow parameters, not current production silently | ACTIVE |
+| DEC-227 | Final production/live promotion always stops at `APPROVAL_REQUIRED` until operator explicitly approves | APPROVAL |
+| DEC-228 | Candidate cannot acquire broker-write authority directly | PRESERVED |
 
-## 11. Operator / engineering
+## 14. Persistence / machine / backup decisions
 
-| ID | Decision | Reason | Status |
-|---|---|---|---|
-| DEC-180 | Terminal dashboard is primary; browser optional/read-only | no UI dependency for trading liveness | ACTIVE |
-| DEC-181 | Dashboard cannot recalculate authority | one owner per rule | ACTIVE |
-| DEC-182 | Upstream `ENTRY_BLOCKED` is not automatically Gate BLOCK | truthful blocker stage | ACTIVE |
-| DEC-183 | Green tests do not equal connected broker proof/profitability | evidence boundaries | ACTIVE |
-| DEC-184 | GitHub Actions are not required | local verification / zero-cost strategy | ACTIVE |
-| DEC-185 | Documentation finalization includes an explicit operator discussion of the remaining genuinely scalp-specific deltas before implementation begins | user-requested final review checkpoint | ACTIVE |
+| ID | Decision | Status |
+|---|---|---|
+| DEC-240 | SQLite/local transactional state remains current target | PRESERVED |
+| DEC-241 | Runtime shutdown performs no Git commit/push/pull | PRESERVED |
+| DEC-242 | Development source checkpoint = coherent remote commit → operator `git pull --ff-only` | PRESERVED |
+| DEC-243 | Optional secret-clean source ZIP/off-site package is separate from runtime state | PRESERVED |
+| DEC-244 | Same-account active-active/distributed broker writer is deferred | DEFERRED |
+| DEC-245 | Distributed DB/fencing/consensus infrastructure is deferred | DEFERRED |
+| DEC-246 | Sequential same-account machine handoff remains supported target | PRESERVED |
+| DEC-247 | Restore context never outranks current broker truth | PRESERVED |
+| DEC-248 | `GITHUB_STRICT_USE_POLICY.md` and backup architecture are canonical top-level docs | ACTIVE |
 
-## 12. Freeze rule
+## 15. GitHub / repository decisions
 
-The preservation-first correction supersedes earlier Audit-1 simplifications that removed or reopened non-scalp reference features/defaults.
+| ID | Decision | Status |
+|---|---|---|
+| DEC-260 | GitHub is source/history/collaboration remote, never trading-runtime dependency | PRESERVED |
+| DEC-261 | No GitHub Actions/cloud compute dependency | DEFERRED |
+| DEC-262 | Low-churn coherent commits; stop retry storms on remote errors | ACTIVE |
+| DEC-263 | Repository visibility is currently public and **must not be changed now** without later explicit operator approval | ACTIVE |
+| DEC-264 | Future privacy recommendation does not authorize a visibility mutation | ACTIVE |
 
-Architecture can be frozen while:
+## 16. Documentation reconstruction decisions
 
-- genuinely scalp-specific thresholds remain `CALIBRATION PENDING`;
-- broker/platform/provider behaviours remain `EXTERNAL PROOF PENDING`;
-- implementation/test evidence remains not-yet-run until exact code exists.
+| ID | Decision | Status |
+|---|---|---|
+| DEC-280 | Current compressed Scalp docs are not sufficient merely because filenames exist | ACTIVE |
+| DEC-281 | Reconstruct every document to reference-equivalent-or-better coverage | ACTIVE |
+| DEC-282 | Restore full audit/source-test/recovery/state-machine detail | ACTIVE |
+| DEC-283 | Code later must be expert-level: clean, optimized, typed, explicit docstrings/comments for non-obvious reasoning/safety | ACTIVE |
+| DEC-284 | Comments explain why/invariants/broker quirks/chronology, not trivial syntax narration | ACTIVE |
 
-A non-scalp inherited feature/default stays in force unless a later explicit governed decision replaces it. No decision in this ledger is a profitability guarantee.
+## 17. Historical decisions explicitly superseded
+
+The following prior Scalp decisions are no longer current authority:
+
+```text
+M1 diagnostic/research only
+physical bounded analytical concurrency required by default
+News BLACKOUT as automatic hard new-entry block
+News UNKNOWN as automatic hard new-entry block
+News-triggered mandatory post-event warmup/cooldown
+64-file manual complete
+final documentation review ready before full reference-depth reconstruction
+```
+
+They remain useful project history but must disappear from current behavioral topic owners during reconstruction.
+
+## 18. Freeze rule
+
+The architecture may be frozen while numerical items remain `CALIBRATE` and broker facts remain `EXTERNAL`, provided:
+
+- their dimensions/owners are explicit;
+- production defaults are explicit;
+- no calibration variable is silently guessed into permanent policy;
+- operator-approved preserved values are not changed;
+- production-changing research remains approval-gated.
+
+No decision is a profitability guarantee.
