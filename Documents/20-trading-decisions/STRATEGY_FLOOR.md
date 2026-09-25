@@ -1,126 +1,385 @@
 # GoldScalpTrader — Strategy Floor
 
-**Status:** FROZEN V1 STRATEGY ARCHITECTURE — CALIBRATION PENDING
-**Version:** 1.1-preserved-bounded-parallel-six-family-floor
-**Authority:** Six independent production strategy-family hypotheses, shared evidence, bounded analytical concurrency, optional confluence, correlation control, attribution and runtime handoff.
+**Status:** APPROVED STRATEGY CONTRACT — DOCUMENTATION RECONSTRUCTION / CALIBRATION PENDING
+**Version:** 2.0-one-active-five-shadow
+**Authority:** Six strategy-family definitions, Strategy Isolation Mode, family attribution, shared evidence, analytical scheduling and research handoff.
 
 ## 1. Purpose
 
-The Strategy Floor defines six independent, auditable scalp hypotheses. It does not own monetary Risk, hard session/news permission, broker identity, controller ownership or order execution.
+The Strategy Floor defines six independent market hypotheses while preserving clean live attribution.
 
-> Parallel hypotheses, bounded evidence, no sequential filter soup, no unanimity requirement.
+> **All six strategies may think; exactly one may trade at a time.**
 
-Every family consumes the same verified immutable IntelligenceSnapshot. Outputs remain attributable until BUY/SELL fusion.
+This is deliberately different from a blended live multi-strategy voting engine. The operator wants to measure the real efficiency of each strategy independently.
 
-## 2. Preserved six-family map
+The Strategy Floor does not own:
 
-```text
-Trend Pullback Continuation
-Breakout Expansion
-Breakout Retest Continuation
-Liquidity Sweep Reversal
-Failed Breakout Reversal
-Compression Expansion
+- monetary Risk;
+- broker market state;
+- controller ownership;
+- Execution Gate;
+- MT5 writes;
+- production promotion without operator approval.
+
+## 2. Six-family map
+
+```mermaid
+flowchart TB
+    SNAP["One immutable IntelligenceSnapshot"] --> P["Trend Pullback Continuation"]
+    SNAP --> B["Breakout Expansion"]
+    SNAP --> R["Breakout Retest Continuation"]
+    SNAP --> S["Liquidity Sweep Reversal"]
+    SNAP --> F["Failed Breakout Reversal"]
+    SNAP --> C["Compression Expansion"]
+
+    P --> ISO["Strategy Isolation Controller"]
+    B --> ISO
+    R --> ISO
+    S --> ISO
+    F --> ISO
+    C --> ISO
+
+    ISO --> ACTIVE["Exactly 1 ACTIVE_EXECUTION"]
+    ISO --> SHADOW["Exactly 5 SHADOW_ONLY"]
+    ACTIVE --> DECIDE["Live BUY/SELL + Red Team"]
+    SHADOW --> RESEARCH["Shadow outcomes / comparison / learning"]
 ```
 
-The narratives remain separate for attribution/research. No family is removed merely to simplify the scaler.
+## 3. Strategy Isolation Mode
 
-## 3. Frozen timeframe baseline
-
-```text
-H1  → broad soft regime / important directional-volatility context
-M15 → opportunity location, path, liquidity/session context
-M5  → primary completed-bar scalp setup/timing structure
-H4  → optional major context only
-M1  → diagnostic/research only
-quote/spread → executable condition, not strategy-history authority
-```
-
-No family may quietly use M1 as independent production trigger.
-
-## 4. FamilyReport contract
-
-Each report preserves family identity, independent BUY/SELL cases, strength/evidence coverage, support/conflict labels, source timestamps/lineage, plausible objective/path room, timing profile, event/freshness context, session/regime attribution and correlation/event-cluster identity where needed.
-
-A FamilyReport is soft evidence, not broker permission.
-
-## 5. Family definitions
-
-### Trend Pullback Continuation
-Established short-horizon move resuming after controlled pullback into useful location.
-
-### Breakout Expansion
-Meaningful level accepted and releasing fresh expansion with remaining executable room; perfect retest not mandatory.
-
-### Breakout Retest Continuation
-Meaningful causal break holds on fresh retest with M5 continuation structure; exact geometry belongs to `BREAKOUT_RETEST_GEOMETRY.md`.
-
-### Liquidity Sweep Reversal
-Pre-existing pool taken/rejected with causal reclaim/shift; wick alone insufficient.
-
-### Failed Breakout Reversal
-Attempted acceptance fails and credible opposing response forms.
-
-### Compression Expansion
-Causal compressed range releases with directional evidence and enough remaining room; direction never guessed before release.
-
-## 6. Optional confluence
+### 3.1 States
 
 ```text
-supportive Trendline/Fib/POC/FVG/OB → bounded positive support
-missing optional context             → no automatic base penalty
-opposed/unclear optional context     → visible conflict/context
-POC alone                            → no direction
+ACTIVE_EXECUTION
+SHADOW_ONLY
+RESEARCH_ONLY / DISABLED     # only through governed policy when needed
 ```
 
-Optional confluence cannot become hidden universal gate.
+Exactly one preserved family is `ACTIVE_EXECUTION` for live trade origination during an evaluation period.
 
-## 7. Correlation / overlap
+### 3.2 Active family may
 
-Families may describe the same episode. Fusion must bound correlated support using event lineage rather than count one sweep/break/reclaim sequence as several independent confirmations.
+- evaluate independent BUY and SELL cases;
+- create the production M5 Opportunity;
+- hand that Opportunity to M1 timing;
+- progress through TradePlan, Executable Quality, Risk and execution if later authorities pass.
 
-## 8. Preserved bounded analytical concurrency
+### 3.3 Shadow families may
 
-Semantic contract:
+- analyze the same immutable snapshot;
+- publish what they would have done;
+- record candidate Opportunity/timing/plan counterfactuals;
+- provide bounded challenge/context to Red Team;
+- contribute to research, autonomous invention and ML datasets;
+- compete statistically with the active family.
+
+### 3.4 Shadow families may not
+
+- create live broker Intent;
+- create a second live production Opportunity;
+- vote an active-family non-trade into a trade;
+- change the active-family live direction;
+- size money;
+- consume another live position slot.
+
+## 4. Family definitions
+
+| Family | Core question | Distinctive evidence | Common non-requirements |
+|---|---|---|---|
+| Trend Pullback Continuation | Is an established move resuming after an efficient pullback? | H1/M15 context, M5 pullback/resumption, location, room | every SMC primitive |
+| Breakout Expansion | Is accepted structure releasing directional expansion? | qualified break, acceptance, displacement/momentum, path | perfect retest |
+| Breakout Retest Continuation | Did a meaningful break hold on an efficient retest? | break, retest zone, M5 response, room | every confluence tool |
+| Liquidity Sweep Reversal | Was a pre-existing liquidity pool taken and rejected? | pool, sweep, reclaim/rejection, reversal structure | wick alone |
+| Failed Breakout Reversal | Did attempted acceptance fail and reverse? | failed break, opposing response, location/path | identical sweep narrative |
+| Compression Expansion | Did compression release with directional evidence? | compression, break/release, volatility/momentum build | pre-guessed direction |
+
+## 5. FamilyReport contract
+
+Each family report should preserve at least:
 
 ```text
-one immutable IntelligenceSnapshot
-→ six dependency-independent FamilyReports
-→ bounded physical workers as target capability
-→ deterministic canonical result order
-→ bounded optional confluence
-→ BUY/SELL fusion
+family
+mode: ACTIVE_EXECUTION | SHADOW_ONLY | RESEARCH_ONLY
+direction cases: BUY + SELL
+score / evidence strength
+coverage
+required evidence status
+supporting evidence[]
+opposing evidence[]
+causal event/source IDs
+M5 setup identity / age
+location/room
+preferred M1 timing profile
+confidence explanation
+reasons[]
 ```
 
-The reference bounded-parallel capability is preserved. A deterministic **one-worker fallback** is also mandatory and must be semantically identical.
+A report is soft analytical evidence. It is never monetary/broker permission.
 
-Worker-count tuning is profiling/implementation choice; the concurrency feature itself is not optional removal.
+## 6. Trend Pullback Continuation
 
-Workers cannot mutate lifecycle state, size lots, persist Intents or call MT5.
+Question:
 
-## 9. Frequency / quality evidence
+> Is a directional move resuming from a useful pullback rather than already being chased?
 
-Research evaluates Opportunity Recall, meaningful missed moves, analytical ENTER/capacity-admitted frequency, Net R/expectancy after costs, drawdown/loss streak, MAE/MFE, entry/capture/exit efficiency, hold duration, spread/slippage/latency, family/session/regime attribution and correlated-family contribution.
+Potentially important evidence:
 
-Historical win rate alone cannot justify stricter universal filters.
+- H1 broad direction/regime;
+- M15 structure/location;
+- M5 pullback and resumption;
+- EMA20/50 relationship;
+- RSI reset/pressure;
+- ATR/volatility;
+- trendline/Fibonacci where useful;
+- adequate target path.
 
-## 10. Risk / hard-authority boundary
+Some of these may be strong or family-required after calibration. Missing Fib/POC/FVG does not automatically invalidate the family unless the versioned family definition explicitly requires it.
 
-Family score never selects or increases monetary Risk. Downstream Risk resolves preserved SMALL/MEDIUM/NORMAL profile plus any explicitly enabled eligible aggressive overlay. Session/news/account/controller/Gate remain independent hard authorities.
+## 7. Breakout Expansion
 
-## 11. Planned implementation ownership
+Question:
+
+> Is a meaningful break being accepted with enough momentum/path to expand rather than immediately fail?
+
+Potential evidence:
+
+- causal M15/M5 break;
+- completed acceptance;
+- displacement/expansion;
+- rising momentum/volatility;
+- liquidity/path room;
+- current M5 event freshness.
+
+Late breakout chase belongs to Opportunity/M1/executable-quality logic rather than being hidden inside the family score.
+
+## 8. Breakout Retest Continuation
+
+Question:
+
+> Did a meaningful breakout hold on retest, with an efficient local invalidation boundary and continuation evidence?
+
+Potential evidence:
+
+- causal breakout;
+- retest of broken structure/zone;
+- M5 hold/rejection/continuation;
+- local target room;
+- M1 subordinate refinement after M5 Opportunity;
+- optional trendline/Fib/POC support.
+
+Its structural invalidation may be M5-first because the actual retest-failure boundary can be materially tighter and more thesis-correct than broad M15 structure.
+
+## 9. Liquidity Sweep Reversal
+
+Question:
+
+> Did price take a pre-existing meaningful pool and reject/reclaim it sufficiently to support reversal?
+
+Potential evidence:
+
+- pre-existing M15/M5 liquidity;
+- real sweep/reclaim rather than wick-only penetration;
+- M5 rejection/transition;
+- location;
+- opposing target path;
+- M1 micro reclaim/refinement after the setup is armed.
+
+A relevant exact sweep extreme may become family-specific invalidation geometry if causally proven.
+
+## 10. Failed Breakout Reversal
+
+Question:
+
+> Did attempted structural acceptance fail and produce a credible opposing response?
+
+Potential evidence:
+
+- FAILED_BREAK event;
+- return through broken level;
+- M5 opposing displacement/MSS;
+- location/path;
+- M1 reversal-entry refinement.
+
+This stays distinct from Liquidity Sweep even when the same episode shares causal evidence.
+
+## 11. Compression Expansion
+
+Question:
+
+> Did a meaningful compression release with actual direction and enough room?
+
+Potential evidence:
+
+- M15/M5 compression;
+- break/release;
+- directional body/volatility expansion;
+- path/liquidity room;
+- no severe late extension;
+- M1 refinement if an M5 Opportunity already exists.
+
+Do not guess direction before release evidence.
+
+## 12. Important evidence is not universal evidence
+
+The user-approved rule is:
+
+> **EMA, RSI, Fib, FVG, OB, Trendline, POC and related evidence can be extremely important, but must not become unrelated universal restrictions.**
+
+Family contracts classify evidence explicitly:
 
 ```text
-src/gold_scalp_trader/strategies/floor.py
-src/gold_scalp_trader/strategies/parallel.py
-src/gold_scalp_trader/strategies/confluence.py
-src/gold_scalp_trader/decisions/fusion.py
-src/gold_scalp_trader/decisions/opportunity.py
-src/gold_scalp_trader/decisions/timing.py
+REQUIRED_FOR_FAMILY
+STRONG_SUPPORT
+OPTIONAL_SUPPORT
+OPPOSITION
+NOT_RELEVANT
+UNKNOWN
 ```
 
-## 12. Planned proof / calibration
+A missing family-required fact can stop that family. It must not automatically block another strategy family.
 
-Tests prove same-snapshot inputs, six-family availability, independent BUY/SELL cases, attribution, no unanimity, optional evidence semantics, correlation bounding, bounded-parallel ↔ one-worker parity and zero family broker/Risk authority.
+## 13. Physical scheduling
 
-Family weights/thresholds, trigger profiles, event freshness, session conditioning, correlation caps and Opportunity thresholds remain scalp research questions.
+Family calculations are logically independent. Physical parallelism is profiling-driven.
+
+```mermaid
+flowchart LR
+    SNAP["Immutable snapshot"] --> RUN["Serial or bounded-parallel family evaluation"]
+    RUN --> ORDER["Restore canonical deterministic family order"]
+    ORDER --> ISO["Apply active/shadow policy"]
+```
+
+Required invariants:
+
+- identical input snapshot;
+- no worker broker call;
+- no worker lifecycle mutation;
+- bounded worker resources;
+- deterministic results/order;
+- one-worker and parallel semantic parity.
+
+## 14. Correlation / event lineage
+
+All six families may recognize the same event differently. Research needs those differences; live confidence must not multiply one causal event into fake certainty.
+
+Preserve:
+
+```text
+parent event ID
+structure/liquidity event IDs
+zone/pool identity
+timeframe
+family interpretation
+```
+
+Correlation control is analytical de-duplication, not a limit on how many families can analyze.
+
+## 15. Opportunity handoff
+
+Only active family can drive:
+
+```text
+FamilyReport
+→ active BUY/SELL debate
+→ Red Team
+→ persistent M5 Opportunity
+→ subordinate M1 timing
+```
+
+The shadow reports remain attached for research attribution but cannot alter live production lineage.
+
+## 16. Throughput / quality philosophy
+
+The floor must not optimize for either:
+
+```text
+few “perfect” trades
+or
+forced high trade count
+```
+
+Measure jointly:
+
+- active-family Opportunity Recall;
+- shadow Opportunity Recall;
+- actual trades/day;
+- 120/day benchmark gap;
+- false blocks;
+- missed valid moves;
+- Net R/expectancy;
+- entry/capture efficiency;
+- costs/slippage;
+- drawdown/loss streak;
+- slot occupancy/hold time.
+
+## 17. Research and family switching
+
+An evaluation period should preserve:
+
+```text
+active family
+policy/version ID
+start/end timestamps
+market/data/code identity
+actual outcomes
+shadow-family counterfactuals
+```
+
+Research may propose the next active family or a candidate variant. Production switch is governed/versioned and must follow the project's approval rules.
+
+## 18. Dashboard
+
+```text
+STRATEGY FLOOR
+ACTIVE      Breakout Retest Continuation
+SHADOW      Pullback / Breakout / Sweep / Failed Break / Compression
+Active BUY  82
+Active SELL 31
+Red Team    moderate conflict
+Opportunity ARMED
+Shadow Best Sweep Reversal BUY 77 • research only
+```
+
+The dashboard must clearly label shadow output as **not live authority**.
+
+## 19. Planned ownership / proof
+
+Planned source:
+
+```text
+strategies/floor.py
+strategies/isolation.py
+strategies/parallel.py or equivalent profiling-driven scheduler
+strategies/confluence.py
+decisions/fusion.py
+```
+
+Tests must prove:
+
+- all six families analyze;
+- exactly one active;
+- five shadow;
+- shadow cannot create live Opportunity/Intent;
+- active family switch preserves historical attribution;
+- BUY/SELL independence;
+- optional evidence semantics;
+- event correlation lineage;
+- one-worker/parallel parity;
+- no MT5 import/write authority in strategy layer.
+
+## 20. Calibration
+
+Open items:
+
+- family qualification thresholds;
+- family-required vs optional evidence;
+- within-family weights;
+- Red-Team conflict thresholds;
+- event correlation caps;
+- session/regime effects;
+- M1 preferred timing profiles;
+- strategy rotation/evaluation duration.
+
+## 21. Final invariant
+
+> **The strategy floor maximizes auditable opportunity discovery while preserving one-strategy-at-a-time live attribution. Shadow strategies learn and challenge; they do not contaminate live execution. Each family may value its own important evidence without imposing a global filter soup on the whole bot.**

@@ -1,130 +1,389 @@
-# GoldScalpTrader — Scoring and Decision Fusion
+# GoldScalpTrader — Scoring, Active-Family Fusion and Red Team
 
-**Status:** FROZEN V1 FUSION ARCHITECTURE — WEIGHTS/THRESHOLDS CALIBRATION PENDING
-**Version:** 1.1-preserved-parallel-floor-manager
-**Authority:** Independent BUY/SELL thesis fusion, Red-Team conflict, analytical coverage, correlation, attribution and Floor-Manager output.
+**Status:** APPROVED DECISION CONTRACT — DOCUMENTATION RECONSTRUCTION / CALIBRATION PENDING
+**Version:** 2.0-active-family-buy-sell-debate
+**Authority:** Active-family BUY/SELL thesis construction, evidence weighting, Red-Team challenge, coverage, correlation, Opportunity qualification and shadow-family separation.
 
 ## 1. Purpose
 
-Fusion turns six FamilyReports into competing BUY and SELL theses while preserving why each side leads, what opposes it and how much evidence is available.
-
-It never converts soft score into monetary Risk or broker permission.
-
-## 2. Pipeline
+The Decision/Fusion layer turns the **currently active strategy family's** evidence into two competing theses:
 
 ```text
-six FamilyReports
-→ bounded optional confluence
-→ BUY Team + SELL Team
-→ correlation control
-→ Debate / Red Team
-→ Floor Manager / DecisionBoard
-→ persistent Opportunity
-→ completed-M5 Entry Timing
-→ analytical DecisionSnapshot
+BUY thesis
+SELL thesis
 ```
 
-Hard Risk/session/news/account/controller/execution authority remains downstream.
+It then asks Red Team to challenge the stronger thesis before a production Opportunity is armed.
 
-## 3. Six-family input
+Unlike the earlier blended multi-family live fusion design:
 
-Fusion consumes the preserved production set: Trend Pullback Continuation, Breakout Expansion, Breakout Retest Continuation, Liquidity Sweep Reversal, Failed Breakout Reversal and Compression Expansion.
+> **Shadow families do not vote in live direction.**
 
-Exact analytical weights are calibration, not architecture.
+Their reports remain available for context, counterfactual comparison and research only.
 
-## 4. Independent thesis construction
+## 2. Decision topology
 
-Each directional thesis consumes the same completed family set and preserves leading/supporting families, strengths, lineage, coverage, structural room, session/regime, freshness/cost warnings and timing preference.
+```mermaid
+flowchart TB
+    ACTIVE["1 ACTIVE_EXECUTION FamilyReport"] --> BUY["Active-family BUY case"]
+    ACTIVE --> SELL["Active-family SELL case"]
+    BUY --> WEIGHT["Family-specific evidence weighting"]
+    SELL --> WEIGHT
+    WEIGHT --> RED["Red Team"]
+    SHADOW["5 SHADOW_ONLY reports"] -. "bounded challenge / research context only" .-> RED
+    RED --> BOARD["DecisionBoard"]
+    BOARD --> OPP{"Production Opportunity qualified?"}
+    OPP -->|Yes| LIFE["Persistent M5 Opportunity"]
+    OPP -->|No| WAIT["No production Opportunity / WAIT"]
+```
 
-Unanimity is not required. One coherent family may lead when others are neutral, subject to downstream timing/geometry/Risk/safety.
+## 3. Why BUY and SELL stay independent
 
-## 5. Correlation control
+The system must not compute one scalar direction and assume the other side is simply its inverse.
 
-A sweep + reclaim + MSS + failed-break evidence from the same causal event cannot become four independent votes. Correlation/event lineage may cap/reweight synergy while preserving family attribution.
-
-## 6. Optional confluence
-
-Trendline/Fib/POC/FVG/OB may provide bounded support only when compatible with an existing family narrative. Missing optional context does not automatically penalize a valid base case. Opposed/unclear optional context remains visible conflict, not hard BLOCK.
-
-## 7. Red Team
-
-Representative objections include:
+Example:
 
 ```text
-STRONG_OPPOSING_THESIS
-LOW_EVIDENCE_COVERAGE
-LEADING_FAMILY_CONFLICTS
-CORRELATED_SUPPORT
+BUY = strong continuation case
+SELL = also credible failed-break reversal case
+```
+
+This is genuine conflict, not “BUY minus SELL = neutral”.
+
+Each directional case preserves:
+
+- family identity;
+- direction;
+- required evidence status;
+- weighted support;
+- opposition;
+- coverage;
+- location/room;
+- event lineage;
+- preferred timing profile;
+- reasons.
+
+## 4. Evidence weighting
+
+Weights exist to express the relative importance of evidence **inside the active family's own definition**.
+
+Examples:
+
+### Trend Pullback
+
+Possible stronger contributions:
+
+- directional H1/M15 structure;
+- valid pullback location;
+- M5 resumption;
+- EMA flow;
+- available room.
+
+### Sweep Reversal
+
+Possible stronger contributions:
+
+- real pre-existing pool;
+- sweep/reclaim;
+- M5 reversal response;
+- location/path.
+
+Exact weights are `CALIBRATE`.
+
+They are not probabilities and they never change monetary Risk.
+
+## 5. Optional evidence treatment
+
+Evidence states:
+
+```text
+required and present
+required and absent
+supportive
+opposing
+neutral/not relevant
+unknown
+```
+
+Rules:
+
+- missing family-required evidence can prevent that active family from qualifying;
+- missing optional evidence is not silently score zero;
+- important optional evidence can add meaningful support;
+- opposing evidence remains visible;
+- no optional confluence becomes a global system veto;
+- no score bypasses hard execution authority.
+
+## 6. Red Team
+
+Red Team's purpose is **quality control without turning the system restrictive**.
+
+It asks:
+
+> What is the strongest credible reason this active-family trade thesis may be wrong, late, correlated, poorly located or economically unattractive?
+
+Potential objections:
+
+```text
+STRONG_ACTIVE_FAMILY_OPPOSING_THESIS
+LOW_REQUIRED_EVIDENCE_COVERAGE
+CORRELATED_EVIDENCE
+M5_EVENT_STALE
+M1_TRIGGER_WEAK
 ENTRY_EXTENDED
-EVENT_STALE_OR_AGING
-TARGET_ROOM_WEAK
-TRANSACTION_COST_HEAVY
-FAILED_ACCEPTANCE
-NO_DIRECTIONAL_EDGE
+LOCATION_POOR
+TARGET_ROOM_POOR
+FAMILY_CONFLICT
+SHADOW_FAMILY_STRONG_CONTRARY_CASE   # context, not live vote
 ```
 
-These are analytical reasons, not Risk/News/Session/Controller/Execution blockers.
+Red Team may:
 
-## 8. Coverage / UNKNOWN
+- reduce thesis quality;
+- keep Opportunity unarmed;
+- produce WAIT;
+- demand fresh timing evidence;
+- invalidate the analytical setup if its own family contract is actually broken.
 
-Optional missing evidence may be omitted/reweighted where family contract permits. Required financial/broker/safety truth is never a weighted market feature.
+It may not:
 
-UNKNOWN states what is unavailable and whether analysis can remain observational/WAIT or cannot complete.
+- size lots;
+- invent Risk blocks;
+- call MT5;
+- treat News as hard veto;
+- allow a shadow family to originate the live trade.
 
-## 9. Floor Manager versus Entry Timing
+## 7. Shadow-family context
 
-Floor Manager asks whether an idea is worth tracking as persistent Opportunity. Entry Timing asks whether the completed-M5 moment is fresh/efficient enough to act.
+Shadow outputs are useful in two ways:
 
-Strong Opportunity cannot force ENTER when event is stale, move chased, cost burden poor or target room collapsed.
+### Live challenge context
 
-M1 remains diagnostic/research only.
+If five shadow families independently disagree with the active family, the operator/research system should know. But they cannot mechanically outvote it.
 
-## 10. Analytical action vocabulary
+### Counterfactual research
+
+Record:
 
 ```text
-ENTER_BUY
-ENTER_SELL
-WAIT
-MISSED
-INVALID
+active family action/outcome
+vs
+shadow family hypothetical actions/outcomes
 ```
 
-`BLOCKED` belongs to downstream hard authorities. Preserve analytical result alongside later blocker for truthful research.
+This is essential for deciding whether a different family should become active later.
 
-## 11. Cost awareness
+## 8. Correlation control
 
-Fusion may use descriptive cost/room context. TradePlan owns explicit gross + cost-adjusted geometry; Execution owns final fresh Bid/Ask/spread/drift acceptance. Fusion never shifts stop/target or decides affordability.
+Within the active family, several evidence items may describe the same event.
 
-## 12. Preserved scheduling semantics
-
-Family reports are designed for bounded dependency-independent workers with immutable common input and deterministic canonical ordering.
-
-A one-worker fallback is mandatory and semantically identical. Physical worker count may be tuned after profiling, but **bounded concurrency itself is a preserved reference capability**, not an optional feature to delete.
-
-Workers have zero lifecycle/Risk/Gate/broker-write authority.
-
-## 13. Persistence / research
-
-Journal Opportunity/Episode, family cases, correlation grouping, Red-Team objections, coverage, timing, cost/freshness context, policy/config/data identity and later hard blocker. Blocked/counterfactual outcomes are not actual P/L.
-
-## 14. Dashboard
-
-Show BUY Thesis, SELL Thesis, Directional Edge, Leading Family, correlation/debate, Opportunity/Episode, Timing, Coverage, Analytical Action and separate hard Permission/blocker.
-
-## 15. Planned implementation ownership
+Example:
 
 ```text
-src/gold_scalp_trader/strategies/floor.py
-src/gold_scalp_trader/strategies/parallel.py
-src/gold_scalp_trader/strategies/confluence.py
-src/gold_scalp_trader/decisions/fusion.py
-src/gold_scalp_trader/decisions/snapshot.py
-src/gold_scalp_trader/decisions/opportunity.py
-src/gold_scalp_trader/decisions/timing.py
+M5 rejection
++ sweep reclaim
++ failed break
++ FVG
 ```
 
-## 16. Planned proof / calibration
+If they all derive from the same causal move, weighting must avoid pretending they are independent confirmations.
 
-Tests prove independent BUY/SELL construction, opposition visibility, correlation bounding, optional evidence handling, family attribution, Opportunity handoff, no broker authority and bounded-parallel ↔ one-worker parity.
+Use causal IDs/source lineage and calibrated caps.
 
-Weights, synergy caps, conflict penalties, coverage/Opportunity thresholds and cost/freshness penalty magnitudes remain scalp calibration.
+## 9. Coverage
+
+Coverage tells how much expected evidence was available.
+
+Coverage is separate from evidence quality.
+
+Example:
+
+```text
+high score + 45% coverage
+≠ automatically high confidence
+```
+
+Unknown optional evidence should reduce certainty/coverage where appropriate rather than become negative direction.
+
+## 10. DecisionBoard
+
+A production-facing DecisionBoard should contain:
+
+```text
+active_family
+policy_version
+buy_thesis
+sell_thesis
+leading_direction
+leading_quality/score
+opposing_quality/score
+coverage
+Red-Team objections[]
+causal event IDs
+M5 setup identity/age
+preferred M1 profile
+location/room summary
+shadow_context_summary
+Opportunity recommendation
+reasons[]
+```
+
+No lot/SL broker request fields belong here.
+
+## 11. Opportunity qualification
+
+Decision Board asks:
+
+> Is there a coherent active-family M5 idea worth tracking?
+
+Entry Timing later asks:
+
+> Is the current M1/current-price moment efficient enough to act?
+
+This split avoids two errors:
+
+- deleting a good setup because the exact entry moment is not ready;
+- treating a high score as permission to chase.
+
+## 12. Score interpretation
+
+Scores are explanatory/relative analytical tools.
+
+They are not:
+
+- probability of winning;
+- permission to increase risk;
+- permission to ignore poor target economics;
+- broker authority.
+
+Calibration should optimize jointly:
+
+```text
+Net expectancy
+Opportunity Recall
+trade throughput
+entry efficiency
+capture efficiency
+false blocks
+missed opportunities
+cost burden
+drawdown
+```
+
+A threshold that improves historical win rate by eliminating most good opportunities is not automatically better.
+
+## 13. Throughput implications
+
+The approved 120/day benchmark makes the Decision Board responsible for transparent opportunity accounting.
+
+Track:
+
+```text
+active-family setups discovered
+armed opportunities
+WAITs
+invalidations
+M1 misses
+quality-stage rejects
+Risk/broker blocks
+actual trades
+```
+
+Do not hide low trade count behind one generic “NO SIGNAL”.
+
+## 14. News / session handling
+
+News/Fundamentals may appear as soft context tags.
+
+Session labels may influence family performance context.
+
+Neither becomes a Red-Team hard veto unless actual market/strategy evidence justifies it under the active family definition.
+
+Actual broker CLOSED/PRE_CLOSE is downstream hard authority, not a score.
+
+## 15. Persistence and research
+
+Persist/journal enough decision evidence to reproduce why a trade was or was not pursued:
+
+- active family/version;
+- BUY/SELL cases;
+- weights/policy fingerprint;
+- coverage;
+- objections;
+- source events;
+- Opportunity ID;
+- shadow reports;
+- later timing/quality/Risk/block/outcome.
+
+This lets research distinguish:
+
+```text
+bad strategy
+bad entry timing
+bad cost economics
+hard safe block
+capacity block
+system fault
+```
+
+## 16. Dashboard
+
+```text
+DECISION BOARD
+Active Family   Trend Pullback
+BUY Thesis      84 • strong
+SELL Thesis     29 • weak
+Coverage        92%
+Red Team        M1 timing not ready
+Shadow Conflict Sweep Reversal SELL 71 • research only
+Decision        ARM BUY OPPORTUNITY
+```
+
+Shadow evidence must visibly say **research only**.
+
+## 17. Planned implementation owners
+
+```text
+strategies/floor.py
+    family BUY/SELL cases
+
+strategies/confluence.py
+    family-specific optional evidence mapping/caps
+
+decisions/fusion.py
+    active-family BUY/SELL synthesis + Red Team
+
+decisions/snapshot.py
+    orchestration / DecisionBoard
+```
+
+## 18. Planned tests
+
+- independent active BUY/SELL cases;
+- active-family isolation;
+- shadow cannot create production Opportunity;
+- strong shadow opposition remains context only;
+- required vs optional evidence;
+- UNKNOWN not silently zero;
+- causal correlation caps;
+- deterministic scoring order;
+- no score→Risk/write shortcut;
+- strategy-policy version attribution;
+- opportunity-threshold sensitivity research hooks.
+
+## 19. Calibration
+
+Open evidence dimensions:
+
+- family-specific weights;
+- qualification thresholds;
+- minimum coverage;
+- conflict penalties;
+- Red-Team thresholds;
+- correlation caps;
+- session/regime modifiers;
+- strategy evaluation/rotation policy.
+
+## 20. Final invariant
+
+> **Live decision fusion belongs to the one active strategy family, not a blended six-strategy vote. BUY and SELL remain independent, Red Team challenges rather than suffocates, shadow families remain measurable, and scores never impersonate money or broker permission.**

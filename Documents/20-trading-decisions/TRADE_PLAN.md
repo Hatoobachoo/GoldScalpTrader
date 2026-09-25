@@ -1,112 +1,127 @@
-# GoldScalpTrader — Structural Trade Plan
+# GoldScalpTrader — Structural Trade Plan and Executable Geometry Handoff
 
-**Status:** FROZEN V1 TRADE-PLAN ARCHITECTURE — CALIBRATION PENDING
-**Version:** 1.0-cost-aware-scalp-geometry
-**Authority:** Approved entry reference, family-aware structural invalidation, initial SL, objective hierarchy, immutable original R, gross structural quality and cost-adjusted executable room.
+**Status:** APPROVED TRADE-PLAN CONTRACT — DOCUMENTATION RECONSTRUCTION / CALIBRATION PENDING
+**Version:** 2.0-scalp-family-geometry
+**Authority:** Approved Entry Reference, family-aware structural invalidation, initial SL, objective hierarchy, immutable original R, gross structural quality and handoff to Executable Quality.
 
-## 1. Purpose and boundary
+## 1. Purpose
 
-TradePlan converts a valid Opportunity plus analytical `ENTER` timing into explicit market geometry **before** monetary sizing or broker submission.
+TradePlan converts a READY active-family Opportunity into market geometry **before** monetary sizing and broker submission.
 
-> Strategy decides whether an idea is worth pursuing. TradePlan defines how it would be entered, invalidated and targeted. Risk decides whether the account can afford that geometry.
+> Strategy decides whether the idea is worth pursuing. TradePlan defines what invalidates it and where credible objectives exist. Executable Quality asks whether the current market price/cost still makes the geometry worthwhile. Risk asks whether the account can afford it.
 
-TradePlan does not size lots, distort a structural stop for account convenience, call MT5 or grant final execution permission.
+TradePlan does not:
+
+- size lots;
+- change Risk percentages;
+- move SL to fit 0.01 lot;
+- use current spread as structural invalidation;
+- call MT5 writer;
+- grant final permission.
 
 ## 2. Construction pipeline
 
-```text
-READY analytical Opportunity
-→ Approved Entry Reference
-→ family-aware structural invalidation
-→ volatility/noise + broker-tick outward buffer
-→ Immediate / Primary / optional Expansion objectives
-→ Stop Quality
-→ path / target / gross structural quality
-→ current known transaction-cost context
-→ cost-adjusted executable-room diagnostics
-→ READY / DEGRADED / INVALID TradePlan
-→ independent monetary Risk
+```mermaid
+flowchart TB
+    OPP["READY active-family Opportunity"] --> ENTRY["Approved Entry Reference"]
+    ENTRY --> INV["Family-aware structural invalidation"]
+    INV --> BUF["Noise/ATR + tick-valid outward buffer"]
+    BUF --> OBJ["Immediate / Primary / Expansion / Runner objectives"]
+    OBJ --> GROSS["Gross R + path/target quality"]
+    GROSS --> PLAN["READY / DEGRADED / INVALID TradePlan"]
+    PLAN --> EXECQ["Executable Quality: fresh quote/spread/drift/cost"]
+    EXECQ --> RISK["Monetary Risk"]
 ```
 
 ## 3. Price identities
 
-| Identity | Meaning | Owner |
+Never collapse these prices:
+
+| Price | Meaning | Owner |
 |---|---|---|
-| Signal Price | where evidence formed | decisions/timing |
-| Approved Entry Reference | geometry reference | TradePlan |
-| Executable Quote | fresh Bid/Ask immediately before submit | execution |
-| Actual Fill | broker-confirmed filled price | reconciliation |
+| Signal Price | where causal evidence formed | Strategy/Decision |
+| Approved Entry Reference | price used to construct plan geometry | TradePlan |
+| Executable Quote | fresh Bid/Ask used for current economic/pre-submit validation | Executable Quality/Execution |
+| Actual Fill | broker-confirmed executed price | Execution/Reconciliation |
 
-A scalp is especially sensitive to the difference between Signal Price, Approved Entry Reference and Actual Fill.
+This separation is critical for drift, cost and entry-efficiency research.
 
-## 4. TradePlan output
+## 4. Inputs
 
-Preserve:
+TradePlan requires:
 
-- Opportunity / Episode / family identity;
-- direction;
-- signal and approved entry reference;
-- invalidation source/price and evidence lineage;
-- buffer and initial SL;
-- Stop Quality;
-- Immediate Obstacle;
-- Primary Scalp Target;
-- optional Expansion Target;
-- optional exceptional Runner Objective;
-- immutable original structural risk distance;
-- gross structural R / room;
-- current spread/cost diagnostics;
-- cost-adjusted remaining room / room-to-cost context;
-- path/target/plan quality;
-- event/plan freshness;
-- state and exact reason.
+- active family and policy version;
+- Opportunity/Episode identity;
+- READY timing result;
+- causal IntelligenceSnapshot;
+- SymbolSpec/tick geometry;
+- reference price;
+- versioned TradePlan policy.
 
-States:
+Outputs include:
 
 ```text
-READY
-DEGRADED
-INVALID
+trade_plan_id
+opportunity_id / episode_id
+active_family / policy_version
+direction
+signal/reference price
+invalidation source + price
+buffer + resulting initial SL
+stop quality
+Immediate Obstacle
+Primary Target
+Expansion Target
+optional Runner Objective
+gross R distances/multiples
+path/target quality
+state + reasons
 ```
 
-## 5. Family-aware structural invalidation
+## 5. Family-aware invalidation
 
-Core question:
+The core question:
 
-> What causal price behaviour proves this exact thesis wrong?
+> **What price behavior proves this exact active-family thesis wrong?**
 
-Candidate sources include protected/confirmed M5 structure, retest-failure boundary, sweep extreme, failed-break extreme, M15 fallback structure and meaningful technical zone.
+A generic “nearest swing” is not always the correct answer.
 
-A source must be causal, provable from the same immutable market/intelligence lineage and on the correct side of entry.
+### Baseline search tendencies
 
-### V1 preferred hierarchy
-
-| Family | Preferred invalidation |
+| Family | Preferred invalidation logic |
 |---|---|
-| Trend Pullback Continuation | M5 local pullback failure → M15 structure → H1 fallback |
-| Breakout Expansion | M5/M15 acceptance-failure geometry → broader fallback |
-| Breakout Retest Continuation | M5 retest-failure boundary → M15 → H1 |
-| Liquidity Sweep Reversal | exact proven M5 sweep extreme → generic M5 → M15 → H1 |
-| Failed Breakout Reversal | exact proven M5 failed-break extreme → generic M5 → M15 → H1 |
-| Compression Expansion | M5 release/range failure → M15 range boundary → H1 fallback |
+| Trend Pullback | pullback/continuation structural failure, often M15 then M5/H1 fallback |
+| Breakout Expansion | accepted breakout failure boundary, often M15/M5 |
+| Breakout Retest | **actual M5 retest-failure boundary first**, then broader fallback |
+| Liquidity Sweep Reversal | **causally proven M5 sweep extreme first** where available |
+| Failed Breakout Reversal | **causally proven M5 failed-break extreme first** where available |
+| Compression Expansion | compression/release structural boundary, often M15/M5 |
 
-Exact event extremes are used only when matching event/candle lineage is provable. Otherwise fall back conservatively; never invent a tighter stop.
-
-## 6. Initial SL and Stop Quality
-
-Initial SL is:
+Within a timeframe, the planner may prefer:
 
 ```text
-structural invalidation
-+ volatility/noise-aware buffer
-+ outward broker-valid tick normalization
+family-specific event boundary
+→ protected swing
+→ confirmed swing
+→ meaningful technical zone
+→ next allowed timeframe
 ```
 
-ATR supports structure; it does not replace structure.
+It must never invent a tighter level merely to improve R.
 
-If broker stop/freeze/tick constraints materially distort the thesis, the plan becomes INVALID rather than silently moving geometry.
+## 6. Stop construction
 
-Stop Quality vocabulary:
+Initial SL:
+
+```text
+family-correct structural invalidation
++ volatility/noise buffer
++ outward tick normalization
+```
+
+ATR assists structure; it does not replace it.
+
+Possible Stop Quality:
 
 ```text
 ROBUST
@@ -115,97 +130,260 @@ FRAGILE
 INVALID
 ```
 
-FRAGILE normally degrades/waits while the Opportunity may survive for better geometry.
+If broker geometry would require distorting the thesis-correct stop materially, the plan is degraded/invalid rather than secretly rewritten.
 
 ## 7. Objective hierarchy
 
-V1 scalp hierarchy:
-
 ```text
 Immediate Obstacle
-→ Primary Scalp Target
-→ optional Expansion Target when fresh continuation/session structure supports it
-→ Runner Objective only as exceptional continuation
+→ Primary Structural Target
+→ Expansion Target
+→ optional Runner Objective
 ```
 
-Targets come from causally known structure/liquidity/session geometry, not arbitrary fixed-dollar TP values.
+### Immediate Obstacle
 
-Multiple analytical objectives do not imply multiple orders or mandatory partial closes.
+Nearest meaningful opposing structure/path fact. It can be a warning even if not chosen as final target.
 
-## 8. Gross structural quality and cost-adjusted room
+### Primary
 
-Audit 1 freezes a dual-truth design:
+First credible structural objective that meaningfully expresses the active-family thesis.
+
+### Expansion
+
+Next credible structural/liquidity objective if continuation remains plausible.
+
+### Runner
+
+Exceptional extension objective. It must be structurally defined; “profit is large” is not an objective.
+
+Multiple objectives do not imply multiple broker orders or mandatory partial closes.
+
+## 8. Gross structural R
+
+For BUY:
 
 ```text
-A) gross structural geometry
-B) current cost-adjusted executable room
+risk_distance   = entry_reference - initial_SL
+reward_distance = primary_target - entry_reference
+gross_R         = reward_distance / risk_distance
 ```
 
-TradePlan must preserve current known facts sufficient to reason about:
+SELL is symmetric.
 
-- gross reward distance;
-- original stop distance;
-- current spread;
-- approved slippage/commission reserve assumptions where available;
-- remaining room after known cost context;
-- room-to-cost ratio or equivalent normalized metric.
+Original R geometry is immutable for later management/research once actual fill/original approved stop establish realized 1R identity.
 
-The old Swing `1.20R` floor is **not active scalp policy**. Exact minimum gross R / net room thresholds remain calibration pending.
+## 9. Minimum gross R — Scalp-specific policy
 
-Do not double-count spread if executable Bid/Ask geometry already embeds it. Do not invent future slippage/fill values that are not yet known.
+The Swing reference used a fixed 1.20R hard floor. The operator approved reopening this for Scalp.
 
-## 9. Final execution revalidation
+Current rule:
 
-A plan can deteriorate between analytical ENTER and broker submit because:
+> **Do not automatically impose Swing's 1.20R as the hard Scalp floor.**
 
-- price drifts;
-- spread expands;
-- target room shrinks;
-- new completed structure changes the thesis;
-- event freshness expires;
-- broker constraints make the request invalid.
+Instead:
 
-Execution owns the final fresh Bid/Ask/spread/drift/trigger-age recheck. Risk may block affordability but cannot rewrite the plan.
+- retain and report exact gross structural R;
+- calibrate the minimum gross R using chronological Scalp evidence;
+- combine it later with cost-adjusted opportunity quality;
+- never lower quality merely to hit a trade-count quota;
+- never require a high gross R that systematically eliminates profitable short-duration opportunities without evidence.
 
-## 10. Original R
+`minimum_gross_R` is therefore an approved calibration variable, not an undocumented constant.
 
-After verified fill plus original structural SL, original risk distance defines immutable historical 1R for management/research. Later protection/trailing never rewrites original R.
+## 10. Gross versus executable quality
 
-## 11. Persistence / recovery
+TradePlan owns **gross structural geometry**.
 
-A persisted TradePlan belongs to exactly one Opportunity/Episode identity. Recovery validates identity plus fresh broker/market truth before any write. Restored plan is context, not permission.
-
-When a terminal Opportunity is replaced by a genuinely new episode, retire mismatched old TradePlan before persisting the new active identity.
-
-## 12. Dashboard
-
-When valid geometry exists, show separately:
+Executable Quality owns current economic usability:
 
 ```text
-Entry Reference
-current executable Bid/Ask
-SL
-Primary / optional Expansion objective
-Gross structural R/room
-Cost-adjusted room context
-Invalidation source
-Stop/Path/Target quality
-Plan state/reason
+fresh spread
+spread / SL
+spread / target
+slippage allowance
+current price drift
+decision→send latency
+remaining target room
+total cost / reward
 ```
 
-Never display zero placeholders as valid geometry.
+This separation prevents cost double counting and prevents TradePlan from changing structural SL simply to make cost ratios look better.
 
-## 13. Planned implementation ownership
+## 11. Plan states
 
 ```text
-src/gold_scalp_trader/decisions/trade_plan.py
-src/gold_scalp_trader/decisions/family_trade_plan.py
+READY
+DEGRADED
+INVALID
 ```
 
-## 14. Planned proof
+Examples:
 
-Tests cover BUY/SELL geometry, family-aware invalidation, event-specific extremes, tick normalization, broker constraints, objective ordering, gross/cost-room calculations, no double-counting, original-R immutability, stale/drift degradation and strict Risk independence.
+### READY
 
-## 15. Calibration pending
+Structural invalidation/objectives are credible and gross geometry meets the current versioned policy.
 
-Minimum gross R, minimum cost-adjusted room/ratio, buffers, fragile-stop threshold, target/path quality, session-target sources, runner policy, target merge tolerance and plan/event freshness values require replay/stress/holdout and connected execution evidence.
+### DEGRADED
+
+Opportunity may survive but current plan geometry is marginal/fragile and may benefit from a better entry.
+
+Examples:
+
+```text
+STOP_FRAGILE_WAIT_FOR_BETTER_GEOMETRY
+TARGET_ROOM_MARGINAL
+REFERENCE_TOO_EXTENDED
+```
+
+### INVALID
+
+No credible family-correct invalidation/objective can be constructed, or structure is contradictory/corrupt.
+
+## 12. Breakout Retest special geometry
+
+A valid Breakout Retest may have a clear M5 retest-failure boundary materially closer than broad M15 structure.
+
+```mermaid
+flowchart LR
+    OPP["Breakout Retest Opportunity"] --> M5{"Valid causal M5 retest-failure boundary?"}
+    M5 -->|Yes| STOP["Use M5 boundary + buffer"]
+    M5 -->|No| M15["M15 structural fallback"]
+    M15 --> H1["H1 if needed"]
+    STOP --> TARGETS["Evaluate actual structural objectives"]
+```
+
+Purpose: use thesis-correct geometry, not artificially tighten the stop.
+
+## 13. Reversal event geometry
+
+For Failed Breakout Reversal and Liquidity Sweep Reversal, exact causal event extremes may be valid invalidation references.
+
+They are allowed only if the exact event/candle exists in the same immutable causal snapshot.
+
+If ambiguous/missing:
+
+```text
+NO fabricated event extreme
+→ conservative generic M5 structural fallback
+→ M15/H1 fallback
+```
+
+## 14. M1 relationship
+
+M1 can refine entry **before** plan construction/rebuild.
+
+A better M1 entry can legitimately improve:
+
+- stop distance relative to reference;
+- gross R;
+- cost ratios;
+- chase/drift.
+
+But M1 cannot move the M5 thesis invalidation to an arbitrary micro level unless that family's approved structural contract explicitly makes that micro boundary thesis-correct.
+
+## 15. Deterioration before submit
+
+A TradePlan can be structurally valid yet no longer executable because current price moved.
+
+Correct path:
+
+```text
+original TradePlan
+→ fresh quote
+→ Executable Quality revalidation
+→ if current economics still acceptable, continue
+→ otherwise WAIT/MISSED/rebuild as owning lifecycle allows
+```
+
+Do not silently modify original plan history.
+
+## 16. Persistence / lineage
+
+Persist enough to prove:
+
+- exact Opportunity/Episode;
+- active family/policy;
+- invalidation source;
+- objective sources;
+- policy/config fingerprint;
+- created/rebuilt timestamps;
+- plan state/reason.
+
+A TradePlan belongs to exactly one Opportunity identity.
+
+## 17. Dashboard
+
+```text
+TRADE PLAN
+Family        Breakout Retest
+Entry Ref     4322.40
+SL            4319.85
+Invalidation  M5:RETEST_FAILURE_LOW
+Primary       4325.90 • gross 1.37R
+Expansion     4328.80 • gross 2.51R
+Runner        4333.10 • optional
+Stop Quality  ACCEPTABLE
+Plan State    READY
+```
+
+No plan = dashes/WAIT reason, not fake zeros.
+
+## 18. Research
+
+Measure:
+
+- family invalidation source performance;
+- stop distance distribution;
+- minimum gross R threshold sensitivity;
+- M1 entry improvement;
+- target/path quality;
+- gross R vs after-cost Net R;
+- false rejection due broad stops;
+- missed opportunities from too-high R floors;
+- bad trades admitted by too-low floors.
+
+## 19. Planned implementation ownership
+
+```text
+decisions/trade_plan.py
+    generic structural plan / targets / original R
+
+decisions/family_trade_plan.py
+    family-specific event/retest invalidation selection
+
+decisions/executable_quality.py
+    current spread/cost/drift economics — separate owner
+```
+
+## 20. Planned proof
+
+Tests cover:
+
+- BUY/SELL geometry;
+- family-aware invalidation order;
+- breakout-retest M5 boundary;
+- sweep/failed-break event extremes;
+- conservative fallback;
+- ATR/tick buffers;
+- target provenance;
+- no stop rewrite for Risk/min lot;
+- minimum gross-R policy version;
+- immutable original R;
+- stale-price handoff to Executable Quality;
+- persistence identity.
+
+## 21. Calibration
+
+Approved open variables:
+
+- stop/noise buffers;
+- target merge/path quality;
+- minimum gross R;
+- family-specific invalidation refinements;
+- objective ranking;
+- M1 entry/reference rebuilding rules.
+
+## 22. Final invariant
+
+> **TradePlan must represent the true active-family thesis, not an account-size compromise or a fixed-R template. It preserves structural invalidation and objectives honestly, while current costs and executable price are judged later by a separate quality layer.**
