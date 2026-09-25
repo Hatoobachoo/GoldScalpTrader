@@ -1,2 +1,2 @@
-from .controller import ControllerLease,acquire,verify
-__all__=["ControllerLease","acquire","verify"]
+from .controller import ControllerLease,acquire,renew,release,verify
+__all__=["ControllerLease","acquire","renew","release","verify"]
