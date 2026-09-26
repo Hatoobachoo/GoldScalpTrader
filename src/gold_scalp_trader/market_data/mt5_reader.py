@@ -39,7 +39,16 @@ class Mt5ReadError(RuntimeError):
 
 
 def _field(obj: Any, name: str, default: Any = None) -> Any:
-    return obj.get(name, default) if isinstance(obj, dict) else getattr(obj, name, default)
+    if isinstance(obj, dict):
+        return obj.get(name, default)
+    try:
+        return getattr(obj, name)
+    except (AttributeError, TypeError):
+        pass
+    try:
+        return obj[name]
+    except (KeyError, IndexError, TypeError, ValueError):
+        return default
 
 
 def _utc_from_epoch(seconds: int | float) -> datetime:

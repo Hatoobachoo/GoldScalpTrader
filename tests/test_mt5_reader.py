@@ -4,6 +4,9 @@ from gold_scalp_trader.config import Settings
 from gold_scalp_trader.domain.enums import DataQuality,Timeframe
 from gold_scalp_trader.market_data.mt5_reader import Mt5Reader
 UTC=timezone.utc
+class StructuredRow:
+    def __init__(self, **values): self.values=values
+    def __getitem__(self,key): return self.values[key]
 class FakeMt5:
     TIMEFRAME_M1=1; TIMEFRAME_M5=5; TIMEFRAME_M15=15; TIMEFRAME_H1=60; TIMEFRAME_H4=240
     def account_info(self): return SimpleNamespace(login=7,server="demo",currency="USD",balance=100,equity=100,margin_free=100,trade_allowed=True,trade_expert=True)
@@ -17,6 +20,15 @@ class FakeMt5:
             t=end-(n-1-i)*step; rows.append({"time":t,"open":100+i*.01,"high":101+i*.01,"low":99+i*.01,"close":100.5+i*.01,"tick_volume":10,"real_volume":0})
         return rows
     def positions_get(self,symbol=None): return []
+class StructuredRateMt5(FakeMt5):
+    def copy_rates_from_pos(self,symbol,timeframe,start_pos,count):
+        rows=super().copy_rates_from_pos(symbol,timeframe,start_pos,count)
+        return [StructuredRow(**row) for row in rows]
 
 def test_reader_builds_one_completed_snapshot_and_distinguishes_verified_zero_positions():
     result=Mt5Reader(Settings(),FakeMt5()).read(captured_at=datetime(2026,1,1,0,0,tzinfo=UTC)); assert result.resolved_symbol=="XAUUSDm"; assert result.snapshot.positions==(); assert result.snapshot.positions_quality is DataQuality.HEALTHY; assert len(result.snapshot.series(Timeframe.M5))>=50
+
+def test_reader_accepts_mt5_structured_rate_rows():
+    result=Mt5Reader(Settings(),StructuredRateMt5()).read(captured_at=datetime(2026,1,1,0,0,tzinfo=UTC))
+    assert len(result.snapshot.series(Timeframe.M1))>=50
+    assert result.snapshot.quality[Timeframe.M1] is DataQuality.HEALTHY
