@@ -46,31 +46,19 @@ def _result():
         series=lambda tf: candles if tf is Timeframe.M5 else (),
     )
     active = SetupCandidate(
-        "A",
-        StrategyFamily.BREAKOUT_RETEST_CONTINUATION,
-        SetupQualification.QUALIFIED_BUY,
-        Direction.BUY,
-        .8,
-        .9,
-        ("M5-A",),
-        ("active",),
+        "A", StrategyFamily.BREAKOUT_RETEST_CONTINUATION,
+        SetupQualification.QUALIFIED_BUY, Direction.BUY, .8, .9,
+        ("M5-A",), ("active",),
     )
     shadow = SetupCandidate(
-        "S",
-        StrategyFamily.LIQUIDITY_SWEEP_REVERSAL,
-        SetupQualification.QUALIFIED_SELL,
-        Direction.SELL,
-        .7,
-        .8,
-        ("M5-S",),
-        ("shadow",),
+        "S", StrategyFamily.LIQUIDITY_SWEEP_REVERSAL,
+        SetupQualification.QUALIFIED_SELL, Direction.SELL, .7, .8,
+        ("M5-S",), ("shadow",),
         m5_event_time=now - timedelta(minutes=5),
-        preferred_m1_profile="SWEEP_RECLAIM",
-        policy_version="shadow-v1",
+        preferred_m1_profile="SWEEP_RECLAIM", policy_version="shadow-v1",
     )
     isolation = IsolationResult(
-        active.family,
-        active,
+        active.family, active,
         (
             IsolatedCandidate(active, StrategyMode.ACTIVE_EXECUTION),
             IsolatedCandidate(shadow, StrategyMode.SHADOW_ONLY),
@@ -84,8 +72,7 @@ def _result():
         trade_plan_id="PLAN-1", timing_profile="RETEST", timing_policy_version="T1",
     )
     cycle = SimpleNamespace(
-        intelligence=SimpleNamespace(market=market),
-        isolation=isolation,
+        intelligence=SimpleNamespace(market=market), isolation=isolation,
         reason="earned protection after >=1R",
     )
     return SimpleNamespace(cycle=cycle, managed_trade=trade, management_action=ManagementAction.PROTECT)
@@ -138,49 +125,32 @@ def _efficiency_trade() -> ManagedTrade:
 def test_post_trade_efficiency_uses_only_durable_observed_path():
     store = StateStore()
     trade = _efficiency_trade()
-    store.append_event(
-        TIMING_NS,
-        "TIM-WAIT",
-        {
-            "opportunity_id": "OPP-EFF",
-            "opportunity_created_at": "2026-09-26T10:00:00+00:00",
-            "timing_decision_at": "2026-09-26T10:01:00+00:00",
-            "timing_outcome": "WAIT",
-        },
-    )
-    store.append_event(
-        TIMING_NS,
-        "TIM-READY",
-        {
-            "opportunity_id": "OPP-EFF",
-            "opportunity_created_at": "2026-09-26T10:00:00+00:00",
-            "timing_decision_at": "2026-09-26T10:03:00+00:00",
-            "timing_outcome": "READY_BUY",
-        },
-    )
+    store.append_event(TIMING_NS, "TIM-WAIT", {
+        "opportunity_id": "OPP-EFF",
+        "opportunity_created_at": "2026-09-26T10:00:00+00:00",
+        "timing_decision_at": "2026-09-26T10:01:00+00:00",
+        "timing_outcome": "WAIT",
+    })
+    store.append_event(TIMING_NS, "TIM-READY", {
+        "opportunity_id": "OPP-EFF",
+        "opportunity_created_at": "2026-09-26T10:00:00+00:00",
+        "timing_decision_at": "2026-09-26T10:03:00+00:00",
+        "timing_outcome": "READY_BUY",
+    })
     for key, minutes, open_r, action in (
         ("M1", 2, -0.25, "HOLD"),
         ("M2", 5, 1.00, "PROTECT"),
         ("M3", 10, 2.00, "TRAIL"),
         ("M4", 13, 1.40, "HOLD"),
     ):
-        store.append_event(
-            MANAGEMENT_NS,
-            key,
-            {
-                "trade_id": trade.trade_id,
-                "captured_at_utc": (trade.opened_at + timedelta(minutes=minutes)).isoformat(),
-                "action": action,
-                "open_r": open_r,
-                "initial_risk_money": 10.0,
-            },
-        )
+        store.append_event(MANAGEMENT_NS, key, {
+            "trade_id": trade.trade_id,
+            "captured_at_utc": (trade.opened_at + timedelta(minutes=minutes)).isoformat(),
+            "action": action, "open_r": open_r, "initial_risk_money": 10.0,
+        })
 
     result = measure_trade_efficiency(
-        store,
-        trade,
-        closed_at=datetime(2026, 9, 26, 10, 20, tzinfo=UTC),
-        net_money=15.0,
+        store, trade, closed_at=datetime(2026, 9, 26, 10, 20, tzinfo=UTC), net_money=15.0,
     )
     assert result.realized_r == pytest.approx(1.5)
     assert result.entry_reference_drift_r == pytest.approx(0.1)
@@ -200,14 +170,28 @@ def test_post_trade_efficiency_uses_only_durable_observed_path():
     assert result.management_samples == 4
 
 
+def test_sparse_path_does_not_invent_capture_when_close_exceeds_sampled_mfe():
+    store = StateStore()
+    trade = _efficiency_trade()
+    store.append_event(MANAGEMENT_NS, "M-SPARSE", {
+        "trade_id": trade.trade_id,
+        "captured_at_utc": (trade.opened_at + timedelta(minutes=5)).isoformat(),
+        "action": "HOLD", "open_r": 1.0, "initial_risk_money": 10.0,
+    })
+    result = measure_trade_efficiency(
+        store, trade, closed_at=trade.opened_at + timedelta(minutes=6), net_money=15.0,
+    )
+    assert result.realized_r == pytest.approx(1.5)
+    assert result.observed_mfe_r == pytest.approx(1.0)
+    assert result.observed_capture_efficiency is None
+    assert result.observed_giveback_r is None
+
+
 def test_efficiency_never_invents_missing_path_metrics():
     store = StateStore()
     trade = _efficiency_trade()
     result = measure_trade_efficiency(
-        store,
-        trade,
-        closed_at=datetime(2026, 9, 26, 10, 20, tzinfo=UTC),
-        net_money=15.0,
+        store, trade, closed_at=datetime(2026, 9, 26, 10, 20, tzinfo=UTC), net_money=15.0,
     )
     assert result.initial_risk_money is None
     assert result.realized_r is None

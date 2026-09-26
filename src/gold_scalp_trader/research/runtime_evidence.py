@@ -2,7 +2,7 @@
 
 This module never grants broker, Risk, Gate, Session or promotion authority.
 It records causal observations and derives only metrics supported by durable
-runtime evidence.  Post-trade analytics explicitly distinguish polling-observed
+runtime evidence. Post-trade analytics explicitly distinguish polling-observed
 path statistics from true intrabar extrema.
 """
 from __future__ import annotations
@@ -275,28 +275,16 @@ def measure_trade_efficiency(
     closed_at: datetime,
     net_money: float,
 ) -> TradeEfficiency:
-    """Derive causal post-trade metrics without pretending polling samples are full path truth."""
-    management = [
-        event.payload
-        for event in store.list_events(MANAGEMENT_NS)
-        if str(event.payload.get("trade_id") or "") == trade.trade_id
-    ]
+    """Derive causal metrics without pretending sampled observations are complete path truth."""
+    management = [event.payload for event in store.list_events(MANAGEMENT_NS) if str(event.payload.get("trade_id") or "") == trade.trade_id]
     management.sort(key=lambda row: str(row.get("captured_at_utc") or ""))
 
     timing: list[dict[str, Any]] = []
     if trade.opportunity_id:
-        timing = [
-            event.payload
-            for event in store.list_events(TIMING_NS)
-            if str(event.payload.get("opportunity_id") or "") == trade.opportunity_id
-        ]
+        timing = [event.payload for event in store.list_events(TIMING_NS) if str(event.payload.get("opportunity_id") or "") == trade.opportunity_id]
         timing.sort(key=lambda row: str(row.get("timing_decision_at") or ""))
 
-    initial_risk_values = [
-        float(row["initial_risk_money"])
-        for row in management
-        if row.get("initial_risk_money") is not None and float(row["initial_risk_money"]) > 0
-    ]
+    initial_risk_values = [float(row["initial_risk_money"]) for row in management if row.get("initial_risk_money") is not None and float(row["initial_risk_money"]) > 0]
     initial_risk_money = initial_risk_values[0] if initial_risk_values else None
     realized_r = None if initial_risk_money is None else float(net_money) / initial_risk_money
 
@@ -315,27 +303,23 @@ def measure_trade_efficiency(
     observed_mae_r = min((value for _, value in open_samples), default=None)
     observed_capture = None
     observed_giveback = None
-    if realized_r is not None and observed_mfe_r is not None and observed_mfe_r > 0:
-        observed_capture = realized_r / observed_mfe_r
+    # A sparse sampled path can miss the closing spike. If verified realized R is
+    # above the sampled MFE, the sampled path cannot support capture/giveback.
+    if realized_r is not None and observed_mfe_r is not None and observed_mfe_r > 0 and realized_r <= observed_mfe_r + 1e-9:
         observed_giveback = observed_mfe_r - realized_r
+        if realized_r >= 0:
+            observed_capture = realized_r / observed_mfe_r
 
     first_mfe_at = None
     if observed_mfe_r is not None:
         first_mfe_at = next((when for when, value in open_samples if value == observed_mfe_r), None)
 
-    opportunity_created = next(
-        (_dt(row.get("opportunity_created_at")) for row in timing if _dt(row.get("opportunity_created_at")) is not None),
-        None,
-    )
-    first_ready_at = next(
-        (
-            _dt(row.get("timing_decision_at"))
-            for row in timing
-            if str(row.get("timing_outcome")) in READY_OUTCOMES
-            and _dt(row.get("timing_decision_at")) is not None
-        ),
-        None,
-    )
+    opportunity_created = next((_dt(row.get("opportunity_created_at")) for row in timing if _dt(row.get("opportunity_created_at")) is not None), None)
+    first_ready_at = next((
+        _dt(row.get("timing_decision_at"))
+        for row in timing
+        if str(row.get("timing_outcome")) in READY_OUTCOMES and _dt(row.get("timing_decision_at")) is not None
+    ), None)
     protect_at = _first_action_time(management, "PROTECT")
     trail_at = _first_action_time(management, "TRAIL")
     primary_at = _first_time_at_or_above(management, _target_r(trade, trade.primary_target))
