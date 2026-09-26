@@ -64,6 +64,7 @@ REQUIRED_SOURCE_PATHS = (
     "decisions/executable_quality.py",
     "risk/engine.py",
     "risk/state.py",
+    "risk/runtime.py",
     "risk/permissions.py",
     "execution/models.py",
     "execution/checks.py",
@@ -150,6 +151,7 @@ CRITICAL_TESTS = (
     "tests/test_executable_quality.py",
     "tests/test_risk_profiles.py",
     "tests/test_risk_state.py",
+    "tests/test_risk_runtime_state.py",
     "tests/test_execution_intent.py",
     "tests/test_gate.py",
     "tests/test_controller.py",
@@ -172,6 +174,7 @@ CRITICAL_TESTS = (
 ANALYTICAL_NO_BROKER_DIRS = (
     SRC / "intelligence",
     SRC / "strategies",
+    SRC / "risk",
     SRC / "research",
     SRC / "operator",
     SRC / "diagnostics",
@@ -294,6 +297,14 @@ def check_architecture_boundaries(errors: list[str]) -> None:
     if "active" not in isolation_text.lower() or "shadow" not in isolation_text.lower():
         _fail(errors, "strategy isolation no longer visibly separates active and shadow states")
 
+    risk_runtime = SRC / "risk" / "runtime.py"
+    if risk_runtime.is_file():
+        text = risk_runtime.read_text(encoding="utf-8")
+        if "order_send(" in text or "execution.mt5_writer" in text:
+            _fail(errors, "durable Risk runtime gained broker-write authority")
+        if "StateStore" not in text or "risk_day" not in (SRC / "risk" / "state.py").read_text(encoding="utf-8"):
+            _fail(errors, "durable Risk-day state ownership is no longer explicit")
+
 
 def check_connected_evidence_is_read_only(errors: list[str]) -> None:
     for path in CONNECTED_EVIDENCE_PATHS:
@@ -337,6 +348,7 @@ def main() -> int:
     print("  PASS  66-document topology")
     print("  PASS  canonical source / script / proof ownership paths")
     print("  PASS  preserved Risk / cooldown / REAL-disable policy")
+    print("  PASS  durable UTC Risk-day component remains read/accounting-only")
     print("  PASS  setup-detection / isolation boundaries")
     print("  PASS  sole-writer / no-broker analytical boundaries")
     print("  PASS  connected-DEMO evidence tooling remains read-only")

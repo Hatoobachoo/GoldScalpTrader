@@ -1,8 +1,8 @@
 # GoldScalpTrader — Module Structure and File Map
 
 **Status:** IMPLEMENTED ARCHITECTURE MAP — CONNECTED DEMO CERTIFICATION IN PROGRESS
-**Version:** 2.3-institutional-scalp-implementation
-**Authority:** Actual package/file ownership, dependency direction, setup-detection/isolation boundaries, serial financial authority, connected evidence observation and research/presentation separation.
+**Version:** 2.4-institutional-scalp-implementation
+**Authority:** Actual package/file ownership, dependency direction, setup-detection/isolation boundaries, durable Risk-day authority, serial financial authority, connected evidence observation and research/presentation separation.
 
 ## 1. Dependency direction
 
@@ -25,6 +25,7 @@ flowchart TB
     MGMT --> RESEARCH
 
     PERSIST["persistence"] -. "durable context" .-> APP
+    PERSIST -.-> RISK
     PERSIST -.-> EXEC
     PERSIST -.-> MGMT
     PERSIST -.-> RESEARCH
@@ -41,11 +42,11 @@ Broker/financial authority remains serial even if analytical work is physically 
 | `domain` | enums, typed IDs/DTOs, units/states | MT5 calls |
 | `diagnostics` | structured logs, reason/health models, metrics, read-only accumulated connected-DEMO evidence summaries | trading authority |
 | `security` | secret detection/redaction | secret storage |
-| `market_data` | sole normalized analytical MT5 read boundary, account-mode verification and activity normalization | raw irreversible writes |
+| `market_data` | sole normalized analytical/recovery MT5 read boundary, account-mode verification and activity normalization | raw irreversible writes |
 | `intelligence` | causal descriptive structure/technical/liquidity/quant/session/News context | money/Gate |
 | `strategies` | six family definitions, market-first setup detection, Strategy Isolation, analytical scheduler | Risk/broker writes |
 | `decisions` | active-family BUY/SELL/Red Team, Opportunity, M1 timing, TradePlan, executable quality | raw MT5 write |
-| `risk` | preserved profiles, monetary sizing, daily state, cooldown/re-entry/capacity | strategy rewrite |
+| `risk` | preserved profiles, monetary sizing, durable UTC risk-day/account-safety state, cooldown/re-entry/capacity | strategy rewrite or broker write |
 | `execution` | Gate, controller, Intent, checks, sole writer, reconciliation | strategy invention |
 | `management` | ManagedTrade, close-proof lineage and HOLD/PROTECT/TRAIL/RUNNER/EXIT decisions | raw writer |
 | `persistence` | strict local state/checkpoints/recovery packages | current broker truth |
@@ -104,6 +105,7 @@ src/gold_scalp_trader/
 ├── risk/
 │   ├── engine.py
 │   ├── state.py
+│   ├── runtime.py
 │   └── permissions.py
 ├── execution/
 │   ├── models.py
@@ -250,6 +252,8 @@ quote/tick
 
 `market_data/account_mode.py` is the narrow environment guard used by the DEMO runtime to prove the connected MT5 account reports DEMO before any write-capable path proceeds.
 
+`market_data/mt5_reader.py` also owns normalized account-wide/position-scoped deal-history and whole-account position reads used by recovery/Risk accounting. Unavailable history/positions remain UNKNOWN rather than zero.
+
 M1 is production-relevant only as subordinate timing after a valid M5 Opportunity; it cannot independently create a setup.
 
 ## 7. Decision ownership
@@ -290,14 +294,23 @@ These owners must remain distinct in behavior even if implementation refactors f
 - aggregate/capacity risk;
 - disabled-by-default aggressive 8%/16% overlay.
 
-`risk/state.py` owns:
+`risk/state.py` owns the strict durable state model and persistence serialization for:
 
-- UTC risk day;
+- fixed UTC risk-day identity and DayStartEquity;
+- fixed SMALL/MEDIUM/NORMAL profile for that day;
 - Account Safety P/L state;
 - daily lock/reset;
 - consecutive-loss streak;
 - cooldown;
 - same-episode re-entry state.
+
+`risk/runtime.py` is a **read/accounting authority component with no broker-write capability**. It:
+
+- reconstructs/bootstraps a UTC day only from verified account-wide history while the whole account is flat and lifecycle-reconciled;
+- loads the persisted day/profile on restart instead of resolving from current equity;
+- separates identifiable non-trading cash flow from Account Safety P/L;
+- consumes exact verified close receipts idempotently for the global loss streak/cooldown;
+- returns typed PASS/BLOCK/UNKNOWN Risk authority for new exposure.
 
 `risk/permissions.py` composes Risk-related hard facts. News context is not a hard permission input.
 
@@ -346,7 +359,7 @@ HOLD / PROTECT / TRAIL / RUNNER / EXIT
 
 `management/execution.py` turns approved management actions into the same governed execution service/Intent path.
 
-`management/closure.py` owns exact known-trade close proof/archival handoff; it cannot adopt an unknown external Gold position.
+`management/closure.py` owns exact known-trade close proof/archival handoff. Its durable receipt includes the verified close monetary result needed for restart-safe Risk streak/cooldown accounting; it cannot adopt an unknown external Gold position.
 
 Management never imports raw MT5 writer directly.
 
@@ -449,6 +462,7 @@ research/ML → live production mutation                     NO
 unknown position/history → zero                            NO
 ambiguous broker acknowledgement → blind retry             NO
 Risk → tighten structural SL to fit volume                 NO
+Risk runtime/accounting authority → broker write            NO
 News provider failure → hard trading kill switch           NO
 trading runtime → Git commit/push/pull                     NO
 backup package → credentials                               NO

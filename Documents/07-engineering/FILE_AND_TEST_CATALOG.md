@@ -1,7 +1,7 @@
 # GoldScalpTrader — Complete File and Test Catalog
 
 **Status:** IMPLEMENTED FILE/TEST MAP — OFFLINE CONTRACT SYNC ENFORCED / CONNECTED DEMO CERTIFICATION IN PROGRESS
-**Version:** 2.3-institutional-scalp-implementation
+**Version:** 2.4-institutional-scalp-implementation
 **Authority:** Actual source ownership, actual deterministic/integration proof, remaining connected proof and implementation/document synchronization.
 
 ## 1. Current repository reality
@@ -88,17 +88,20 @@ tests/test_mt5_reader.py
 tests/test_deal_history_reader.py
 tests/test_activity_accounting.py
 tests/test_market_domain.py
+tests/test_risk_runtime_state.py
 ```
 
 Required semantics remain:
 
-- one normalized analytical MT5 boundary;
+- one normalized analytical/recovery MT5 boundary;
 - completed H1/M15/M5 and bounded M1 chronology;
 - optional H4;
 - Bid/Ask/source/capture timestamps;
 - future-clock/stale/corrupt detection;
 - `[]` vs `None` exposure semantics;
 - symbol/spec normalization;
+- account-wide deal-history normalization for Risk-day accounting;
+- whole-account flatness read preserves UNKNOWN rather than inventing zero;
 - no raw write authority;
 - connected DEMO account must positively report DEMO before writes.
 
@@ -216,6 +219,8 @@ tests/test_decision_pipeline.py
 Must preserve:
 
 - family-correct structural invalidation;
+- no fabricated `entry ± ATR` stop/target geometry;
+- ATR is only a structural/noise buffer after a causal invalidation exists;
 - no SL rewrite to fit Risk;
 - no inherited fixed Swing 1.20R hard dependency;
 - gross R distinct from current costs;
@@ -229,6 +234,7 @@ Source:
 ```text
 risk/engine.py
 risk/state.py
+risk/runtime.py
 risk/permissions.py
 ```
 
@@ -237,9 +243,21 @@ Current proof:
 ```text
 tests/test_risk_profiles.py
 tests/test_risk_state.py
+tests/test_risk_runtime_state.py
 tests/test_guarded_demo_runtime.py
 scripts/verify_contract_sync.py
 ```
+
+`risk/runtime.py` is a broker-read/accounting authority component and has no broker-write capability. Deterministic proof covers:
+
+- fixed UTC risk-day profile persistence even if current equity later crosses an account band;
+- strict risk-state SQLite round-trip;
+- DayStartEquity reconstruction from verified flat-account history rather than current equity;
+- identifiable non-trading cash-flow separation in Account Safety P/L;
+- fail-closed day bootstrap when whole-account flatness/lifecycle truth is unavailable;
+- persisted daily loss lock;
+- idempotent verified-close consumption for the global loss streak/cooldown;
+- true breakeven does not become a false loss.
 
 Exact preserved policy regression-checked by the contract-sync verifier:
 
@@ -331,9 +349,10 @@ tests/test_managed_trade_store.py
 tests/test_management_lifecycle.py
 tests/test_action_reconciliation.py
 tests/test_deal_history_reader.py
+tests/test_risk_runtime_state.py
 ```
 
-`management/closure.py` exists because exact broker/manual close proof is a separate responsibility from deciding HOLD/PROTECT/TRAIL/RUNNER/EXIT.
+`management/closure.py` exists because exact broker/manual close proof is a separate responsibility from deciding HOLD/PROTECT/TRAIL/RUNNER/EXIT. Its immutable closure receipt now preserves the verified net monetary close result used by restart-safe Risk streak/cooldown accounting.
 
 Unknown/manual Gold exposure is never silently adopted as bot-owned.
 
@@ -358,6 +377,7 @@ tests/test_state_store.py
 tests/test_checkpoint.py
 tests/test_full_checkpoint.py
 tests/test_recovery_package.py
+tests/test_risk_runtime_state.py
 ```
 
 The remaining fresh-machine + connected MT5 reconciliation/handoff drill belongs to Phase 15, not to offline test claims.
@@ -387,6 +407,8 @@ tests/test_graphical_runtime.py
 ```
 
 Write-capable DEMO behavior requires explicit DEMO confirmation and positive MT5 DEMO account proof. REAL remains hard-disabled.
+
+The durable `risk/runtime.py` component is deliberately tracked separately from raw execution ownership: it may read account/history/state and return PASS/BLOCK/UNKNOWN, but it cannot send or reconcile an order by itself.
 
 ## 15. Operator / graphical dashboard
 
@@ -517,7 +539,7 @@ market-first setup / no strategy forcing
 strategy isolation
 M5→M1 decision pipeline
 executable quality
-Risk policy/state
+Risk policy/state and durable UTC risk-day accounting
 one-shot execution Intent / Gate / controller
 guarded DEMO runtime
 ManagedTrade lifecycle
