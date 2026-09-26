@@ -10,7 +10,9 @@ Safety-first local MetaTrader 5 gold scalping project.
 - `DEMO` → continuous guarded demo trading with local SQLite state.
 - `REAL` → disabled in this release.
 
-The connected MT5 account must explicitly report DEMO mode before any DEMO broker write. The runtime blocks on stale/incomplete required data, occupied/unknown exposure, unresolved Intents, controller conflicts, persistence failure, disabled expert trading, or failed broker prechecks.
+The connected MT5 account must explicitly report DEMO mode before any DEMO broker write. The runtime blocks on stale/incomplete required data, occupied/unknown exposure, unresolved Intents, controller conflicts, persistence failure, disabled expert trading, failed broker prechecks, or unknown/closed hard Session authority.
+
+Hard broker Session facts are now consumed from the scoped local runtime provider file `runtime/session_news.json` (beside the configured state DB). `OPEN` must be positively verified for new exposure; `PRE_CLOSE` blocks new OPENs and preserves the governed flatten thresholds; provider absence/expiry/scope mismatch fails closed. A conservative Saturday floor displays `CLOSED` but never fabricates weekday `OPEN`. News remains soft context only.
 
 Verified bot positions use the governed lifecycle:
 
@@ -32,9 +34,11 @@ For the detailed as-built hierarchy of runtime modes, configuration locks, DEMO 
 
 Timing Intelligence is a first-class subsystem: M5 remains the setup/thesis authority, M1 refines entry timing, and verified timing evidence is preserved locally for governed efficiency research. Autonomous research may propose improvements, but cannot change Risk/Gate, promote itself to live execution, or gain broker authority.
 
+A qualified M5 Opportunity now has durable local Opportunity/Episode identity across repeated WAIT/READY cycles and restart. The same causal terminal episode cannot silently re-arm merely because an in-memory cycle generated a new random ID; only a fresh causal M5 identity may create a new episode. Once the irreversible OPEN send is consumed, the durable Opportunity becomes `TRIGGERED`.
+
 For governed DEMO OPENs, the causal Opportunity/episode, TradePlan, M5 event lineage and TimingDecision profile/ages/chase/extension are frozen into durable OPEN context **before the irreversible broker send**. After verified OPEN reconciliation the same lineage is stored in `ManagedTrade`, then carried through exact verified close into the exactly-once learning queue/StrategyMemory. Missing efficiency metrics remain unknown rather than fabricated.
 
-The live DEMO presentation paths also write **research-only** management-path evidence and same-market shadow-family counterfactual evidence. This records management action/open-R progression and all five shadow candidates without granting those research records Risk, Gate, broker-write or automatic promotion authority.
+The live DEMO presentation paths also write **research-only** management-path evidence and same-market shadow-family counterfactual evidence. This records management action/open-R progression and shadow candidates without granting those research records Risk, Gate, broker-write or automatic promotion authority.
 
 Implementation hierarchy, current evidence wiring, autonomous/governed promotion boundaries and remaining learning gaps are documented in:
 
@@ -42,7 +46,7 @@ Implementation hierarchy, current evidence wiring, autonomous/governed promotion
 
 ## Approved graphical dashboard
 
-DEMO uses the approved local graphical dashboard by default. It is one-screen/no-scroll and includes a live candlestick chart, M1/M5/M15/H1/H4 buttons, Indicators, Drawings and Settings controls, Detected Setup, Active Test Family, shadow setups, TradePlan, Risk, ManagedTrade, Execution and Gate information.
+DEMO uses the approved local graphical dashboard by default. It is one-screen/no-scroll and includes a live candlestick chart, M1/M5/M15/H1/H4 buttons, Indicators, Drawings and Settings controls, Detected Setup, Active Test Family, shadow setups, Opportunity/Timing, TradePlan, Risk, hard Session/News-source state, ManagedTrade, Execution and Gate information.
 
 Chart/UI controls are presentation-only. They redraw the cached dashboard snapshot and cannot trigger broker writes. The governed trading cycle advances only on its fixed runtime timer.
 
