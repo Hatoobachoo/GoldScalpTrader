@@ -15,6 +15,7 @@ from gold_scalp_trader.domain.enums import RuntimeMode, Timeframe
 from gold_scalp_trader.operator.graphical_snapshot import from_runtime
 from gold_scalp_trader.persistence.checkpoint import export_checkpoint
 from gold_scalp_trader.persistence.store import StateStore
+from gold_scalp_trader.research.timing_learning import record_runtime_timing
 
 
 class RuntimeDashboardProvider:
@@ -36,6 +37,7 @@ class RuntimeDashboardProvider:
     def __call__(self):
         """Advance exactly one governed broker cycle and return one UI snapshot."""
         result = self.step(self.settings, self.api, self.store)
+        record_runtime_timing(self.store, result)
         self.last_result = result
         self.calls += 1
         market = result.cycle.intelligence.market

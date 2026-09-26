@@ -20,6 +20,7 @@ from gold_scalp_trader.operator.graphical_snapshot import from_runtime
 from gold_scalp_trader.operator.terminal_dashboard import render
 from gold_scalp_trader.persistence.checkpoint import export_checkpoint
 from gold_scalp_trader.persistence.store import StateStore
+from gold_scalp_trader.research.timing_learning import record_runtime_timing
 
 
 def _clear_screen() -> None:
@@ -97,6 +98,7 @@ def run_live_demo(
                     sleep_fn(settings.loop_interval_seconds)
                 continue
 
+            record_runtime_timing(store, result)
             _print_result(result, state_path)
             completed += 1
             if max_cycles is None or completed < max_cycles:
