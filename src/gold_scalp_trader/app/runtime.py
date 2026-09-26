@@ -65,11 +65,9 @@ def symbol_allows_action(
     mode = spec.trade_mode
     if mode is None:
         return None
-
     if isinstance(mode, str):
         value = mode.strip().upper()
-        disabled = value in {"DISABLED", "SYMBOL_TRADE_MODE_DISABLED"}
-        if disabled:
+        if value in {"DISABLED", "SYMBOL_TRADE_MODE_DISABLED"}:
             return False
         if action is not ExecutionAction.OPEN:
             return True
@@ -113,8 +111,10 @@ def _quote_ready(market: MarketSnapshot, settings: Settings) -> bool:
 def _data_ready(cycle: CycleResult, settings: Settings) -> bool:
     market = cycle.intelligence.market
     required = (Timeframe.M1, Timeframe.M5, Timeframe.M15, Timeframe.H1)
-    candles_ready = all(market.quality.get(tf) is DataQuality.HEALTHY for tf in required)
-    return candles_ready and _quote_ready(market, settings)
+    return (
+        all(market.quality.get(tf) is DataQuality.HEALTHY for tf in required)
+        and _quote_ready(market, settings)
+    )
 
 
 def _management_data_ready(
@@ -138,11 +138,11 @@ def _identity_ready(market: MarketSnapshot, api) -> bool:
 
 
 def _writer(settings: Settings, api) -> Mt5Writer:
-    return Mt5Writer(
-        api,
-        magic=settings.bot_magic,
-        comment_prefix=settings.bot_comment_prefix,
-    )
+    return Mt5Writer(api, magic=settings.bot_magic, comment_prefix=settings.bot_comment_prefix)
+
+
+def _iso(value: datetime | None) -> str | None:
+    return None if value is None else value.isoformat()
 
 
 def _save_open_context(
@@ -151,20 +151,50 @@ def _save_open_context(
     cycle: CycleResult,
     settings: Settings,
 ) -> None:
-    if cycle.trade_plan is None or cycle.opportunity is None:
-        raise ValueError("OPEN context requires TradePlan and Opportunity")
+    """Freeze all causal entry/timing lineage before the irreversible send."""
+    if cycle.trade_plan is None or cycle.opportunity is None or cycle.timing is None:
+        raise ValueError("OPEN context requires TradePlan, Opportunity and TimingDecision")
     plan = cycle.trade_plan
+    opp = cycle.opportunity
+    timing = cycle.timing
     store.put(
         OPEN_CONTEXT_NS,
         intent.intent_id,
         {
-            "family": cycle.opportunity.family.value,
+            "family": opp.family.value,
             "policy_version": settings.active_strategy_policy_version,
             "primary_target": plan.primary_target,
             "expansion_target": plan.expansion_target,
             "opened_at": intent.created_at.isoformat(),
+            "opportunity_id": opp.opportunity_id,
+            "episode_id": opp.episode_id,
+            "trade_plan_id": plan.trade_plan_id,
+            "entry_reference": plan.entry_reference,
+            "m5_source_event_ids": list(opp.source_event_ids),
+            "m5_event_time": _iso(opp.m5_event_time),
+            "timing_profile": timing.profile,
+            "timing_policy_version": timing.policy_version,
+            "timing_trigger_time": _iso(timing.trigger_time),
+            "m5_event_age_seconds": timing.m5_event_age_seconds,
+            "m5_event_age_bars": timing.m5_event_age_bars,
+            "trigger_age_seconds": timing.trigger_age_seconds,
+            "chase_atr": timing.chase_atr,
+            "micro_extension_atr": timing.micro_extension_atr,
         },
+        allow_replace=False,
     )
+
+
+def _optional_dt(value) -> datetime | None:
+    return None if value in (None, "") else datetime.fromisoformat(str(value))
+
+
+def _optional_float(value) -> float | None:
+    return None if value is None else float(value)
+
+
+def _optional_int(value) -> int | None:
+    return None if value is None else int(value)
 
 
 def _managed_from_verified_open(
@@ -191,8 +221,7 @@ def _managed_from_verified_open(
     if primary_target_raw is None:
         raise ValueError("verified OPEN has no target lineage")
     expansion_raw = context.get("expansion_target")
-    opened_raw = context.get("opened_at")
-    opened_at = datetime.fromisoformat(str(opened_raw)) if opened_raw else intent.created_at
+    opened_at = _optional_dt(context.get("opened_at")) or intent.created_at
     original_r = abs(position.price_open - original_sl)
     if original_r <= 0:
         raise ValueError("verified OPEN has invalid original R geometry")
@@ -212,6 +241,22 @@ def _managed_from_verified_open(
         policy_version=str(context.get("policy_version", settings.active_strategy_policy_version)),
         original_r_price=original_r,
         opened_at=opened_at,
+        opportunity_id=None if context.get("opportunity_id") is None else str(context["opportunity_id"]),
+        episode_id=None if context.get("episode_id") is None else str(context["episode_id"]),
+        trade_plan_id=None if context.get("trade_plan_id") is None else str(context["trade_plan_id"]),
+        entry_reference=_optional_float(context.get("entry_reference")),
+        m5_source_event_ids=tuple(str(x) for x in context.get("m5_source_event_ids", ())),
+        m5_event_time=_optional_dt(context.get("m5_event_time")),
+        timing_profile=None if context.get("timing_profile") is None else str(context["timing_profile"]),
+        timing_policy_version=(
+            None if context.get("timing_policy_version") is None else str(context["timing_policy_version"])
+        ),
+        timing_trigger_time=_optional_dt(context.get("timing_trigger_time")),
+        m5_event_age_seconds=_optional_float(context.get("m5_event_age_seconds")),
+        m5_event_age_bars=_optional_int(context.get("m5_event_age_bars")),
+        trigger_age_seconds=_optional_float(context.get("trigger_age_seconds")),
+        chase_atr=_optional_float(context.get("chase_atr")),
+        micro_extension_atr=_optional_float(context.get("micro_extension_atr")),
     )
     store.delete(OPEN_CONTEXT_NS, intent.intent_id)
     return trade
@@ -302,10 +347,11 @@ def _reconcile_unresolved_intents(
         elif intent.action is ExecutionAction.CLOSE:
             matched = close_matches(intent, market.positions)
             if matched is True:
-                out = intent.with_state(IntentState.ACCEPTED_VERIFIED, reason="CLOSE_POSITION_ABSENCE_RECONCILED")
+                out = intent.with_state(
+                    IntentState.ACCEPTED_VERIFIED,
+                    reason="CLOSE_POSITION_ABSENCE_RECONCILED",
+                )
                 save_intent(store, out)
-                # ManagedTrade is deliberately retained until exact exit-deal
-                # volume proof is available.
         last = out
     return managed, last
 
@@ -406,12 +452,7 @@ def _run_managed_demo_cycle(
     close_price = None
     if decision.action is ManagementAction.EXIT:
         close_price = market.quote.bid if trade.direction is Direction.BUY else market.quote.ask
-    intent = management_to_intent(
-        decision,
-        trade,
-        price=close_price,
-        as_of=market.captured_at,
-    )
+    intent = management_to_intent(decision, trade, price=close_price, as_of=market.captured_at)
     if intent is None:
         return RuntimeResult(cycle, False, None, trade, decision.action)
 
@@ -467,13 +508,14 @@ def _run_managed_demo_cycle(
                     current_trade = replace(current_trade, current_sl=out.sl)
                     save_managed(store, scope, current_trade)
             elif out.action is ExecutionAction.CLOSE and close_matches(out, fresh.positions) is True:
-                out = out.with_state(IntentState.ACCEPTED_VERIFIED, reason="CLOSE_POSITION_ABSENCE_RECONCILED")
+                out = out.with_state(
+                    IntentState.ACCEPTED_VERIFIED,
+                    reason="CLOSE_POSITION_ABSENCE_RECONCILED",
+                )
                 save_intent(store, out)
                 if _try_archive_missing_managed(settings, reader, store, fresh, scope, current_trade):
                     current_trade = None  # type: ignore[assignment]
         except Mt5ReadError:
-            # The one irreversible send has already happened. Preserve UNKNOWN
-            # and let the next cycle reconcile; never resend blindly.
             pass
 
     cycle = replace(
@@ -539,9 +581,9 @@ def run_guarded_demo_cycle(
             holder=holder,
         )
 
-    # A bot-magic position without durable ManagedTrade lineage is never
-    # silently adopted. Recovery evidence must resolve it explicitly.
-    if market.positions is not None and any(position.magic == settings.bot_magic for position in market.positions):
+    if market.positions is not None and any(
+        position.magic == settings.bot_magic for position in market.positions
+    ):
         cycle = replace(
             cycle,
             status="RECOVERY",
@@ -625,12 +667,15 @@ def run_guarded_demo_cycle(
     if out.state is IntentState.ACCEPTED_UNKNOWN:
         try:
             fresh = reader.read().snapshot
-            current_managed, reconciled = _reconcile_unresolved_intents(settings, store, fresh, scope)
+            current_managed, reconciled = _reconcile_unresolved_intents(
+                settings,
+                store,
+                fresh,
+                scope,
+            )
             if reconciled is not None and reconciled.intent_id == out.intent_id:
                 out = reconciled
         except Mt5ReadError:
-            # Send already consumed. Preserve ACCEPTED_UNKNOWN and reconcile on
-            # the next cycle rather than raising into a misleading no-write path.
             pass
 
     cycle = replace(

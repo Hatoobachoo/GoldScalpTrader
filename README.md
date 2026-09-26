@@ -32,6 +32,8 @@ For the detailed as-built hierarchy of runtime modes, configuration locks, DEMO 
 
 Timing Intelligence is a first-class subsystem: M5 remains the setup/thesis authority, M1 refines entry timing, and verified timing evidence is preserved locally for governed efficiency research. Autonomous research may propose improvements, but cannot change Risk/Gate, promote itself to live execution, or gain broker authority.
 
+For governed DEMO OPENs, the causal Opportunity/episode, TradePlan, M5 event lineage and TimingDecision profile/ages/chase/extension are now frozen into durable OPEN context **before the irreversible broker send**. After verified OPEN reconciliation the same lineage is stored in `ManagedTrade`, then carried through exact verified close into the exactly-once learning queue/StrategyMemory. Missing efficiency metrics remain unknown rather than fabricated.
+
 Implementation hierarchy, current evidence wiring, autonomous/governed promotion boundaries and remaining learning gaps are documented in:
 
 [`TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md`](TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md)

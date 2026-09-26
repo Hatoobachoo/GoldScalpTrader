@@ -134,6 +134,28 @@ def test_demo_path_never_writes_without_a_complete_trade_setup():
         assert result.managed_trade.ticket == 88
         assert api.last_request["magic"] == _settings().bot_magic
 
+        assert result.cycle.opportunity is not None
+        assert result.cycle.trade_plan is not None
+        assert result.cycle.timing is not None
+        trade = result.managed_trade
+        opportunity = result.cycle.opportunity
+        plan = result.cycle.trade_plan
+        timing = result.cycle.timing
+        assert trade.opportunity_id == opportunity.opportunity_id
+        assert trade.episode_id == opportunity.episode_id
+        assert trade.trade_plan_id == plan.trade_plan_id
+        assert trade.entry_reference == plan.entry_reference
+        assert trade.m5_source_event_ids == opportunity.source_event_ids
+        assert trade.m5_event_time == opportunity.m5_event_time
+        assert trade.timing_profile == timing.profile
+        assert trade.timing_policy_version == timing.policy_version
+        assert trade.timing_trigger_time == timing.trigger_time
+        assert trade.m5_event_age_seconds == timing.m5_event_age_seconds
+        assert trade.m5_event_age_bars == timing.m5_event_age_bars
+        assert trade.trigger_age_seconds == timing.trigger_age_seconds
+        assert trade.chase_atr == timing.chase_atr
+        assert trade.micro_extension_atr == timing.micro_extension_atr
+
 
 def test_non_demo_account_is_hard_refused():
     api = Api(account_trade_mode=2)
