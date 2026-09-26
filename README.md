@@ -22,6 +22,12 @@ OPEN → ManagedTrade → HOLD / PROTECT / TRAIL / RUNNER / EXIT
 
 A bot-magic position without durable ManagedTrade lineage is never silently adopted. A missing known position is not called closed until exit-deal volume proof is available.
 
+## REAL / DEMO mode engineering guide
+
+For the detailed as-built hierarchy of runtime modes, configuration locks, DEMO account verification, Gate/precheck layers, sole MT5 writer, persistence/reconciliation, connected certification, REAL hard-disable behavior, code locations and current integration boundaries, read:
+
+[`REAL_AND_DEMO_MODE_ARCHITECTURE.md`](REAL_AND_DEMO_MODE_ARCHITECTURE.md)
+
 ## Approved graphical dashboard
 
 DEMO uses the approved local graphical dashboard by default. It is one-screen/no-scroll and includes a live candlestick chart, M1/M5/M15/H1/H4 buttons, Indicators, Drawings and Settings controls, Detected Setup, Active Test Family, shadow setups, TradePlan, Risk, ManagedTrade, Execution and Gate information.
