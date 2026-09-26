@@ -42,11 +42,28 @@ def _payload(record: CandidateRecord) -> dict:
     }
 
 
+def _restore_semantics(value):
+    """Restore invention tuple semantics lost by JSON serialization.
+
+    Candidate fingerprints are JSON-canonical and therefore unaffected by
+    tuple/list representation, but dataclass round-trip equality should retain
+    the immutable tuple shape produced by ``invent``.
+    """
+    if not isinstance(value, dict):
+        raise StateIntegrityError("candidate semantics must be an object")
+    restored = dict(value)
+    for key in ("required", "supportive", "sources"):
+        item = restored.get(key)
+        if isinstance(item, list):
+            restored[key] = tuple(item)
+    return restored
+
+
 def _candidate(payload: dict) -> Candidate:
     return Candidate(
         candidate_id=str(payload["candidate_id"]),
         kind=str(payload["kind"]),
-        semantics=dict(payload["semantics"]),
+        semantics=_restore_semantics(payload["semantics"]),
         stage=PromotionStage(str(payload["stage"])),
         holdout_consumed=bool(payload.get("holdout_consumed", False)),
         rollback_target=None if payload.get("rollback_target") is None else str(payload["rollback_target"]),

@@ -59,7 +59,10 @@ def record_management(store: StateStore, result: Any) -> str | None:
     cycle = getattr(result, "cycle", None)
     if trade is None or action is None or cycle is None:
         return None
-    market = cycle.intelligence.market
+    intelligence = getattr(cycle, "intelligence", None)
+    market = getattr(intelligence, "market", None)
+    if market is None:
+        return None
     bars = 0
     if trade.opened_at is not None:
         bars = sum(1 for candle in market.series(Timeframe.M5) if candle.close_time > trade.opened_at)
@@ -72,7 +75,7 @@ def record_management(store: StateStore, result: Any) -> str | None:
         "direction": _value(trade.direction),
         "captured_at_utc": _iso(market.captured_at),
         "action": _value(action),
-        "reason": str(cycle.reason),
+        "reason": str(getattr(cycle, "reason", "")),
         "open_r": _num(_open_r(trade, market)),
         "bars_in_trade": bars,
         "spread": _num(market.quote.spread),
@@ -95,31 +98,40 @@ def record_shadows(store: StateStore, result: Any) -> tuple[str, ...]:
     cycle = getattr(result, "cycle", None)
     if cycle is None:
         return ()
-    market = cycle.intelligence.market
-    active = cycle.isolation.active_family
+    intelligence = getattr(cycle, "intelligence", None)
+    market = getattr(intelligence, "market", None)
+    isolation = getattr(cycle, "isolation", None)
+    if market is None or isolation is None:
+        return ()
+    candidates = getattr(isolation, "candidates", None)
+    if candidates is None:
+        return ()
+    active = getattr(isolation, "active_family", None)
     keys: list[str] = []
-    for isolated in cycle.isolation.candidates:
-        if isolated.mode is not StrategyMode.SHADOW_ONLY:
+    for isolated in candidates:
+        if getattr(isolated, "mode", None) is not StrategyMode.SHADOW_ONLY:
             continue
-        candidate = isolated.candidate
+        candidate = getattr(isolated, "candidate", None)
+        if candidate is None:
+            continue
         payload = {
             "schema_version": SCHEMA_VERSION,
-            "captured_at_utc": _iso(market.captured_at),
+            "captured_at_utc": _iso(getattr(market, "captured_at", None)),
             "active_family": _value(active),
-            "shadow_family": _value(candidate.family),
-            "candidate_id": candidate.candidate_id,
-            "qualification": _value(candidate.qualification),
-            "direction": _value(candidate.direction),
-            "qualified": bool(candidate.qualified),
-            "score": _num(candidate.score),
-            "coverage": _num(candidate.coverage),
-            "source_event_ids": sorted(str(x) for x in candidate.source_event_ids),
-            "m5_event_time": _iso(candidate.m5_event_time),
-            "preferred_m1_profile": candidate.preferred_m1_profile,
-            "policy_version": candidate.policy_version,
-            "spread": _num(market.quote.spread),
-            "bid": _num(market.quote.bid),
-            "ask": _num(market.quote.ask),
+            "shadow_family": _value(getattr(candidate, "family", None)),
+            "candidate_id": getattr(candidate, "candidate_id", None),
+            "qualification": _value(getattr(candidate, "qualification", None)),
+            "direction": _value(getattr(candidate, "direction", None)),
+            "qualified": bool(getattr(candidate, "qualified", False)),
+            "score": _num(getattr(candidate, "score", None)),
+            "coverage": _num(getattr(candidate, "coverage", None)),
+            "source_event_ids": sorted(str(x) for x in getattr(candidate, "source_event_ids", ()) or ()),
+            "m5_event_time": _iso(getattr(candidate, "m5_event_time", None)),
+            "preferred_m1_profile": getattr(candidate, "preferred_m1_profile", None),
+            "policy_version": getattr(candidate, "policy_version", None),
+            "spread": _num(getattr(getattr(market, "quote", None), "spread", None)),
+            "bid": _num(getattr(getattr(market, "quote", None), "bid", None)),
+            "ask": _num(getattr(getattr(market, "quote", None), "ask", None)),
         }
         event_key = _key("SHD", payload)
         store.append_event(SHADOW_NS, event_key, payload)
