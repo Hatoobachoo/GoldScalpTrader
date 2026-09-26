@@ -77,6 +77,41 @@ If the necessary runtime evidence is absent, the field remains `None`/UNKNOWN ra
 
 This lets research ask useful questions such as “are entries consistently late?”, “does PROTECT happen too early?”, or “how much observed MFE is commonly given back?” without teaching the live system to weaken Risk or execution safety.
 
+### Governed autonomous strategy promotion
+
+Raw runtime observations are **source evidence**, not promotion-stage proof. A Timing event, shadow snapshot or actual learning observation cannot be reused by itself to claim that a candidate passed validation, holdout, stress, shadow, DEMO or production review.
+
+Every governed promotion step now requires typed `candidate_stage_evidence` bound to:
+
+```text
+candidate ID
+candidate fingerprint
+exact next target stage
+dataset identity
+code revision
+config fingerprint
+policy version
+execution realism
+evidence identity SHA-256
+artifact SHA-256
+recorded limitations
+```
+
+Stage skipping remains forbidden. Evidence for one candidate, fingerprint or target stage cannot promote another. `APPROVAL_REQUIRED → PRODUCTION` still requires explicit operator approval and rollback lineage. Even a candidate whose research registry reaches `PRODUCTION` receives **no direct runtime activation authority**; deployment remains a separate governed action.
+
+This keeps the intended hierarchy intact:
+
+```text
+observed evidence
+→ measured performance
+→ research hypothesis
+→ immutable stage-specific evidence
+→ replay / validation / holdout / stress / shadow / DEMO
+→ APPROVAL_REQUIRED
+→ explicit operator approval
+→ versioned deployment
+```
+
 Implementation hierarchy, current evidence wiring, autonomous/governed promotion boundaries and remaining learning gaps are documented in:
 
 [`TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md`](TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md)
