@@ -145,6 +145,16 @@ def test_counterfactual_path_is_after_cost_and_never_claims_broker_execution():
     assert result.outcome.mode is StrategyMode.SHADOW_ONLY
 
 
+def test_counterfactual_rejects_pre_entry_candles_and_naive_entry_time():
+    base = datetime(2026, 1, 2, 10, 1, tzinfo=UTC)
+    with pytest.raises(ValueError, match="timezone-aware"):
+        CounterfactualPlan("SH-T", "FAMILY", Direction.BUY, 100.0, 99.0, 102.0, "2026-01-02T10:01:00")
+    plan = CounterfactualPlan("SH-T", "FAMILY", Direction.BUY, 100.0, 99.0, 102.0, base.isoformat())
+    pre_entry = Candle(Timeframe.M1, base - timedelta(minutes=1), 100, 101, 99.5, 100.5)
+    with pytest.raises(ValueError, match="pre-entry"):
+        evaluate_counterfactual_path(plan, (pre_entry,))
+
+
 def test_counterfactual_same_bar_stop_and_target_is_ambiguous_not_guessed():
     base = datetime(2026, 1, 2, 10, 0, tzinfo=UTC)
     plan = CounterfactualPlan("SH-2", "FAMILY", Direction.BUY, 100.0, 99.0, 102.0, base.isoformat())
@@ -188,32 +198,20 @@ def test_ablation_reports_edge_and_recall_tradeoff_without_creating_policy():
 def test_evidence_identity_requires_real_sha256_fields():
     with pytest.raises(ValueError, match="candidate_fingerprint"):
         build_evidence_identity(
-            candidate_fingerprint="candidate-v1",
-            dataset_sha256=_sha("dataset"),
-            code_revision="abc123",
-            config_fingerprint="cfg-v1",
-            policy_version="policy-v1",
-            execution_realism="M1_REFINEMENT_REPLAY",
+            candidate_fingerprint="candidate-v1", dataset_sha256=_sha("dataset"), code_revision="abc123",
+            config_fingerprint="cfg-v1", policy_version="policy-v1", execution_realism="M1_REFINEMENT_REPLAY",
         )
     with pytest.raises(ValueError, match="dataset_sha256"):
         build_evidence_identity(
-            candidate_fingerprint=_sha("candidate"),
-            dataset_sha256="dataset-sha",
-            code_revision="abc123",
-            config_fingerprint="cfg-v1",
-            policy_version="policy-v1",
-            execution_realism="M1_REFINEMENT_REPLAY",
+            candidate_fingerprint=_sha("candidate"), dataset_sha256="dataset-sha", code_revision="abc123",
+            config_fingerprint="cfg-v1", policy_version="policy-v1", execution_realism="M1_REFINEMENT_REPLAY",
         )
 
 
 def test_evidence_package_is_write_new_and_detects_tamper(tmp_path: Path):
     evidence = build_evidence_identity(
-        candidate_fingerprint=_sha("candidate-v1"),
-        dataset_sha256=_sha("dataset-v1"),
-        code_revision="abc123",
-        config_fingerprint="cfg-v1",
-        policy_version="policy-v1",
-        execution_realism="M1_REFINEMENT_REPLAY",
+        candidate_fingerprint=_sha("candidate-v1"), dataset_sha256=_sha("dataset-v1"), code_revision="abc123",
+        config_fingerprint="cfg-v1", policy_version="policy-v1", execution_realism="M1_REFINEMENT_REPLAY",
     )
     metrics = summarize((ResearchOutcome("1", "FAMILY", StrategyMode.ACTIVE_EXECUTION, True, True, net_r=0.4),))
     package = write_evidence_package(tmp_path, package_id="pkg-001", evidence=evidence, metrics=metrics, limitations=("bar-based execution",))
@@ -225,22 +223,19 @@ def test_evidence_package_is_write_new_and_detects_tamper(tmp_path: Path):
 
 
 def test_evidence_package_recomputes_identity_digest(tmp_path: Path):
+    import json
     evidence = build_evidence_identity(
-        candidate_fingerprint=_sha("candidate-v2"),
-        dataset_sha256=_sha("dataset-v2"),
-        code_revision="abc124",
-        config_fingerprint="cfg-v2",
-        policy_version="policy-v2",
-        execution_realism="BAR_REPLAY",
+        candidate_fingerprint=_sha("candidate-v2"), dataset_sha256=_sha("dataset-v2"), code_revision="abc124",
+        config_fingerprint="cfg-v2", policy_version="policy-v2", execution_realism="BAR_REPLAY",
     )
     package = write_evidence_package(tmp_path, package_id="pkg-002", evidence=evidence, metrics={"net_r": 1.0})
     manifest_path = package / "evidence_manifest.json"
-    payload = __import__("json").loads(manifest_path.read_text(encoding="utf-8"))
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
     payload["code_revision"] = "tampered-code"
-    data = (__import__("json").dumps(payload, sort_keys=True, indent=2, ensure_ascii=True) + "\n").encode("utf-8")
+    data = (json.dumps(payload, sort_keys=True, indent=2, ensure_ascii=True) + "\n").encode("utf-8")
     manifest_path.write_bytes(data)
     package_manifest_path = package / "package_manifest.json"
-    package_manifest = __import__("json").loads(package_manifest_path.read_text(encoding="utf-8"))
+    package_manifest = json.loads(package_manifest_path.read_text(encoding="utf-8"))
     package_manifest["files"]["evidence_manifest.json"] = sha256(data).hexdigest()
-    package_manifest_path.write_text(__import__("json").dumps(package_manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    package_manifest_path.write_text(json.dumps(package_manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     assert not verify_evidence_package(package)

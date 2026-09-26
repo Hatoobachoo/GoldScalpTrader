@@ -4,8 +4,10 @@ import pytest
 
 from gold_scalp_trader.persistence.store import StateIntegrityError, StateStore
 from gold_scalp_trader.research.candidate_registry import (
+    STAGE_EVIDENCE_NS,
     advance_governed,
     load,
+    load_stage_evidence,
     record_stage_evidence,
     register_invention,
     runtime_activation_allowed,
@@ -72,6 +74,27 @@ def test_stage_evidence_is_fingerprint_and_next_stage_bound():
             store, cid, PromotionStage.RESEARCHING,
             evidence_id="E-WRONG-FP", identity=_identity("0" * 64, "wrong"), artifact_sha256="c" * 64,
         )
+
+
+def test_stage_evidence_identity_is_reverified_when_loaded():
+    store = StateStore()
+    recipe = Recipe(("M5_SETUP",), ("M1_ENTRY_TIMING",), "INDEPENDENT_CASES", "FAMILY_PROFILE")
+    _evidence(store, "TIM-SOURCE")
+    record = register_invention(store, recipe, ("TIM-SOURCE",))
+    cid = record.candidate.candidate_id
+    record_stage_evidence(
+        store, cid, PromotionStage.RESEARCHING,
+        evidence_id="E-TAMPER", identity=_identity(record.candidate.fingerprint, "tamper"), artifact_sha256="d" * 64,
+    )
+    row = store.get(STAGE_EVIDENCE_NS, "E-TAMPER")
+    assert row is not None
+    payload = dict(row.payload)
+    identity = dict(payload["evidence_identity"])
+    identity["code_revision"] = "tampered"
+    payload["evidence_identity"] = identity
+    store.put(STAGE_EVIDENCE_NS, "E-TAMPER", payload, allow_replace=True)
+    with pytest.raises(StateIntegrityError, match="identity integrity mismatch"):
+        load_stage_evidence(store, "E-TAMPER")
 
 
 def test_governed_promotion_requires_typed_stage_evidence_and_cannot_self_activate():

@@ -8,6 +8,7 @@ single candle touches both stop and target.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from datetime import datetime
 from enum import Enum
 from hashlib import sha256
 import json
@@ -75,6 +76,12 @@ class CounterfactualPlan:
     def __post_init__(self) -> None:
         if not self.episode_id.strip() or not self.family.strip() or not self.entry_time_iso.strip():
             raise ValueError("counterfactual identity and entry time are required")
+        try:
+            entry_time = datetime.fromisoformat(self.entry_time_iso.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise ValueError("counterfactual entry time must be ISO-8601") from exc
+        if entry_time.tzinfo is None or entry_time.utcoffset() is None:
+            raise ValueError("counterfactual entry time must be timezone-aware")
         if self.direction not in {Direction.BUY, Direction.SELL}:
             raise ValueError("counterfactual direction must be BUY or SELL")
         for name in ("entry", "initial_sl", "primary_target", "cost_r"):
@@ -94,6 +101,10 @@ class CounterfactualPlan:
     def original_r_price(self) -> float:
         return abs(self.entry - self.initial_sl)
 
+    @property
+    def entry_time(self) -> datetime:
+        return datetime.fromisoformat(self.entry_time_iso.replace("Z", "+00:00"))
+
 
 @dataclass(frozen=True, slots=True)
 class CounterfactualEvaluation:
@@ -112,10 +123,12 @@ def _path_r(plan: CounterfactualPlan, price: float) -> float:
 
 
 def evaluate_counterfactual_path(plan: CounterfactualPlan, candles: Iterable[Candle]) -> CounterfactualEvaluation:
-    """Evaluate an explicit shadow plan without lookahead or intrabar guessing."""
+    """Evaluate an explicit shadow plan without pre-entry leakage or intrabar guessing."""
     rows = tuple(candles)
     previous = None
     for candle in rows:
+        if candle.open_time < plan.entry_time:
+            raise ValueError("counterfactual path contains a pre-entry candle")
         if previous is not None and candle.open_time <= previous:
             raise ValueError("counterfactual candles must be strictly chronological")
         previous = candle.open_time
@@ -180,10 +193,7 @@ def save_counterfactual(store: StateStore, plan: CounterfactualPlan, evaluation:
         "schema_version": 1,
         "plan": asdict(plan),
         "status": evaluation.status.value,
-        "outcome": {
-            **asdict(evaluation.outcome),
-            "mode": evaluation.outcome.mode.value,
-        },
+        "outcome": {**asdict(evaluation.outcome), "mode": evaluation.outcome.mode.value},
         "bars_observed": evaluation.bars_observed,
         "exit_time_iso": evaluation.exit_time_iso,
         "gross_r": evaluation.gross_r,

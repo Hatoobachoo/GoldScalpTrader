@@ -12,15 +12,22 @@ from typing import Iterable
 
 from gold_scalp_trader.persistence.store import StateIntegrityError, StateStore
 
-from .evidence import EvidenceIdentity, identity_payload
+from .evidence import EvidenceIdentity, identity_payload, verify_evidence_identity
 from .invention import Recipe, invent
+from .outcomes import SHADOW_OUTCOME_NS
 from .promotion import Candidate, PromotionStage, advance
 from .runtime_evidence import MANAGEMENT_NS, SHADOW_NS
 from .timing_learning import NS as TIMING_NS
 
 NS = "governed_strategy_candidates"
 STAGE_EVIDENCE_NS = "candidate_stage_evidence"
-KNOWN_SOURCE_NAMESPACES = (TIMING_NS, MANAGEMENT_NS, SHADOW_NS, "strategy_learning_memory")
+KNOWN_SOURCE_NAMESPACES = (
+    TIMING_NS,
+    MANAGEMENT_NS,
+    SHADOW_NS,
+    SHADOW_OUTCOME_NS,
+    "strategy_learning_memory",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -151,8 +158,8 @@ def record_stage_evidence(
         raise ValueError("stage evidence_id is required")
     if identity.candidate_fingerprint != candidate.fingerprint:
         raise StateIntegrityError("stage evidence candidate fingerprint mismatch")
-    if not _valid_sha256(identity.sha256):
-        raise StateIntegrityError("stage evidence identity hash invalid")
+    if not verify_evidence_identity(identity):
+        raise StateIntegrityError("stage evidence identity integrity check failed")
     if not _valid_sha256(artifact_sha256):
         raise ValueError("stage evidence artifact_sha256 must be a valid SHA-256")
 
@@ -188,9 +195,25 @@ def load_stage_evidence(store: StateStore, evidence_id: str) -> StageEvidence | 
     payload = row.payload
     if payload.get("runtime_authority") != "NONE" or payload.get("broker_authority") != "NONE":
         raise StateIntegrityError("stage evidence authority corruption")
-    identity = payload.get("evidence_identity")
-    if not isinstance(identity, dict) or identity.get("sha256") != payload.get("evidence_identity_sha256"):
-        raise StateIntegrityError("stage evidence identity mismatch")
+    identity_payload_raw = payload.get("evidence_identity")
+    if not isinstance(identity_payload_raw, dict):
+        raise StateIntegrityError("stage evidence identity missing")
+    try:
+        identity = EvidenceIdentity(
+            candidate_fingerprint=str(identity_payload_raw["candidate_fingerprint"]),
+            dataset_sha256=str(identity_payload_raw["dataset_sha256"]),
+            code_revision=str(identity_payload_raw["code_revision"]),
+            config_fingerprint=str(identity_payload_raw["config_fingerprint"]),
+            policy_version=str(identity_payload_raw["policy_version"]),
+            execution_realism=str(identity_payload_raw["execution_realism"]),
+            sha256=str(identity_payload_raw["sha256"]),
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise StateIntegrityError("stage evidence identity malformed") from exc
+    if not verify_evidence_identity(identity):
+        raise StateIntegrityError("stage evidence identity integrity mismatch")
+    if identity.sha256 != payload.get("evidence_identity_sha256"):
+        raise StateIntegrityError("stage evidence identity hash mismatch")
     if payload.get("result") != "PASS":
         raise StateIntegrityError("stage evidence is not PASS")
     artifact_sha256 = str(payload.get("artifact_sha256", ""))
@@ -201,7 +224,7 @@ def load_stage_evidence(store: StateStore, evidence_id: str) -> StageEvidence | 
         str(payload["candidate_id"]),
         str(payload["candidate_fingerprint"]),
         PromotionStage(str(payload["target_stage"])),
-        str(payload["evidence_identity_sha256"]),
+        identity.sha256,
         artifact_sha256,
         tuple(str(item) for item in payload.get("limitations", ())),
     )
