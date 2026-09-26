@@ -1,97 +1,63 @@
-# GoldScalpTrader — Timing Intelligence, Learning Efficiency and Governed Strategy Improvement
+# GoldScalpTrader — Timing Intelligence, Efficiency Learning and Governed Improvement
 
-**Status:** IMPLEMENTATION-SYNC GUIDE — TIMING EVIDENCE FOUNDATION ACTIVE / DEEP LEARNING LOOP STILL INTEGRATION WORK
-**Version:** 1.0-timing-learning-governance
-**Scope:** as-built timing hierarchy, durable timing evidence, efficiency-learning objectives, autonomous strategy research, governed promotion, safety boundaries and remaining integration work.
+**Status:** IMPLEMENTATION-SYNC GUIDE — CAUSAL TIMING/TRADE LEARNING ACTIVE / CONNECTED CALIBRATION PENDING  
+**Version:** 2.0-causal-efficiency-governance  
+**Scope:** as-built Timing Intelligence, persistent Opportunity lifecycle, timing/management learning, actual-vs-shadow evidence, counterfactual discipline, candidate governance and remaining connected proof.
 
 ## 1. Core motive
 
-GoldScalpTrader is not intended to improve merely by taking more trades. The intended improvement loop is:
+GoldScalpTrader is designed around:
 
 ```text
 right setup
-→ right active strategy
+→ right strategy
 → right direction
 → right structural geometry
-→ right entry time
 → right risk
-→ right management timing
-→ right exit time
-→ verified broker outcome
-→ durable evidence
-→ governed research
-→ validated policy improvement
+→ right time
+→ right management
+→ verified outcome
+→ causal evidence
+→ governed improvement
 ```
 
-Timing Intelligence is therefore a first-class subsystem. Its job is not only to say whether a setup exists; it must help determine when an otherwise-valid M5 opportunity is efficient to enter, when it should wait, when it has been chased/missed, and—through downstream verified learning—whether entry and management timing can be improved.
-
-The learning motive is equally important: components that benefit from empirical improvement should become more efficient from verified evidence, while hard safety authorities remain stable and non-self-modifying.
+The objective is not maximum trade count. It is better decision and management efficiency under stable safety authority.
 
 ## 2. Authority hierarchy
 
 ```text
-H1 context
-  ↓
-M15 location/path context
-  ↓
-M5 setup + thesis authority
-  ↓
-Persistent Opportunity concept
-  ↓
-M1 subordinate timing refinement
-  ↓
-TimingDecision
-  ↓
-TradePlan
-  ↓
-Executable Quality
-  ↓
-Risk
-  ↓
-Session / other hard authorities
-  ↓
-Gate
-  ↓
-ExecutionIntent
-  ↓
-sole MT5 writer
+H1 / M15 context
+→ market-first M5 setup detection
+→ one ACTIVE_EXECUTION family + five SHADOW_ONLY families
+→ independent BUY / SELL thesis + Red Team
+→ persistent M5 Opportunity/Episode
+→ subordinate M1 TimingDecision
+→ structural TradePlan
+→ Executable Quality
+→ monetary Risk
+→ hard Session authority
+→ Gate
+→ durable Intent
+→ sole MT5 writer
+→ broker reconciliation
+→ ManagedTrade
+→ verified close
+→ exactly-once learning
 ```
 
-Timing never grants monetary or broker authority.
+M1 cannot invent a production trade. Timing cannot bypass TradePlan, Risk, Session, Gate or execution safety.
 
-M1 cannot invent a standalone live trade. A valid M5 Opportunity must exist first.
+## 3. Entry Timing Intelligence
 
-## 3. Current timing implementation
-
-Primary code:
+Primary implementation:
 
 ```text
 src/gold_scalp_trader/decisions/timing.py
+src/gold_scalp_trader/app/opportunity_lifecycle.py
+src/gold_scalp_trader/research/timing_learning.py
 ```
 
-Current `TimingPolicy` supports versioned calibration dimensions including:
-
-- maximum micro extension in ATR;
-- optional M5 event-age limit;
-- optional M1 trigger-age limit;
-- optional chase-distance limit.
-
-Current `TimingDecision` preserves:
-
-```text
-outcome
-reason
-trigger_time
-micro_extension_atr
-m5_event_age_seconds
-m5_event_age_bars
-trigger_age_seconds
-chase_atr
-profile
-policy_version
-```
-
-Current outcomes are:
+Timing outcomes:
 
 ```text
 READY_BUY
@@ -101,351 +67,259 @@ MISSED
 INVALID
 ```
 
-The timing engine contains family-aware refinement behavior. Reversal families use reversal-oriented micro evidence, while continuation families use continuation/resumption evidence. Exact thresholds remain governed calibration variables rather than automatically self-edited live parameters.
-
-## 4. Runtime position of Timing Intelligence
-
-Primary orchestration:
+Timing evidence preserves, where available:
 
 ```text
-src/gold_scalp_trader/app/cycle.py
-```
-
-Current order is:
-
-```text
-build IntelligenceSnapshot
-→ detect setup families
-→ isolate one ACTIVE_EXECUTION family
-→ independent directional fusion
-→ create M5 Opportunity
-→ timing.evaluate(...)
-→ if WAIT/MISSED/INVALID: no TradePlan
-→ if READY: build TradePlan
-→ Executable Quality
-→ Risk
-→ hard-authority Gate later in guarded runtime
-```
-
-Therefore M1 timing is subordinate to an already-qualified active-family M5 thesis and cannot bypass TradePlan, Quality, Risk or Gate.
-
-## 5. New durable timing-evidence layer
-
-Implemented owner:
-
-```text
-src/gold_scalp_trader/research/timing_learning.py
-```
-
-Persistent event namespace:
-
-```text
-timing_decision_evidence
-```
-
-This is a **research-only evidence namespace**. It has no MT5 writer and no ability to approve a trade.
-
-For each meaningful timing decision it records a normalized evidence payload containing, where available:
-
-```text
-stable causal episode fingerprint
-family
-direction
-M5 source event IDs
-active strategy policy version
-M5 event time
-coverage
-timing outcome
-timing reason
-timing profile
-timing policy version
-M1 trigger time
-M5 event age in seconds/bars
-M1 trigger age
-chase ATR
-micro extension ATR
-spread
-downstream cycle status
-live action
-whether that returned runtime cycle observed a broker write
-```
-
-Identical evidence is idempotent. The event key is content-addressed, so unchanged repeated GUI/terminal refresh cycles do not create conflicting duplicate evidence.
-
-## 6. Stable timing episode fingerprint
-
-The current analytical `Opportunity` object may be recreated by the stateless cycle path. Research evidence therefore must not depend only on a transient random Opportunity ID.
-
-The timing-evidence layer derives a stable causal fingerprint from:
-
-```text
-family
-direction
-source_event_ids
+Opportunity ID
+Episode ID
+Opportunity created/updated time
+Timing decision time
+family / direction
+M5 source-event IDs
 strategy policy version
 M5 event time
-preferred M1 timing profile
-```
-
-This allows repeated timing observations for the same causal setup to be grouped for research even before full durable Opportunity lifecycle integration is completed.
-
-Important limitation:
-
-> This fingerprint is a research grouping mechanism, not a substitute for the canonical persistent Opportunity lifecycle required by `ENTRY_TIMING.md`.
-
-Full durable Opportunity WAIT/READY/MISSED/INVALIDATED identity remains a separate integration item and must not be falsely marked complete.
-
-## 7. DEMO runtime wiring
-
-Timing evidence is now wired into both approved DEMO presentation paths.
-
-Terminal path:
-
-```text
-python bot.py
-→ app.main
-→ run_live_demo
-→ run_guarded_demo_cycle
-→ record_runtime_timing
-→ terminal presentation
-```
-
-Graphical path:
-
-```text
-python bot.py
-→ app.main
-→ run_live_demo
-→ run_graphical_demo
-→ RuntimeDashboardProvider
-→ run_guarded_demo_cycle
-→ record_runtime_timing
-→ immutable graphical snapshot
-```
-
-Files:
-
-```text
-src/gold_scalp_trader/app/demo_runner.py
-src/gold_scalp_trader/app/graphical_demo_runner.py
-```
-
-The recording step happens after the governed cycle returns and writes only to local `StateStore` research evidence.
-
-It does not perform a broker call.
-
-## 8. What timing learning should ultimately measure
-
-The desired evidence model should support questions such as:
-
-- Was the bot consistently one M1 candle late?
-- Did waiting for a reclaim improve expectancy for a specific family?
-- Did entry after a particular chase distance reduce realized R?
-- Which M1 timing profile works better for each strategy family?
-- Does a timing rule improve entry efficiency but reduce opportunity capture excessively?
-- Are winners being protected too early?
-- Are exits systematically late after momentum/structure deterioration?
-- Which session/context produces the best after-cost timing behavior?
-- How much edge is lost to spread, slippage, trigger age and decision latency?
-
-The eventual evidence set should include, when causally verifiable:
-
-```text
-setup detected time
-M5 event knowledge time
-Opportunity armed time
 M1 trigger time
-READY time
-actual send time
-actual fill time
-entry delay
-entry reference drift
-M5 setup age
+timing profile / policy version
+M5 event age
 M1 trigger age
 chase ATR
-spread / SL
-spread / target
-slippage
-MAE / MFE
-time to primary target
-time to expansion target
-time to protect
-time to trail
-exit decision time
-actual close time
-profit giveback
-realized R
-entry efficiency
-capture efficiency
-management efficiency
+micro-extension ATR
+spread
+downstream cycle status
+broker-write association
 ```
 
-Missing evidence must remain UNKNOWN/None. It must never be fabricated just to complete a learning sample.
+The persistent Opportunity lifecycle keeps the same causal identity across repeated WAIT/READY refreshes and restart. A terminal causal episode cannot silently re-arm merely because a fresh in-memory object receives another random ID.
+
+## 4. Entry-to-trade lineage
+
+Before the irreversible OPEN send, the governed runtime freezes the causal entry context. After verified broker reconciliation the same context is carried into `ManagedTrade` and then through verified close into StrategyMemory.
+
+Durable trade lineage includes:
+
+```text
+opportunity_id
+episode_id
+trade_plan_id
+approved entry reference
+M5 source-event IDs / event time
+timing profile / version
+M1 trigger time
+M5 event age
+trigger age
+chase ATR
+micro extension ATR
+strategy family / policy version
+```
+
+Missing lineage remains `None`; it is not backfilled from hindsight.
+
+## 5. Management Timing Intelligence
+
+Research-only management observations are recorded by:
+
+```text
+src/gold_scalp_trader/research/runtime_evidence.py
+```
+
+Each observed governed management cycle may preserve:
+
+```text
+trade / position identity
+family / policy / direction
+captured time
+HOLD / PROTECT / TRAIL / RUNNER / EXIT action
+reason
+observed open R
+initial monetary R when broker symbol economics are available
+bars in trade
+spread
+current/original SL
+primary/expansion targets
+Opportunity / Episode / TradePlan lineage
+Timing profile/version
+```
+
+These observations do not decide live policy. They form causal research evidence for whether protection, trailing or exits occur too early or too late.
+
+## 6. Verified-close efficiency learning
+
+`management/closure.py` now derives post-trade metrics only from evidence that can be supported by the durable trade path.
+
+When evidence exists, StrategyMemory can preserve:
+
+```text
+initial_risk_money
+after-cost realized_r
+entry_reference_drift_r
+observed_mfe_r
+observed_mae_r
+observed_capture_efficiency
+observed_giveback_r
+opportunity_to_entry_seconds
+ready_to_entry_seconds
+trigger_to_entry_seconds
+m5_event_to_entry_seconds
+time_to_first_protect_seconds
+time_to_first_trail_seconds
+time_to_observed_primary_target_seconds
+time_to_observed_expansion_target_seconds
+time_to_observed_mfe_seconds
+management_samples
+```
+
+### Evidence-label rule
+
+`observed_mfe_r` / `observed_mae_r` are **runtime-observed path statistics**, not claims of perfect tick-by-tick or intrabar extrema.
+
+`observed_capture_efficiency` is based on observed MFE and verified after-cost realized R. It is deliberately named `observed_...` so research cannot silently treat sampled runtime visibility as complete market truth.
+
+Canonical `entry_efficiency` and full-path `capture_efficiency` remain `None` until a separately governed, causal definition has sufficient evidence. Missing values are never replaced with zero.
+
+## 7. Exactly-once actual learning
+
+Current path:
+
+```text
+exact broker close proof
+→ close archive
+→ closed_trade_learning_queue
+→ immutable source validation
+→ StrategyMemory save with allow_replace=False
+→ queue consume only after durable save
+```
+
+Actual learning cannot originate from an unverified close.
+
+## 8. Shadow evidence versus shadow outcome
+
+The live runtime records same-market SHADOW_ONLY candidate snapshots, but a candidate snapshot is **not** automatically hypothetical P/L.
+
+Snapshot evidence includes candidate family/direction/qualification/score/coverage/source events/context without broker authority.
+
+A genuine counterfactual outcome requires explicit hypothetical geometry and a causal replay path:
+
+```text
+episode / family / direction
++ entry
++ initial SL
++ primary target
++ timezone-aware entry time
++ explicit cost in R
++ chronological completed candles beginning no earlier than entry time
+```
+
+Research owner:
+
+```text
+src/gold_scalp_trader/research/outcomes.py
+```
+
+Rules:
+
+- result remains `SHADOW_ONLY` and `executed=False`;
+- cost is subtracted explicitly in R;
+- pre-entry candles are rejected;
+- non-chronological candles are rejected;
+- if one OHLC bar touches SL and TP, order is unknowable → `AMBIGUOUS_INTRABAR_ORDER`, no invented P/L;
+- incomplete paths remain `UNRESOLVED`;
+- counterfactual evidence is stored separately from broker P/L.
+
+Actual and shadow P/L metrics are also separated in `research/metrics.py`; shadow R is never silently merged into actual execution metrics.
 
 ## 9. Three learning layers
 
-The project should keep three learning classes separated.
-
-### 9.1 Operational learning
-
-Examples:
-
-- spread distributions;
-- slippage;
-- deviation/fill behavior;
-- decision→send→ack→reconcile latency;
-- broker/session operational behavior.
-
-Operational learning may inform calibrated execution assumptions, but cannot bypass Gate or safety limits.
-
-### 9.2 Trading learning
-
-Examples:
-
-- timing profile efficiency;
-- family performance;
-- BUY/SELL asymmetry;
-- session/context performance;
-- entry efficiency;
-- management timing;
-- exit/capture efficiency;
-- missed-opportunity cost.
-
-### 9.3 Research learning
-
-Examples:
-
-- ablation;
-- walk-forward validation;
-- stress testing;
-- candidate discovery;
-- strategy invention;
-- promotion evidence.
-
-These layers must not be collapsed into one opaque self-modifying AI process.
-
-## 10. What may learn and improve
-
-Evidence-driven improvement is appropriate for:
+### Operational learning
 
 ```text
-Timing Intelligence calibration
-family-specific M1 profiles
-setup-quality estimation
-entry efficiency
-exit efficiency
-capture efficiency
-management timing
-context/session specialization
-shadow-strategy evaluation
-cost/slippage expectations
-candidate strategy discovery
+spread
+slippage
+deviation/fill behavior
+latency
+broker/session operational behavior
 ```
 
-Any change that can influence live decisions must be versioned and governed.
+### Trading learning
 
-## 11. What must not self-modify
+```text
+M1 timing quality
+entry delay/drift
+family/context performance
+management timing
+observed MFE/MAE/giveback
+actual-vs-shadow differences
+```
 
-Hard safety/governance authorities are not adaptive targets:
+### Research learning
+
+```text
+replay
+ablation
+walk-forward
+one-shot holdout
+stress
+counterfactual evaluation
+candidate discovery
+promotion evidence
+```
+
+These layers are intentionally separate.
+
+## 10. What may improve
+
+Governed research may propose changes to:
+
+- TimingPolicy calibration;
+- family-specific M1 profiles;
+- setup-quality estimation;
+- entry/management/exit timing;
+- context specialization;
+- strategy-family selection evidence;
+- cost/slippage assumptions;
+- declarative candidate strategy variants.
+
+A research result never changes production merely because it scores better.
+
+## 11. What must remain non-adaptive safety authority
 
 ```text
 REAL release lock
-risk hard ceilings
-daily-loss hard ceilings
+Risk hard ceilings
+daily-loss ceilings
 persist-before-send
+one-shot financial execution
 sole MT5 writer
-exactly-once execution semantics
 account identity verification
 one-position rule
-no martingale
-no uncontrolled grid
-no averaging down
+no martingale/grid/averaging-down rescue
 reconciliation requirements
+Session hard-authority semantics
 verified-close requirement
-research/live authority separation
+recovery safety
 ```
 
-Central rule:
+> The bot may learn how to trade better; it may not learn how to bypass its safety system.
 
-> **The bot may learn how to trade better; it may not learn how to bypass its safety system.**
+## 12. Autonomous invention and candidate identity
 
-## 12. Actual verified learning pipeline
+Autonomous invention remains declarative; it does not generate live Python strategy code.
 
-Current actual trade-learning owners:
+Candidate semantics receive deterministic fingerprints. Source observations can come from actual StrategyMemory, timing evidence, management evidence, shadow snapshots and governed shadow-counterfactual outcomes.
 
-```text
-management/closure.py
-research/live_learning.py
-research/learning.py
-```
+Source evidence means “this observation exists.” It does **not** mean “the candidate passed a validation stage.”
 
-Current verified-close ordering preserves:
+## 13. Typed governed promotion evidence
+
+Promotion owner:
 
 ```text
-verified full close
-→ closed_trade_learning_queue
-→ closure receipt
-→ later LearningObservation
-→ StrategyMemory
-→ queue consumed only after durable save
-```
-
-`LearningObservation` already supports:
-
-```text
-realized_r
-entry_efficiency
-capture_efficiency
-```
-
-but missing values remain `None`; the system does not fabricate them.
-
-A future integration packet must connect richer timing/path evidence to the immutable ManagedTrade/verified-close learning lineage so those metrics can be calculated from real causal evidence rather than merely existing as optional fields.
-
-## 13. Autonomous strategy invention
-
-Primary code:
-
-```text
-src/gold_scalp_trader/research/invention.py
-```
-
-Autonomous invention is declarative. It does not generate executable Python trading code.
-
-Allowed primitives include concepts such as:
-
-```text
-M5_SETUP
-M1_ENTRY_TIMING
-EXECUTABLE_COST
-MANAGEMENT_EFFICIENCY
-structure
-liquidity
-technical location
-session/news context
-```
-
-A recipe produces a research `Candidate` with deterministic identity and semantics.
-
-Autonomous discovery may propose:
-
-- new feature combinations;
-- timing variants;
-- management variants;
-- regime/context specializations;
-- candidate family semantics.
-
-It may not grant itself broker authority.
-
-## 14. Governed promotion hierarchy
-
-Primary code:
-
-```text
+src/gold_scalp_trader/research/candidate_registry.py
 src/gold_scalp_trader/research/promotion.py
+src/gold_scalp_trader/research/evidence.py
+src/gold_scalp_trader/research/packages.py
 ```
 
-Current promotion stages include:
+Promotion stages:
 
 ```text
 PROPOSED
@@ -460,135 +334,89 @@ PROPOSED
 → PRODUCTION
 ```
 
-Automated stage skipping is forbidden.
-
-Production promotion requires explicit operator approval and a rollback target.
-
-Timing evidence may become research evidence for a candidate, but collecting timing evidence does not itself advance a candidate or alter the active strategy.
-
-## 15. Desired governed improvement loop
+Every step requires typed evidence bound to:
 
 ```text
-verified actual + shadow evidence
-→ StrategyMemory / episode journal
-→ timing/family/context analysis
-→ hypothesis
-→ candidate
-→ replay
-→ ablation
-→ walk-forward
-→ holdout
-→ stress
-→ shadow
-→ DEMO candidate
-→ explicit approval boundary
-→ versioned policy
+candidate ID
+candidate fingerprint
+exact next target stage
+dataset SHA-256
+code revision
+config fingerprint
+policy version
+execution realism
+evidence identity SHA-256
+artifact SHA-256
+limitations
 ```
 
-Every step must preserve evidence lineage.
+A normal Timing event or shadow snapshot cannot masquerade as HOLDOUT/STRESS/DEMO proof.
 
-## 16. Shadow strategy role
+Evidence identities are recomputed on verification. Candidate and dataset identity fields must be real SHA-256 digests.
 
-The five non-active families should eventually provide same-episode counterfactual evidence:
+`APPROVAL_REQUIRED → PRODUCTION` additionally requires explicit operator approval and rollback lineage. Even `PRODUCTION` in the research registry has no direct runtime activation authority.
 
-```text
-active family actual decision/outcome
-vs
-shadow family hypothetical setup/timing/plan/outcome
-```
+## 14. Replay / bias controls already present
 
-Shadow results are research counterfactuals, never broker P/L.
+Research replay uses completed candles and chronological prefixes. M1 is visible only after its candle close is knowable at the replay decision timestamp.
 
-This comparison is essential for deciding whether an active strategy, timing profile or management rule is genuinely more efficient than alternatives under the same market episode.
+Validation helpers enforce non-overlapping chronological windows and a one-shot final holdout identity.
 
-Current strategy isolation prevents shadow families from broker authority. Deep shadow outcome/learning integration remains an audit and implementation area.
+Counterfactual replay refuses unknown intrabar SL/TP ordering instead of choosing the profitable interpretation.
 
-## 17. Current packet: implemented vs pending
+These protections reduce look-ahead leakage but do not prove a candidate is robust; dataset quality, regime coverage and connected DEMO evidence still matter.
 
-### Implemented in this packet
+## 15. Recovery / persistence
 
-- durable append-only timing-decision evidence;
-- stable causal timing episode fingerprint;
-- timing policy/profile/version preservation in research evidence;
-- M5/M1 age/chase/extension preservation;
-- downstream status/action association;
-- GUI DEMO evidence wiring;
-- terminal DEMO evidence wiring;
-- idempotent duplicate handling;
-- governed research summary by outcome/family/profile;
-- dedicated tests for evidence stability/idempotency/separation.
+Timing evidence, management evidence, StrategyMemory, candidate stage evidence and shadow-counterfactual outcomes live in `StateStore` namespaces.
 
-### Still pending / must be challenged
+Full checkpoint export defaults to all existing namespaces, so these research/governance records are included in normal full checkpoints. Recovery still requires fresh broker reconciliation before financial authority resumes.
 
-- canonical persistent Opportunity identity across WAIT/READY cycles;
-- explicit durable READY/TRIGGERED transition ownership;
-- timing lineage frozen into ManagedTrade at verified OPEN;
-- actual fill/reference/slippage linkage;
-- causal M1/M5 path reconstruction for entry efficiency;
-- MAE/MFE and capture-efficiency calculation from verified path;
-- management timing evidence journal;
-- shadow timing/outcome learning loop;
-- timing-evidence consumption by replay/ablation/walk-forward tooling;
-- evidence-bound candidate generation from efficiency findings;
-- policy package generation/promotion integration;
-- connected DEMO timing proof;
-- dashboard timing-learning analytics panel;
-- Session authority integration remains separately required.
+## 16. Connected DEMO evidence visibility
 
-None of these pending items should be described as complete merely because supporting modules exist.
+Read-only connected certification/reporting can expose:
 
-## 18. Testing ownership
+- hard Session state;
+- Timing sample counts;
+- broker-write-associated Timing samples;
+- management evidence counts;
+- shadow candidate counts;
+- actual learning counts.
 
-New focused test:
+These counts improve observability but do not automatically PASS canonical connected drills. Real Exness schedule, fill/slippage/latency, lifecycle, restart and statistically meaningful learning remain external evidence.
+
+## 17. Current limitations / intentionally unproven items
+
+The implementation deliberately does **not** claim:
+
+- an “ideal entry” derived from hindsight;
+- perfect tick-level MFE/MAE from polling observations;
+- true counterfactual broker fills from OHLC candles;
+- shadow P/L without explicit TradePlan-like geometry;
+- candidate quality merely because promotion bookkeeping is valid;
+- automatic live deployment of a research candidate;
+- connected DEMO certification from offline tests;
+- profitability.
+
+Further calibration should be driven by accumulated DEMO evidence rather than by adding self-modifying authority.
+
+## 18. Focused proof owners
 
 ```text
 tests/test_timing_learning_lineage.py
+tests/test_runtime_research_evidence.py
+tests/test_live_learning_pipeline.py
+tests/test_research_integrity.py
+tests/test_candidate_registry.py
+tests/test_full_checkpoint.py
 ```
 
-It proves:
-
-- same causal setup produces the same research episode fingerprint;
-- identical timing evidence is idempotent;
-- family, policy, trigger age and chase survive persistence;
-- READY and WAIT evidence remain distinguishable;
-- research summary can associate broker-write-returning cycles without granting authority.
-
-Full offline verification must still be run locally with:
+Full regression remains:
 
 ```powershell
 python scripts/verify_offline_release.py
 ```
 
-## 19. Safety boundaries
+## 19. Final invariant
 
-The timing evidence module:
-
-- imports no MT5 writer;
-- calls no `order_send`;
-- cannot enable REAL;
-- cannot alter Risk;
-- cannot alter Gate;
-- cannot change active strategy;
-- cannot promote a research candidate;
-- writes only local checksummed research events through `StateStore`.
-
-## 20. Next implementation priority
-
-The next coherent work should connect timing evidence to the immutable trade lifecycle without weakening safety:
-
-```text
-READY timing evidence
-→ persisted OPEN context
-→ verified broker OPEN
-→ ManagedTrade timing lineage
-→ verified close
-→ learning queue
-→ LearningObservation timing/path metrics
-→ governed efficiency report
-```
-
-After that, management timing and shadow counterfactual learning can be deepened.
-
-## 21. Final invariant
-
-> **Timing Intelligence must improve the quality of WHEN the bot acts, but never become an independent trade inventor or broker authority. Learning must convert verified evidence into governed, versioned improvement—not uncontrolled self-modification. Autonomous research may propose; validation and governance decide what is allowed to affect live execution.**
+> Timing Intelligence improves **WHEN** a valid setup acts. Management learning measures **HOW** the trade was managed. Shadow research asks **WHAT IF** without pretending counterfactuals were broker trades. Autonomous research proposes **WHAT TO TEST**. Evidence and governance decide what advances. Hard safety authority remains outside the learning search space.
