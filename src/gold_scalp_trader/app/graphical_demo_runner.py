@@ -1,15 +1,16 @@
 """Live graphical DEMO runtime adapter.
 
-The dashboard is presentation-only and fail-visible.  GUI creation is not
-conditioned on successful MT5 initialization or a tradeable market.  Broker
-runtime failures are converted into read-only degraded snapshots while trading
-remains fail-closed.
+The normal GUI path publishes a read-only atomic snapshot and serves the
+GoldSwingTrader-style localhost browser floor.  Browser presentation has no MT5,
+Risk, Gate or broker-write authority.  Runtime faults remain visible while
+trading fails closed.
 """
 from __future__ import annotations
 
 from dataclasses import replace
 import importlib
 from pathlib import Path
+import time
 from typing import Callable, Type
 
 from gold_scalp_trader.app.runtime import RuntimeResult, run_guarded_demo_cycle
@@ -121,7 +122,7 @@ class RuntimeDashboardProvider:
         return data, dict(self.last_candles_by_tf)
 
     def __call__(self):
-        """Advance one governed cycle; convert any runtime fault into visible UI state."""
+        """Advance one governed cycle; convert runtime faults into visible UI state."""
         self.calls += 1
         try:
             result = self.step(self.settings, self.api, self.store)
@@ -163,6 +164,49 @@ class _DashboardResources:
                 self.store.close()
 
 
+def _run_browser_floor(
+    settings: Settings,
+    provider: RuntimeDashboardProvider,
+    resources: _DashboardResources,
+) -> int:
+    """Run authoritative runtime polling in this thread and UI HTTP in a daemon thread."""
+    from graphical_dashboard.server import start_background, stop_background
+    from graphical_dashboard.snapshot import build_snapshot, publish_snapshot
+
+    snapshot_path = resources.state_path.parent / "dashboard_snapshot.json"
+    starting = _initial_degraded_data(settings, RuntimeError("Runtime starting"))
+    publish_snapshot(snapshot_path, build_snapshot(starting, {}))
+    server, server_thread = start_background(snapshot_path, open_browser=True)
+    try:
+        while True:
+            data, candles = provider()
+            try:
+                payload = build_snapshot(
+                    data,
+                    candles,
+                    runtime_result=provider.last_result,
+                )
+            except Exception as exc:
+                # Presentation serialization must never terminate the trading loop.
+                degraded = _initial_degraded_data(
+                    settings,
+                    RuntimeError(f"dashboard snapshot unavailable: {type(exc).__name__}"),
+                )
+                payload = build_snapshot(degraded, {})
+            try:
+                publish_snapshot(snapshot_path, payload)
+            except Exception as exc:
+                # Keep the server and trading process alive. The browser will truthfully
+                # mark the previous frame stale if publication cannot recover.
+                print(f"DASHBOARD SNAPSHOT ERROR: {type(exc).__name__}: {exc}")
+            time.sleep(max(0.25, float(settings.loop_interval_seconds)))
+    except KeyboardInterrupt:
+        return 0
+    finally:
+        stop_background(server, server_thread)
+        resources.close()
+
+
 def run_graphical_demo(
     settings: Settings,
     api,
@@ -170,7 +214,7 @@ def run_graphical_demo(
     dashboard_cls: Type | None = None,
     step: Callable[..., RuntimeResult] = run_guarded_demo_cycle,
 ) -> int:
-    """Run GUI regardless of market/runtime health; provider enforces fail-visible state."""
+    """Run browser visual floor normally; retain injected legacy UI seam for tests."""
     state_path = Path(settings.state_db_path)
     state_path.parent.mkdir(parents=True, exist_ok=True)
     store = StateStore(state_path)
@@ -178,9 +222,9 @@ def run_graphical_demo(
     provider = RuntimeDashboardProvider(settings, api, store, step=step)
 
     if dashboard_cls is None:
-        from graphical_dashboard.ui import DashboardApp
-        dashboard_cls = DashboardApp
+        return _run_browser_floor(settings, provider, resources)
 
+    # Compatibility/test seam. Production GUI uses the browser floor above.
     app = dashboard_cls(
         provider,
         refresh_ms=max(250, int(settings.loop_interval_seconds * 1000)),
@@ -194,18 +238,14 @@ def run_graphical_demo(
 
 
 def run_graphical_demo_standalone(settings: Settings, *, dashboard_cls: Type | None = None) -> int:
-    """Create GUI before first MT5 initialize attempt."""
+    """Create the visual floor before the first MT5 initialize attempt."""
     if settings.mode is not RuntimeMode.DEMO:
         raise PermissionError("graphical live runtime is available only in DEMO mode")
     return run_graphical_demo(settings, LazyMt5Api(), dashboard_cls=dashboard_cls)
 
 
 def run_error_dashboard(title: str, exc: Exception, *, dashboard_cls: Type | None = None) -> int:
-    """Best-effort read-only dashboard for configuration/startup safety failures."""
-    if dashboard_cls is None:
-        from graphical_dashboard.ui import DashboardApp
-        dashboard_cls = DashboardApp
-
+    """Show startup/configuration failure in the same browser visual floor."""
     message = f"{type(exc).__name__}: {exc}"
     data = DashboardData(
         symbol="XAUUSD",
@@ -228,9 +268,26 @@ def run_error_dashboard(title: str, exc: Exception, *, dashboard_cls: Type | Non
         learning_text="Unavailable until startup/configuration is corrected",
     )
 
-    def provider():
-        return data, {}
+    if dashboard_cls is not None:
+        def provider():
+            return data, {}
+        app = dashboard_cls(provider, refresh_ms=2000, on_close=None)
+        app.run()
+        return 2
 
-    app = dashboard_cls(provider, refresh_ms=2000, on_close=None)
-    app.run()
-    return 2
+    from graphical_dashboard.server import start_background, stop_background
+    from graphical_dashboard.snapshot import build_snapshot, publish_snapshot
+
+    state_dir = Path(".state")
+    snapshot_path = state_dir / "dashboard_snapshot.json"
+    publish_snapshot(snapshot_path, build_snapshot(data, {}))
+    server, thread = start_background(snapshot_path, open_browser=True)
+    try:
+        while True:
+            time.sleep(1.0)
+            # Refresh timestamp so a deliberate safety-block dashboard stays visibly alive.
+            publish_snapshot(snapshot_path, build_snapshot(data, {}))
+    except KeyboardInterrupt:
+        return 2
+    finally:
+        stop_background(server, thread)
