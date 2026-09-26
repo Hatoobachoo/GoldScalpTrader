@@ -73,6 +73,47 @@ def test_missing_metrics_are_not_fabricated():
     assert obs.entry_efficiency is None
     assert obs.capture_efficiency is None
     assert obs.realized_r is None
+    assert obs.observed_mfe_r is None
+    assert obs.observed_capture_efficiency is None
+
+
+def test_provable_efficiency_metrics_survive_learning_ingestion():
+    store = StateStore()
+    enriched = payload()
+    enriched.update(
+        {
+            "initial_risk_money": 5.0,
+            "realized_r": 0.5,
+            "entry_reference_drift_r": 0.1,
+            "observed_mfe_r": 1.25,
+            "observed_mae_r": -0.4,
+            "observed_capture_efficiency": 0.4,
+            "observed_giveback_r": 0.75,
+            "opportunity_to_entry_seconds": 300.0,
+            "ready_to_entry_seconds": 45.0,
+            "trigger_to_entry_seconds": 12.0,
+            "m5_event_to_entry_seconds": 600.0,
+            "time_to_first_protect_seconds": 240.0,
+            "time_to_first_trail_seconds": 480.0,
+            "time_to_observed_primary_target_seconds": 540.0,
+            "time_to_observed_expansion_target_seconds": None,
+            "time_to_observed_mfe_seconds": 510.0,
+            "management_samples": 8,
+        }
+    )
+    enqueue(store, "TRD-1", enriched)
+    process_pending(store)
+    obs = load(store, "managed-trade:TRD-1")
+    assert obs is not None
+    assert obs.realized_r == pytest.approx(0.5)
+    assert obs.entry_reference_drift_r == pytest.approx(0.1)
+    assert obs.observed_mfe_r == pytest.approx(1.25)
+    assert obs.observed_mae_r == pytest.approx(-0.4)
+    assert obs.observed_capture_efficiency == pytest.approx(0.4)
+    assert obs.ready_to_entry_seconds == pytest.approx(45.0)
+    assert obs.time_to_first_trail_seconds == pytest.approx(480.0)
+    assert obs.management_samples == 8
+    assert obs.capture_efficiency is None
 
 
 def test_conflicting_existing_memory_preserves_queue():

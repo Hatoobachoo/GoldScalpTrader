@@ -1,6 +1,8 @@
 """Exactly-once StrategyMemory observations."""
 from __future__ import annotations
+
 from dataclasses import asdict, dataclass
+
 from gold_scalp_trader.persistence.store import StateStore
 
 NS = "strategy_learning_memory"
@@ -34,6 +36,22 @@ class LearningObservation:
     trigger_age_seconds: float | None = None
     chase_atr: float | None = None
     micro_extension_atr: float | None = None
+    initial_risk_money: float | None = None
+    entry_reference_drift_r: float | None = None
+    observed_mfe_r: float | None = None
+    observed_mae_r: float | None = None
+    observed_capture_efficiency: float | None = None
+    observed_giveback_r: float | None = None
+    opportunity_to_entry_seconds: float | None = None
+    ready_to_entry_seconds: float | None = None
+    trigger_to_entry_seconds: float | None = None
+    m5_event_to_entry_seconds: float | None = None
+    time_to_first_protect_seconds: float | None = None
+    time_to_first_trail_seconds: float | None = None
+    time_to_observed_primary_target_seconds: float | None = None
+    time_to_observed_expansion_target_seconds: float | None = None
+    time_to_observed_mfe_seconds: float | None = None
+    management_samples: int = 0
     tags: tuple[str, ...] = ()
 
 
@@ -88,6 +106,22 @@ def load(store: StateStore, source_id: str) -> LearningObservation | None:
         trigger_age_seconds=_opt_float(p.get("trigger_age_seconds")),
         chase_atr=_opt_float(p.get("chase_atr")),
         micro_extension_atr=_opt_float(p.get("micro_extension_atr")),
+        initial_risk_money=_opt_float(p.get("initial_risk_money")),
+        entry_reference_drift_r=_opt_float(p.get("entry_reference_drift_r")),
+        observed_mfe_r=_opt_float(p.get("observed_mfe_r")),
+        observed_mae_r=_opt_float(p.get("observed_mae_r")),
+        observed_capture_efficiency=_opt_float(p.get("observed_capture_efficiency")),
+        observed_giveback_r=_opt_float(p.get("observed_giveback_r")),
+        opportunity_to_entry_seconds=_opt_float(p.get("opportunity_to_entry_seconds")),
+        ready_to_entry_seconds=_opt_float(p.get("ready_to_entry_seconds")),
+        trigger_to_entry_seconds=_opt_float(p.get("trigger_to_entry_seconds")),
+        m5_event_to_entry_seconds=_opt_float(p.get("m5_event_to_entry_seconds")),
+        time_to_first_protect_seconds=_opt_float(p.get("time_to_first_protect_seconds")),
+        time_to_first_trail_seconds=_opt_float(p.get("time_to_first_trail_seconds")),
+        time_to_observed_primary_target_seconds=_opt_float(p.get("time_to_observed_primary_target_seconds")),
+        time_to_observed_expansion_target_seconds=_opt_float(p.get("time_to_observed_expansion_target_seconds")),
+        time_to_observed_mfe_seconds=_opt_float(p.get("time_to_observed_mfe_seconds")),
+        management_samples=int(p.get("management_samples", 0) or 0),
         tags=tuple(str(x) for x in p.get("tags", ())),
     )
 

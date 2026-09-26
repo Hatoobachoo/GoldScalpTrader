@@ -36,9 +36,46 @@ Timing Intelligence is a first-class subsystem: M5 remains the setup/thesis auth
 
 A qualified M5 Opportunity now has durable local Opportunity/Episode identity across repeated WAIT/READY cycles and restart. The same causal terminal episode cannot silently re-arm merely because an in-memory cycle generated a new random ID; only a fresh causal M5 identity may create a new episode. Once the irreversible OPEN send is consumed, the durable Opportunity becomes `TRIGGERED`.
 
-For governed DEMO OPENs, the causal Opportunity/episode, TradePlan, M5 event lineage and TimingDecision profile/ages/chase/extension are frozen into durable OPEN context **before the irreversible broker send**. After verified OPEN reconciliation the same lineage is stored in `ManagedTrade`, then carried through exact verified close into the exactly-once learning queue/StrategyMemory. Missing efficiency metrics remain unknown rather than fabricated.
+For governed DEMO OPENs, the causal Opportunity/episode, TradePlan, M5 event lineage and TimingDecision profile/ages/chase/extension are frozen into durable OPEN context **before the irreversible broker send**. After verified OPEN reconciliation the same lineage is stored in `ManagedTrade`, then carried through exact verified close into the exactly-once learning queue/StrategyMemory.
 
 The live DEMO presentation paths also write **research-only** management-path evidence and same-market shadow-family counterfactual evidence. This records management action/open-R progression and shadow candidates without granting those research records Risk, Gate, broker-write or automatic promotion authority.
+
+### Efficiency learning measurement
+
+Closed-trade learning distinguishes **provable causal measurements** from hindsight estimates.
+
+When durable evidence exists, the learning path can preserve:
+
+```text
+Opportunity first-seen / armed time
+first READY timing-decision time
+M1 trigger time
+actual broker-open time
+trigger → entry delay
+READY → entry delay
+Opportunity → entry delay
+M5 event → entry delay
+approved-entry-reference drift in R
+observed management-path MFE / MAE in R
+time to first PROTECT
+time to first TRAIL
+time to observed Primary Target
+time to observed Expansion Target
+time to observed MFE
+initial monetary R from SymbolSpec economics
+after-cost realized R
+observed capture efficiency
+observed profit giveback
+management sample count
+```
+
+Important evidence rule:
+
+> `observed_mfe_r`, `observed_mae_r` and `observed_capture_efficiency` are based on durable runtime observation samples. They are **not** silently relabelled as true intrabar MFE/MAE or an ideal hindsight path.
+
+If the necessary runtime evidence is absent, the field remains `None`/UNKNOWN rather than becoming zero or an inferred value. `entry_efficiency` and canonical full-path `capture_efficiency` remain unpopulated unless a separately approved causal definition and sufficient path evidence exist.
+
+This lets research ask useful questions such as “are entries consistently late?”, “does PROTECT happen too early?”, or “how much observed MFE is commonly given back?” without teaching the live system to weaken Risk or execution safety.
 
 Implementation hierarchy, current evidence wiring, autonomous/governed promotion boundaries and remaining learning gaps are documented in:
 

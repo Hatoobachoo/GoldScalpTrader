@@ -1,8 +1,11 @@
 """Crash-safe verified-close queue and exactly-once actual learning processor."""
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
+
 from gold_scalp_trader.persistence.store import StateIntegrityError, StateStore
+
 from .learning import LearningObservation, save as save_observation
 
 QUEUE = "closed_trade_learning_queue"
@@ -84,6 +87,22 @@ def _observation(trade_id: str, payload: dict[str, Any]) -> LearningObservation:
         trigger_age_seconds=_optional_float(payload, "trigger_age_seconds"),
         chase_atr=_optional_float(payload, "chase_atr"),
         micro_extension_atr=_optional_float(payload, "micro_extension_atr"),
+        initial_risk_money=_optional_float(payload, "initial_risk_money"),
+        entry_reference_drift_r=_optional_float(payload, "entry_reference_drift_r"),
+        observed_mfe_r=_optional_float(payload, "observed_mfe_r"),
+        observed_mae_r=_optional_float(payload, "observed_mae_r"),
+        observed_capture_efficiency=_optional_float(payload, "observed_capture_efficiency"),
+        observed_giveback_r=_optional_float(payload, "observed_giveback_r"),
+        opportunity_to_entry_seconds=_optional_float(payload, "opportunity_to_entry_seconds"),
+        ready_to_entry_seconds=_optional_float(payload, "ready_to_entry_seconds"),
+        trigger_to_entry_seconds=_optional_float(payload, "trigger_to_entry_seconds"),
+        m5_event_to_entry_seconds=_optional_float(payload, "m5_event_to_entry_seconds"),
+        time_to_first_protect_seconds=_optional_float(payload, "time_to_first_protect_seconds"),
+        time_to_first_trail_seconds=_optional_float(payload, "time_to_first_trail_seconds"),
+        time_to_observed_primary_target_seconds=_optional_float(payload, "time_to_observed_primary_target_seconds"),
+        time_to_observed_expansion_target_seconds=_optional_float(payload, "time_to_observed_expansion_target_seconds"),
+        time_to_observed_mfe_seconds=_optional_float(payload, "time_to_observed_mfe_seconds"),
+        management_samples=int(payload.get("management_samples", 0) or 0),
         tags=tags,
     )
 

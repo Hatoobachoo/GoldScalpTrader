@@ -1,8 +1,11 @@
 """Crash-safe close proof and archive helpers for known bot ManagedTrades."""
 from __future__ import annotations
+
 from gold_scalp_trader.market_data.activity import DealFacts
-from gold_scalp_trader.persistence.store import StateStore, StateIntegrityError
+from gold_scalp_trader.persistence.store import StateIntegrityError, StateStore
 from gold_scalp_trader.research.live_learning import enqueue
+from gold_scalp_trader.research.runtime_evidence import measure_trade_efficiency
+
 from .models import ManagedTrade
 from .store import clear
 
@@ -63,6 +66,12 @@ def archive_verified_close(
     closed_at = max(d.time_utc for d in exits)
     origin = close_origin(deals, trade, bot_magic=bot_magic)
     net_money = sum(d.net_money for d in exits)
+    efficiency = measure_trade_efficiency(
+        store,
+        trade,
+        closed_at=closed_at,
+        net_money=net_money,
+    )
     serialized = [
         {
             "ticket": d.ticket,
@@ -108,6 +117,7 @@ def archive_verified_close(
         "trigger_age_seconds": trade.trigger_age_seconds,
         "chase_atr": trade.chase_atr,
         "micro_extension_atr": trade.micro_extension_atr,
+        **efficiency.payload(),
     }
     enqueue(store, trade.trade_id, payload)
     store.put(
@@ -121,6 +131,9 @@ def archive_verified_close(
             "close_intent_id": close_intent_id,
             "reason": reason,
             "net_money": net_money,
+            "realized_r": efficiency.realized_r,
+            "observed_mfe_r": efficiency.observed_mfe_r,
+            "observed_mae_r": efficiency.observed_mae_r,
         },
         allow_replace=False,
     )

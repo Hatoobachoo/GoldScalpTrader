@@ -15,7 +15,7 @@ from typing import Any
 from gold_scalp_trader.persistence.store import StateStore
 
 NS = "timing_decision_evidence"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 def _value(value: Any) -> str | None:
@@ -65,9 +65,15 @@ def evidence_payload(result: Any) -> dict[str, Any] | None:
 
     market = getattr(getattr(cycle, "intelligence", None), "market", None)
     quote = getattr(market, "quote", None)
+    decision_at = getattr(market, "captured_at", None)
     return {
         "schema_version": SCHEMA_VERSION,
         "episode_key": episode_key(opportunity),
+        "opportunity_id": getattr(opportunity, "opportunity_id", None),
+        "episode_id": getattr(opportunity, "episode_id", None),
+        "opportunity_created_at": _iso(getattr(opportunity, "created_at", None)),
+        "opportunity_updated_at": _iso(getattr(opportunity, "updated_at", None)),
+        "timing_decision_at": _iso(decision_at),
         "family": _value(getattr(opportunity, "family", None)),
         "direction": _value(getattr(opportunity, "direction", None)),
         "source_event_ids": sorted(str(x) for x in getattr(opportunity, "source_event_ids", ()) or ()),

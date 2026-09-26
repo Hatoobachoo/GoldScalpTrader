@@ -1,22 +1,52 @@
-"""Research-only runtime evidence for management efficiency and shadow families.
+"""Research-only runtime evidence for timing/management efficiency and shadow families.
 
 This module never grants broker, Risk, Gate, Session or promotion authority.
-It records causal observations so later governed research can compare actual
-management paths with same-market shadow strategy evidence.
+It records causal observations and derives only metrics supported by durable
+runtime evidence.  Post-trade analytics explicitly distinguish polling-observed
+path statistics from true intrabar extrema.
 """
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import asdict, dataclass
+from datetime import datetime
 from hashlib import sha256
 import json
 from typing import Any
 
-from gold_scalp_trader.domain.enums import StrategyMode, Timeframe
+from gold_scalp_trader.domain.enums import Direction, StrategyMode, Timeframe
+from gold_scalp_trader.management.models import ManagedTrade
 from gold_scalp_trader.persistence.store import StateStore
+from gold_scalp_trader.research.timing_learning import NS as TIMING_NS
 
 MANAGEMENT_NS = "management_decision_evidence"
 SHADOW_NS = "shadow_strategy_evidence"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+READY_OUTCOMES = {"READY_BUY", "READY_SELL"}
+
+
+@dataclass(frozen=True, slots=True)
+class TradeEfficiency:
+    initial_risk_money: float | None = None
+    realized_r: float | None = None
+    entry_reference_drift_r: float | None = None
+    observed_mfe_r: float | None = None
+    observed_mae_r: float | None = None
+    observed_capture_efficiency: float | None = None
+    observed_giveback_r: float | None = None
+    opportunity_to_entry_seconds: float | None = None
+    ready_to_entry_seconds: float | None = None
+    trigger_to_entry_seconds: float | None = None
+    m5_event_to_entry_seconds: float | None = None
+    time_to_first_protect_seconds: float | None = None
+    time_to_first_trail_seconds: float | None = None
+    time_to_observed_primary_target_seconds: float | None = None
+    time_to_observed_expansion_target_seconds: float | None = None
+    time_to_observed_mfe_seconds: float | None = None
+    management_samples: int = 0
+
+    def payload(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 def _value(value: Any) -> str | None:
@@ -53,6 +83,27 @@ def _open_r(trade: Any, market: Any) -> float | None:
     return (float(price) - entry) / float(r) if direction == "BUY" else (entry - float(price)) / float(r)
 
 
+def _initial_risk_money(trade: Any, market: Any) -> float | None:
+    """Observed initial monetary R from broker symbol economics when available."""
+    spec = getattr(market, "symbol_spec", None)
+    if spec is None:
+        return None
+    tick_size = getattr(spec, "tick_size", None)
+    tick_value = getattr(spec, "tick_value", None)
+    volume = getattr(trade, "volume", None)
+    r_price = getattr(trade, "original_r_price", None)
+    values = (tick_size, tick_value, volume, r_price)
+    if any(value is None for value in values):
+        return None
+    tick_size = float(tick_size)
+    tick_value = float(tick_value)
+    volume = float(volume)
+    r_price = float(r_price)
+    if tick_size <= 0 or tick_value <= 0 or volume <= 0 or r_price <= 0:
+        return None
+    return (r_price / tick_size) * tick_value * volume
+
+
 def record_management(store: StateStore, result: Any) -> str | None:
     trade = getattr(result, "managed_trade", None)
     action = getattr(result, "management_action", None)
@@ -77,6 +128,7 @@ def record_management(store: StateStore, result: Any) -> str | None:
         "action": _value(action),
         "reason": str(getattr(cycle, "reason", "")),
         "open_r": _num(_open_r(trade, market)),
+        "initial_risk_money": _num(_initial_risk_money(trade, market)),
         "bars_in_trade": bars,
         "spread": _num(market.quote.spread),
         "current_sl": _num(trade.current_sl),
@@ -168,3 +220,143 @@ def summarize_runtime_evidence(store: StateStore) -> dict[str, Any]:
         "shadow_by_family": dict(sorted(Counter(str(e.payload.get("shadow_family", "UNKNOWN")) for e in shadows).items())),
         "qualified_shadow_samples": sum(1 for e in shadows if e.payload.get("qualified") is True),
     }
+
+
+def _dt(value: Any) -> datetime | None:
+    if value in (None, ""):
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
+
+
+def _seconds(start: datetime | None, end: datetime | None) -> float | None:
+    if start is None or end is None:
+        return None
+    value = (end - start).total_seconds()
+    return value if value >= 0 else None
+
+
+def _target_r(trade: ManagedTrade, target: float | None) -> float | None:
+    if target is None or trade.original_r_price <= 0:
+        return None
+    move = float(target) - trade.entry if trade.direction is Direction.BUY else trade.entry - float(target)
+    return move / trade.original_r_price if move > 0 else None
+
+
+def _first_time_at_or_above(rows: list[dict[str, Any]], threshold: float | None) -> datetime | None:
+    if threshold is None:
+        return None
+    for row in rows:
+        value = row.get("open_r")
+        when = _dt(row.get("captured_at_utc"))
+        if value is not None and when is not None and float(value) >= threshold:
+            return when
+    return None
+
+
+def _first_action_time(rows: list[dict[str, Any]], action: str) -> datetime | None:
+    for row in rows:
+        if str(row.get("action", "")).upper() == action:
+            when = _dt(row.get("captured_at_utc"))
+            if when is not None:
+                return when
+    return None
+
+
+def measure_trade_efficiency(
+    store: StateStore,
+    trade: ManagedTrade,
+    *,
+    closed_at: datetime,
+    net_money: float,
+) -> TradeEfficiency:
+    """Derive causal post-trade metrics without pretending polling samples are full path truth."""
+    management = [
+        event.payload
+        for event in store.list_events(MANAGEMENT_NS)
+        if str(event.payload.get("trade_id") or "") == trade.trade_id
+    ]
+    management.sort(key=lambda row: str(row.get("captured_at_utc") or ""))
+
+    timing: list[dict[str, Any]] = []
+    if trade.opportunity_id:
+        timing = [
+            event.payload
+            for event in store.list_events(TIMING_NS)
+            if str(event.payload.get("opportunity_id") or "") == trade.opportunity_id
+        ]
+        timing.sort(key=lambda row: str(row.get("timing_decision_at") or ""))
+
+    initial_risk_values = [
+        float(row["initial_risk_money"])
+        for row in management
+        if row.get("initial_risk_money") is not None and float(row["initial_risk_money"]) > 0
+    ]
+    initial_risk_money = initial_risk_values[0] if initial_risk_values else None
+    realized_r = None if initial_risk_money is None else float(net_money) / initial_risk_money
+
+    drift_r = None
+    if trade.entry_reference is not None and trade.original_r_price > 0:
+        drift = trade.entry - trade.entry_reference if trade.direction is Direction.BUY else trade.entry_reference - trade.entry
+        drift_r = drift / trade.original_r_price
+
+    open_samples: list[tuple[datetime, float]] = []
+    for row in management:
+        when = _dt(row.get("captured_at_utc"))
+        value = row.get("open_r")
+        if when is not None and value is not None:
+            open_samples.append((when, float(value)))
+    observed_mfe_r = max((value for _, value in open_samples), default=None)
+    observed_mae_r = min((value for _, value in open_samples), default=None)
+    observed_capture = None
+    observed_giveback = None
+    if realized_r is not None and observed_mfe_r is not None and observed_mfe_r > 0:
+        observed_capture = realized_r / observed_mfe_r
+        observed_giveback = observed_mfe_r - realized_r
+
+    first_mfe_at = None
+    if observed_mfe_r is not None:
+        first_mfe_at = next((when for when, value in open_samples if value == observed_mfe_r), None)
+
+    opportunity_created = next(
+        (_dt(row.get("opportunity_created_at")) for row in timing if _dt(row.get("opportunity_created_at")) is not None),
+        None,
+    )
+    first_ready_at = next(
+        (
+            _dt(row.get("timing_decision_at"))
+            for row in timing
+            if str(row.get("timing_outcome")) in READY_OUTCOMES
+            and _dt(row.get("timing_decision_at")) is not None
+        ),
+        None,
+    )
+    protect_at = _first_action_time(management, "PROTECT")
+    trail_at = _first_action_time(management, "TRAIL")
+    primary_at = _first_time_at_or_above(management, _target_r(trade, trade.primary_target))
+    expansion_at = _first_time_at_or_above(management, _target_r(trade, trade.expansion_target))
+
+    return TradeEfficiency(
+        initial_risk_money=initial_risk_money,
+        realized_r=realized_r,
+        entry_reference_drift_r=drift_r,
+        observed_mfe_r=observed_mfe_r,
+        observed_mae_r=observed_mae_r,
+        observed_capture_efficiency=observed_capture,
+        observed_giveback_r=observed_giveback,
+        opportunity_to_entry_seconds=_seconds(opportunity_created, trade.opened_at),
+        ready_to_entry_seconds=_seconds(first_ready_at, trade.opened_at),
+        trigger_to_entry_seconds=_seconds(trade.timing_trigger_time, trade.opened_at),
+        m5_event_to_entry_seconds=_seconds(trade.m5_event_time, trade.opened_at),
+        time_to_first_protect_seconds=_seconds(trade.opened_at, protect_at),
+        time_to_first_trail_seconds=_seconds(trade.opened_at, trail_at),
+        time_to_observed_primary_target_seconds=_seconds(trade.opened_at, primary_at),
+        time_to_observed_expansion_target_seconds=_seconds(trade.opened_at, expansion_at),
+        time_to_observed_mfe_seconds=_seconds(trade.opened_at, first_mfe_at),
+        management_samples=len(management),
+    )
