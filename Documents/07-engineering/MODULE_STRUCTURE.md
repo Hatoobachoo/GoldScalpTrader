@@ -1,8 +1,8 @@
 # GoldScalpTrader — Module Structure and File Map
 
 **Status:** IMPLEMENTED ARCHITECTURE MAP — CONNECTED DEMO CERTIFICATION IN PROGRESS
-**Version:** 2.4-institutional-scalp-implementation
-**Authority:** Actual package/file ownership, dependency direction, setup-detection/isolation boundaries, durable Risk-day authority, serial financial authority, connected evidence observation and research/presentation separation.
+**Version:** 2.5-institutional-scalp-implementation
+**Authority:** Actual package/file ownership, dependency direction, setup-detection/isolation boundaries, durable Risk-day authority, typed session/News provider separation, exactly-once learning, serial financial authority, connected evidence observation and research/presentation separation.
 
 ## 1. Dependency direction
 
@@ -50,10 +50,10 @@ Broker/financial authority remains serial even if analytical work is physically 
 | `execution` | Gate, controller, Intent, checks, sole writer, reconciliation | strategy invention |
 | `management` | ManagedTrade, close-proof lineage and HOLD/PROTECT/TRAIL/RUNNER/EXIT decisions | raw writer |
 | `persistence` | strict local state/checkpoints/recovery packages | current broker truth |
-| `app` | startup/recovery/runtime composition/cadence/DTO assembly, guarded DEMO runners | duplicate policy ownership |
+| `app` | startup/recovery/runtime composition/cadence/DTO assembly, typed session/News provider boundary, guarded DEMO runners | duplicate policy ownership |
 | `operator` | read-only terminal/graphical view models/renderers | authority recomputation |
 | `graphical_dashboard` | approved one-screen interactive local UI | trading mutation |
-| `research` | replay, learning, discovery, invention, ML, promotion evidence | production broker authority |
+| `research` | replay, exactly-once actual learning, discovery, invention, ML, promotion evidence | production broker authority |
 
 ## 3. Implemented package tree
 
@@ -187,22 +187,9 @@ Given one causal IntelligenceSnapshot,
 which strategy-family setup(s) genuinely qualify now?
 ```
 
-It may return:
+It may return `NONE`, one qualified setup or multiple independently qualified setup candidates. It cannot force the active family onto the chart, create monetary Risk/broker permission, or silently switch the production family.
 
-```text
-NONE
-one qualified setup
-multiple independently qualified setup candidates
-```
-
-It cannot:
-
-- force active family onto the chart;
-- create monetary Risk;
-- create broker permission;
-- silently choose a different live production family.
-
-`strategies/isolation.py` then applies the current policy:
+`strategies/isolation.py` applies the current policy:
 
 ```text
 qualified candidate belongs to ACTIVE_EXECUTION family
@@ -216,8 +203,6 @@ qualified candidate belongs only to SHADOW_ONLY family
 
 `strategies/scheduler.py` owns physical scheduling only.
 
-Correct optimization order:
-
 ```text
 shared precomputation
 → vectorization/cache
@@ -226,206 +211,117 @@ shared precomputation
 → bounded parallel execution only where critical path improves
 ```
 
-Required parity:
-
-- immutable inputs;
-- bounded resources;
-- deterministic canonical output order;
-- worker errors visible;
-- no broker/lifecycle side effects;
-- one-worker and parallel modes semantically identical.
-
-Physical parallelism is not mandatory if profiling shows no benefit.
+Immutable inputs, bounded resources, deterministic ordering, visible worker errors, no broker/lifecycle side effects and one-worker/parallel semantic parity are mandatory.
 
 ## 6. Data/timeframe ownership
 
-`market_data` reads all analytical timeframes through one normalized boundary:
+`market_data` reads H4 optional, H1, M15, M5, bounded M1 and quote/tick through one normalized boundary. `market_data/account_mode.py` proves connected DEMO mode before any write-capable path proceeds.
 
-```text
-H4 optional
-H1
-M15
-M5
-bounded M1 for subordinate entry refinement
-quote/tick
-```
-
-`market_data/account_mode.py` is the narrow environment guard used by the DEMO runtime to prove the connected MT5 account reports DEMO before any write-capable path proceeds.
-
-`market_data/mt5_reader.py` also owns normalized account-wide/position-scoped deal-history and whole-account position reads used by recovery/Risk accounting. Unavailable history/positions remain UNKNOWN rather than zero.
+`market_data/mt5_reader.py` also owns normalized account-wide/position-scoped deal history and whole-account position reads used by recovery/Risk accounting. Unavailable history/positions remain UNKNOWN rather than zero.
 
 M1 is production-relevant only as subordinate timing after a valid M5 Opportunity; it cannot independently create a setup.
 
 ## 7. Decision ownership
 
 ```text
-strategies/setup_detector.py
-→ family setup classification
-
-strategies/isolation.py
-→ live-active vs shadow eligibility
-
-decisions/fusion.py
-→ active-family BUY/SELL + Red Team only
-
-decisions/opportunity.py
-→ persistent M5 Opportunity/Episode
-
-decisions/timing.py
-→ subordinate M1 READY/WAIT/MISSED/INVALID
-
-decisions/trade_plan.py + family_trade_plan.py
-→ structural geometry
-
-decisions/executable_quality.py
-→ fresh spread/cost/drift/latency economics
+strategies/setup_detector.py → family setup classification
+strategies/isolation.py      → live-active vs shadow eligibility
+decisions/fusion.py          → active-family BUY/SELL + Red Team only
+decisions/opportunity.py     → persistent M5 Opportunity/Episode
+decisions/timing.py          → subordinate M1 READY/WAIT/MISSED/INVALID
+decisions/trade_plan.py + family_trade_plan.py → structural geometry
+decisions/executable_quality.py → fresh spread/cost/drift/latency economics
 ```
 
-These owners must remain distinct in behavior even if implementation refactors file placement.
+These owners remain distinct in behavior even if implementation refactors file placement.
 
 ## 8. Risk ownership
 
-`risk/engine.py` owns:
+`risk/engine.py` owns preserved profiles/bands, broker-aware volume/min-lot actual risk, margin/aggregate-capacity risk and the disabled-by-default aggressive 8%/16% overlay.
 
-- preserved SMALL/MEDIUM/NORMAL profile resolution/bands;
-- dynamic broker-aware volume;
-- min-lot actual risk;
-- margin;
-- aggregate/capacity risk;
-- disabled-by-default aggressive 8%/16% overlay.
+`risk/state.py` owns strict durable serialization for fixed UTC risk-day identity/DayStartEquity/profile, Account Safety P/L, daily lock/reset, consecutive-loss streak, cooldown and same-episode re-entry state.
 
-`risk/state.py` owns the strict durable state model and persistence serialization for:
-
-- fixed UTC risk-day identity and DayStartEquity;
-- fixed SMALL/MEDIUM/NORMAL profile for that day;
-- Account Safety P/L state;
-- daily lock/reset;
-- consecutive-loss streak;
-- cooldown;
-- same-episode re-entry state.
-
-`risk/runtime.py` is a **read/accounting authority component with no broker-write capability**. It:
-
-- reconstructs/bootstraps a UTC day only from verified account-wide history while the whole account is flat and lifecycle-reconciled;
-- loads the persisted day/profile on restart instead of resolving from current equity;
-- separates identifiable non-trading cash flow from Account Safety P/L;
-- consumes exact verified close receipts idempotently for the global loss streak/cooldown;
-- returns typed PASS/BLOCK/UNKNOWN Risk authority for new exposure.
+`risk/runtime.py` is a **read/accounting authority component with no broker-write capability**. It bootstraps a UTC day only from verified account-wide history while flat/reconciled, loads the persisted profile on restart, separates identifiable non-trading cash flow, consumes exact verified close receipts idempotently, and returns typed PASS/BLOCK/UNKNOWN for new exposure.
 
 `risk/permissions.py` composes Risk-related hard facts. News context is not a hard permission input.
 
-## 9. Session / News acquisition
+## 9. Session / News provider ownership
 
-`app/session_news.py` may provide separate typed outputs:
+`app/session_news.py` implements the typed provider boundary defined by the frozen provider contract.
+
+It supports a bounded, schema-versioned, exact-scope local provider snapshot with:
+
+- account/server/symbol scope validation;
+- timezone-aware observation and validity timestamps;
+- verified `OPEN / PRE_CLOSE / CLOSED / REOPEN_WARMUP / UNKNOWN` market state;
+- explicit schedule verification/tradeability/provenance;
+- reopen/gap/execution-normalization fields;
+- News provider health/events with the preserved 1800-second freshness baseline when invoked with project settings.
+
+Critical separation:
 
 ```text
-BrokerSessionFacts  → hard market/session authority
-NewsContextFacts    → soft context/research/dashboard
+expired/unverified/mismatched Session facts → hard Session UNKNOWN
+missing/stale News context                 → soft News health only
 ```
 
-Shared transport must never collapse these authority types.
+The provider module performs no broker write and does not infer hard session permission from News.
 
 ## 10. Execution ownership
 
-Only:
-
-```text
-execution/mt5_writer.py
-```
-
-may perform raw irreversible broker operations.
+Only `execution/mt5_writer.py` may perform raw irreversible broker operations.
 
 All OPEN/MODIFY/CLOSE paths use:
 
 ```text
-Gate
-→ durable Intent
-→ fresh checks/order_check
-→ SUBMITTING
-→ one writer call
-→ acknowledgement classification
-→ reconciliation
+Gate → durable Intent → fresh checks/order_check → SUBMITTING
+→ one writer call → acknowledgement classification → reconciliation
 ```
 
 No blind retry after ambiguous broker acknowledgement.
 
 ## 11. Management ownership
 
-`management/manager.py` decides:
+`management/manager.py` decides `HOLD / PROTECT / TRAIL / RUNNER / EXIT`. `management/execution.py` turns approved actions into the governed Intent path.
 
-```text
-HOLD / PROTECT / TRAIL / RUNNER / EXIT
-```
-
-`management/execution.py` turns approved management actions into the same governed execution service/Intent path.
-
-`management/closure.py` owns exact known-trade close proof/archival handoff. Its durable receipt includes the verified close monetary result needed for restart-safe Risk streak/cooldown accounting; it cannot adopt an unknown external Gold position.
-
-Management never imports raw MT5 writer directly.
+`management/closure.py` owns exact known-trade close proof/archival handoff. Its durable receipt includes verified close monetary result for restart-safe Risk streak/cooldown accounting; unknown external Gold is never adopted.
 
 ## 12. Persistence / recovery
 
-`persistence/store.py` is strict durable context, not broker truth.
-
-`persistence/checkpoint.py` exports consistent verified state.
-
-`app/recovery.py` reconciles restored local state with fresh current MT5 truth before trading resumes.
-
-No runtime Git publication module exists.
+`persistence/store.py` is strict durable context, not broker truth. `persistence/checkpoint.py` exports consistent state. `app/recovery.py` reconciles restored local context against current MT5 truth before trading resumes. No runtime Git publication module exists.
 
 ## 13. Research / learning ownership
 
-Research may run computationally heavier/offline workloads, but cannot mutate live production policy directly.
+`research/live_learning.py` owns the durable verified-close learning queue and exactly-once processing into `research/learning.py` StrategyMemory.
 
-`research/replay.py` owns causal multi-timeframe completed-bar replay points.
+Ordering is:
 
-`research/management_replay.py` owns one-position production-capacity replay while keeping shadow hypotheses counterfactual.
+```text
+verified close queue item
+→ validate immutable source identity
+→ durable StrategyMemory observation
+→ consume queue item only after durable save
+```
 
-`research/evidence.py` + `research/packages.py` own immutable evidence identity/write-new research packages.
+Missing `realized_r`, Entry Efficiency or Capture Efficiency are preserved as UNKNOWN/`None`; they are never fabricated from incomplete close evidence. The observation preserves actual family/policy, net money, close origin, ticket/symbol and open/close timestamps when known.
 
-`research/promotion.py` stops at `APPROVAL_REQUIRED` before production promotion.
-
-`research/models.py` isolates advanced ML feature/model identity and reproducible evidence.
+Replay/discovery/invention/ML/promotion remain downstream. `research/promotion.py` stops at `APPROVAL_REQUIRED` before production promotion.
 
 ## 14. Application / DEMO runner ownership
 
-`app/demo_runner.py` and `app/graphical_demo_runner.py` compose the governed DEMO runtime only. They do not create alternative trading policy.
+`app/demo_runner.py` and `app/graphical_demo_runner.py` compose the governed DEMO runtime only. They preserve explicit DEMO account proof, persistent StateStore, fixed cadence, governed cycle/management lifecycle and local checkpoint on safe shutdown.
 
-They must preserve:
-
-```text
-explicit DEMO account proof
-→ persistent StateStore
-→ one fixed runtime cadence
-→ governed cycle / management lifecycle
-→ local checkpoint on safe shutdown
-```
-
-The graphical runner supplies immutable/read-only presentation snapshots to the GUI. Chart buttons cannot trigger broker cycles or writes.
+The graphical runner supplies immutable/read-only snapshots to the GUI. Chart buttons cannot trigger broker cycles or writes.
 
 ## 15. Graphical dashboard ownership
 
-Approved Swing-style Scalp graphical dashboard is local and presentation-only.
-
-`graphical_dashboard/chart.py` owns chart rendering/interactions.
-
-`controls.py` owns functional M1/M5/M15/H1/H4, Indicators, Drawings and Settings interactions.
-
-`operator/graphical_snapshot.py` provides atomic read-only dashboard DTOs.
-
-No dashboard module imports Risk engine or MT5 writer to recalculate/mutate authority.
+Approved Swing-style Scalp graphical dashboard is local and presentation-only. `graphical_dashboard/chart.py` owns chart interactions; `controls.py` owns M1/M5/M15/H1/H4, Indicators, Drawings and Settings; `operator/graphical_snapshot.py` supplies atomic read-only DTOs. No dashboard module recalculates or mutates authority.
 
 ## 16. Connected DEMO evidence ownership
 
-Phase-15 evidence observation is deliberately separated from trading authority.
+`diagnostics/connected_demo.py` aggregates already-captured read-only connected-DEMO reports. `scripts/certify_connected_demo.py` captures one read-only observation and `scripts/monitor_connected_demo.py` accumulates them at a bounded interval while the governed bot may trade.
 
-`diagnostics/connected_demo.py` owns pure aggregation of already-captured read-only connected-DEMO reports. It verifies one account/symbol scope, accumulates lifecycle facts across time and refuses evidence that claims a certification-tool broker write or REAL release.
-
-`scripts/certify_connected_demo.py` captures one read-only connected snapshot.
-
-`scripts/monitor_connected_demo.py` repeatedly invokes that collector from a separate operator process while the governed DEMO bot may continue trading. It writes only local `runtime/evidence` artifacts, never broker state, source control or production policy.
-
-Cumulative facts such as verified OPEN/MODIFY/CLOSE/learning remain observed once proven. Current-health facts such as unresolved Intent use the latest sample. Manual/restart/handoff/schedule/distribution drills remain explicitly PENDING until actual evidence exists.
+They write only ignored local evidence files; they never mutate broker state, source control, production policy or REAL enablement. Missing manual/restart/handoff/schedule/distribution drills remain explicitly PENDING.
 
 ## 17. Implemented scripts
 
@@ -444,11 +340,7 @@ scripts/verify_contract_sync.py
 scripts/verify_offline_release.py
 ```
 
-`certify_connected_demo.py` is a read-only Phase 15 evidence collector. It connects to the intended MT5 DEMO account, reads normalized market/account facts plus local durable evidence, writes an evidence JSON, and performs no broker write. Missing drills remain explicitly PENDING.
-
-`monitor_connected_demo.py` is a read-only accumulation wrapper for long-running DEMO certification. It enforces a minimum sampling interval, rejects scope/REAL/write inconsistencies, writes local runtime evidence atomically and may stop once the core normal DEMO lifecycle has been observed. It never marks external/manual drills PASS by inference.
-
-`verify_contract_sync.py` statically enforces high-value frozen-document invariants against the source tree. It is part of the offline release audit and does not replace connected broker proof.
+The connected certification/monitor scripts are read-only. `verify_contract_sync.py` statically enforces selected high-value frozen-document invariants and does not replace connected proof.
 
 ## 18. Forbidden dependency directions
 
@@ -463,6 +355,7 @@ unknown position/history → zero                            NO
 ambiguous broker acknowledgement → blind retry             NO
 Risk → tighten structural SL to fit volume                 NO
 Risk runtime/accounting authority → broker write            NO
+Session/News provider → broker write                       NO
 News provider failure → hard trading kill switch           NO
 trading runtime → Git commit/push/pull                     NO
 backup package → credentials                               NO
@@ -472,12 +365,6 @@ connected certification/monitor tool → REAL enablement     NO
 
 ## 19. Source-map synchronization
 
-Any source/test rename, ownership change or new material script/package updates:
+Any source/test rename, ownership change or new material script/package updates this file, `FILE_AND_TEST_CATALOG.md`, the owning behavioral contract when behavior changes, affected tests/audits/operator docs and final release traceability.
 
-- this file;
-- `FILE_AND_TEST_CATALOG.md`;
-- owning topic contract when behavior changes;
-- affected tests/audits/operator docs;
-- final release traceability.
-
-The local offline release verifier must fail when a high-value frozen contract and source tree drift in a way covered by `verify_contract_sync.py`.
+The local offline release verifier must fail when a covered high-value frozen contract and source tree drift.
