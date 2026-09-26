@@ -28,6 +28,14 @@ For the detailed as-built hierarchy of runtime modes, configuration locks, DEMO 
 
 [`REAL_AND_DEMO_MODE_ARCHITECTURE.md`](REAL_AND_DEMO_MODE_ARCHITECTURE.md)
 
+## Timing Intelligence and governed learning
+
+Timing Intelligence is a first-class subsystem: M5 remains the setup/thesis authority, M1 refines entry timing, and verified timing evidence is preserved locally for governed efficiency research. Autonomous research may propose improvements, but cannot change Risk/Gate, promote itself to live execution, or gain broker authority.
+
+Implementation hierarchy, current evidence wiring, autonomous/governed promotion boundaries and remaining learning gaps are documented in:
+
+[`Documents/TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md`](Documents/TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md)
+
 ## Approved graphical dashboard
 
 DEMO uses the approved local graphical dashboard by default. It is one-screen/no-scroll and includes a live candlestick chart, M1/M5/M15/H1/H4 buttons, Indicators, Drawings and Settings controls, Detected Setup, Active Test Family, shadow setups, TradePlan, Risk, ManagedTrade, Execution and Gate information.
