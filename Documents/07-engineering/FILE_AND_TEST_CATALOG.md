@@ -1,14 +1,14 @@
 # GoldScalpTrader — Complete File and Test Catalog
 
 **Status:** IMPLEMENTED FILE/TEST MAP — OFFLINE CONTRACT SYNC ENFORCED / CONNECTED DEMO CERTIFICATION IN PROGRESS
-**Version:** 2.5-institutional-scalp-implementation
+**Version:** 2.4-institutional-scalp-implementation
 **Authority:** Actual source ownership, actual deterministic/integration proof, remaining connected proof and implementation/document synchronization.
 
 ## 1. Current repository reality
 
-The repository implements the documented architecture through guarded DEMO runtime components, ManagedTrade lifecycle, durable Risk/state components, governed research/learning tooling, read-only connected evidence tooling and the approved graphical dashboard.
+The repository is no longer a provisional scaffold. The documented architecture is implemented through the live guarded DEMO runtime, managed-trade lifecycle, governed research toolkit, read-only connected evidence tooling and approved graphical dashboard.
 
-Evidence classes remain separate:
+Current evidence classes must remain separate:
 
 ```text
 source exists
@@ -18,7 +18,7 @@ source exists
 ≠ future REAL release proof
 ```
 
-`Documents/` remains the behavioral source of truth. Code and tests conform to it.
+`Documents/` remains the source of truth for behavior. Code and tests must conform to it.
 
 ## 2. Source ownership summary
 
@@ -28,20 +28,18 @@ config/domain/diagnostics/security
 → intelligence
 → strategies: setup detector + six families + isolation + scheduler
 → decisions: active-family debate + Opportunity + M1 timing + TradePlan + executable quality
-→ risk: sizing + durable UTC-day authority
+→ risk
 → execution
 → management
 → app/operator
 
 persistence = durable local context/recovery
-research = verified-close learning + replay/discovery/invention/ML/promotion
+research = downstream replay/learning/discovery/invention/ML/promotion
 graphical_dashboard = read-only local presentation
 diagnostics connected-demo = read-only Phase-15 evidence aggregation
 ```
 
-## 3. Foundation/config/domain/diagnostics
-
-Source:
+## 3. Foundation/config/domain/diagnostics — implemented source
 
 ```text
 src/gold_scalp_trader/config/settings.py
@@ -57,7 +55,7 @@ src/gold_scalp_trader/diagnostics/connected_demo.py
 src/gold_scalp_trader/security/financial_secrets.py
 ```
 
-Proof includes:
+Current proof includes:
 
 ```text
 tests/test_settings.py
@@ -68,7 +66,9 @@ scripts/scan_financial_secrets.py
 scripts/verify_contract_sync.py
 ```
 
-The contract-sync verifier checks exact preserved Risk bands, disabled-by-default aggressive/manual-reset policy, `REAL_RELEASE_ENABLED = False`, canonical source/test ownership and selected no-broker boundaries.
+The connected-DEMO evidence test proves cumulative OPEN/MODIFY/CLOSE/learning evidence does not create a false full-certification PASS, current unresolved-Intent state is not laundered, scope mismatch is rejected, and certification evidence cannot claim REAL enablement or a broker write.
+
+The contract-sync verifier additionally checks exact preserved Risk bands, disabled-by-default aggressive/manual-reset policy and `REAL_RELEASE_ENABLED = False`.
 
 ## 4. Market-data layer
 
@@ -81,7 +81,7 @@ market_data/activity.py
 market_data/snapshot.py
 ```
 
-Proof:
+Current tests:
 
 ```text
 tests/test_mt5_reader.py
@@ -91,7 +91,7 @@ tests/test_market_domain.py
 tests/test_risk_runtime_state.py
 ```
 
-Required semantics:
+Required semantics remain:
 
 - one normalized analytical/recovery MT5 boundary;
 - completed H1/M15/M5 and bounded M1 chronology;
@@ -100,12 +100,12 @@ Required semantics:
 - future-clock/stale/corrupt detection;
 - `[]` vs `None` exposure semantics;
 - symbol/spec normalization;
-- account-wide and position-scoped deal-history normalization;
-- whole-account flatness read preserving UNKNOWN rather than inventing zero;
+- account-wide deal-history normalization for Risk-day accounting;
+- whole-account flatness read preserves UNKNOWN rather than inventing zero;
 - no raw write authority;
 - connected DEMO account must positively report DEMO before writes.
 
-Real Exness SymbolSpec, filling modes, schedule and timing remain Phase-15 evidence.
+Real Exness SymbolSpec, filling modes, schedule and timing remain Phase 15 evidence.
 
 ## 5. Intelligence layer
 
@@ -122,7 +122,7 @@ intelligence/news.py
 intelligence/snapshot.py
 ```
 
-Proof includes:
+Current tests include:
 
 ```text
 tests/test_indicators_structure.py
@@ -131,7 +131,13 @@ tests/test_news_context.py
 tests/test_decision_pipeline.py
 ```
 
-Frozen behavior: completed/causal structure, optional-evidence neutrality, M1 subordinate to valid M5 Opportunity, News soft-only and no broker authority.
+Required frozen behavior:
+
+- completed/causal structure;
+- optional evidence neutrality;
+- M1 subordinate to valid M5 Opportunity;
+- News context soft-only;
+- no broker authority.
 
 ## 6. Setup Detector / Strategy Isolation / six families
 
@@ -145,7 +151,7 @@ strategies/scheduler.py
 strategies/confluence.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_strategy_isolation.py
@@ -164,7 +170,13 @@ market setup = Liquidity Sweep only
 → Liquidity Sweep remains shadow/research evidence
 ```
 
-No family setup → no production Opportunity.
+And:
+
+```text
+market forms no family setup
+→ Setup Detector = NONE
+→ no production Opportunity
+```
 
 ## 7. Active-family decision / Opportunity / timing
 
@@ -177,7 +189,7 @@ decisions/opportunity.py
 decisions/timing.py
 ```
 
-Proof:
+Current integrated proof:
 
 ```text
 tests/test_decision_pipeline.py
@@ -185,7 +197,7 @@ tests/test_cycle_no_forcing.py
 tests/test_strategy_isolation.py
 ```
 
-Coverage includes independent active-family BUY/SELL evidence, Red-Team challenge, persistent M5 Opportunity, subordinate M1 timing, freshness/chase/drift and no M1-only production setup.
+Required coverage includes active-family BUY/SELL independence, Red-Team challenge, persistent M5 Opportunity, subordinate M1 timing, freshness/chase/drift and no M1-only production setup.
 
 ## 8. TradePlan / executable quality
 
@@ -197,14 +209,23 @@ decisions/trade_plan.py
 decisions/executable_quality.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_executable_quality.py
 tests/test_decision_pipeline.py
 ```
 
-Must preserve family-correct structural invalidation, no fabricated `entry ± ATR` plan geometry, ATR only as a structural/noise buffer, no SL rewrite to fit Risk, no inherited fixed Swing 1.20R hard dependency, gross R distinct from current costs and fixed+aware execution-quality dimensions.
+Must preserve:
+
+- family-correct structural invalidation;
+- no fabricated `entry ± ATR` stop/target geometry;
+- ATR is only a structural/noise buffer after a causal invalidation exists;
+- no SL rewrite to fit Risk;
+- no inherited fixed Swing 1.20R hard dependency;
+- gross R distinct from current costs;
+- fixed emergency spread plus spread/SL, spread/target and cost/reward dimensions;
+- current deterioration does not rewrite historical plan.
 
 ## 9. Risk
 
@@ -217,7 +238,7 @@ risk/runtime.py
 risk/permissions.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_risk_profiles.py
@@ -227,15 +248,24 @@ tests/test_guarded_demo_runtime.py
 scripts/verify_contract_sync.py
 ```
 
-`risk/runtime.py` is read/accounting authority only. Deterministic proof covers fixed UTC risk-day profile persistence, strict SQLite round-trip, DayStartEquity reconstruction from verified flat-account history, identifiable non-trading cash-flow separation, fail-closed bootstrap, persisted daily loss lock, idempotent verified-close loss-streak/cooldown accounting and true-breakeven handling.
+`risk/runtime.py` is a broker-read/accounting authority component and has no broker-write capability. Deterministic proof covers:
 
-Preserved regression values:
+- fixed UTC risk-day profile persistence even if current equity later crosses an account band;
+- strict risk-state SQLite round-trip;
+- DayStartEquity reconstruction from verified flat-account history rather than current equity;
+- identifiable non-trading cash-flow separation in Account Safety P/L;
+- fail-closed day bootstrap when whole-account flatness/lifecycle truth is unavailable;
+- persisted daily loss lock;
+- idempotent verified-close consumption for the global loss streak/cooldown;
+- true breakeven does not become a false loss.
+
+Exact preserved policy regression-checked by the contract-sync verifier:
 
 ```text
 SMALL  3.0–4.5 / >4.5–6.5 / hard 7 / daily 12
 MEDIUM 2.0–3.0 / >3.0–4.5 / hard 5 / daily 9
 NORMAL 1.0–2.0 / >2.0–3.5 / hard 4 / daily 7
-Aggressive disabled default; 8% single ceiling / 16% aggregate/day
+Aggressive overlay disabled by default; 8% single ceiling / 16% aggregate/day
 3 losses → at least 30m cooldown
 max independent Gold positions = 1
 ```
@@ -251,28 +281,24 @@ intelligence/news.py
 risk/permissions.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_news_context.py
-tests/test_session_news_provider.py
 tests/test_guarded_demo_runtime.py
 ```
 
-`app/session_news.py` now implements the frozen typed provider boundary with schema/version validation, exact account/server/symbol scope, timezone-aware observation/validity timestamps and explicit market states.
-
-Deterministic proof covers:
+Required semantics:
 
 ```text
-verified valid Session OPEN → session can report hard OPEN
-PRE_CLOSE                  → never new-entry-allowed
-expired/unverified Session → UNKNOWN
-scope mismatch              → reject
-News missing/stale          → soft UNAVAILABLE/STALE only
-News health                 → never a hard-trading permission
+News event / provider unavailable
+→ no direct hard block
+
+actual broker session UNKNOWN/CLOSED/PRE_CLOSE
+→ hard state according to owner
 ```
 
-The preserved 1800-second News-context freshness baseline is supported by the loader. Current Exness schedule correctness remains Phase-15 external proof.
+The 1800-second context-cache freshness baseline remains preserved.
 
 ## 11. Execution / controller / reconciliation
 
@@ -290,7 +316,7 @@ execution/controller.py
 execution/sqlite_coordination.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_execution_intent.py
@@ -302,7 +328,7 @@ tests/test_guarded_demo_runtime.py
 scripts/verify_contract_sync.py
 ```
 
-Persist-before-send, one send per Intent, no blind retry, action-sensitive reconciliation, sole writer and controller fencing remain mandatory.
+Must preserve persist-before-send, one send per Intent, no blind retry, action-sensitive OPEN/MODIFY/CLOSE reconciliation, sole writer and controller fencing.
 
 ## 12. Management / close proof
 
@@ -316,7 +342,7 @@ management/closure.py
 management/store.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_managed_trade_store.py
@@ -326,7 +352,9 @@ tests/test_deal_history_reader.py
 tests/test_risk_runtime_state.py
 ```
 
-`management/closure.py` owns exact broker/manual close proof and immutable closure receipt. The receipt preserves verified net monetary result used by restart-safe Risk streak/cooldown accounting. Unknown/manual Gold exposure is never adopted.
+`management/closure.py` exists because exact broker/manual close proof is a separate responsibility from deciding HOLD/PROTECT/TRAIL/RUNNER/EXIT. Its immutable closure receipt now preserves the verified net monetary close result used by restart-safe Risk streak/cooldown accounting.
+
+Unknown/manual Gold exposure is never silently adopted as bot-owned.
 
 ## 13. Persistence / recovery
 
@@ -342,7 +370,7 @@ app/recovery.py
 app/recovery_mt5.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_state_store.py
@@ -352,7 +380,7 @@ tests/test_recovery_package.py
 tests/test_risk_runtime_state.py
 ```
 
-Fresh-machine + connected MT5 reconciliation/handoff remains Phase-15 external proof.
+The remaining fresh-machine + connected MT5 reconciliation/handoff drill belongs to Phase 15, not to offline test claims.
 
 ## 14. Application runtime / DEMO launcher
 
@@ -370,7 +398,7 @@ app/dashboard.py
 app/live_presentation.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_demo_launcher.py
@@ -378,7 +406,9 @@ tests/test_guarded_demo_runtime.py
 tests/test_graphical_runtime.py
 ```
 
-Write-capable DEMO behavior requires explicit DEMO confirmation and positive MT5 DEMO account proof. REAL remains hard-disabled. Read/accounting authorities remain separate from raw broker-write ownership.
+Write-capable DEMO behavior requires explicit DEMO confirmation and positive MT5 DEMO account proof. REAL remains hard-disabled.
+
+The durable `risk/runtime.py` component is deliberately tracked separately from raw execution ownership: it may read account/history/state and return PASS/BLOCK/UNKNOWN, but it cannot send or reconcile an order by itself.
 
 ## 15. Operator / graphical dashboard
 
@@ -395,14 +425,14 @@ graphical_dashboard/server.py
 graphical_dashboard/__main__.py
 ```
 
-Proof:
+Current proof:
 
 ```text
 tests/test_dashboard_controls.py
 tests/test_graphical_runtime.py
 ```
 
-Approved GUI remains one-screen/no-scroll. Chart controls are presentation-only and cannot trigger a broker cycle/write.
+The approved GUI is one-screen/no-scroll. Timeframe, Indicators, Drawings and Settings controls are presentation-only and cannot trigger a broker cycle/write.
 
 ## 16. Research / learning / ML
 
@@ -430,32 +460,22 @@ research/models.py
 research/promotion.py
 ```
 
-Proof:
+Current proof:
 
 ```text
-tests/test_live_learning_pipeline.py
 tests/test_research_governance.py
 tests/test_research_integrity.py
 scripts/report_demo_learning_evidence.py
 scripts/run_walk_forward.py
 ```
 
-`research/live_learning.py` now provides exactly-once queue processing:
+The research toolkit includes causal multi-timeframe replay, M1 no-lookahead, one-position production-capacity replay, typed actual/shadow outcomes, opportunity/efficiency metrics, explicit stress, walk-forward boundaries, one-shot holdout semantics, ablation and immutable evidence packages.
 
-```text
-verified full-close queue item
-→ validate immutable source identity
-→ save StrategyMemory observation with allow_replace=False
-→ consume queue only after durable save
-```
-
-Tests prove identical successful processing is idempotent, a conflicting existing observation leaves the queue intact, incomplete evidence remains pending, and missing realized-R/entry/capture metrics are not fabricated.
-
-The broader research toolkit retains causal replay, one-position production-capacity replay, actual/shadow separation, opportunity/efficiency metrics, stress, walk-forward/holdout, ablation and immutable evidence packages. Candidate production promotion stops at `APPROVAL_REQUIRED`.
+Research has zero raw broker authority. Candidate progression may advance through governed research stages but production promotion stops at `APPROVAL_REQUIRED`.
 
 ## 17. Connected DEMO evidence / Phase 15
 
-Source/tooling:
+Implemented source and tooling:
 
 ```text
 src/gold_scalp_trader/diagnostics/connected_demo.py
@@ -464,7 +484,30 @@ scripts/monitor_connected_demo.py
 tests/test_connected_demo_evidence.py
 ```
 
-The collector/monitor are read-only, scope-bound and conservative. Verified OPEN/MODIFY/CLOSE/learning evidence can accumulate once observed; current unresolved-Intent status uses the latest sample; scope mismatch or certification-tool broker-write/REAL claims reject the evidence set; missing manual/restart/handoff/schedule/distribution drills stay PENDING.
+`certify_connected_demo.py` captures one read-only connected observation and never performs a broker write.
+
+`monitor_connected_demo.py` may run in a separate terminal while the guarded DEMO bot trades. It samples at a bounded interval, writes only ignored local `runtime/evidence` files, accumulates normal lifecycle evidence and keeps external/manual drills pending until actually observed.
+
+Aggregation semantics are intentionally conservative:
+
+```text
+verified OPEN/MODIFY/CLOSE/learning observed at least once
+→ evidence remains observed
+
+unresolved Intent state
+→ latest sample controls current-clear status
+
+scope/account/symbol mismatch
+→ reject evidence set
+
+certification tool reports broker write or REAL enablement
+→ reject evidence set
+
+missing manual/restart/handoff/schedule/distribution drill
+→ PENDING, never inferred PASS
+```
+
+This accelerates evidence accumulation without weakening the Phase-15 contract.
 
 ## 18. Implemented scripts
 
@@ -483,40 +526,59 @@ scripts/verify_contract_sync.py
 scripts/verify_offline_release.py
 ```
 
-`report_demo_learning_evidence.py` is read-only. `verify_contract_sync.py` fails offline release when covered high-value frozen-document invariants drift.
+`report_demo_learning_evidence.py` is read-only and reports durable StateStore evidence; it never connects to MT5 or performs a broker action.
 
-## 19. Integration test families represented
+`verify_contract_sync.py` fails the offline release when selected high-value frozen-document invariants drift from the source tree.
+
+## 19. Integration test families currently represented
+
+The current suite contains combined/integration tests for:
 
 ```text
 market-first setup / no strategy forcing
 strategy isolation
 M5→M1 decision pipeline
 executable quality
-Risk policy/state + durable UTC risk-day accounting
-Session/News provider authority separation
-one-shot Intent / Gate / controller
+Risk policy/state and durable UTC risk-day accounting
+one-shot execution Intent / Gate / controller
 guarded DEMO runtime
 ManagedTrade lifecycle
 OPEN/MODIFY/CLOSE reconciliation
 broker deal-history close proof
-exactly-once verified-close StrategyMemory ingestion
 StateStore/checkpoint/recovery package
-graphical runtime/chart controls
+graphical runtime and chart controls
 research no-lookahead/capacity/metrics/governance/integrity
 connected DEMO evidence accumulation safety
 ```
 
+Future file splits or additional edge-case tests must update this catalog only when they change material proof ownership.
+
 ## 20. Connected DEMO proof — still external
 
-Offline code/tests cannot prove actual Exness SymbolSpec, real schedule/DST/holiday facts, filling/order modes, actual spread/slippage/deviation distributions, real latency, live OPEN/MODIFY/CLOSE lifecycle, manual known-trade close visibility, restart during real active lifecycle or fresh-machine MT5 recovery/handoff.
+Offline code/tests cannot prove:
 
-The read-only connected collector/monitor records facts that can be observed without manufacturing broker events. These remain Phase-15 requirements until actually observed.
+- actual Exness SymbolSpec;
+- real market schedule/DST/holiday facts;
+- broker filling/order modes;
+- actual spread/slippage/deviation distributions;
+- real decision/send/ack/reconcile latency;
+- live OPEN/MODIFY/CLOSE lifecycle;
+- broker/manual known-trade close visibility;
+- restart during a real active lifecycle;
+- fresh-machine MT5 recovery/handoff.
+
+The read-only connected collector/monitor records facts that can be observed without manufacturing broker events. These remain Phase 15 evidence requirements until actually observed.
 
 ## 21. Synchronization rule
 
-Every material source/test/script addition, removal, rename or ownership change updates this catalog, `MODULE_STRUCTURE.md`, the owning behavioral contract when behavior changes and release/audit status when evidence changes.
+Every material source/test/script addition, removal, rename or ownership change updates:
 
-Offline release sequence:
+- this catalog;
+- `MODULE_STRUCTURE.md`;
+- the owning behavioral contract if behavior changes;
+- release/audit status if evidence changes.
+
+The offline release sequence includes:
 
 ```text
 verify_documents_manual.py
