@@ -120,6 +120,8 @@ Implementation hierarchy, current evidence wiring, autonomous/governed promotion
 
 DEMO uses the approved local graphical dashboard by default. It is one-screen/no-scroll and includes a live candlestick chart, M1/M5/M15/H1/H4 buttons, Indicators, Drawings and Settings controls, Detected Setup, Active Test Family, shadow setups, Opportunity/Timing, TradePlan, Risk, hard Session/News-source state, ManagedTrade, Execution and Gate information.
 
+The graphical shell is **fail-visible and market-state independent**. It is created before the first MT5 initialization attempt. A closed market remains visible as `CLOSED`; MT5 initialization/read failures, missing DEMO permission, stale/incomplete data, Session/Gate safety blocks and other governed runtime errors remain visible as `DEGRADED`/`SAFETY BLOCK` dashboard state instead of terminating the UI. Trading remains fail-closed, and the dashboard preserves the last healthy snapshot/candles when a later runtime poll fails.
+
 Chart/UI controls are presentation-only. They redraw the cached dashboard snapshot and cannot trigger broker writes. The governed trading cycle advances only on its fixed runtime timer.
 
 ## Live DEMO quick start
