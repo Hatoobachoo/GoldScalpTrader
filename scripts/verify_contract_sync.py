@@ -2,9 +2,10 @@
 
 This local/static guard does not replace connected Exness DEMO proof. It checks
 Document topology, canonical source/test ownership, preserved Risk constants,
-REAL hard-disable, market-first isolation, typed Session/News separation,
-critical implementation-to-catalog proof mappings, and forbidden broker
-dependencies in analytical/research/read-only layers.
+REAL hard-disable, market-first isolation, hard Session / soft News separation,
+durable Opportunity/timing/learning/governed-candidate ownership, critical
+implementation-to-catalog proof mappings, and forbidden broker dependencies in
+analytical/research/read-only layers.
 """
 from __future__ import annotations
 
@@ -88,6 +89,9 @@ REQUIRED_SOURCE_PATHS = (
     "persistence/local_recovery_package.py",
     "research/learning.py",
     "research/live_learning.py",
+    "research/timing_learning.py",
+    "research/runtime_evidence.py",
+    "research/candidate_registry.py",
     "research/replay.py",
     "research/management_replay.py",
     "research/session_history.py",
@@ -110,6 +114,9 @@ REQUIRED_SOURCE_PATHS = (
     "operator/graphical_snapshot.py",
     "app/main.py",
     "app/runtime.py",
+    "app/runtime_core.py",
+    "app/session_authority.py",
+    "app/opportunity_lifecycle.py",
     "app/startup.py",
     "app/recovery.py",
     "app/recovery_mt5.py",
@@ -128,6 +135,9 @@ REQUIRED_ROOT_PATHS = (
     "graphical_dashboard/controls.py",
     "graphical_dashboard/server.py",
     "graphical_dashboard/__main__.py",
+    "TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md",
+    "GOVERNED_AUTONOMOUS_STRATEGY_IMPLEMENTATION.md",
+    "REAL_AND_DEMO_MODE_ARCHITECTURE.md",
 )
 
 REQUIRED_SCRIPTS = (
@@ -154,6 +164,9 @@ CRITICAL_TESTS = (
     "tests/test_risk_state.py",
     "tests/test_risk_runtime_state.py",
     "tests/test_session_news_provider.py",
+    "tests/test_session_runtime_authority.py",
+    "tests/test_opportunity_lifecycle.py",
+    "tests/test_timing_learning_lineage.py",
     "tests/test_execution_intent.py",
     "tests/test_gate.py",
     "tests/test_controller.py",
@@ -166,6 +179,8 @@ CRITICAL_TESTS = (
     "tests/test_dashboard_controls.py",
     "tests/test_graphical_runtime.py",
     "tests/test_live_learning_pipeline.py",
+    "tests/test_runtime_research_evidence.py",
+    "tests/test_candidate_registry.py",
     "tests/test_research_governance.py",
     "tests/test_research_integrity.py",
     "tests/test_checkpoint.py",
@@ -200,18 +215,25 @@ CONNECTED_EVIDENCE_PATHS = (
     SRC / "diagnostics" / "connected_demo.py",
 )
 
-# Status docs are descriptive, not behavioral authority. These fragments prevent a
-# later docs-only edit from erasing implementation/proof that still exists.
 CATALOG_REQUIRED_FRAGMENTS = (
-    "**Version:** 2.5-institutional-scalp-implementation",
+    "**Version:** 2.6-institutional-scalp-implementation",
     "app/session_news.py",
-    "tests/test_session_news_provider.py",
+    "app/session_authority.py",
+    "tests/test_session_runtime_authority.py",
+    "app/opportunity_lifecycle.py",
+    "tests/test_opportunity_lifecycle.py",
+    "app/runtime_core.py",
+    "research/timing_learning.py",
+    "tests/test_timing_learning_lineage.py",
+    "research/runtime_evidence.py",
+    "tests/test_runtime_research_evidence.py",
+    "research/candidate_registry.py",
+    "tests/test_candidate_registry.py",
     "verified valid Session OPEN",
     "News health                 → never a hard-trading permission",
-    "research/live_learning.py",
-    "tests/test_live_learning_pipeline.py",
     "verified full-close queue item",
     "consume queue only after durable save",
+    "runtime activation remains separate from candidate registry stage",
     "REAL remains hard-disabled",
     "Connected DEMO proof — still external",
 )
@@ -323,21 +345,33 @@ def check_architecture_boundaries(errors: list[str]) -> None:
         _fail(errors, "strategy isolation no longer visibly separates active and shadow states")
 
     risk_runtime = SRC / "risk" / "runtime.py"
-    if risk_runtime.is_file():
-        text = risk_runtime.read_text(encoding="utf-8")
-        if "order_send(" in text or "execution.mt5_writer" in text:
-            _fail(errors, "durable Risk runtime gained broker-write authority")
-        risk_state = (SRC / "risk" / "state.py").read_text(encoding="utf-8")
-        if "StateStore" not in text or "risk_day" not in risk_state:
-            _fail(errors, "durable Risk-day state ownership is no longer explicit")
+    text = risk_runtime.read_text(encoding="utf-8")
+    if "order_send(" in text or "execution.mt5_writer" in text:
+        _fail(errors, "durable Risk runtime gained broker-write authority")
+    risk_state = (SRC / "risk" / "state.py").read_text(encoding="utf-8")
+    if "StateStore" not in text or "risk_day" not in risk_state:
+        _fail(errors, "durable Risk-day state ownership is no longer explicit")
 
     provider = SRC / "app" / "session_news.py"
-    if provider.is_file():
-        text = provider.read_text(encoding="utf-8")
-        if "order_send(" in text or "execution.mt5_writer" in text:
-            _fail(errors, "Session/News provider gained broker-write authority")
-        if "hard_trading_permission" not in text or "MarketState.UNKNOWN" not in text:
-            _fail(errors, "Session/News authority separation is no longer explicit")
+    text = provider.read_text(encoding="utf-8")
+    if "order_send(" in text or "execution.mt5_writer" in text:
+        _fail(errors, "Session/News provider gained broker-write authority")
+    if "hard_trading_permission" not in text or "MarketState.UNKNOWN" not in text:
+        _fail(errors, "Session/News authority separation is no longer explicit")
+
+    session_authority = (SRC / "app" / "session_authority.py").read_text(encoding="utf-8")
+    if "order_send(" in session_authority or "execution.mt5_writer" in session_authority:
+        _fail(errors, "hard Session authority gained broker-write authority")
+    if "PRE_CLOSE" not in session_authority or "UNKNOWN" not in session_authority:
+        _fail(errors, "hard Session runtime no longer exposes PRE_CLOSE/UNKNOWN semantics")
+
+    opportunity = (SRC / "app" / "opportunity_lifecycle.py").read_text(encoding="utf-8")
+    if "TRIGGERED" not in opportunity or "StateStore" not in opportunity:
+        _fail(errors, "durable Opportunity lifecycle no longer exposes terminal/persistent ownership")
+
+    candidate_registry = (SRC / "research" / "candidate_registry.py").read_text(encoding="utf-8")
+    if "runtime_activation_allowed" not in candidate_registry or "return False" not in candidate_registry:
+        _fail(errors, "candidate registry no longer visibly denies direct runtime activation")
 
 
 def check_connected_evidence_is_read_only(errors: list[str]) -> None:
@@ -387,7 +421,9 @@ def main() -> int:
     print("  PASS  implemented source/test mappings remain represented in engineering catalog")
     print("  PASS  preserved Risk / cooldown / REAL-disable policy")
     print("  PASS  durable UTC Risk-day component remains read/accounting-only")
-    print("  PASS  Session hard / News soft provider boundary remains read-only")
+    print("  PASS  Session hard / News soft runtime authority boundaries")
+    print("  PASS  durable Opportunity / timing lineage ownership")
+    print("  PASS  governed candidate registry cannot directly activate runtime")
     print("  PASS  setup-detection / isolation boundaries")
     print("  PASS  sole-writer / no-broker analytical boundaries")
     print("  PASS  connected-DEMO evidence tooling remains read-only")

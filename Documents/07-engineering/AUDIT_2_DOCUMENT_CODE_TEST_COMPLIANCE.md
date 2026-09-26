@@ -1,22 +1,34 @@
 # GoldScalpTrader — Audit 2: Document → Code → Test Compliance
 
-**Status:** OFFLINE COMPLIANCE PASS WITH CONNECTED-PROOF EXCEPTIONS
-**Version:** 2.1-implementation-trace
-**Authority:** Traceability audit from canonical contract to source owner to deterministic/integration evidence, with connected DEMO evidence explicitly separated.
+**Status:** OFFLINE COMPLIANCE PASS WITH CONNECTED-PROOF EXCEPTIONS  
+**Version:** 2.2-implementation-trace  
+**Authority:** Traceability from canonical contract to actual source owner to deterministic/integration evidence, with connected DEMO facts explicitly separated.
 
-## 1. Purpose
+## 1. Current verdict
 
-Audit 2 asks:
-
-> **Can every material documented behavior be traced to an implementation owner and appropriate proof, with no known undocumented production behavior?**
-
-Current answer:
+Latest operator-run offline release after commit `7fdf57c` reported:
 
 ```text
-OFFLINE DOCUMENT → CODE → TEST TRACEABILITY     PASS / PARTIAL BY AREA
-CONNECTED EXNESS BROKER FACTS                   EXTERNAL_PROOF_PENDING
-FUTURE REAL RELEASE                             NOT APPROVED / HARD DISABLED
+compileall     PASS
+documents      PASS
+contract-sync  PASS
+secrets        PASS
+pytest         PASS
+OFFLINE STATUS: PASS
 ```
+
+Therefore the current audited offline baseline is:
+
+```text
+DOCUMENT TREE / CANONICAL POLICY        PASS
+SOURCE OWNERSHIP MAP                    PASS
+STATIC CONTRACT SYNC                    PASS
+DETERMINISTIC / INTEGRATION TEST SUITE  PASS
+CONNECTED EXNESS EVIDENCE               PENDING
+FUTURE REAL RELEASE                     HARD DISABLED
+```
+
+Offline PASS does not certify broker reality or profitability.
 
 ## 2. Traceability model
 
@@ -28,268 +40,194 @@ flowchart LR
     EXT --> OP["Operator/dashboard truth"]
 ```
 
-A missing offline link is a compliance finding. A broker fact that inherently needs real Exness/Windows evidence is not converted into an offline PASS.
+A missing offline link is a compliance finding. A broker fact that inherently needs real Windows/Exness evidence remains external proof rather than being inferred from mocks.
 
 ## 3. Machine-enforced sync guard
 
-The repository now includes:
+`scripts/verify_contract_sync.py` is executed by `scripts/verify_offline_release.py` and now pins high-value ownership/proof for:
 
-```text
-scripts/verify_contract_sync.py
-```
-
-It is executed by:
-
-```text
-scripts/verify_offline_release.py
-```
-
-and checks selected high-value frozen-document invariants:
-
-- final 66-document `01–08` topology;
-- canonical source-owner paths;
-- preserved SMALL/MEDIUM/NORMAL Risk constants;
-- disabled-by-default aggressive mode/manual reset;
+- frozen 66-document topology;
+- canonical source/test paths;
+- SMALL/MEDIUM/NORMAL Risk constants;
+- aggressive-mode/manual-reset defaults;
 - 3-loss / 30-minute cooldown baseline;
 - one-position baseline;
 - `REAL_RELEASE_ENABLED = False`;
-- setup-detector + active/shadow separation presence;
-- analytical/research/operator layers cannot import raw MT5 writer;
-- raw `order_send` remains confined to the sole writer;
-- legacy News blackout/post-News warmup terms are absent from current code.
+- market-first setup/isolation boundaries;
+- hard Session / soft News separation;
+- durable Opportunity lifecycle ownership;
+- timing-learning lineage ownership;
+- management/shadow runtime evidence ownership;
+- governed autonomous candidate registry ownership;
+- candidate registry cannot directly activate runtime;
+- analytical/research/operator layers cannot own raw MT5 writer;
+- connected-certification tooling remains read-only.
 
-This is a regression guard, not a substitute for design review or connected certification.
+The verifier is a regression guard, not a substitute for connected certification or adversarial design review.
 
-## 4. Current high-risk trace matrix
+## 4. High-risk trace matrix
 
-| Requirement | Canonical owner | Implementation owner | Current proof | Status |
-|---|---|---|---|---|
-| one normalized MT5 read boundary | Market Data/System Contract | `market_data/mt5_reader.py` | `test_mt5_reader.py`, deal/activity tests | COMPLIANT offline; connected facts pending |
-| market-first Setup Detector | Strategy Floor | `strategies/setup_detector.py` | `test_cycle_no_forcing.py`, `test_strategy_isolation.py` | COMPLIANT |
-| active family cannot force setup | Strategy Floor | detector + isolation + cycle | no-forcing/isolation tests | COMPLIANT |
-| exactly one active / shadow separation | Strategy Floor | `strategies/isolation.py` | `test_strategy_isolation.py` | COMPLIANT |
-| M5 Opportunity before M1 timing | Entry Timing | opportunity/timing/cycle | `test_decision_pipeline.py` | COMPLIANT |
-| M1 cannot create standalone production trade | Entry Timing | timing/cycle | decision/no-forcing tests | COMPLIANT |
-| family-aware TradePlan | TradePlan + family extensions | `decisions/trade_plan.py`, `family_trade_plan.py` | decision/quality tests | PARTIAL — more family-specific edge tests desirable |
-| fixed+aware executable quality | TradePlan/Execution | `decisions/executable_quality.py` | `test_executable_quality.py` | COMPLIANT offline; real costs pending |
-| preserved Risk profiles | Risk Contract | `config/settings.py`, `risk/engine.py` | risk tests + contract-sync verifier | COMPLIANT |
-| aggressive mode default false / 8–16 ceilings | Risk Contract | config/risk engine | risk tests + static guard | COMPLIANT |
-| News soft-context-only | News/Session contracts | `intelligence/news.py`, permissions/runtime | `test_news_context.py` + static guard | COMPLIANT |
-| broker OPEN/CLOSED/PRE_CLOSE authority | Session/Risk | session/permissions/runtime | offline logic | EXTERNAL_PROOF_PENDING for current Exness schedule |
-| upstream blocker vs Gate distinction | Execution/Dashboard | cycle/runtime/presentation | Gate/runtime/dashboard tests | COMPLIANT offline |
-| one-shot Intent / no blind retry | Execution | intent store/service/reconcile/writer | intent/action-reconcile tests | COMPLIANT offline; ambiguous real ack drill pending |
-| sole raw writer | Execution | `execution/mt5_writer.py` | static guard + writer tests | COMPLIANT |
-| manual/foreign exposure not adopted | Broker Activity | reader/runtime/closure | deal/action reconciliation tests | COMPLIANT offline; real manual-close drill pending |
-| ManagedTrade lifecycle | Trade Manager | `management/*`, runtime | management lifecycle/store tests | COMPLIANT offline; live MODIFY/CLOSE proof pending |
-| exactly-once learning | Learning | research learning + close archive | research integrity/governance tests | PARTIAL — connected closed-trade evidence pending |
-| autonomous invention/ML cannot self-promote | Research governance | invention/promotion/models | research governance tests | COMPLIANT offline |
-| no runtime Git publication | GitHub/Recovery policy | runtime/app tree | architecture/static review | COMPLIANT |
-| graphical dashboard read-only | Operator docs | operator + graphical dashboard + runner | graphical runtime/controls tests | COMPLIANT offline |
-| REAL disabled | System/Release | `config/settings.py` | contract-sync verifier | COMPLIANT |
+| Requirement | Implementation owner | Current proof | Offline status |
+|---|---|---|---|
+| normalized MT5 read boundary | `market_data/mt5_reader.py` | reader/deal/activity/domain tests | COMPLIANT; real broker facts external |
+| market-first setup detection | `strategies/setup_detector.py` | no-forcing/isolation tests | COMPLIANT |
+| exactly one active / shadows non-authoritative | `strategies/isolation.py` | isolation + runtime research tests | COMPLIANT |
+| independent BUY/SELL + Red Team | decision fusion/cycle | decision pipeline | COMPLIANT |
+| M5 before M1 | decisions + cycle | decision pipeline/no-forcing | COMPLIANT |
+| persistent causal Opportunity | `app/opportunity_lifecycle.py` | `test_opportunity_lifecycle.py` | COMPLIANT offline |
+| timing lineage into actual learning | runtime/runtime-core + ManagedTrade + learning | timing/managed/live-learning tests | COMPLIANT offline |
+| family-aware TradePlan | trade-plan modules | decision/quality tests | COMPLIANT baseline; further family edge depth remains useful |
+| executable spread/cost quality | `decisions/executable_quality.py` | executable-quality tests | COMPLIANT offline; real distributions external |
+| preserved Risk profiles/ceilings | config/risk | risk tests + static guard | COMPLIANT |
+| daily-loss/cooldown restart state | risk state/runtime | risk runtime/state tests | COMPLIANT offline |
+| Session OPEN/PRE_CLOSE/CLOSED/UNKNOWN runtime authority | `app/session_news.py`, `app/session_authority.py`, runtime | session provider/runtime authority tests | COMPLIANT offline; actual Exness schedule external |
+| News soft only | News/session boundary | News + session tests/static guard | COMPLIANT |
+| Gate / persist-before-send / one-shot | execution + `app/runtime_core.py` | intent/gate/controller/runtime tests | COMPLIANT offline |
+| sole raw writer | `execution/mt5_writer.py` | writer tests + static scan | COMPLIANT |
+| ambiguous ack requires reconciliation | execution/reconcile | action reconciliation tests | COMPLIANT offline; real ambiguous ack external |
+| ManagedTrade/close lineage | management + runtime core | management/store/deal tests | COMPLIANT offline |
+| verified-close exactly-once learning | closure + live learning | live-learning tests | COMPLIANT offline; real close evidence external |
+| management-path research evidence | `research/runtime_evidence.py` | runtime research tests | COMPLIANT offline |
+| shadow-family same-market evidence | `research/runtime_evidence.py` | runtime research tests | COMPLIANT offline; statistical DEMO depth pending |
+| autonomous invention evidence-bound | invention + `candidate_registry.py` | candidate/research governance tests | COMPLIANT offline |
+| candidate cannot self-activate runtime | candidate registry/promotion | candidate tests + static guard | COMPLIANT |
+| graphical dashboard read-only | operator/graphical runner/UI | graphical/controls tests | COMPLIANT offline |
+| recovery/checkpoint local integrity | persistence/recovery | checkpoint/recovery tests | COMPLIANT offline; fresh-machine connected handoff external |
+| REAL disabled | config/startup/runtime layers | settings + contract sync | COMPLIANT / HARD DISABLED |
 
-## 5. Setup Detector compliance
+## 5. Opportunity / Timing compliance
 
-Required behavior:
-
-```text
-chart/market facts
-→ Setup Detector
-→ actual qualifying family candidate(s)
-→ Strategy Isolation policy
-```
-
-Not:
-
-```text
-active family selected
-→ force that family onto every chart
-```
-
-Current source/test trace includes:
+Required hierarchy:
 
 ```text
-strategies/setup_detector.py
-strategies/isolation.py
-app/cycle.py
-app/runtime.py
-tests/test_cycle_no_forcing.py
-tests/test_strategy_isolation.py
+market setup
+→ active-family independent thesis
+→ M5 Opportunity
+→ durable causal Opportunity/Episode
+→ subordinate M1 TimingDecision
+→ structural TradePlan
+→ executable quality
+→ Risk / Session / Gate
 ```
 
-Current offline verdict: **COMPLIANT**.
-
-## 6. M1 compliance
-
-Required flow:
-
-```text
-active-family M5 setup
-→ Opportunity
-→ subordinate M1 refinement
-```
-
-Current implementation is traced through `decisions/opportunity.py`, `decisions/timing.py` and the integrated cycle/runtime path.
+Current implementation preserves stable Opportunity/Episode identity across repeated refresh/restart and terminal `TRIGGERED` handling after irreversible OPEN send. Timing profile/version, event age, M1 trigger age, chase and source-event lineage are frozen into durable pre-send context and then ManagedTrade/verified-close learning where available.
 
 No approved path exists from M1 alone to a production Intent.
 
 Current offline verdict: **COMPLIANT**.
 
-## 7. News compliance
+## 6. Session / News compliance
 
-The current code must not implement:
+`app/session_authority.py` is now part of the guarded DEMO runtime composition rather than a standalone-only provider.
 
-```text
-News event/provider unavailable
-→ hard block solely because of News
-```
-
-`verify_contract_sync.py` rejects legacy current-code terms `NEWS_BLACKOUT` and `POST_NEWS_WARMUP` and prevents analytical News modules from gaining broker-writer authority.
-
-Current offline verdict: **COMPLIANT**.
-
-Current provider reliability/event-performance calibration remains research evidence, not permission authority.
-
-## 8. Risk compliance
-
-Machine/static and deterministic tests compare current code against the preserved canonical table:
+Offline-tested semantics include:
 
 ```text
-SMALL   3.0–4.5 / >4.5–6.5 / hard 7 / daily 12
-MEDIUM  2.0–3.0 / >3.0–4.5 / hard 5 / daily 9
-NORMAL  1.0–2.0 / >2.0–3.5 / hard 4 / daily 7
-```
-
-Also guarded:
-
-```text
-Aggressive disabled by default
-8% single-trade ceiling — not target
-16% aggregate/day
-one independent position
-3 consecutive closed losses / >=30m cooldown
-manual reset disabled by default
+verified scoped OPEN → eligible hard Session permission
+PRE_CLOSE           → no new exposure; governed management/flatten semantics
+expired/unverified  → UNKNOWN / fail closed
+scope mismatch      → reject
+obvious weekend     → CLOSED without fabricating weekday OPEN
+News stale/missing  → soft context only
 ```
 
 Current offline verdict: **COMPLIANT**.
 
-## 9. Execution compliance
+Actual Exness session calendar, PRE_CLOSE timing, DST, holiday and maintenance correctness remain **EXTERNAL_PROOF_PENDING**.
 
-Required irreversible path:
+## 7. Execution compliance
+
+Financial path remains:
 
 ```text
 Gate
-→ Intent persisted
-→ fresh precheck/order_check
+→ durable Intent
+→ local + broker precheck/order_check
 → SUBMITTING persisted
-→ one writer send
-→ ack classification
+→ exactly one MT5Writer send
+→ acknowledgement classification
 → reconciliation
 ```
 
-Current ownership:
-
-```text
-execution/gate.py
-execution/intent_store.py
-execution/checks.py
-execution/service.py
-execution/mt5_writer.py
-execution/reconcile.py
-execution/controller.py
-```
-
-The static contract verifier also scans analytical/research/presentation directories for forbidden writer imports/raw sends.
+`app/runtime.py` owns runtime policy/orchestration. `app/runtime_core.py` owns the exactly-once financial lifecycle implementation. This split is descriptive ownership, not a second writer path.
 
 Current offline verdict: **COMPLIANT**.
 
-Real broker return modes, slippage/deviation and ambiguous acknowledgement drill remain **EXTERNAL_PROOF_PENDING**.
+## 8. Learning / autonomous-governance compliance
 
-## 10. Management / close compliance
-
-Current managed lifecycle:
+Actual closed-trade learning remains exactly-once:
 
 ```text
-verified OPEN
-→ ManagedTrade
-→ HOLD / PROTECT / TRAIL / RUNNER / EXIT
-→ governed MODIFY/CLOSE Intent
-→ reconciliation
-→ exact close proof
+verified full close
+→ durable learning queue
+→ immutable source validation
+→ StrategyMemory save
+→ queue consume only after durable save
 ```
 
-Implementation includes `management/closure.py` as the exact close-proof boundary in addition to manager/execution/store.
+`research/timing_learning.py` records timing evidence. `research/runtime_evidence.py` records management-path and shadow-family observations. Missing causal metrics remain `None` rather than fabricated.
 
-Current offline verdict: **COMPLIANT** for modeled/tested behavior.
+`research/candidate_registry.py` requires durable source evidence and preserves evidence-chain/fingerprint lineage. Promotion-stage progression remains governed; stage alone cannot edit runtime settings or activate a strategy. Explicit approval/rollback requirements remain separate from actual deployment authority.
 
-Real broker/manual close visibility remains **EXTERNAL_PROOF_PENDING**.
+Current offline verdict: **COMPLIANT for authority/integrity boundaries**. Statistical value, overfitting resistance and useful policy improvements still require real accumulated research/DEMO evidence.
 
-## 11. Dashboard compliance
+## 9. Dashboard compliance
 
-Approved graphical UI is implemented through:
+The graphical path is wired through the governed DEMO runtime. Presentation remains read-only and timer-driven. Dashboard DTOs expose hard Session state and Opportunity/Timing information in addition to strategy, TradePlan, Risk, execution and ManagedTrade state.
+
+Current offline verdict: **COMPLIANT** for code/test wiring. Exact intended Windows visual geometry remains operator/connected evidence.
+
+## 10. File/test map synchronization
+
+Current engineering maps must include at least these newer material owners:
 
 ```text
-operator/graphical_snapshot.py
-graphical_dashboard/ui.py
-chart.py
-controls.py
-app/graphical_demo_runner.py
+app/runtime_core.py
+app/session_authority.py
+app/opportunity_lifecycle.py
+research/timing_learning.py
+research/runtime_evidence.py
+research/candidate_registry.py
+
+tests/test_session_runtime_authority.py
+tests/test_opportunity_lifecycle.py
+tests/test_timing_learning_lineage.py
+tests/test_runtime_research_evidence.py
+tests/test_candidate_registry.py
 ```
 
-Current controls are functional presentation controls; broker cycles remain timer-driven.
+`MODULE_STRUCTURE.md`, `FILE_AND_TEST_CATALOG.md` and `verify_contract_sync.py` are updated together when these ownership/proof mappings change.
 
-Current offline verdict: **COMPLIANT**.
+## 11. Remaining connected evidence exceptions
 
-Exact visual polish remains operator-review evidence rather than a safety claim.
+The following cannot receive PASS from source/tests alone:
 
-## 12. Research / AI compliance
-
-Current research modules have no raw broker authority. Candidate promotion remains evidence-bound and ends at `APPROVAL_REQUIRED` before production.
-
-Current offline verdict: **COMPLIANT for authority boundary; PARTIAL for research depth/connected evidence**.
-
-Research depth can continue improving without changing production authority.
-
-## 13. File/Test Catalog compliance
-
-`MODULE_STRUCTURE.md` and `FILE_AND_TEST_CATALOG.md` are synchronized to current implementation additions including:
-
-```text
-market_data/account_mode.py
-app/demo_runner.py
-app/graphical_demo_runner.py
-management/closure.py
-scripts/verify_contract_sync.py
-scripts/verify_offline_release.py
-```
-
-Unexpected future material source/test ownership must update both engineering maps in the same coherent packet.
-
-## 14. Connected evidence exceptions
-
-The following cannot receive a PASS from source/static tests alone:
-
-- actual Exness SymbolSpec/filling/stops/margin behavior;
-- actual daily/weekend/DST/holiday schedule;
-- real spread/slippage/deviation distributions;
+- actual Exness SymbolSpec/filling/stops/freeze/margin/order-check behavior;
+- actual daily/weekend/DST/holiday/maintenance schedule;
+- real spread/slippage/deviation/fill distributions;
 - decision→send→ack→reconcile latency;
-- live OPEN/MODIFY/CLOSE/SL/TP lifecycle;
-- manual close of a known bot trade;
-- ambiguous acknowledgement/no duplicate drill where safely exercisable;
+- controlled OPEN/MODIFY/PROTECT/TRAIL/CLOSE;
+- broker-side TP/SL close visibility;
+- manual close attribution of a known bot trade;
+- ambiguous acknowledgement/no duplicate under real broker behavior;
 - restart during real active lifecycle;
-- fresh-machine restore/handoff;
-- statistically meaningful active/shadow DEMO learning evidence.
+- fresh-machine restore and sequential handoff;
+- strategy-isolation attribution under real DEMO activity;
+- M1 timing latency/quality under real DEMO activity;
+- 3-loss/cooldown persistence under actual closed broker deals;
+- statistically meaningful actual/shadow/timing/management learning reports;
+- intended Windows graphical layout review.
 
 These remain **Phase 15 EXTERNAL_PROOF_PENDING**.
 
-## 15. Current Audit 2 verdict
+## 12. Final Audit-2 verdict
 
 ```text
-DOCUMENT TREE / CANONICAL POLICY        PASS
-SOURCE OWNERSHIP MAP                    PASS
-HIGH-RISK STATIC CONTRACT SYNC          PASS when verify_contract_sync.py passes locally
-DETERMINISTIC/INTEGRATION TEST MAP      PASS/PARTIAL by row above
-CONNECTED EXNESS EVIDENCE               PENDING
-FUTURE REAL RELEASE                     HARD DISABLED
+OFFLINE DOCUMENT → CODE → TEST TRACEABILITY     PASS
+HIGH-RISK AUTHORITY BOUNDARIES                  PASS OFFLINE
+CONNECTED EXNESS FACTS                          PENDING
+CONNECTED DEMO LIFECYCLE CERTIFICATION          PENDING
+FUTURE REAL RELEASE                             HARD DISABLED
 ```
 
-No profitability claim is made.
+No profitability claim is made. This audit does not replace the future full forensic repository audit or connected certification.
