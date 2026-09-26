@@ -70,6 +70,10 @@ def apply_operator_drill_evidence(report: dict[str, Any], records: Sequence[dict
     for record in records:
         if not isinstance(record, dict) or record.get("schema_version") != 1:
             raise ValueError("unsupported operator drill evidence schema")
+        if bool(record.get("broker_write_performed_by_this_tool")):
+            raise ValueError("operator drill evidence reports an unexpected broker write")
+        if bool(record.get("real_release_enabled")):
+            raise ValueError("REAL release must remain disabled during DEMO drill evidence")
         if str(record.get("account_scope_sha256")) != scope or str(record.get("symbol")) != symbol:
             raise ValueError("operator drill evidence scope/symbol mismatch")
         if str(record.get("mode")) != "DEMO":
