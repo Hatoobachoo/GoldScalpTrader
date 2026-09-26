@@ -9,15 +9,12 @@ from collections import Counter
 import os
 from pathlib import Path
 
+from gold_scalp_trader.diagnostics.connected_runtime_evidence import summarize_local_research
 from gold_scalp_trader.execution.intent_store import NS as INTENT_NS, unresolved
 from gold_scalp_trader.management.store import NS as MANAGED_TRADE_NS
 from gold_scalp_trader.persistence.store import StateStore, StateStoreError
 from gold_scalp_trader.research.episode_journal import NS as EPISODE_NS
 from gold_scalp_trader.research.learning import NS as LEARNING_NS
-
-
-def _fmt(value: object) -> str:
-    return "—" if value is None else str(value)
 
 
 def main() -> int:
@@ -42,6 +39,7 @@ def main() -> int:
         episodes = store.list_events(EPISODE_NS)
         managed = store.list_records(MANAGED_TRADE_NS)
         unresolved_intents = unresolved(store)
+        runtime_research = summarize_local_research(store)
 
         intent_states = Counter(str(r.payload.get("state", "UNKNOWN")) for r in intents)
         intent_actions = Counter(str(r.payload.get("action", "UNKNOWN")) for r in intents)
@@ -63,6 +61,15 @@ def main() -> int:
         print(f"  by family: {dict(families)}")
         print(f"Research episodes: {len(episodes)}")
         print(f"  by evidence class: {dict(episode_classes)}")
+        print("Runtime learning evidence:")
+        print(f"  timing samples: {runtime_research['timing_samples']}")
+        print(
+            "  timing samples associated with broker write: "
+            f"{runtime_research['timing_broker_write_associated_samples']}"
+        )
+        print(f"  management samples: {runtime_research['management_samples']}")
+        print(f"  shadow samples: {runtime_research['shadow_samples']}")
+        print(f"  qualified shadow samples: {runtime_research['qualified_shadow_samples']}")
 
         if realized:
             print(f"Observed realized R: count={len(realized)} avg={sum(realized)/len(realized):.4f} net={sum(realized):.4f}")
@@ -77,22 +84,56 @@ def main() -> int:
         else:
             print("Capture Efficiency avg: —")
 
-        has_open = any(str(r.payload.get("action")) == "OPEN" and str(r.payload.get("state")) == "ACCEPTED_VERIFIED" for r in intents)
-        has_modify = any(str(r.payload.get("action")) == "MODIFY" and str(r.payload.get("state")) == "ACCEPTED_VERIFIED" for r in intents)
-        has_close = any(str(r.payload.get("action")) == "CLOSE" and str(r.payload.get("state")) == "ACCEPTED_VERIFIED" for r in intents)
+        has_open = any(
+            str(r.payload.get("action")) == "OPEN"
+            and str(r.payload.get("state")) == "ACCEPTED_VERIFIED"
+            for r in intents
+        )
+        has_modify = any(
+            str(r.payload.get("action")) == "MODIFY"
+            and str(r.payload.get("state")) == "ACCEPTED_VERIFIED"
+            for r in intents
+        )
+        has_close = any(
+            str(r.payload.get("action")) == "CLOSE"
+            and str(r.payload.get("state")) == "ACCEPTED_VERIFIED"
+            for r in intents
+        )
         print("\nPHASE 15 EVIDENCE SNAPSHOT")
         print(f"  verified OPEN evidence:   {'YES' if has_open else 'NO'}")
         print(f"  verified MODIFY evidence: {'YES' if has_modify else 'NO'}")
         print(f"  verified CLOSE evidence:  {'YES' if has_close else 'NO'}")
         print(f"  actual learning evidence: {'YES' if learning else 'NO'}")
-        print(f"  unresolved intent safety: {'CLEAR' if not unresolved_intents else 'RECONCILIATION REQUIRED'}")
+        print(
+            "  timing evidence:          "
+            f"{'YES' if runtime_research['timing_samples'] else 'NO'}"
+        )
+        print(
+            "  management evidence:      "
+            f"{'YES' if runtime_research['management_samples'] else 'NO'}"
+        )
+        print(
+            "  shadow evidence:          "
+            f"{'YES' if runtime_research['shadow_samples'] else 'NO'}"
+        )
+        print(
+            "  unresolved intent safety: "
+            f"{'CLEAR' if not unresolved_intents else 'RECONCILIATION REQUIRED'}"
+        )
 
         if not integrity:
             print("STATUS: FAIL — StateStore integrity check failed")
             return 1
         print("STATUS: REPORT COMPLETE")
         print("NOTE: absence of an item means NOT YET PROVEN, not FAIL by itself.")
-        print("NOTE: broker schedule, slippage, latency, manual-close and fresh-machine drills still require connected evidence.")
+        print(
+            "NOTE: local timing/management/shadow evidence is reported but does not by itself "
+            "certify connected Phase-15 drills."
+        )
+        print(
+            "NOTE: broker schedule, slippage, latency, manual-close and fresh-machine drills "
+            "still require connected evidence."
+        )
         return 0
     finally:
         store.close()
