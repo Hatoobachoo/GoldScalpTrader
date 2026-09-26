@@ -1,8 +1,8 @@
 # GoldScalpTrader — Module Structure and File Map
 
-**Status:** IMPLEMENTED ARCHITECTURE MAP — OFFLINE RELEASE PASS / CONNECTED DEMO CERTIFICATION PENDING  
+**Status:** IMPLEMENTED ARCHITECTURE MAP — OFFLINE RELEASE BASELINE PASS / CONNECTED DEMO CERTIFICATION IN PROGRESS  
 **Version:** 2.5-institutional-scalp-implementation  
-**Authority:** Actual package/file ownership, dependency direction, durable Session/Opportunity/timing/research boundaries, serial financial authority and connected-evidence separation.
+**Authority:** Actual package/file ownership, dependency direction, serial financial authority, hard Session/soft News separation, durable timing/learning evidence and read-only connected certification.
 
 ## 1. Dependency direction
 
@@ -11,29 +11,21 @@ flowchart TB
     BASE["config / domain / diagnostics / security"] --> DATA["market_data"]
     DATA --> INTEL["intelligence"]
     INTEL --> STRAT["strategies: setup detection + six families + isolation"]
-    STRAT --> DEC["decisions: BUY/SELL + Red Team + M5 Opportunity + M1 timing + TradePlan + quality"]
+    STRAT --> DEC["decisions: BUY/SELL + Red Team + Opportunity + M1 timing + TradePlan + quality"]
     DEC --> RISK["risk"]
-    RISK --> SESSION["app/session hard authority"]
-    SESSION --> EXEC["execution"]
+    RISK --> APP["app policy composition: Session + durable Opportunity"]
+    APP --> EXEC["execution: Gate / Intent / sole writer / reconciliation"]
     EXEC --> MGMT["management"]
-    MGMT --> APP["app composition / lifecycle"]
+    MGMT --> RESEARCH["learning / timing / shadow / governed candidates"]
     APP --> OP["operator / graphical dashboard"]
-
-    DATA --> RESEARCH["research"]
-    INTEL --> RESEARCH
-    STRAT --> RESEARCH
-    DEC --> RESEARCH
-    MGMT --> RESEARCH
-
     PERSIST["persistence"] -. "durable context" .-> APP
-    PERSIST -.-> RISK
     PERSIST -.-> EXEC
     PERSIST -.-> MGMT
     PERSIST -.-> RESEARCH
-    APP -. "read-only certification observations" .-> DIAG["diagnostics"]
+    APP -. "read-only connected evidence" .-> DIAG["diagnostics"]
 ```
 
-Broker/financial authority remains serial. Research, dashboard and connected-certification tooling have no raw broker authority.
+Broker/financial authority remains serial even if analytical work is physically parallelized after profiling.
 
 ## 2. Package authority table
 
@@ -41,37 +33,43 @@ Broker/financial authority remains serial. Research, dashboard and connected-cer
 |---|---|---|
 | `config` | validated settings/policy identities | hidden live policy mutation |
 | `domain` | enums, typed IDs/DTOs, units/states | MT5 calls |
-| `diagnostics` | logs/health/metrics/read-only connected evidence | trading authority |
+| `diagnostics` | logs/health/metrics + read-only connected evidence summaries | trading authority |
 | `security` | secret detection/redaction | secret storage |
-| `market_data` | normalized MT5 reads/account-mode/activity facts | raw irreversible writes |
-| `intelligence` | causal structure/technical/liquidity/session/News context | money/Gate |
-| `strategies` | six families, market-first setup detection, isolation/scheduling | Risk/broker writes |
-| `decisions` | independent BUY/SELL/Red Team, analytical Opportunity, M1 timing, TradePlan, quality | raw MT5 write |
-| `risk` | preserved risk profiles/sizing/durable UTC risk-day/cooldown/capacity | strategy rewrite/broker write |
-| `execution` | Gate/controller/Intent/checks/sole writer/reconciliation | research invention |
-| `management` | ManagedTrade, management decisions, exact close proof | raw writer |
+| `market_data` | normalized MT5 read boundary/account-mode/activity facts | raw irreversible writes |
+| `intelligence` | causal market structure/technical/liquidity/session/News context | money/Gate |
+| `strategies` | setup detection, six families, isolation, scheduler | Risk/broker writes |
+| `decisions` | BUY/SELL/Red Team, Opportunity, M1 timing, TradePlan, executable quality | raw MT5 write |
+| `risk` | sizing, UTC risk-day, cooldown/re-entry/capacity | strategy rewrite or broker write |
+| `execution` | Gate, controller, Intent, checks, sole writer, reconciliation | strategy invention |
+| `management` | ManagedTrade, close proof, HOLD/PROTECT/TRAIL/RUNNER/EXIT | raw writer |
 | `persistence` | strict local state/checkpoints/recovery packages | current broker truth |
-| `app` | startup/runtime policy composition, hard Session, durable Opportunity lifecycle, exactly-once runtime core, DEMO runners | duplicate strategy/Risk authority |
-| `operator` | read-only view models/renderers | authority recomputation |
-| `graphical_dashboard` | one-screen local UI | trading mutation |
-| `research` | actual/shadow/timing/management evidence, replay, invention, candidate governance | runtime activation/broker authority |
+| `app` | startup/recovery/runtime policy composition/cadence, guarded DEMO runners | duplicate policy ownership |
+| `operator` | read-only terminal/graphical view models | authority recomputation |
+| `graphical_dashboard` | local presentation/interactions | trading mutation |
+| `research` | replay, actual/shadow/timing learning, discovery, candidates/promotion evidence | production broker authority |
 
-## 3. Implemented package tree
+## 3. Material current source map
 
 ```text
 src/gold_scalp_trader/
 ├── config/settings.py
-├── domain/{enums.py,ids.py,market.py,models.py}
-├── diagnostics/{logging.py,reasons.py,health.py,metrics.py,connected_demo.py}
+├── domain/{enums,ids,market,models}.py
+├── diagnostics/
+│   ├── logging.py
+│   ├── reasons.py
+│   ├── health.py
+│   ├── metrics.py
+│   ├── connected_demo.py
+│   └── connected_runtime_evidence.py
 ├── security/financial_secrets.py
-├── market_data/{account_mode.py,mt5_reader.py,activity.py,snapshot.py}
-├── intelligence/{candle_structure.py,indicators.py,technical.py,liquidity.py,confluence.py,session.py,news.py,snapshot.py}
-├── strategies/{floor.py,setup_detector.py,isolation.py,scheduler.py,confluence.py}
-├── decisions/{fusion.py,snapshot.py,opportunity.py,timing.py,family_trade_plan.py,trade_plan.py,executable_quality.py}
-├── risk/{engine.py,state.py,runtime.py,permissions.py}
-├── execution/{models.py,checks.py,gate.py,intent_store.py,service.py,mt5_writer.py,reconcile.py,controller.py,sqlite_coordination.py}
-├── management/{models.py,manager.py,execution.py,closure.py,store.py}
-├── persistence/{store.py,runtime_state.py,checkpoint.py,backup.py,local_recovery_package.py}
+├── market_data/{account_mode,mt5_reader,activity,snapshot}.py
+├── intelligence/{candle_structure,indicators,technical,liquidity,confluence,session,news,snapshot}.py
+├── strategies/{floor,setup_detector,isolation,scheduler,confluence}.py
+├── decisions/{fusion,snapshot,opportunity,timing,family_trade_plan,trade_plan,executable_quality}.py
+├── risk/{engine,state,runtime,permissions}.py
+├── execution/{models,checks,gate,intent_store,service,mt5_writer,reconcile,controller,sqlite_coordination}.py
+├── management/{models,manager,execution,closure,store}.py
+├── persistence/{store,runtime_state,checkpoint,backup,local_recovery_package}.py
 ├── research/
 │   ├── learning.py
 │   ├── live_learning.py
@@ -95,11 +93,12 @@ src/gold_scalp_trader/
 │   ├── invention.py
 │   ├── models.py
 │   └── promotion.py
-├── operator/{presentation.py,terminal_dashboard.py,graphical_snapshot.py}
+├── operator/{presentation,terminal_dashboard,graphical_snapshot}.py
 └── app/
     ├── main.py
     ├── runtime.py
     ├── runtime_core.py
+    ├── session_news.py
     ├── session_authority.py
     ├── opportunity_lifecycle.py
     ├── startup.py
@@ -109,175 +108,132 @@ src/gold_scalp_trader/
     ├── loop.py
     ├── dashboard.py
     ├── live_presentation.py
-    ├── session_news.py
     ├── demo_runner.py
     └── graphical_demo_runner.py
-
-graphical_dashboard/{ui.py,chart.py,controls.py,server.py,__main__.py}
 ```
 
-Material file additions/removals must update this map and `FILE_AND_TEST_CATALOG.md` in the same coherent packet.
-
-## 4. Strategy and decision ownership
+Presentation root:
 
 ```text
-setup_detector.py → which family setup(s) genuinely qualify from market facts
-isolation.py      → exactly one ACTIVE_EXECUTION family; other families SHADOW_ONLY
-fusion.py         → active-family independent BUY/SELL + Red Team
-opportunity.py    → analytical M5 Opportunity construction
-opportunity_lifecycle.py → durable causal Opportunity/Episode state across refresh/restart
-timing.py         → subordinate M1 READY/WAIT/MISSED/INVALID refinement
-trade_plan.py + family_trade_plan.py → structural geometry
-executable_quality.py → spread/cost/drift/latency economics
+graphical_dashboard/{ui,chart,controls,server,__main__}.py
 ```
 
-M1 cannot create a production setup. Active strategy selection cannot force its family onto the chart.
-
-## 5. Durable Opportunity lifecycle
-
-`app/opportunity_lifecycle.py` owns persistent causal identity and terminal re-arm behavior around analytical Opportunities.
-
-Required properties:
-
-- same causal M5 setup retains Opportunity/Episode identity across refreshes;
-- restart reloads the same lifecycle record;
-- WAIT/READY state changes do not manufacture a new causal episode;
-- irreversible OPEN send marks the episode `TRIGGERED`;
-- terminal state prevents silent same-causal-episode re-entry except governed re-entry rules;
-- lifecycle state is local durable context, not broker truth.
-
-## 6. Timing Intelligence / lineage
-
-`decisions/timing.py` owns live analytical timing refinement. `research/timing_learning.py` owns research-only timing evidence.
-
-Timing lineage carried toward verified learning includes, when available:
+## 4. Decision ownership
 
 ```text
-Opportunity / Episode
-M5 source event IDs/time
-strategy policy version
-Timing profile/policy version
-M1 trigger time
-M5 event age
-trigger age
-chase ATR
-micro-extension ATR
-TradePlan identity/reference
+setup_detector
+→ actual qualifying market setup(s)
+
+isolation
+→ exactly one ACTIVE_EXECUTION family; others SHADOW_ONLY
+
+fusion
+→ independent BUY / SELL / Red Team for active family
+
+opportunity + app/opportunity_lifecycle
+→ persistent causal M5 Opportunity/Episode
+
+timing
+→ subordinate M1 READY/WAIT/MISSED/INVALID
+
+trade_plan + family_trade_plan
+→ structural geometry
+
+executable_quality
+→ spread/cost/drift/latency economics
 ```
 
-The runtime freezes this context before irreversible OPEN send; verified reconciliation then transfers it into ManagedTrade and exact-close learning lineage. Missing efficiency evidence remains unknown rather than fabricated.
+M1 never creates an independent production thesis.
 
-## 7. Risk ownership
-
-`risk/engine.py` owns sizing/profile economics. `risk/state.py` owns durable UTC-day/account-safety/cooldown/re-entry state. `risk/runtime.py` is read/accounting authority only. `risk/permissions.py` composes hard financial facts.
-
-News is never a hard Risk/session permission input.
-
-## 8. Session / News ownership
-
-`app/session_news.py` loads typed scoped provider facts:
+## 5. Session / News ownership
 
 ```text
-BrokerSessionFacts → hard market/session source facts
-NewsContextFacts   → soft context/research/dashboard
+app/session_news.py      → typed provider boundary
+app/session_authority.py → hard runtime OPEN/PRE_CLOSE/CLOSED/UNKNOWN authority
+intelligence/news.py     → soft context/research only
 ```
 
-`app/session_authority.py` composes the runtime hard Session state and preserves:
+News cannot become hard trading permission. Missing/expired/unverified Session facts fail closed; obvious Saturday fallback may report CLOSED but weekday OPEN is never fabricated.
 
-- verified scoped OPEN as new-entry permission;
-- PRE_CLOSE as no-new-entry state with governed management/flatten semantics;
-- expired/unverified/scope-mismatched facts as UNKNOWN/fail-closed;
-- obvious weekend CLOSED classification without fabricating weekday OPEN.
+## 6. Execution ownership
 
-Current Exness schedule/DST/holiday correctness remains connected evidence.
-
-## 9. Execution/runtime ownership
-
-`app/runtime.py` is the policy/orchestration layer: Session authority, durable Opportunity composition and operator-facing runtime result.
-
-`app/runtime_core.py` preserves the financial lifecycle mechanics:
+Only `execution/mt5_writer.py` may perform raw irreversible broker operations.
 
 ```text
 Gate
 → durable Intent
-→ fresh local/broker prechecks
-→ persist SUBMITTING
-→ one MT5Writer send
+→ fresh checks/order_check
+→ SUBMITTING
+→ one writer call
 → acknowledgement classification
 → reconciliation
-→ ManagedTrade / governed management / exact close
 ```
 
-Only `execution/mt5_writer.py` may contain raw irreversible broker operations. No blind retry follows ambiguous acknowledgement.
+`app/runtime.py` owns policy/orchestration. `app/runtime_core.py` preserves the exactly-once financial lifecycle. This split does not create a second writer.
 
-## 10. Management and close ownership
-
-`management/manager.py` decides HOLD/PROTECT/TRAIL/RUNNER/EXIT. `management/execution.py` turns approved actions into governed Intent/service flow. `management/closure.py` owns exact known-trade close proof, immutable closure receipt and learning-queue handoff.
-
-Unknown/manual Gold exposure is never silently adopted as bot-owned.
-
-## 11. Research / continuous learning ownership
-
-Research is non-authoritative for live financial actions.
+## 7. Learning / autonomous governance ownership
 
 ```text
-research/live_learning.py     → exactly-once verified-close StrategyMemory ingestion
-research/timing_learning.py   → durable timing-decision evidence
-research/runtime_evidence.py  → management-path + same-market shadow evidence
-research/replay.py            → causal completed-bar replay
-research/management_replay.py → one-position management/counterfactual replay
-research/evidence.py/packages.py → immutable evidence identities/packages
-research/invention.py         → declarative candidate invention only
-research/promotion.py         → governed stage machine
-research/candidate_registry.py→ durable evidence-bound candidate/evidence chain
+verified close
+→ live_learning exactly-once StrategyMemory
+
+timing_learning
+→ content-addressed TimingDecision evidence
+
+runtime_evidence
+→ management path + same-market shadow evidence
+
+candidate_registry
+→ durable evidence-bound candidate identity/stage record
 ```
 
-Candidate registry stage alone never activates runtime strategy. Research cannot mutate Risk, Gate, REAL enablement or sole-writer rules.
+Candidate/research stage never directly activates runtime policy, modifies Risk/Gate or gains broker authority.
 
-## 12. Persistence / recovery
-
-`persistence/store.py` is strict checksummed local context. Checkpoints/recovery packages preserve state; current broker truth must be freshly reconciled before financial authority resumes after restore.
-
-No runtime Git publication module exists.
-
-## 13. DEMO runners / operator presentation
-
-`app/demo_runner.py` and `app/graphical_demo_runner.py` compose the governed DEMO runtime only. Both record optional research evidence after the governed cycle returns. Research recording is observational and must not crash or authorize the trading cycle when optional analytical fields are absent.
-
-`operator/graphical_snapshot.py` exposes hard Session plus Opportunity/Timing/TradePlan/Risk/Execution/ManagedTrade state to the read-only GUI. Chart controls cannot cause broker cycles.
-
-## 14. Connected DEMO evidence ownership
-
-`diagnostics/connected_demo.py`, `scripts/certify_connected_demo.py` and `scripts/monitor_connected_demo.py` are read-only certification tooling. They may collect local durable evidence and MT5 read facts but cannot call the writer or enable REAL.
-
-Missing real broker schedule/lifecycle/manual-close/restart/handoff/distribution drills remain PENDING until actually observed.
-
-## 15. Forbidden dependency directions
+## 8. Connected DEMO evidence ownership
 
 ```text
-intelligence/strategy/research → MT5Writer                  NO
-setup detector → Risk/Gate                                   NO
-shadow family → live Intent                                  NO
-M1 alone → production Opportunity                            NO
-dashboard → authority mutation                               NO
-candidate registry → runtime activation                      NO
-research learning → hard safety self-modification            NO
-unknown position/history → zero                              NO
-ambiguous broker acknowledgement → blind retry               NO
-Risk → tighten structural SL to fit volume                   NO
-News provider failure → hard trading permission              NO
-trading runtime → Git commit/push/pull                       NO
-connected certification → broker write / REAL enablement     NO
+diagnostics/connected_demo.py
+→ pure aggregation + explicit operator-drill validation
+
+diagnostics/connected_runtime_evidence.py
+→ read-only Session normalization + timing/management/shadow local counts
+
+scripts/certify_connected_demo.py
+→ one connected read-only observation
+
+scripts/monitor_connected_demo.py
+→ repeated bounded sampling + Session/research visibility
+
+scripts/report_demo_learning_evidence.py
+→ local StateStore learning/evidence report only
 ```
 
-## 16. Source-map synchronization
+Connected evidence tooling performs no broker write and cannot enable REAL.
 
-Any material source/test rename, ownership change or new package updates:
+The certifier reports Session independently from quote freshness and exposes durable Timing Intelligence, management and shadow counts. Those counts do not automatically convert canonical external drills into PASS.
 
-- this file;
-- `FILE_AND_TEST_CATALOG.md`;
-- `scripts/verify_contract_sync.py` where the ownership/proof is high value;
-- owning behavioral contract only when behavior changes;
-- affected audit/status/operator guides.
+## 9. Operator / dashboard ownership
 
-A green offline release proves only the checked offline implementation. Connected Exness evidence remains a separate Phase-15 gate, and REAL remains hard-disabled.
+The graphical dashboard remains local and presentation-only. It consumes immutable/read-only runtime snapshots; controls cannot trigger financial authority or alter policy.
+
+## 10. Persistence / recovery ownership
+
+`persistence/store.py` is durable context, not current broker truth. Checkpoint/restore must be reconciled with fresh MT5 facts before financial authority resumes. No runtime Git publication module exists.
+
+## 11. Forbidden directions
+
+```text
+intelligence/strategy/research/dashboard → MT5Writer       NO
+setup detector → Risk/Gate                                  NO
+shadow family → live Intent                                 NO
+M1 alone → production Opportunity                           NO
+research/candidate registry → runtime activation            NO
+News provider failure → hard News trading kill switch       NO
+ambiguous broker acknowledgement → blind retry              NO
+trading runtime → Git commit/push/pull                      NO
+connected certification/monitor → broker write/REAL enable NO
+```
+
+## 12. Synchronization
+
+Any material source/test rename, ownership change or new material script/package updates this map, `FILE_AND_TEST_CATALOG.md`, affected status/audit documentation and high-value verification tests. Offline PASS never substitutes for connected DEMO proof.

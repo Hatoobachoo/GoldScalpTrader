@@ -1,6 +1,6 @@
 # GoldScalpTrader — Complete File and Test Catalog
 
-**Status:** IMPLEMENTED FILE/TEST MAP — OFFLINE RELEASE PASS / CONNECTED DEMO CERTIFICATION PENDING  
+**Status:** IMPLEMENTED FILE/TEST MAP — OFFLINE RELEASE BASELINE PASS / CONNECTED DEMO CERTIFICATION PENDING  
 **Version:** 2.6-institutional-scalp-implementation  
 **Authority:** Actual source ownership, deterministic/integration proof, remaining connected proof, and implementation/document synchronization.
 
@@ -52,6 +52,7 @@ diagnostics/reasons.py
 diagnostics/health.py
 diagnostics/metrics.py
 diagnostics/connected_demo.py
+diagnostics/connected_runtime_evidence.py
 security/financial_secrets.py
 market_data/account_mode.py
 market_data/mt5_reader.py
@@ -66,8 +67,6 @@ intelligence/session.py
 intelligence/news.py
 intelligence/snapshot.py
 ```
-
-Proof includes settings/config/domain/MT5-reader/deal-history/activity/confluence/News tests plus secret and contract-sync scripts.
 
 The normalized reader owns completed multi-timeframe history, quote age, account/symbol/position facts and deal history. `None` remains UNKNOWN rather than fabricated zero. Real Exness SymbolSpec/filling/schedule behavior remains connected proof.
 
@@ -214,7 +213,7 @@ tests/test_writer_attribution.py
 tests/test_guarded_demo_runtime.py
 ```
 
-`app/runtime.py` owns runtime policy/orchestration around Session and durable Opportunity. `app/runtime_core.py` preserves the exactly-once financial lifecycle implementation. All OPEN/MODIFY/CLOSE paths retain:
+`app/runtime.py` owns runtime policy/orchestration around Session and durable Opportunity. `app/runtime_core.py` preserves the exactly-once financial lifecycle implementation.
 
 ```text
 Gate
@@ -240,16 +239,6 @@ management/closure.py
 management/store.py
 ```
 
-Proof:
-
-```text
-tests/test_managed_trade_store.py
-tests/test_management_lifecycle.py
-tests/test_action_reconciliation.py
-tests/test_deal_history_reader.py
-tests/test_live_learning_pipeline.py
-```
-
 Verified OPEN freezes Opportunity/episode/TradePlan/M5 event/TimingDecision lineage into ManagedTrade. Exact close proof carries the same lineage into the learning queue. Missing efficiency metrics remain `None`; they are never fabricated.
 
 ## 9. Persistence / recovery
@@ -266,17 +255,7 @@ app/recovery.py
 app/recovery_mt5.py
 ```
 
-Proof:
-
-```text
-tests/test_state_store.py
-tests/test_checkpoint.py
-tests/test_full_checkpoint.py
-tests/test_recovery_package.py
-tests/test_risk_runtime_state.py
-```
-
-StateStore is strict/checksummed local context, not current broker truth. Recovery must reconcile restored local state against fresh MT5 truth before financial authority resumes. Fresh-machine/sequential handoff remains connected Phase-15 proof.
+Proof includes `test_state_store.py`, `test_checkpoint.py`, `test_full_checkpoint.py`, `test_recovery_package.py` and Risk runtime persistence tests. Fresh-machine/sequential handoff remains connected Phase-15 proof.
 
 ## 10. Research / continuous learning / shadow evidence
 
@@ -335,7 +314,7 @@ Autonomous invention is declarative research only. `research/candidate_registry.
 
 ## 11. Application / operator / dashboard
 
-Source:
+Source includes:
 
 ```text
 app/main.py
@@ -363,18 +342,7 @@ graphical_dashboard/server.py
 graphical_dashboard/__main__.py
 ```
 
-Proof:
-
-```text
-tests/test_demo_launcher.py
-tests/test_guarded_demo_runtime.py
-tests/test_dashboard_controls.py
-tests/test_graphical_runtime.py
-tests/test_session_runtime_authority.py
-tests/test_opportunity_lifecycle.py
-```
-
-The graphical dashboard is presentation-only. Runtime snapshots now expose hard Session state plus Opportunity/Timing lineage in addition to strategy, TradePlan, Risk, execution and ManagedTrade state.
+The graphical dashboard is presentation-only. Runtime snapshots expose hard Session state plus Opportunity/Timing lineage in addition to strategy, TradePlan, Risk, execution and ManagedTrade state.
 
 ## 12. Connected DEMO evidence / Phase 15
 
@@ -382,12 +350,22 @@ Implemented read-only tooling:
 
 ```text
 src/gold_scalp_trader/diagnostics/connected_demo.py
+src/gold_scalp_trader/diagnostics/connected_runtime_evidence.py
 scripts/certify_connected_demo.py
 scripts/monitor_connected_demo.py
+scripts/report_demo_learning_evidence.py
 tests/test_connected_demo_evidence.py
+tests/test_connected_runtime_evidence.py
+tests/test_connected_reporting_wiring.py
 ```
 
-It cannot perform broker writes or enable REAL. Operator drill evidence must be DEMO/scope/hash/time bound. Missing connected/manual/restart/handoff/schedule/distribution drills remain PENDING, never inferred PASS.
+The connected certifier now observes the same hard Session authority surface used by governed DEMO runtime and reports Session state/source/schedule verification/tradeability/reason separately from quote freshness. It also reports durable Timing Intelligence, management-decision and shadow-family evidence counts.
+
+The monitor prints Session state and runtime-research counts on every sample. A stale quote is never presented as proof of market closure.
+
+Local timing/management/shadow samples improve observability but do **not** auto-PASS canonical connected drills. Artifact-backed/scope-bound connected evidence remains required for `m1_refinement_timing`, `shadow_learning_report`, broker schedule, latency, spread/slippage/deviation and other Phase-15 drills.
+
+Connected evidence tooling cannot perform broker writes or enable REAL.
 
 ## 13. Root engineering guides
 
@@ -397,13 +375,14 @@ These guides are intentionally outside the frozen 66-document manual topology:
 REAL_AND_DEMO_MODE_ARCHITECTURE.md
 TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md
 GOVERNED_AUTONOMOUS_STRATEGY_IMPLEMENTATION.md
+CONNECTED_DEMO_EVIDENCE_IMPLEMENTATION.md
 ```
 
 They describe as-built implementation hierarchy and do not replace canonical behavioral contracts.
 
 ## 14. Offline release status
 
-Latest operator-provided local run after commit `7fdf57c` reported:
+The last operator-provided fully validated baseline before the connected-evidence visibility extension reported:
 
 ```text
 compileall     PASS
@@ -414,7 +393,7 @@ pytest         PASS
 OFFLINE STATUS: PASS
 ```
 
-This proves the current offline release checks passed in the intended Windows working copy. It does not prove connected Exness broker behavior.
+The connected-evidence visibility extension requires the same local verifier to be rerun before it inherits that PASS. Offline success never proves connected Exness broker behavior.
 
 ## 15. Connected DEMO proof — still external
 
@@ -436,12 +415,6 @@ These remain Phase-15 evidence requirements until actually observed.
 
 ## 16. Synchronization rule
 
-Every material source/test/script addition, removal, rename, ownership change or proof-status change updates:
-
-- this catalog;
-- `MODULE_STRUCTURE.md` when module/file ownership changes;
-- owning behavioral contract only when behavior itself changes;
-- status/audit documentation;
-- `scripts/verify_contract_sync.py` for high-value ownership/proof regressions.
+Every material source/test/script addition, removal, rename, ownership change or proof-status change updates this catalog, `MODULE_STRUCTURE.md` where ownership changes, the owning behavioral contract only when behavior itself changes, status/audit documentation, and high-value static/test guards.
 
 Offline PASS must never be described as connected certification. `REAL` remains hard-disabled until the separate future release gate is explicitly approved.
