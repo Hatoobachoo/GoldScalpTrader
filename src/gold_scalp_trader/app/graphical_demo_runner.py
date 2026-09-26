@@ -15,6 +15,7 @@ from gold_scalp_trader.domain.enums import RuntimeMode, Timeframe
 from gold_scalp_trader.operator.graphical_snapshot import from_runtime
 from gold_scalp_trader.persistence.checkpoint import export_checkpoint
 from gold_scalp_trader.persistence.store import StateStore
+from gold_scalp_trader.research.runtime_evidence import record_runtime_research
 from gold_scalp_trader.research.timing_learning import record_runtime_timing
 
 
@@ -38,13 +39,11 @@ class RuntimeDashboardProvider:
         """Advance exactly one governed broker cycle and return one UI snapshot."""
         result = self.step(self.settings, self.api, self.store)
         record_runtime_timing(self.store, result)
+        record_runtime_research(self.store, result)
         self.last_result = result
         self.calls += 1
         market = result.cycle.intelligence.market
-        candles_by_tf = {
-            timeframe.value: market.series(timeframe)
-            for timeframe in Timeframe
-        }
+        candles_by_tf = {timeframe.value: market.series(timeframe) for timeframe in Timeframe}
         return from_runtime(result, market_state="DEMO"), candles_by_tf
 
 
@@ -83,9 +82,7 @@ def run_graphical_demo(
     provider = RuntimeDashboardProvider(settings, api, store, step=step)
 
     if dashboard_cls is None:
-        # Lazy import keeps headless/offline tests independent from Tk.
         from graphical_dashboard.ui import DashboardApp
-
         dashboard_cls = DashboardApp
 
     app = dashboard_cls(

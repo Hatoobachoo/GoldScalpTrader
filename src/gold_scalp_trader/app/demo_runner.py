@@ -20,6 +20,7 @@ from gold_scalp_trader.operator.graphical_snapshot import from_runtime
 from gold_scalp_trader.operator.terminal_dashboard import render
 from gold_scalp_trader.persistence.checkpoint import export_checkpoint
 from gold_scalp_trader.persistence.store import StateStore
+from gold_scalp_trader.research.runtime_evidence import record_runtime_research
 from gold_scalp_trader.research.timing_learning import record_runtime_timing
 
 
@@ -57,6 +58,8 @@ def _print_result(result: RuntimeResult, state_path: Path) -> None:
         print(f"Primary      : {trade.primary_target:.3f}")
         if trade.expansion_target is not None:
             print(f"Expansion    : {trade.expansion_target:.3f}")
+        if trade.timing_profile is not None:
+            print(f"Timing       : {trade.timing_profile} • {trade.timing_policy_version or 'UNKNOWN'}")
     if result.management_action is not None:
         print(f"Management   : {result.management_action.value}")
     print("-" * 78)
@@ -73,11 +76,8 @@ def run_live_demo(
     if settings.mode is not RuntimeMode.DEMO or not settings.demo_write_enabled:
         raise PermissionError("DEMO mode with explicit DEMO confirmation is required")
 
-    # Approved operator default. Tests/headless tooling can request a bounded
-    # terminal run without constructing a GUI.
     if settings.dashboard_mode == "GUI" and max_cycles is None:
         from gold_scalp_trader.app.graphical_demo_runner import run_graphical_demo
-
         return run_graphical_demo(settings, api)
 
     state_path = _state_path(settings)
@@ -99,6 +99,7 @@ def run_live_demo(
                 continue
 
             record_runtime_timing(store, result)
+            record_runtime_research(store, result)
             _print_result(result, state_path)
             completed += 1
             if max_cycles is None or completed < max_cycles:
