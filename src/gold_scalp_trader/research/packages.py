@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
-from .evidence import EvidenceIdentity, identity_payload
+from .evidence import EvidenceIdentity, build_evidence_identity, identity_payload, verify_evidence_identity
 
 
 def _json_bytes(payload: Mapping[str, Any]) -> bytes:
@@ -39,6 +39,8 @@ def write_evidence_package(
 ) -> Path:
     if not package_id.strip() or any(ch in package_id for ch in ("/", "\\", "..")):
         raise ValueError("package_id must be a simple non-empty name")
+    if not verify_evidence_identity(evidence):
+        raise ValueError("evidence identity integrity check failed")
     target = Path(root) / package_id
     target.mkdir(parents=True, exist_ok=False)
 
@@ -70,12 +72,25 @@ def verify_evidence_package(path: str | Path) -> bool:
     target = Path(path)
     try:
         manifest = json.loads((target / "package_manifest.json").read_text(encoding="utf-8"))
+        if manifest.get("broker_authority") != "NONE":
+            return False
         expected = manifest["files"]
         for name, digest in expected.items():
             data = (target / name).read_bytes()
             if _hash(data) != digest:
                 return False
         evidence = json.loads((target / "evidence_manifest.json").read_text(encoding="utf-8"))
-        return evidence.get("sha256") == manifest.get("evidence_sha256") and manifest.get("broker_authority") == "NONE"
+        rebuilt = build_evidence_identity(
+            candidate_fingerprint=str(evidence["candidate_fingerprint"]),
+            dataset_sha256=str(evidence["dataset_sha256"]),
+            code_revision=str(evidence["code_revision"]),
+            config_fingerprint=str(evidence["config_fingerprint"]),
+            policy_version=str(evidence["policy_version"]),
+            execution_realism=str(evidence["execution_realism"]),
+        )
+        return (
+            str(evidence.get("sha256", "")).lower() == rebuilt.sha256
+            and str(manifest.get("evidence_sha256", "")).lower() == rebuilt.sha256
+        )
     except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
         return False

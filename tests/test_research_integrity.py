@@ -1,26 +1,38 @@
 from datetime import datetime, timedelta, timezone
+from hashlib import sha256
 from pathlib import Path
 
 import pytest
 
-from gold_scalp_trader.domain.enums import StrategyMode, Timeframe
+from gold_scalp_trader.domain.enums import Direction, StrategyMode, Timeframe
 from gold_scalp_trader.domain.market import Candle
 from gold_scalp_trader.research.ablation import compare_feature
 from gold_scalp_trader.research.datasets import build_dataset_identity, verify_dataset_identity
 from gold_scalp_trader.research.evidence import build_evidence_identity
 from gold_scalp_trader.research.management_replay import ReplayCandidate, apply_single_position_capacity
-from gold_scalp_trader.research.metrics import summarize
-from gold_scalp_trader.research.outcomes import ResearchOutcome
+from gold_scalp_trader.research.metrics import summarize, summarize_counterfactuals
+from gold_scalp_trader.research.outcomes import (
+    CounterfactualPlan,
+    CounterfactualStatus,
+    ResearchOutcome,
+    evaluate_counterfactual_path,
+    save_counterfactual,
+)
 from gold_scalp_trader.research.packages import verify_evidence_package, write_evidence_package
 from gold_scalp_trader.research.replay import chronological_points
 from gold_scalp_trader.research.stress import StressScenario, apply_execution_stress
 from gold_scalp_trader.research.validation import HoldoutUse, ValidationWindows, consume_holdout, walk_forward_folds
+from gold_scalp_trader.persistence.store import StateStore
 
 UTC = timezone.utc
 
 
 def _candle(tf: Timeframe, minute: int, price: float = 100.0) -> Candle:
     return Candle(tf, datetime(2026, 1, 2, 10, minute, tzinfo=UTC), price, price + 1, price - 1, price + 0.25)
+
+
+def _sha(text: str) -> str:
+    return sha256(text.encode("utf-8")).hexdigest()
 
 
 def test_dataset_identity_detects_change(tmp_path: Path):
@@ -113,6 +125,54 @@ def test_shadow_outcome_cannot_claim_broker_execution():
         ResearchOutcome("x", "FAMILY", StrategyMode.SHADOW_ONLY, True, True, net_r=1.0)
 
 
+def test_executed_outcome_must_have_qualified():
+    with pytest.raises(ValueError, match="must have qualified"):
+        ResearchOutcome("x", "FAMILY", StrategyMode.ACTIVE_EXECUTION, False, True, net_r=1.0)
+
+
+def test_counterfactual_path_is_after_cost_and_never_claims_broker_execution():
+    base = datetime(2026, 1, 2, 10, 0, tzinfo=UTC)
+    plan = CounterfactualPlan("SH-1", "FAMILY", Direction.BUY, 100.0, 99.0, 102.0, base.isoformat(), cost_r=0.1)
+    path = (
+        Candle(Timeframe.M1, base, 100.0, 101.0, 99.5, 100.8),
+        Candle(Timeframe.M1, base + timedelta(minutes=1), 100.8, 102.2, 100.5, 102.0),
+    )
+    result = evaluate_counterfactual_path(plan, path)
+    assert result.status is CounterfactualStatus.TARGET
+    assert result.gross_r == pytest.approx(2.0)
+    assert result.outcome.net_r == pytest.approx(1.9)
+    assert result.outcome.executed is False
+    assert result.outcome.mode is StrategyMode.SHADOW_ONLY
+
+
+def test_counterfactual_same_bar_stop_and_target_is_ambiguous_not_guessed():
+    base = datetime(2026, 1, 2, 10, 0, tzinfo=UTC)
+    plan = CounterfactualPlan("SH-2", "FAMILY", Direction.BUY, 100.0, 99.0, 102.0, base.isoformat())
+    path = (Candle(Timeframe.M1, base, 100.0, 102.5, 98.5, 100.5),)
+    result = evaluate_counterfactual_path(plan, path)
+    assert result.status is CounterfactualStatus.AMBIGUOUS_INTRABAR_ORDER
+    assert result.outcome.net_r is None
+    assert result.evidence_quality == "AMBIGUOUS_OHLC_ORDER"
+
+
+def test_shadow_counterfactuals_have_separate_metrics_and_durable_evidence():
+    base = datetime(2026, 1, 2, 10, 0, tzinfo=UTC)
+    win_plan = CounterfactualPlan("SH-W", "FAMILY", Direction.BUY, 100.0, 99.0, 101.0, base.isoformat(), cost_r=0.1)
+    loss_plan = CounterfactualPlan("SH-L", "FAMILY", Direction.BUY, 100.0, 99.0, 102.0, base.isoformat(), cost_r=0.1)
+    win = evaluate_counterfactual_path(win_plan, (Candle(Timeframe.M1, base, 100, 101.2, 99.5, 101),))
+    loss = evaluate_counterfactual_path(loss_plan, (Candle(Timeframe.M1, base, 100, 100.5, 98.8, 99),))
+    metrics = summarize_counterfactuals((win.outcome, loss.outcome))
+    assert metrics.resolved == 2
+    assert metrics.net_r == pytest.approx(-0.2)
+    assert metrics.win_rate == pytest.approx(0.5)
+    store = StateStore()
+    key = save_counterfactual(store, win_plan, win)
+    saved = store.list_events("shadow_counterfactual_outcomes")
+    assert saved[0].event_key == key
+    assert saved[0].payload["broker_executed"] is False
+    assert saved[0].payload["broker_authority"] == "NONE"
+
+
 def test_ablation_reports_edge_and_recall_tradeoff_without_creating_policy():
     result = compare_feature(
         "RSI_CONTEXT",
@@ -125,10 +185,31 @@ def test_ablation_reports_edge_and_recall_tradeoff_without_creating_policy():
     assert result.recall_delta == pytest.approx(-0.08)
 
 
+def test_evidence_identity_requires_real_sha256_fields():
+    with pytest.raises(ValueError, match="candidate_fingerprint"):
+        build_evidence_identity(
+            candidate_fingerprint="candidate-v1",
+            dataset_sha256=_sha("dataset"),
+            code_revision="abc123",
+            config_fingerprint="cfg-v1",
+            policy_version="policy-v1",
+            execution_realism="M1_REFINEMENT_REPLAY",
+        )
+    with pytest.raises(ValueError, match="dataset_sha256"):
+        build_evidence_identity(
+            candidate_fingerprint=_sha("candidate"),
+            dataset_sha256="dataset-sha",
+            code_revision="abc123",
+            config_fingerprint="cfg-v1",
+            policy_version="policy-v1",
+            execution_realism="M1_REFINEMENT_REPLAY",
+        )
+
+
 def test_evidence_package_is_write_new_and_detects_tamper(tmp_path: Path):
     evidence = build_evidence_identity(
-        candidate_fingerprint="candidate-v1",
-        dataset_sha256="dataset-sha",
+        candidate_fingerprint=_sha("candidate-v1"),
+        dataset_sha256=_sha("dataset-v1"),
         code_revision="abc123",
         config_fingerprint="cfg-v1",
         policy_version="policy-v1",
@@ -140,4 +221,26 @@ def test_evidence_package_is_write_new_and_detects_tamper(tmp_path: Path):
     with pytest.raises(FileExistsError):
         write_evidence_package(tmp_path, package_id="pkg-001", evidence=evidence, metrics=metrics)
     (package / "metrics.json").write_text("{}\n", encoding="utf-8")
+    assert not verify_evidence_package(package)
+
+
+def test_evidence_package_recomputes_identity_digest(tmp_path: Path):
+    evidence = build_evidence_identity(
+        candidate_fingerprint=_sha("candidate-v2"),
+        dataset_sha256=_sha("dataset-v2"),
+        code_revision="abc124",
+        config_fingerprint="cfg-v2",
+        policy_version="policy-v2",
+        execution_realism="BAR_REPLAY",
+    )
+    package = write_evidence_package(tmp_path, package_id="pkg-002", evidence=evidence, metrics={"net_r": 1.0})
+    manifest_path = package / "evidence_manifest.json"
+    payload = __import__("json").loads(manifest_path.read_text(encoding="utf-8"))
+    payload["code_revision"] = "tampered-code"
+    data = (__import__("json").dumps(payload, sort_keys=True, indent=2, ensure_ascii=True) + "\n").encode("utf-8")
+    manifest_path.write_bytes(data)
+    package_manifest_path = package / "package_manifest.json"
+    package_manifest = __import__("json").loads(package_manifest_path.read_text(encoding="utf-8"))
+    package_manifest["files"]["evidence_manifest.json"] = sha256(data).hexdigest()
+    package_manifest_path.write_text(__import__("json").dumps(package_manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     assert not verify_evidence_package(package)
