@@ -234,7 +234,7 @@ CATALOG_REQUIRED_FRAGMENTS = (
     "verified full-close queue item",
     "consume queue only after durable save",
     "runtime activation remains separate from candidate registry stage",
-    "REAL remains hard-disabled",
+    "REAL = hard-disabled",
     "Connected DEMO proof — still external",
 )
 
@@ -362,8 +362,8 @@ def check_architecture_boundaries(errors: list[str]) -> None:
     session_authority = (SRC / "app" / "session_authority.py").read_text(encoding="utf-8")
     if "order_send(" in session_authority or "execution.mt5_writer" in session_authority:
         _fail(errors, "hard Session authority gained broker-write authority")
-    if "PRE_CLOSE" not in session_authority or "UNKNOWN" not in session_authority:
-        _fail(errors, "hard Session runtime no longer exposes PRE_CLOSE/UNKNOWN semantics")
+    if "MarketState.PRE_CLOSE" not in session_authority or "unknown_snapshot(" not in session_authority:
+        _fail(errors, "hard Session runtime no longer exposes PRE_CLOSE/UNKNOWN fail-closed semantics")
 
     opportunity = (SRC / "app" / "opportunity_lifecycle.py").read_text(encoding="utf-8")
     if "TRIGGERED" not in opportunity or "StateStore" not in opportunity:
