@@ -34,7 +34,7 @@ Timing Intelligence is a first-class subsystem: M5 remains the setup/thesis auth
 
 Implementation hierarchy, current evidence wiring, autonomous/governed promotion boundaries and remaining learning gaps are documented in:
 
-[`Documents/TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md`](Documents/TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md)
+[`TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md`](TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md)
 
 ## Approved graphical dashboard
 
