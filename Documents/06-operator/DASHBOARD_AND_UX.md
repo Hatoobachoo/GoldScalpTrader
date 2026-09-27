@@ -1,12 +1,10 @@
 # GoldScalpTrader — Dashboard and UX Contract
 
 **Status:** IMPLEMENTED OPERATOR UX — SWING-STYLE TERMINAL PRIMARY / GRAPHICAL SECONDARY  
-**Version:** 4.0-swing-parity-scalp-floor  
-**Authority:** Operator presentation hierarchy, bilingual/emoji visual language, fail-visible behavior, read-only controls, blocker/Gate truth, and dashboard liveness.
+**Version:** 4.1-swing-parity-roman-urdu-scalp-floor  
+**Authority:** Operator presentation hierarchy, English + Roman Urdu visual language, fail-visible behavior, read-only controls, blocker/Gate truth, and dashboard liveness.
 
 ## 1. Constitutional hierarchy
-
-GoldScalpTrader follows the completed GoldSwingTrader operator model:
 
 ```text
 Authoritative runtime facts
@@ -20,38 +18,60 @@ SECONDARY: localhost graphical/browser visual floor
 
 The terminal is the primary operator surface. The browser is an optional read-only secondary projection. Closing or breaking the browser cannot stop the bot or hide the primary terminal floor.
 
-Presentation owns zero broker, Risk, Gate, strategy-selection, Opportunity, promotion, or REAL-enable authority.
+Presentation owns zero broker, Risk, Gate, strategy-routing, Opportunity, promotion, or REAL-enable authority.
 
-## 2. Implemented primary renderer stack
+## 2. Language contract
+
+Operational dashboard language is **English + Roman Urdu**, matching normal conversational usage:
 
 ```text
-terminal width 96+  → Rich institutional renderer
-terminal width 64–95→ narrow stacked renderer
-Rich/render failure → compact crash-safe fallback
+WAIT  | Intazar
+BUY   | Kharid
+SELL  | Farokht
+WHY   | Wajah
+Current Decision | Maujooda Faisla
+Trade Plan       | Mansuba
+Risk & Account   | Risk aur Account
+Open Trade       | Khula Trade
+System           | Nizam
+Learning         | Seekhna
+Discovery        | Daryaft
 ```
 
-All three retain the same authority truth. The primary floor is bilingual English/Urdu and uses emojis/status emphasis when available.
+Urdu script is not used for operational labels/status/reasons. The Arabic invocation may remain as a decorative masthead element because it is not an authority-bearing operator control.
 
-The normal wide hierarchy is:
+## 3. Primary renderer stack
 
 ```text
-DOUBLE HEADER
-Market • Session • Symbol • SELL • BUY
-Spread • M5 Countdown • Action • News • Gate
-M5 thesis • M1 subordinate timing • English/Urdu safety line
+terminal width 96+   → Rich institutional renderer
+terminal width 64–95 → narrow stacked renderer
+Rich/render failure  → compact crash-safe fallback
+```
 
-MARKET PICTURE                 TRADE SETUP
-CURRENT DECISION / موجودہ فیصلہ
-TRADE PLAN / تجارتی منصوبہ
-STRATEGY ISOLATION • 1 ACTIVE + 5 SHADOW
+All three retain the same authority truth and Roman Urdu cues.
+
+The wide hierarchy is:
+
+```text
+IDENTITY HEADER
+GoldScalpTraderAI • PRIMARY LIVE SCALPING FLOOR
+M5 thesis • M1 timing • structural routing • governed execution
+
+MARKET STRIP
+Market • Soft Context • Symbol • SELL • BUY • Spread • M5 Countdown • Action • Gate
+
+MARKET PICTURE                 TRADE SETUP / ROUTE
+CURRENT DECISION / Maujooda Faisla
+TRADE PLAN / Mansuba
+STRATEGY / SETUP BOARD • 1 Routed + 5 Shadow
 RISK & ACCOUNT | TODAY / ACTIVITY | SYSTEM / EXECUTION
 OPEN / MANAGED TRADE when present
-LEARNING / DISCOVERY / BACKUP
+LEARNING / DISCOVERY
 ```
 
-The terminal frame is never reduced to a one-line status banner.
+The identity header and live market strip are deliberately separate so the top of the primary floor does not become visually cramped.
 
-## 3. Always-visible rule
+## 4. Always-visible rule
 
 The operator floor remains meaningful when the system is:
 
@@ -73,24 +93,37 @@ DEMO confirmation/safety block
 
 > **UI fail-visible; trading fail-closed.**
 
-Market CLOSED is a normal displayed state, not an application-exit instruction.
+Market CLOSED is a displayed runtime state, not an application-exit instruction. Missing facts remain `UNKNOWN`, `—`, `WAIT`, `NOT EVALUATED`, or `NO SAMPLE`; presentation never invents zero, plan geometry, Risk, performance, account facts, or broker state.
 
-Missing authoritative facts render `UNKNOWN`, `—`, `WAIT`, `NOT EVALUATED`, or `NO SAMPLE`; presentation must never invent zero, plan geometry, Risk, performance, account facts, or broker state.
+## 5. Session truth in presentation
 
-## 4. Market / setup / strategy-isolation truth
+Hard broker Session and soft/contextual session labels must not be conflated.
 
-The dashboard reports market-first setup facts and then the current isolation policy:
+```text
+Hard Session  → OPEN / PRE_CLOSE / CLOSED / UNKNOWN authority
+Soft Context  → NEW_YORK / LONDON overlap / contextual label only
+Schedule      → VERIFIED / UNVERIFIED
+News          → contextual/soft health
+```
+
+A header must never show `Session NEW_YORK` in a way that can be mistaken for hard Session OPEN when hard Session is actually UNKNOWN.
+
+## 6. Market / setup / routed-family truth
+
+The dashboard reports market-first setup facts and current production routing:
 
 ```text
 Detected Setup        actual market result
-Active Family         exactly one ACTIVE_EXECUTION family
-Shadow Board          five SHADOW_ONLY research families
+Routed Family         exactly one ACTIVE_EXECUTION family when structurally resolved
+Shadow Board          remaining research families
 Action                governed runtime result
 ```
 
-A shadow setup is never displayed as a live broker trade. All-six research facts are visually separated from the one family permitted to originate live execution.
+Production routing is structural, not highest-score selection and not manual `ACTIVE_STRATEGY_FAMILY` selection. Opposite qualified directions produce WAIT/no routed family.
 
-## 5. M5 / M1 timing presentation
+A shadow setup is never displayed as a live broker trade. All-six research facts are visually separated from the one structurally routed production family.
+
+## 7. M5 / M1 timing presentation
 
 ```text
 M5  primary setup / thesis / Opportunity
@@ -100,9 +133,9 @@ H1  broad regime context
 H4  major context
 ```
 
-Presentation may show Opportunity identity/state, Timing READY/WAIT/MISSED/INVALID, timing profile, M5 event age, M1 trigger age, chase/micro-extension evidence and exact wait reason. M1 cannot independently create a production Opportunity.
+Presentation may show Opportunity identity/state, Timing READY/WAIT/MISSED/INVALID, profile, M5 event age, chase/micro-extension evidence and exact wait reason. M1 cannot independently create a production Opportunity.
 
-## 6. Trade Plan / blocker / Gate
+## 8. Trade Plan / blocker / Gate
 
 Only owned geometry may be shown:
 
@@ -118,9 +151,9 @@ quality / invalidation source where available
 
 No real plan → `WAITING` / `NOT AVAILABLE` / `—`.
 
-Upstream stop and central Gate remain distinct. A dashboard refresh never evaluates a new Gate action.
+Upstream stop and central Gate remain distinct. Dashboard refresh never evaluates a new Gate action.
 
-## 7. Risk / account / execution
+## 9. Risk / account / execution
 
 Where owned facts exist, show balance/equity/free margin, fixed risk profile, actual risk %, lot, position count/capacity, daily safety P/L, loss streak/cooldown, controller role, broker reconciliation, Intent/execution and management state.
 
@@ -134,41 +167,32 @@ Preserved monetary policy remains outside presentation:
 
 Aggressive mode stays disabled by default. The dashboard cannot change these values.
 
-## 8. Learning / discovery presentation
-
-Show actual timing/management learning, shadow evidence, discovery status and candidate/governance status only as research facts. Candidate stage never implies runtime activation.
-
-Core invariant shown to the operator:
-
-> **The bot may learn how to trade better; it may not learn how to bypass its safety system.**
-
-## 9. Implemented secondary graphical floor
+## 10. Secondary graphical floor
 
 `DASHBOARD_MODE=GUI` adds the browser **in addition to** the terminal primary.
 
-The secondary visual floor uses the GoldSwing institutional visual language adapted to Scalp:
+The browser uses the Swing institutional floor composition adapted to Scalp:
 
-- dark navy/black + cyan/gold framing;
-- robot masthead;
-- Arabic invocation plus English/Urdu operator text;
-- market/session/live-price/countdown/status strip;
-- M1/M5/M15/H1/H4 completed-candle chart tabs;
-- Indicators / Drawings / Bars local visual controls;
-- Market Analysis / Trend / Session-News / Timing panels;
-- Current Signal / Decision;
-- Trade Plan;
-- current blocker/Gate;
-- 1 ACTIVE + 5 SHADOW strategy board;
-- Risk/account;
-- Open/Managed Trade;
-- Activity/Learning/Discovery/Execution/System floor;
+- robot/title masthead, invocation, Roman Urdu discipline line, clock and mode;
+- symbol / hard market state / **Soft Context** / live price / spread / M5 countdown / bot status strip;
+- left rail: Market Analysis, Trend Direction, Session/News, Timing Intelligence;
+- center: completed-candle M1/M5/M15/H1/H4 chart with local visual controls;
+- right rail: Current Signal/Decision, Trade Plan, blocker/Gate, Multi-Timeframe/Setup;
+- bottom row: Risk & Account, one Strategy/Setup Board, Open/Managed Trade;
+- lower row: Execution & Controller, Trading Activity, Learning & Discovery, System & Data, Recent Verified Closes, discipline tile;
 - explicit stale/offline overlay.
 
-The browser has **no BUY/SELL/MODIFY/CLOSE controls** and no state-changing HTTP endpoint.
+The Strategy board appears once in the lower floor; the right rail is reserved for multi-timeframe/setup context rather than duplicating the same board.
 
-## 10. Presentation cadence and failure semantics
+The browser has **no BUY/SELL/MODIFY/CLOSE controls**, no broker endpoint, and no state-changing HTTP method.
 
-A fast presentation refresh may update already-owned quote/clock/countdown/cached facts. It must not rerun strategy selection, Opportunity, Risk, Gate, or broker execution merely because the screen refreshed.
+## 11. Presentation controls
+
+M1/M5/M15/H1/H4, Indicators, Drawings, Settings and Bars are local presentation state only. They cannot change strategy cadence, family routing, Opportunity, Risk, Gate, Intent or MT5 state.
+
+## 12. Presentation cadence and failure semantics
+
+A fast presentation refresh may update already-owned quote/clock/countdown/cached facts. It must not rerun family routing, Opportunity, Risk, Gate, or broker execution because the screen refreshed.
 
 ```text
 secondary browser fails
@@ -184,6 +208,6 @@ market CLOSED
 → full primary and secondary floors remain visible
 ```
 
-## 11. Final invariant
+## 13. Final invariant
 
-> **GoldScalpTrader has one primary terminal trading floor and, when enabled, one secondary localhost read-only visual floor. Both present the same normalized authority facts with Swing-style hierarchy, emojis and English/Urdu cues. Presentation can reveal authority; it can never create it.**
+> **GoldScalpTrader has one primary terminal floor and one optional secondary localhost read-only visual floor. Both show the same normalized authority facts using Swing-style hierarchy, emojis and English + Roman Urdu cues. Presentation can reveal authority; it can never create it.**
