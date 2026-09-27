@@ -99,7 +99,7 @@ def render_dashboard(
 
     third = _third_width(width)
     risk = _card(
-        f"{m['risk']} RISK & ACCOUNT · Risk aur Account",
+        f"{m['risk']} RISK & ACCOUNT · Mehfooz risk",
         [
             f"{m['wallet']} Balance {_account_money(data.account_balance)}",
             f"Equity {_account_money(data.account_equity)}   Free {_account_money(data.free_margin)}",
