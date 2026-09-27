@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
+import inspect
 from types import SimpleNamespace
 
 import pytest
 
+from gold_scalp_trader.app import runtime_core
 from gold_scalp_trader.app.runtime import run_guarded_demo_cycle, symbol_allows_open
 from gold_scalp_trader.config import Settings
 from gold_scalp_trader.domain.enums import Direction, RuntimeMode, StrategyFamily
@@ -104,6 +106,9 @@ class Api:
             )
         ]
 
+    def history_deals_get(self, date_from, date_to, position=None):
+        return []
+
     def order_check(self, request):
         return SimpleNamespace(retcode=0)
 
@@ -123,9 +128,14 @@ def _settings():
     )
 
 
+def test_guarded_runtime_exposes_no_caller_session_override():
+    assert "market_open" not in inspect.signature(run_guarded_demo_cycle).parameters
+    assert not hasattr(runtime_core, "run_guarded_demo_cycle")
+
+
 def test_demo_path_never_writes_without_a_complete_trade_setup():
     api = Api()
-    result = run_guarded_demo_cycle(_settings(), api, StateStore(), market_open=True)
+    result = run_guarded_demo_cycle(_settings(), api, StateStore())
     assert api.sent in {0, 1}
     if api.sent == 1:
         assert result.intent is not None
@@ -160,7 +170,7 @@ def test_demo_path_never_writes_without_a_complete_trade_setup():
 def test_non_demo_account_is_hard_refused():
     api = Api(account_trade_mode=2)
     with pytest.raises(PermissionError, match="DEMO"):
-        run_guarded_demo_cycle(_settings(), api, StateStore(), market_open=True)
+        run_guarded_demo_cycle(_settings(), api, StateStore())
     assert api.sent == 0
 
 

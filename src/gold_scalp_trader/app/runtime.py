@@ -1,8 +1,9 @@
 """Canonical governed runtime composition.
 
-`runtime_core` retains the already-tested execution/reconciliation mechanics.
-This module composes hard Session authority and durable Opportunity lifecycle
-around those mechanics without granting News or research any broker authority.
+This module is the only public DEMO execution composition owner. Hard Session
+permission comes from the scoped Session authority; callers cannot override it.
+Durable Risk-day state is reconciled before any new OPEN can reach the Gate.
+News and research remain read-only context.
 """
 from __future__ import annotations
 
@@ -37,6 +38,8 @@ from gold_scalp_trader.management.manager import ManagementDecision
 from gold_scalp_trader.management.models import ManagedTrade
 from gold_scalp_trader.management.store import load as load_managed
 from gold_scalp_trader.persistence.store import StateStore
+from gold_scalp_trader.risk.engine import evaluate as monetary_risk_eval
+from gold_scalp_trader.risk.runtime import RiskAuthority, prepare as prepare_risk_authority
 
 symbol_allows_action = core.symbol_allows_action
 symbol_allows_open = core.symbol_allows_open
@@ -68,11 +71,53 @@ def _session_permission(
     provider: ProviderSnapshot,
     action: ExecutionAction,
     broker_allowed: bool | None,
-    legacy_market_open: bool | None,
 ) -> bool:
-    if legacy_market_open is not None:
-        return legacy_market_open
+    """Hard Session + broker capability; no caller-supplied override exists."""
     return session_action_allowed(provider, action) and broker_allowed is True
+
+
+def _apply_durable_open_risk(
+    cycle: CycleResult,
+    settings: Settings,
+    authority: RiskAuthority,
+) -> CycleResult:
+    """Bind monetary sizing to the durable UTC Risk-day authority.
+
+    Analytical cycles intentionally do not invent DayStartEquity. A live OPEN
+    can only receive a monetary RiskEvaluation after the durable authority has
+    reconciled account activity, loss lock and cooldown state.
+    """
+    if cycle.trade_plan is None:
+        return cycle
+    if authority.state is None or authority.decision is not RiskDecision.PASS:
+        return replace(
+            cycle,
+            risk=None,
+            status="RISK",
+            live_action="WAIT",
+            reason=authority.reason,
+        )
+
+    market = cycle.intelligence.market
+    evaluated = monetary_risk_eval(
+        cycle.trade_plan,
+        market.account,
+        market.symbol_spec,
+        day_start_equity=authority.state.day_start_equity,
+        target_risk_pct=settings.target_risk_percent,
+        aggressive_mode=authority.state.aggressive_mode,
+    )
+    return replace(
+        cycle,
+        risk=evaluated,
+        status="RISK",
+        live_action=(
+            "READY_FOR_HARD_AUTHORITIES"
+            if evaluated.decision is RiskDecision.PASS
+            else "WAIT"
+        ),
+        reason=evaluated.reason,
+    )
 
 
 def run_read_cycle(settings: Settings, api) -> RuntimeResult:
@@ -93,7 +138,6 @@ def _forced_preclose_flatten(
     trade: ManagedTrade,
     provider: ProviderSnapshot,
     *,
-    market_open: bool | None,
     holder: str,
 ) -> RuntimeResult:
     """Submit one governed CLOSE when preserved PRE_CLOSE flatten is due."""
@@ -161,7 +205,7 @@ def _forced_preclose_flatten(
         controller_ready = False
 
     broker_allowed = core.symbol_allows_action(api, market.symbol_spec, trade.direction, ExecutionAction.CLOSE)
-    session_ok = _session_permission(provider, ExecutionAction.CLOSE, broker_allowed, market_open)
+    session_ok = _session_permission(provider, ExecutionAction.CLOSE, broker_allowed)
     gate = gate_eval(
         risk=RiskDecision.PASS,
         market_open=session_ok,
@@ -219,9 +263,13 @@ def run_guarded_demo_cycle(
     api,
     store: StateStore,
     *,
-    market_open: bool | None = None,
     holder: str = "local-primary",
 ) -> RuntimeResult:
+    """Run the sole public guarded DEMO execution cycle.
+
+    Hard Session permission and durable Risk state are resolved internally.
+    Tests must mock those providers rather than inject broker permission flags.
+    """
     if settings.mode is not RuntimeMode.DEMO or not settings.demo_write_enabled:
         raise PermissionError("explicit DEMO mode/confirmation required")
     if settings.real_write_enabled:
@@ -233,7 +281,9 @@ def run_guarded_demo_cycle(
         raise PermissionError("connected MT5 account is not explicitly verified as DEMO")
 
     provider = resolve_session_news(settings, market)
-    cycle = run_cycle(market, settings, target_risk_pct=settings.target_risk_percent)
+    # Structural/quality analysis first. Monetary sizing is deliberately deferred
+    # until durable Risk-day authority has been reconciled below.
+    cycle = run_cycle(market, settings, target_risk_pct=None)
     cycle = replace(
         cycle,
         system_text=f"DEMO LIVE • {provider.session.state.value} • DEMO ACCOUNT VERIFIED",
@@ -260,19 +310,34 @@ def run_guarded_demo_cycle(
     if managed is not None:
         if preclose_flatten_due(provider.session, market.captured_at):
             return _forced_preclose_flatten(
-                settings, api, reader, store, market, cycle, scope, managed, provider,
-                market_open=market_open, holder=holder,
+                settings,
+                api,
+                reader,
+                store,
+                market,
+                cycle,
+                scope,
+                managed,
+                provider,
+                holder=holder,
             )
-        management_open = _session_permission(
+        management_allowed = _session_permission(
             provider,
             ExecutionAction.MODIFY,
             core.symbol_allows_action(api, market.symbol_spec, managed.direction, ExecutionAction.MODIFY),
-            market_open,
         )
         return _wrap(
             core._run_managed_demo_cycle(
-                settings, api, reader, store, market, cycle, scope, managed,
-                market_open=management_open, holder=holder,
+                settings,
+                api,
+                reader,
+                store,
+                market,
+                cycle,
+                scope,
+                managed,
+                authority_allowed=management_allowed,
+                holder=holder,
             ),
             provider,
         )
@@ -289,8 +354,19 @@ def run_guarded_demo_cycle(
             provider=provider,
         )
 
+    risk_authority = prepare_risk_authority(
+        store,
+        scope,
+        reader,
+        market,
+        settings,
+        unresolved_lifecycle=False,
+    )
+    cycle = _apply_durable_open_risk(cycle, settings, risk_authority)
+
     if (
-        cycle.trade_plan is None
+        risk_authority.decision is not RiskDecision.PASS
+        or cycle.trade_plan is None
         or cycle.risk is None
         or cycle.risk.decision is not RiskDecision.PASS
         or cycle.risk.volume is None
@@ -307,7 +383,7 @@ def run_guarded_demo_cycle(
         controller_ready = False
 
     broker_open = core.symbol_allows_open(api, market.symbol_spec, plan.direction)
-    session_open = _session_permission(provider, ExecutionAction.OPEN, broker_open, market_open)
+    session_open = _session_permission(provider, ExecutionAction.OPEN, broker_open)
     gate = gate_eval(
         risk=cycle.risk.decision,
         market_open=session_open,

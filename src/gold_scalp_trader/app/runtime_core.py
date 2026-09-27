@@ -1,7 +1,14 @@
+"""Broker-safe runtime mechanics used by the canonical app.runtime composer.
+
+This module intentionally has no public full guarded-DEMO cycle. It owns narrow
+mechanics only: broker capability normalization, persisted entry lineage,
+reconciliation, verified-close recovery and managed-trade mutations. Hard
+Session and durable Risk authority are composed only by app.runtime.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from gold_scalp_trader.app.cycle import CycleResult, run_cycle
 from gold_scalp_trader.config import Settings
@@ -13,7 +20,6 @@ from gold_scalp_trader.domain.enums import (
     IntentState,
     ManagementAction,
     RiskDecision,
-    RuntimeMode,
     Timeframe,
 )
 from gold_scalp_trader.domain.ids import new_id
@@ -56,12 +62,7 @@ def symbol_allows_action(
     direction: Direction,
     action: ExecutionAction,
 ) -> bool | None:
-    """Normalize MT5 symbol trade mode for OPEN/MODIFY/CLOSE.
-
-    OPEN respects long/short/close-only restrictions. Exposure-reducing CLOSE
-    and protective MODIFY are allowed for any non-disabled trade mode and still
-    face broker `order_check` before send.
-    """
+    """Normalize MT5 symbol trade mode for OPEN/MODIFY/CLOSE."""
     mode = spec.trade_mode
     if mode is None:
         return None
@@ -363,6 +364,7 @@ def _bars_in_trade(trade: ManagedTrade, market: MarketSnapshot) -> int:
 
 
 def run_read_cycle(settings: Settings, api) -> RuntimeResult:
+    """Read-only analytical convenience; never owns broker authority."""
     market = Mt5Reader(settings, api).read().snapshot
     return RuntimeResult(
         run_cycle(market, settings, target_risk_pct=settings.target_risk_percent),
@@ -381,9 +383,15 @@ def _run_managed_demo_cycle(
     scope: str,
     trade: ManagedTrade,
     *,
-    market_open: bool | None,
+    authority_allowed: bool,
     holder: str,
 ) -> RuntimeResult:
+    """Execute one already-authorized managed-trade mutation path.
+
+    ``authority_allowed`` must come from the canonical Session composer. Broker
+    symbol capability is checked again here; this helper cannot create Session
+    permission on its own.
+    """
     if market.positions is None:
         cycle = replace(
             cycle,
@@ -464,10 +472,10 @@ def _run_managed_demo_cycle(
         controller_ready = False
 
     broker_allowed = symbol_allows_action(api, market.symbol_spec, trade.direction, intent.action)
-    effective_market_open = market_open if market_open is not None else broker_allowed
+    effective_permission = authority_allowed and broker_allowed is True
     gate = gate_eval(
         risk=RiskDecision.PASS,
-        market_open=effective_market_open,
+        market_open=effective_permission,
         data_ready=_management_data_ready(market, settings, intent.action),
         identity_ready=_identity_ready(market, api),
         exposure_clear=False,
@@ -533,155 +541,21 @@ def _run_managed_demo_cycle(
     return RuntimeResult(cycle, out.send_count == 1, out, current_trade, decision.action)
 
 
-def run_guarded_demo_cycle(
-    settings: Settings,
-    api,
-    store: StateStore,
-    *,
-    market_open: bool | None = None,
-    holder: str = "local-primary",
-) -> RuntimeResult:
-    if settings.mode is not RuntimeMode.DEMO or not settings.demo_write_enabled:
-        raise PermissionError("explicit DEMO mode/confirmation required")
-    if settings.real_write_enabled:
-        raise PermissionError("REAL write path is disabled in this release")
-
-    reader = Mt5Reader(settings, api)
-    market = reader.read().snapshot
-    if not demo_account_verified(api):
-        raise PermissionError("connected MT5 account is not explicitly verified as DEMO")
-
-    cycle = run_cycle(market, settings, target_risk_pct=settings.target_risk_percent)
-    cycle = replace(cycle, system_text="DEMO LIVE • DEMO ACCOUNT VERIFIED")
-    scope = _scope(market)
-
-    managed, reconciled_intent = _reconcile_unresolved_intents(settings, store, market, scope)
-    if unresolved(store):
-        cycle = replace(
-            cycle,
-            status="EXECUTION",
-            live_action="WAIT",
-            reason="UNRESOLVED_INTENT_RECONCILIATION_REQUIRED",
-            system_text="DEMO LIVE • RECONCILING INTENT • NO RESEND",
-        )
-        return RuntimeResult(cycle, False, reconciled_intent, managed)
-
-    managed = load_managed(store, scope)
-    if managed is not None:
-        return _run_managed_demo_cycle(
-            settings,
-            api,
-            reader,
-            store,
-            market,
-            cycle,
-            scope,
-            managed,
-            market_open=market_open,
-            holder=holder,
-        )
-
-    if market.positions is not None and any(
-        position.magic == settings.bot_magic for position in market.positions
-    ):
-        cycle = replace(
-            cycle,
-            status="RECOVERY",
-            live_action="WAIT",
-            reason="ORPHAN_BOT_MAGIC_POSITION_REQUIRES_RECOVERY",
-            system_text="DEMO LIVE • ORPHAN EXPOSURE • NO ADOPTION",
-        )
-        return RuntimeResult(cycle, False, None, None)
-
-    if (
-        cycle.trade_plan is None
-        or cycle.risk is None
-        or cycle.risk.decision is not RiskDecision.PASS
-        or cycle.risk.volume is None
-    ):
-        return RuntimeResult(cycle, False, None, None)
-
-    plan = cycle.trade_plan
-    exposure_clear = market.positions == () if market.positions is not None else None
-    conflicting = bool(unresolved(store))
-
-    try:
-        lease = acquire(store, scope, holder)
-        controller_ready = True
-    except RuntimeError:
-        lease = None
-        controller_ready = False
-
-    broker_open = symbol_allows_open(api, market.symbol_spec, plan.direction)
-    effective_market_open = market_open if market_open is not None else broker_open
-    gate = gate_eval(
-        risk=cycle.risk.decision,
-        market_open=effective_market_open,
-        data_ready=_data_ready(cycle, settings),
-        identity_ready=_identity_ready(market, api),
-        exposure_clear=exposure_clear,
-        persistence_ready=store.integrity_check(),
-        controller_ready=controller_ready,
-        conflicting_intent=conflicting,
-        action=ExecutionAction.OPEN,
-    )
-    cycle = replace(
-        cycle,
-        gate_text=f"{gate.state.value} • {', '.join(gate.reasons)}",
-        live_action="OPEN_READY" if gate.state is GateState.ALLOW else "WAIT",
-        reason=cycle.reason if gate.state is GateState.ALLOW else ", ".join(gate.reasons),
-    )
-    if gate.state is not GateState.ALLOW or lease is None:
-        return RuntimeResult(cycle, False, None, None)
-
-    price = market.quote.ask if plan.direction is Direction.BUY else market.quote.bid
-    broker_tp = plan.expansion_target or plan.primary_target
-    intent = ExecutionIntent(
-        str(new_id("INT")),
-        ExecutionAction.OPEN,
-        market.symbol_spec.symbol,
-        plan.direction,
-        cycle.risk.volume,
-        price,
-        plan.initial_sl,
-        broker_tp,
-        IntentState.CREATED,
-        datetime.now(tz=timezone.utc),
-    )
-    _save_open_context(store, intent, cycle, settings)
-    writer = _writer(settings, api)
-    local = local_precheck(market.account, market.symbol_spec, market.quote, intent.volume)
-    broker = broker_order_check(api, writer.build_request(intent))
-    out = execute_once(
-        store=store,
-        intent=intent,
-        gate=gate,
-        lease=lease,
-        writer=writer,
-        precheck_passed=local.passed and broker.passed,
-    )
-    if out.state is IntentState.FAILED:
-        store.delete(OPEN_CONTEXT_NS, intent.intent_id)
-
-    current_managed: ManagedTrade | None = None
-    if out.state is IntentState.ACCEPTED_UNKNOWN:
-        try:
-            fresh = reader.read().snapshot
-            current_managed, reconciled = _reconcile_unresolved_intents(
-                settings,
-                store,
-                fresh,
-                scope,
-            )
-            if reconciled is not None and reconciled.intent_id == out.intent_id:
-                out = reconciled
-        except Mt5ReadError:
-            pass
-
-    cycle = replace(
-        cycle,
-        live_action="ORDER_SENT" if out.send_count == 1 else "WAIT",
-        reason=out.reason or cycle.reason,
-        gate_text=f"{gate.state.value} • {', '.join(gate.reasons)}",
-    )
-    return RuntimeResult(cycle, out.send_count == 1, out, current_managed)
+__all__ = [
+    "OPEN_CONTEXT_NS",
+    "RuntimeResult",
+    "Mt5ReadError",
+    "Mt5Reader",
+    "acquire",
+    "broker_order_check",
+    "close_matches",
+    "demo_account_verified",
+    "local_precheck",
+    "modify_matches",
+    "open_matches",
+    "run_read_cycle",
+    "save_intent",
+    "symbol_allows_action",
+    "symbol_allows_open",
+    "unresolved",
+]
