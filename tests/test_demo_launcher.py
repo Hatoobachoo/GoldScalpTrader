@@ -96,6 +96,14 @@ def test_configuration_failure_renders_primary_terminal_error(monkeypatch, capsy
 
 
 def _dashboard_data():
+    rows = (
+        ("TREND_PULLBACK_CONTINUATION", "ACTIVE_EXECUTION", "QUALIFIED", "BUY", 0.62, 0.78),
+        ("BREAKOUT_RETEST", "SHADOW_ONLY", "QUALIFIED", "BUY", 0.55, 0.72),
+        ("LIQUIDITY_SWEEP_REVERSAL", "SHADOW_ONLY", "NOT_QUALIFIED", "NONE", 0.31, 0.61),
+        ("RANGE_REJECTION", "SHADOW_ONLY", "NOT_QUALIFIED", "NONE", 0.22, 0.55),
+        ("MOMENTUM_CONTINUATION", "SHADOW_ONLY", "NOT_QUALIFIED", "NONE", 0.28, 0.58),
+        ("FAILED_BREAK_REVERSAL", "SHADOW_ONLY", "NOT_QUALIFIED", "NONE", 0.19, 0.49),
+    )
     return DashboardData(
         symbol="XAUUSDm",
         bid=4300.123,
@@ -104,11 +112,11 @@ def _dashboard_data():
         market_state="CLOSED",
         soft_session="OFF_HOURS",
         bot_status="SCANNING",
-        detected_setup="NO VALID SETUP",
+        detected_setup="TREND_PULLBACK_CONTINUATION",
         active_family="TREND_PULLBACK_CONTINUATION",
         live_action="WAIT",
         reason="market is closed; dashboard remains available",
-        shadow_setups=("BREAKOUT_RETEST", "LIQUIDITY_SWEEP_REVERSAL"),
+        shadow_setups=("BREAKOUT_RETEST",),
         risk_text="NOT EVALUATED",
         gate_text="NOT EVALUATED",
         news_text="UNKNOWN • SOFT ONLY",
@@ -135,6 +143,12 @@ def _dashboard_data():
         m15_structure="BULLISH",
         m5_structure="TRANSITION",
         risk_profile="SMALL",
+        strategy_board_rows=rows,
+        live_feed_state="LIVE",
+        controller_role="LOCAL PRIMARY",
+        broker_reconcile="CLEAR",
+        learning_state="ACTIVE",
+        discovery_state="ACTIVE",
     )
 
 
@@ -150,17 +164,24 @@ def test_primary_terminal_dashboard_is_bilingual_emoji_full_frame_and_closed_mar
     assert "Browser SECONDARY" in frame
     assert "EMA20" in frame
     assert "RSI" in frame
-    assert len(frame.splitlines()) >= 18
+    assert "STRATEGY ISOLATION" in frame
+    assert "ACTIVE EXECUTION" in frame
+    assert len(frame.splitlines()) >= 24
 
 
-def test_wide_primary_terminal_dashboard_is_rich_style_or_safe_fallback():
+def test_wide_primary_terminal_dashboard_matches_swing_style_operator_hierarchy():
     frame = render(_dashboard_data(), width=132, color=False)
     assert "GoldScalpTraderAI" in frame
-    assert "PRIMARY" in frame
-    assert "MARKET ANALYSIS" in frame
+    assert "PRIMARY LIVE SCALPING FLOOR" in frame
+    assert "MARKET PICTURE" in frame
+    assert "TRADE SETUP" in frame
     assert "CURRENT DECISION" in frame
-    assert "ACCOUNT & RISK" in frame
-    assert "EXECUTION" in frame
+    assert "TRADE PLAN" in frame
+    assert "STRATEGY ISOLATION" in frame
+    assert "RISK & ACCOUNT" in frame
+    assert "TODAY / ACTIVITY" in frame
+    assert "SYSTEM / EXECUTION" in frame
+    assert "LEARNING / DISCOVERY" in frame
     assert "محفوظ عمل" in frame
 
 
