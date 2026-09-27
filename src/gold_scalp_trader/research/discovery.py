@@ -71,7 +71,6 @@ def _cluster_id(key: tuple[str, str, tuple[str, ...]]) -> str:
 
 
 def _source_ref(payload: dict) -> str | None:
-    """Return explicit durable source identity embedded by the episode producer."""
     reason = str(payload.get("reason", ""))
     marker = ";SOURCE="
     if marker not in reason:
@@ -140,12 +139,13 @@ def run_discovery(store: StateStore, policy: DiscoveryPolicy | None = None) -> D
 
     eligible = candidates = suppressed = pending = 0
     for key, events in clusters.items():
+        evidence_class = key[0]
+        if evidence_class not in _ELIGIBLE_RECIPES and evidence_class not in _NEVER_STRATEGY:
+            continue
+
         independent_ids = tuple(dict.fromkeys(event.event_key for event in events))
         if len(independent_ids) < policy.min_independent_episodes:
             pending += 1
-            continue
-        evidence_class = key[0]
-        if evidence_class not in _ELIGIBLE_RECIPES and evidence_class not in _NEVER_STRATEGY:
             continue
 
         eligible += 1
@@ -157,13 +157,7 @@ def run_discovery(store: StateStore, policy: DiscoveryPolicy | None = None) -> D
 
         source_ids = tuple(dict.fromkeys(ref for event in events if (ref := _source_ref(event.payload))))
         if len(source_ids) < policy.min_independent_episodes:
-            _suppress(
-                store,
-                cluster_id,
-                evidence_class,
-                independent_ids,
-                "INSUFFICIENT_IMMUTABLE_SOURCE_LINEAGE",
-            )
+            _suppress(store, cluster_id, evidence_class, independent_ids, "INSUFFICIENT_IMMUTABLE_SOURCE_LINEAGE")
             suppressed += 1
             continue
 
