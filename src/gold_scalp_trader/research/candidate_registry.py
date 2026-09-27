@@ -1,13 +1,16 @@
 """Durable governed registry for autonomous research candidates.
 
-Registration and promotion are research/governance operations only. Reaching a
-stage never edits runtime Settings, Risk, Gate, active strategy selection or
-broker authority. Stage evidence can only be issued by the verified immutable
-stage-package protocol; arbitrary caller hashes cannot manufacture PASS proof.
+Candidate stages never edit runtime Settings, Risk, Gate, active strategy
+selection or broker authority. PASS evidence is accepted only from immutable
+verified stage packages. Every successful transition is appended to an
+actor-attributed chronological audit trail.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from datetime import datetime, timezone
+from hashlib import sha256
+import json
 from typing import Iterable
 
 from gold_scalp_trader.persistence.store import StateIntegrityError, StateStore
@@ -21,13 +24,10 @@ from .timing_learning import NS as TIMING_NS
 
 NS = "governed_strategy_candidates"
 STAGE_EVIDENCE_NS = "candidate_stage_evidence"
+TRANSITION_NS = "candidate_stage_transitions"
 VERIFIED_STAGE_ISSUER = "VERIFIED_STAGE_PACKAGE_V1"
 KNOWN_SOURCE_NAMESPACES = (
-    TIMING_NS,
-    MANAGEMENT_NS,
-    SHADOW_NS,
-    SHADOW_OUTCOME_NS,
-    "strategy_learning_memory",
+    TIMING_NS, MANAGEMENT_NS, SHADOW_NS, SHADOW_OUTCOME_NS, "strategy_learning_memory",
 )
 
 
@@ -51,15 +51,15 @@ class StageEvidence:
 
 
 def _payload(record: CandidateRecord) -> dict:
-    candidate = record.candidate
+    c = record.candidate
     return {
-        "candidate_id": candidate.candidate_id,
-        "kind": candidate.kind,
-        "semantics": candidate.semantics,
-        "stage": candidate.stage.value,
-        "holdout_consumed": candidate.holdout_consumed,
-        "rollback_target": candidate.rollback_target,
-        "fingerprint": candidate.fingerprint,
+        "candidate_id": c.candidate_id,
+        "kind": c.kind,
+        "semantics": c.semantics,
+        "stage": c.stage.value,
+        "holdout_consumed": c.holdout_consumed,
+        "rollback_target": c.rollback_target,
+        "fingerprint": c.fingerprint,
         "evidence_chain": list(record.evidence_chain),
         "runtime_authority": "NONE",
         "broker_authority": "NONE",
@@ -71,9 +71,8 @@ def _restore_semantics(value):
         raise StateIntegrityError("candidate semantics must be an object")
     restored = dict(value)
     for key in ("required", "supportive", "sources"):
-        item = restored.get(key)
-        if isinstance(item, list):
-            restored[key] = tuple(item)
+        if isinstance(restored.get(key), list):
+            restored[key] = tuple(restored[key])
     return restored
 
 
@@ -117,7 +116,7 @@ def _valid_sha256(value: str) -> bool:
 
 
 def _expected_next_stage(candidate: Candidate) -> PromotionStage:
-    automated = (
+    ordered = (
         PromotionStage.PROPOSED,
         PromotionStage.RESEARCHING,
         PromotionStage.VALIDATED,
@@ -130,12 +129,10 @@ def _expected_next_stage(candidate: Candidate) -> PromotionStage:
     )
     if candidate.stage is PromotionStage.APPROVAL_REQUIRED:
         return PromotionStage.PRODUCTION
-    if candidate.stage not in automated:
+    if candidate.stage not in ordered:
         raise ValueError("candidate has no promotable next stage")
-    index = automated.index(candidate.stage)
-    if index + 1 >= len(automated):
-        return PromotionStage.PRODUCTION
-    return automated[index + 1]
+    index = ordered.index(candidate.stage)
+    return PromotionStage.PRODUCTION if index + 1 >= len(ordered) else ordered[index + 1]
 
 
 def _record_verified_stage_evidence(
@@ -150,35 +147,32 @@ def _record_verified_stage_evidence(
     limitations: Iterable[str] = (),
     issuer: str,
 ) -> StageEvidence:
-    """Low-level sink reserved for the verified stage-package issuer."""
     if issuer != VERIFIED_STAGE_ISSUER:
         raise PermissionError("candidate stage evidence requires verified package issuer")
     current = load(store, candidate_id)
     if current is None:
         raise StateIntegrityError(f"unknown candidate {candidate_id}")
-    candidate = current.candidate
-    expected = _expected_next_stage(candidate)
+    expected = _expected_next_stage(current.candidate)
     if target_stage is not expected:
         raise ValueError(f"stage evidence must target the next governed stage: {expected.value}")
     if not evidence_id.strip():
         raise ValueError("stage evidence_id is required")
-    if identity.candidate_fingerprint != candidate.fingerprint:
+    if identity.candidate_fingerprint != current.candidate.fingerprint:
         raise StateIntegrityError("stage evidence candidate fingerprint mismatch")
     if not verify_evidence_identity(identity):
         raise StateIntegrityError("stage evidence identity integrity check failed")
     if not _valid_sha256(artifact_sha256) or not _valid_sha256(package_manifest_sha256):
         raise ValueError("stage evidence package/artifact hashes must be valid SHA-256")
-
     payload = {
         "evidence_id": evidence_id,
         "candidate_id": candidate_id,
-        "candidate_fingerprint": candidate.fingerprint,
+        "candidate_fingerprint": current.candidate.fingerprint,
         "target_stage": target_stage.value,
         "evidence_identity": identity_payload(identity),
         "evidence_identity_sha256": identity.sha256,
         "artifact_sha256": artifact_sha256.lower(),
         "package_manifest_sha256": package_manifest_sha256.lower(),
-        "limitations": [str(item) for item in limitations],
+        "limitations": [str(x) for x in limitations],
         "result": "PASS",
         "issuer": issuer,
         "runtime_authority": "NONE",
@@ -186,15 +180,9 @@ def _record_verified_stage_evidence(
     }
     store.put(STAGE_EVIDENCE_NS, evidence_id, payload, allow_replace=False)
     return StageEvidence(
-        evidence_id,
-        candidate_id,
-        candidate.fingerprint,
-        target_stage,
-        identity.sha256,
-        artifact_sha256.lower(),
-        tuple(str(item) for item in limitations),
-        issuer,
-        package_manifest_sha256.lower(),
+        evidence_id, candidate_id, current.candidate.fingerprint, target_stage,
+        identity.sha256, artifact_sha256.lower(), tuple(str(x) for x in limitations),
+        issuer, package_manifest_sha256.lower(),
     )
 
 
@@ -202,48 +190,39 @@ def load_stage_evidence(store: StateStore, evidence_id: str) -> StageEvidence | 
     row = store.get(STAGE_EVIDENCE_NS, evidence_id)
     if row is None:
         return None
-    payload = row.payload
-    if payload.get("runtime_authority") != "NONE" or payload.get("broker_authority") != "NONE":
+    p = row.payload
+    if p.get("runtime_authority") != "NONE" or p.get("broker_authority") != "NONE":
         raise StateIntegrityError("stage evidence authority corruption")
-    if payload.get("issuer") != VERIFIED_STAGE_ISSUER:
+    if p.get("issuer") != VERIFIED_STAGE_ISSUER:
         raise StateIntegrityError("stage evidence issuer is not verified")
-    package_hash = str(payload.get("package_manifest_sha256", ""))
+    package_hash = str(p.get("package_manifest_sha256", ""))
     if not _valid_sha256(package_hash):
         raise StateIntegrityError("stage evidence package manifest hash invalid")
-    identity_payload_raw = payload.get("evidence_identity")
-    if not isinstance(identity_payload_raw, dict):
+    raw = p.get("evidence_identity")
+    if not isinstance(raw, dict):
         raise StateIntegrityError("stage evidence identity missing")
     try:
         identity = EvidenceIdentity(
-            candidate_fingerprint=str(identity_payload_raw["candidate_fingerprint"]),
-            dataset_sha256=str(identity_payload_raw["dataset_sha256"]),
-            code_revision=str(identity_payload_raw["code_revision"]),
-            config_fingerprint=str(identity_payload_raw["config_fingerprint"]),
-            policy_version=str(identity_payload_raw["policy_version"]),
-            execution_realism=str(identity_payload_raw["execution_realism"]),
-            sha256=str(identity_payload_raw["sha256"]),
+            candidate_fingerprint=str(raw["candidate_fingerprint"]), dataset_sha256=str(raw["dataset_sha256"]),
+            code_revision=str(raw["code_revision"]), config_fingerprint=str(raw["config_fingerprint"]),
+            policy_version=str(raw["policy_version"]), execution_realism=str(raw["execution_realism"]),
+            sha256=str(raw["sha256"]),
         )
     except (KeyError, TypeError, ValueError) as exc:
         raise StateIntegrityError("stage evidence identity malformed") from exc
     if not verify_evidence_identity(identity):
         raise StateIntegrityError("stage evidence identity integrity mismatch")
-    if identity.sha256 != payload.get("evidence_identity_sha256"):
+    if identity.sha256 != p.get("evidence_identity_sha256"):
         raise StateIntegrityError("stage evidence identity hash mismatch")
-    if payload.get("result") != "PASS":
+    if p.get("result") != "PASS":
         raise StateIntegrityError("stage evidence is not PASS")
-    artifact_sha256 = str(payload.get("artifact_sha256", ""))
-    if not _valid_sha256(artifact_sha256):
+    artifact = str(p.get("artifact_sha256", ""))
+    if not _valid_sha256(artifact):
         raise StateIntegrityError("stage evidence artifact hash invalid")
     return StageEvidence(
-        str(payload["evidence_id"]),
-        str(payload["candidate_id"]),
-        str(payload["candidate_fingerprint"]),
-        PromotionStage(str(payload["target_stage"])),
-        identity.sha256,
-        artifact_sha256,
-        tuple(str(item) for item in payload.get("limitations", ())),
-        VERIFIED_STAGE_ISSUER,
-        package_hash,
+        str(p["evidence_id"]), str(p["candidate_id"]), str(p["candidate_fingerprint"]),
+        PromotionStage(str(p["target_stage"])), identity.sha256, artifact,
+        tuple(str(x) for x in p.get("limitations", ())), VERIFIED_STAGE_ISSUER, package_hash,
     )
 
 
@@ -258,6 +237,56 @@ def register_invention(store: StateStore, recipe: Recipe, source_evidence_ids: I
     record = CandidateRecord(candidate, evidence_ids)
     store.put(NS, candidate.candidate_id, _payload(record), allow_replace=False)
     return record
+
+
+def _actor_for(target: PromotionStage, operator_approved: bool) -> str:
+    if target is PromotionStage.PRODUCTION:
+        if not operator_approved:
+            raise PermissionError("production transition actor must be explicitly approved operator")
+        return "OPERATOR"
+    if target is PromotionStage.RESEARCHING:
+        return "AUTO_RESEARCH"
+    if target in {PromotionStage.VALIDATED, PromotionStage.LOCKED, PromotionStage.HOLDOUT_PASSED, PromotionStage.APPROVAL_REQUIRED}:
+        return "AUTO_VALIDATOR"
+    if target is PromotionStage.STRESS_PASSED:
+        return "AUTO_STRESS"
+    if target is PromotionStage.SHADOW:
+        return "AUTO_SHADOW"
+    if target is PromotionStage.DEMO_CANDIDATE:
+        return "AUTO_DEMO_CANDIDATE"
+    raise ValueError(f"unsupported transition actor for {target.value}")
+
+
+def _append_transition(
+    store: StateStore,
+    *,
+    candidate_id: str,
+    fingerprint: str,
+    from_stage: PromotionStage,
+    to_stage: PromotionStage,
+    evidence_id: str,
+    actor: str,
+) -> None:
+    recorded_at = datetime.now(tz=timezone.utc).isoformat()
+    identity = {
+        "candidate_id": candidate_id,
+        "fingerprint": fingerprint,
+        "from_stage": from_stage.value,
+        "to_stage": to_stage.value,
+        "evidence_id": evidence_id,
+        "actor": actor,
+    }
+    digest = sha256(json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    store.append_event(
+        TRANSITION_NS,
+        f"TRANS-{digest}",
+        {
+            **identity,
+            "recorded_at_utc": recorded_at,
+            "runtime_authority": "NONE",
+            "broker_authority": "NONE",
+        },
+    )
 
 
 def advance_governed(
@@ -282,19 +311,30 @@ def advance_governed(
     if evidence.target_stage is not target:
         raise StateIntegrityError("promotion evidence target-stage mismatch")
 
+    actor = _actor_for(target, operator_approved)
     candidate = current.candidate
     if rollback_target is not None:
         candidate = replace(candidate, rollback_target=rollback_target)
-    promoted = advance(
-        candidate,
-        target,
-        evidence_id=evidence_id,
-        operator_approved=operator_approved,
-    )
-    chain = (*current.evidence_chain, evidence_id)
-    record = CandidateRecord(promoted, chain)
-    store.put(NS, candidate_id, _payload(record), allow_replace=True)
+    promoted = advance(candidate, target, evidence_id=evidence_id, operator_approved=operator_approved)
+    record = CandidateRecord(promoted, (*current.evidence_chain, evidence_id))
+    # Candidate state and transition audit are committed together.
+    with store.transaction():
+        store.put(NS, candidate_id, _payload(record), allow_replace=True)
+        _append_transition(
+            store,
+            candidate_id=candidate_id,
+            fingerprint=promoted.fingerprint,
+            from_stage=current.candidate.stage,
+            to_stage=target,
+            evidence_id=evidence_id,
+            actor=actor,
+        )
     return record
+
+
+def transition_history(store: StateStore, candidate_id: str) -> tuple[dict, ...]:
+    rows = [e.payload for e in store.list_events(TRANSITION_NS) if e.payload.get("candidate_id") == candidate_id]
+    return tuple(rows)
 
 
 def runtime_activation_allowed(record: CandidateRecord) -> bool:
@@ -302,14 +342,7 @@ def runtime_activation_allowed(record: CandidateRecord) -> bool:
 
 
 __all__ = [
-    "KNOWN_SOURCE_NAMESPACES",
-    "NS",
-    "STAGE_EVIDENCE_NS",
-    "CandidateRecord",
-    "StageEvidence",
-    "advance_governed",
-    "load",
-    "load_stage_evidence",
-    "register_invention",
-    "runtime_activation_allowed",
+    "KNOWN_SOURCE_NAMESPACES", "NS", "STAGE_EVIDENCE_NS", "TRANSITION_NS",
+    "CandidateRecord", "StageEvidence", "advance_governed", "load", "load_stage_evidence",
+    "register_invention", "runtime_activation_allowed", "transition_history",
 ]
