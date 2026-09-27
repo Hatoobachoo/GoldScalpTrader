@@ -3,6 +3,8 @@ from contextlib import contextmanager
 from gold_scalp_trader.app import main as app_main
 from gold_scalp_trader.config import Settings
 from gold_scalp_trader.domain.enums import RuntimeMode, StrategyFamily
+from gold_scalp_trader.operator.presentation import DashboardData
+from gold_scalp_trader.operator.terminal_dashboard import render, render_error
 
 
 def _settings(*, dashboard_mode: str) -> Settings:
@@ -15,62 +17,135 @@ def _settings(*, dashboard_mode: str) -> Settings:
     )
 
 
-def test_main_routes_terminal_demo_mode_through_mt5_session(monkeypatch):
-    settings = _settings(dashboard_mode="TERMINAL")
+class FakeLazyApi:
+    def __init__(self):
+        self.closed = False
+
+    def close(self):
+        self.closed = True
+
+
+def _assert_demo_mode_uses_terminal_first_lazy_runtime(monkeypatch, dashboard_mode: str):
+    settings = _settings(dashboard_mode=dashboard_mode)
+    api = FakeLazyApi()
+    called = {}
+
+    def forbidden_session():
+        raise AssertionError("DEMO dashboard must not require eager mt5_session startup")
+
+    def fake_demo_runner(received_settings, received_api):
+        called["settings"] = received_settings
+        called["api"] = received_api
+        return 0
+
+    monkeypatch.setattr(app_main, "load_settings", lambda: settings)
+    monkeypatch.setattr(app_main, "mt5_session", forbidden_session)
+    monkeypatch.setattr(app_main, "LazyMt5Api", lambda: api)
+    monkeypatch.setattr(app_main, "run_live_demo", fake_demo_runner)
+
+    assert app_main.run() == 0
+    assert called["settings"] is settings
+    assert called["api"] is api
+    assert api.closed is True
+
+
+def test_terminal_mode_uses_primary_terminal_runtime(monkeypatch):
+    _assert_demo_mode_uses_terminal_first_lazy_runtime(monkeypatch, "TERMINAL")
+
+
+def test_gui_mode_uses_same_primary_runtime_and_only_adds_secondary_view(monkeypatch):
+    _assert_demo_mode_uses_terminal_first_lazy_runtime(monkeypatch, "GUI")
+
+
+def test_non_demo_read_mode_still_uses_mt5_session(monkeypatch):
+    settings = Settings(mode=RuntimeMode.DRY_RUN, dashboard_mode="TERMINAL")
     marker = object()
     called = {}
 
     @contextmanager
     def fake_session():
+        called["session"] = True
         yield marker
 
-    def fake_demo_runner(received_settings, api):
-        called["settings"] = received_settings
-        called["api"] = api
-        return 0
+    class Result:
+        wrote_broker = False
+        cycle = object()
 
     monkeypatch.setattr(app_main, "load_settings", lambda: settings)
     monkeypatch.setattr(app_main, "mt5_session", fake_session)
-    monkeypatch.setattr(app_main, "run_live_demo", fake_demo_runner)
+    monkeypatch.setattr(app_main, "run_read_cycle", lambda received_settings, api: Result())
+    monkeypatch.setattr(app_main, "from_cycle", lambda cycle: "DTO")
+    monkeypatch.setattr(app_main, "render", lambda dto: "FRAME")
 
     assert app_main.run() == 0
-    assert called["settings"] is settings
-    assert called["api"] is marker
+    assert called["session"] is True
 
 
-def test_main_starts_gui_before_mt5_session(monkeypatch):
-    settings = _settings(dashboard_mode="GUI")
-    called = {}
-
-    def forbidden_session():
-        raise AssertionError("GUI startup must not require mt5_session before dashboard creation")
-
-    def fake_graphical(received_settings):
-        called["settings"] = received_settings
-        return 0
-
-    monkeypatch.setattr(app_main, "load_settings", lambda: settings)
-    monkeypatch.setattr(app_main, "mt5_session", forbidden_session)
-    monkeypatch.setattr(app_main, "run_graphical_demo_standalone", fake_graphical)
-
-    assert app_main.run() == 0
-    assert called["settings"] is settings
-
-
-def test_configuration_failure_routes_to_fail_visible_error_dashboard(monkeypatch):
-    called = {}
-
+def test_configuration_failure_renders_primary_terminal_error(monkeypatch, capsys):
     def broken_settings():
         raise ValueError("bad configuration")
 
-    def fake_error_dashboard(title, exc):
-        called["title"] = title
-        called["error"] = str(exc)
-        return 2
-
     monkeypatch.setattr(app_main, "load_settings", broken_settings)
-    monkeypatch.setattr(app_main, "run_error_dashboard", fake_error_dashboard)
 
     assert app_main.run() == 2
-    assert called["title"] == "CONFIGURATION ERROR"
-    assert "bad configuration" in called["error"]
+    output = capsys.readouterr().out
+    assert "GOLD SCALP TRADER" in output
+    assert "CONFIGURATION ERROR" in output
+    assert "bad configuration" in output
+    assert "No broker write was attempted" in output
+
+
+def _dashboard_data():
+    return DashboardData(
+        symbol="XAUUSDm",
+        bid=4300.123,
+        ask=4300.321,
+        spread=0.198,
+        market_state="CLOSED",
+        soft_session="OFF_HOURS",
+        bot_status="SCANNING",
+        detected_setup="NO VALID SETUP",
+        active_family="TREND_PULLBACK_CONTINUATION",
+        live_action="WAIT",
+        reason="market is closed; dashboard remains available",
+        shadow_setups=("BREAKOUT_RETEST", "LIQUIDITY_SWEEP_REVERSAL"),
+        risk_text="NOT EVALUATED",
+        gate_text="NOT EVALUATED",
+        news_text="UNKNOWN • SOFT ONLY",
+        system_text="HEALTHY",
+        trade_plan_text="NOT AVAILABLE",
+        managed_trade_text="NONE",
+        execution_text="IDLE",
+        activity_text="Timing: WAIT\nHard Session: CLOSED",
+        learning_text="governed learning active",
+    )
+
+
+def test_primary_terminal_dashboard_is_full_frame_and_closed_market_stays_visible():
+    frame = render(_dashboard_data(), width=90)
+    assert "GOLD SCALP TRADER" in frame
+    assert "CURRENT DECISION" in frame
+    assert "TIMING / ACTIVITY" in frame
+    assert "TRADE PLAN" in frame
+    assert "RISK / EXECUTION" in frame
+    assert "MANAGED TRADE" in frame
+    assert "SHADOW / LEARNING / SYSTEM" in frame
+    assert "Market CLOSED" in frame
+    assert "browser dashboard is secondary" in frame
+    assert len(frame.splitlines()) >= 15
+
+
+def test_wide_terminal_dashboard_marks_browser_as_secondary():
+    frame = render(_dashboard_data(), width=120)
+    assert "PRIMARY TERMINAL DASHBOARD" in frame
+    assert "graphical/browser dashboard = SECONDARY" in frame
+    assert max(len(line) for line in frame.splitlines()) <= 120
+
+
+def test_primary_terminal_error_frame_is_fail_visible():
+    frame = render_error("MT5 ERROR", RuntimeError("terminal unavailable"), width=90)
+    assert "SAFETY BLOCK / DEGRADED" in frame
+    assert "MT5 ERROR" in frame
+    assert "terminal unavailable" in frame
+    assert "TRADING FAIL-CLOSED" in frame
+    assert "NO BROKER WRITE" in frame

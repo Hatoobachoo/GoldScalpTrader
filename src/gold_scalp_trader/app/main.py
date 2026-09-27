@@ -1,5 +1,5 @@
-from gold_scalp_trader.app.demo_runner import run_live_demo
-from gold_scalp_trader.app.graphical_demo_runner import run_error_dashboard, run_graphical_demo_standalone
+from gold_scalp_trader.app.demo_runner import render_startup_error, run_live_demo
+from gold_scalp_trader.app.graphical_demo_runner import LazyMt5Api
 from gold_scalp_trader.app.startup import mt5_session
 from gold_scalp_trader.app.runtime import run_read_cycle
 from gold_scalp_trader.config import load_settings
@@ -9,14 +9,10 @@ from gold_scalp_trader.operator.terminal_dashboard import render
 
 
 def _show_startup_error(title: str, exc: Exception) -> int:
-    """Best-effort fail-visible GUI for errors that happen before MT5 runtime exists."""
-    print(f"{title}: {type(exc).__name__}: {exc}")
+    """Fail visibly in the primary terminal dashboard before runtime exists."""
+    print(render_startup_error(title, exc))
     print("No broker write was attempted.")
-    try:
-        return run_error_dashboard(title, exc)
-    except Exception as dashboard_exc:
-        print(f"DASHBOARD ERROR: {type(dashboard_exc).__name__}: {dashboard_exc}")
-        return 2
+    return 2
 
 
 def run() -> int:
@@ -31,25 +27,22 @@ def run() -> int:
             RuntimeError("REAL broker writes are not enabled in the current release"),
         )
 
-    # GUI DEMO is intentionally started before MT5 initialization.  Its provider
-    # lazily acquires MT5 so connection/login/market-data failures remain visible
-    # inside the dashboard instead of terminating the process before UI creation.
-    if settings.mode is RuntimeMode.DEMO and settings.dashboard_mode == "GUI":
+    # DEMO presentation is terminal-first and fail-visible.  MT5 is acquired
+    # lazily so initialize/login/feed failures happen inside run_live_demo, where
+    # they become DEGRADED dashboard frames instead of terminating before the
+    # operator surface appears. GUI mode only adds the secondary browser view.
+    if settings.mode is RuntimeMode.DEMO:
+        api = LazyMt5Api()
         try:
-            return run_graphical_demo_standalone(settings)
-        except Exception as exc:
-            return _show_startup_error("GRAPHICAL DASHBOARD STARTUP ERROR", exc)
+            return run_live_demo(settings, api)
+        finally:
+            api.close()
 
     try:
         with mt5_session() as mt5:
-            if settings.mode is RuntimeMode.DEMO:
-                return run_live_demo(settings, mt5)
-
             result = run_read_cycle(settings, mt5)
     except Exception as exc:
-        print(f"STARTUP/RUNTIME ERROR: {type(exc).__name__}: {exc}")
-        print("No unverified REAL broker write was attempted.")
-        return 2
+        return _show_startup_error("STARTUP/RUNTIME ERROR", exc)
 
     dto = from_cycle(result.cycle)
     print(render(dto))

@@ -1,11 +1,13 @@
-"""Continuous guarded DEMO runtime.
+"""Continuous guarded DEMO runtime with terminal-first presentation.
 
-This module is the normal DEMO launcher. GUI is the approved default; the
-terminal loop remains available for headless verification. REAL trading remains
-disabled by configuration policy.
+The VS Code/terminal dashboard is the primary operator surface.  When
+``DASHBOARD_MODE=GUI`` the localhost browser floor is started best-effort as a
+secondary read-only projection of the same runtime result; it never owns the
+trading loop or broker authority.
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 import os
 import sys
@@ -14,10 +16,10 @@ from typing import Callable
 
 from gold_scalp_trader.app.runtime import RuntimeResult, run_guarded_demo_cycle
 from gold_scalp_trader.config import Settings
-from gold_scalp_trader.domain.enums import RuntimeMode
-from gold_scalp_trader.market_data.mt5_reader import Mt5ReadError
+from gold_scalp_trader.domain.enums import RuntimeMode, Timeframe
 from gold_scalp_trader.operator.graphical_snapshot import from_runtime
-from gold_scalp_trader.operator.terminal_dashboard import render
+from gold_scalp_trader.operator.presentation import DashboardData
+from gold_scalp_trader.operator.terminal_dashboard import render, render_error
 from gold_scalp_trader.persistence.checkpoint import export_checkpoint
 from gold_scalp_trader.persistence.store import StateStore
 from gold_scalp_trader.research.runtime_evidence import record_runtime_research
@@ -36,34 +38,88 @@ def _state_path(settings: Settings) -> Path:
     return path
 
 
-def _print_result(result: RuntimeResult, state_path: Path) -> None:
+def _active_family(settings: Settings) -> str:
+    return "UNSET" if settings.active_strategy_family is None else settings.active_strategy_family.value
+
+
+def _degraded_data(settings: Settings, title: str, exc: Exception) -> DashboardData:
+    symbol = settings.symbol_aliases[0] if settings.symbol_aliases else "XAUUSD"
+    message = f"{title}: {type(exc).__name__}: {exc}"
+    return DashboardData(
+        symbol=symbol,
+        bid=None,
+        ask=None,
+        spread=None,
+        market_state="UNKNOWN",
+        soft_session="UNKNOWN",
+        bot_status="DEGRADED",
+        detected_setup="UNAVAILABLE",
+        active_family=_active_family(settings),
+        live_action="WAIT",
+        reason=message,
+        shadow_setups=(),
+        risk_text="NOT EVALUATED",
+        gate_text="NOT EVALUATED",
+        news_text="UNKNOWN • SOFT ONLY",
+        system_text="DASHBOARD ALIVE • TRADING FAIL-CLOSED • NO BROKER WRITE FROM FAILED CYCLE",
+        trade_plan_text="NOT AVAILABLE",
+        managed_trade_text="UNKNOWN",
+        execution_text="NO BROKER ACTION FROM FAILED CYCLE",
+        activity_text="Runtime facts unavailable; polling will continue",
+        learning_text="PAUSED until runtime health recovers",
+    )
+
+
+def _print_data(data: DashboardData, state_path: Path, *, wrote_broker: bool | None = None) -> None:
     _clear_screen()
-    print("=" * 78)
-    print(" GOLD SCALP TRADER — LIVE DEMO")
-    print("=" * 78)
-    print(render(from_runtime(result, market_state="DEMO")))
-    print("-" * 78)
-    print("Mode         : DEMO")
-    print(f"State DB     : {state_path}")
-    print(f"Broker write : {'YES' if result.wrote_broker else 'NO'}")
-    if result.intent is not None:
-        print(f"Intent       : {result.intent.intent_id} • {result.intent.state.value}")
-        print(f"Send count   : {result.intent.send_count}")
-        if result.intent.broker_ticket is not None:
-            print(f"Broker ticket: {result.intent.broker_ticket}")
-    if result.managed_trade is not None:
-        trade = result.managed_trade
-        print(f"Managed      : #{trade.ticket} • {trade.family.value}")
-        print(f"Entry / SL   : {trade.entry:.3f} / {trade.current_sl:.3f}")
-        print(f"Primary      : {trade.primary_target:.3f}")
-        if trade.expansion_target is not None:
-            print(f"Expansion    : {trade.expansion_target:.3f}")
-        if trade.timing_profile is not None:
-            print(f"Timing       : {trade.timing_profile} • {trade.timing_policy_version or 'UNKNOWN'}")
-    if result.management_action is not None:
-        print(f"Management   : {result.management_action.value}")
-    print("-" * 78)
-    print("Ctrl+C = safe local stop + checkpoint. REAL trading remains disabled.")
+    print(render(data))
+    print(f"State DB: {state_path}")
+    if wrote_broker is not None:
+        print(f"Broker write this cycle: {'YES' if wrote_broker else 'NO'}")
+
+
+class _SecondaryBrowser:
+    """Best-effort browser projection; failure never affects the primary dashboard."""
+
+    def __init__(self, enabled: bool, snapshot_path: Path) -> None:
+        self.enabled = enabled
+        self.snapshot_path = snapshot_path
+        self.server = None
+        self.thread = None
+        self.error: str | None = None
+
+    def publish(self, data: DashboardData, result: RuntimeResult | None = None) -> DashboardData:
+        if not self.enabled:
+            return data
+        try:
+            from graphical_dashboard.server import start_background
+            from graphical_dashboard.snapshot import build_snapshot, publish_snapshot
+
+            candles = {}
+            if result is not None:
+                market = result.cycle.intelligence.market
+                candles = {timeframe.value: market.series(timeframe) for timeframe in Timeframe}
+            publish_snapshot(
+                self.snapshot_path,
+                build_snapshot(data, candles, runtime_result=result),
+            )
+            if self.server is None:
+                self.server, self.thread = start_background(self.snapshot_path, open_browser=True)
+            self.error = None
+            return data
+        except Exception as exc:
+            self.error = f"SECONDARY GRAPHICAL UNAVAILABLE: {type(exc).__name__}: {exc}"
+            return replace(data, system_text=f"{data.system_text} • {self.error}")
+
+    def close(self) -> None:
+        if self.server is None:
+            return
+        try:
+            from graphical_dashboard.server import stop_background
+            stop_background(self.server, self.thread)
+        finally:
+            self.server = None
+            self.thread = None
 
 
 def run_live_demo(
@@ -73,34 +129,37 @@ def run_live_demo(
     max_cycles: int | None = None,
     sleep_fn: Callable[[float], None] = time.sleep,
 ) -> int:
-    if settings.mode is not RuntimeMode.DEMO or not settings.demo_write_enabled:
-        raise PermissionError("DEMO mode with explicit DEMO confirmation is required")
+    """Run DEMO with an always-visible primary terminal dashboard.
 
-    if settings.dashboard_mode == "GUI" and max_cycles is None:
-        from gold_scalp_trader.app.graphical_demo_runner import run_graphical_demo
-        return run_graphical_demo(settings, api)
+    CLOSED/PRE_CLOSE/WAIT states render normally. Runtime/read/permission/
+    presentation faults render a degraded frame and trading remains fail-closed;
+    polling continues so a transient problem does not make the dashboard vanish.
+    """
+
+    if settings.mode is not RuntimeMode.DEMO:
+        raise PermissionError("DEMO runtime requires DEMO mode")
 
     state_path = _state_path(settings)
     store = StateStore(state_path)
+    secondary = _SecondaryBrowser(
+        enabled=settings.dashboard_mode == "GUI" and max_cycles is None,
+        snapshot_path=state_path.parent / "dashboard_snapshot.json",
+    )
     completed = 0
     try:
         while max_cycles is None or completed < max_cycles:
             try:
                 result = run_guarded_demo_cycle(settings, api, store)
-            except PermissionError:
-                raise
-            except Mt5ReadError as exc:
-                _clear_screen()
-                print(f"MT5 READ DEGRADED: {exc}")
-                print("No new broker write attempted this cycle.")
-                completed += 1
-                if max_cycles is None or completed < max_cycles:
-                    sleep_fn(settings.loop_interval_seconds)
-                continue
+                record_runtime_timing(store, result)
+                record_runtime_research(store, result)
+                data = from_runtime(result, market_state="DEMO")
+                data = secondary.publish(data, result)
+                _print_data(data, state_path, wrote_broker=result.wrote_broker)
+            except Exception as exc:
+                data = _degraded_data(settings, "RUNTIME ISSUE", exc)
+                data = secondary.publish(data, None)
+                _print_data(data, state_path, wrote_broker=False)
 
-            record_runtime_timing(store, result)
-            record_runtime_research(store, result)
-            _print_result(result, state_path)
             completed += 1
             if max_cycles is None or completed < max_cycles:
                 sleep_fn(settings.loop_interval_seconds)
@@ -109,9 +168,15 @@ def run_live_demo(
         print("\nDEMO runtime stop requested.")
         return 0
     finally:
+        secondary.close()
         try:
             checkpoint = state_path.with_suffix(".checkpoint.json")
             export_checkpoint(store, checkpoint)
             print(f"Local runtime checkpoint: {checkpoint}")
         finally:
             store.close()
+
+
+def render_startup_error(title: str, exc: Exception) -> str:
+    """Public presentation helper used by the launcher before Settings/runtime exist."""
+    return render_error(title, exc)
