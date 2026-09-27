@@ -62,7 +62,7 @@ Candidate promotion requires immutable stage-specific evidence bound to candidat
 
 ## Dashboard hierarchy
 
-GoldScalpTrader follows the GoldSwing operator hierarchy:
+GoldScalpTrader follows the GoldSwing operator hierarchy and uses the completed GoldSwingTrader dashboard source as the read-only presentation reference:
 
 ```text
 PRIMARY   = VS Code / terminal live trading floor
@@ -72,10 +72,12 @@ SECONDARY = localhost browser visual floor (optional, read only)
 Primary renderer stack:
 
 ```text
-96+ columns   → Rich institutional floor
+96+ columns   → Swing-derived institutional line floor
 64–95 columns → narrow stacked floor
 render fault  → compact crash-safe fallback
 ```
+
+The wide primary floor follows the Swing live-dashboard hierarchy: top market/action strip, Market Picture + Trade Setup cards, Current Decision, Trade Plan, Strategy/Setup Board, Risk + Activity + System row, managed-trade view when present, and Learning/Discovery footer. It is presentation-only and consumes the canonical Scalp dashboard DTO; it does not recalculate strategy, routing, Risk, Gate, Session authority or broker actions.
 
 Operational bilingual cues use **English + Roman Urdu**, for example:
 
@@ -84,11 +86,12 @@ WAIT / Intazar
 BUY / Kharid
 SELL / Farokht
 WHY / Wajah
-Current Decision / Maujooda Faisla
-Trade Plan / Mansuba
+Market Picture / Market Jaiza
+Trade Setup / Setup aur Route
+Risk & Account / Risk aur Account
 ```
 
-Urdu script is not used for operational dashboard labels/statuses. The Arabic invocation may remain as decorative masthead text.
+Urdu script is not used for operational dashboard labels/statuses. The Arabic invocation may remain as decorative masthead text in the secondary browser.
 
 `DASHBOARD_MODE=GUI` means primary terminal **plus** secondary browser. The browser binds to `127.0.0.1`, has no BUY/SELL/MODIFY/CLOSE controls and cannot own trading authority.
 
