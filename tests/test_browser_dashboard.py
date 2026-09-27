@@ -58,7 +58,7 @@ def test_browser_visual_floor_is_localhost_read_only_and_has_swing_controls() ->
     assert "Drawings OFF" in HTML
     assert "CURRENT SIGNAL / DECISION" in HTML
     assert "TIMING INTELLIGENCE" in HTML
-    assert "no BUY/SELL/MODIFY/CLOSE controls" in HTML
+    assert "no broker controls" in HTML
     assert "BUY NOW" not in HTML
     assert "SELL NOW" not in HTML
     assert 'fetch("/api/snapshot"' in HTML
@@ -82,7 +82,7 @@ def test_browser_snapshot_carries_closed_market_and_completed_chart_facts(tmp_pa
     target = tmp_path / "dashboard_snapshot.json"
     publish_snapshot(target, payload)
     disk = json.loads(target.read_text(encoding="utf-8"))
-    assert disk["schema_version"] == 1
+    assert disk["schema_version"] == 2
     assert not (tmp_path / ".dashboard_snapshot.json.tmp").exists()
 
 
