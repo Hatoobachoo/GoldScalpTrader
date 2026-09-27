@@ -1,7 +1,7 @@
 # GoldScalpTrader — Module Structure and File Map
 
 **Status:** IMPLEMENTED ARCHITECTURE MAP — CURRENT HEAD REQUIRES OFFLINE RE-VERIFICATION / CONNECTED DEMO PENDING  
-**Version:** 2.7-canonical-runtime-shadow-governance  
+**Version:** 2.8-bounded-discovery-runtime-governance  
 **Authority:** Actual package/file ownership and dependency direction.
 
 ## 1. Dependency direction
@@ -17,6 +17,7 @@ config/domain
 → execution: Gate / Intent / sole writer / reconciliation
 → management / verified close
 → actual learning + causal SHADOW_ONLY outcomes
+→ verified-learning triggers + bounded discovery
 → governed research + verified stage-proof packages
 → operator presentation
 
@@ -40,7 +41,7 @@ Broker/financial authority remains serial.
 | `execution` | Gate/controller/Intent/checks/sole writer/reconcile | strategy invention |
 | `management` | ManagedTrade and governed mutations/close proof | raw writer |
 | `persistence` | checksummed local records/events/checkpoints | current broker truth |
-| `research` | actual/shadow evidence, replay, invention, verified stage proof | runtime/broker authority |
+| `research` | actual/shadow evidence, trigger classification, bounded discovery, replay, invention, verified stage proof | runtime/broker authority |
 | `operator` / `graphical_dashboard` | read-only presentation | authority recomputation |
 
 ## 3. Material source map
@@ -64,7 +65,7 @@ src/gold_scalp_trader/
 │   ├── replay.py / management_replay.py / session_history.py
 │   ├── stress.py / validation.py / ablation.py / metrics.py
 │   ├── datasets.py / acquisition.py / evidence.py / packages.py
-│   ├── episode_journal.py / discovery.py / invention.py / models.py
+│   ├── episode_journal.py / triggers.py / discovery.py / invention.py / models.py
 │   ├── promotion.py / candidate_registry.py
 │   └── stage_orchestrator.py
 ├── operator/{presentation,terminal_dashboard,rich_dashboard,narrow_dashboard,compact_dashboard,graphical_snapshot}.py
@@ -145,7 +146,17 @@ stable causal shadow episode identity
 
 It imports no Risk, Gate, Intent or MT5 writer. One terminal shadow episode cannot be recreated and counted again.
 
-## 9. Governed research ownership
+## 9. Continuous discovery ownership
+
+`research/triggers.py` converts only verified StrategyMemory observations into idempotent research episodes. Its thresholds are research-trigger thresholds, not live trading parameters.
+
+`research/discovery.py` groups recurring independent episodes. A candidate is registered only when the cluster has enough independent evidence and immutable source lineage. Automatic live-derived candidates bind to the underlying StrategyMemory source IDs. Missing lineage produces a durable suppression reason instead of a guessed candidate.
+
+Broker/system faults and hard-safety blocks are explicitly non-strategy evidence and are suppressed rather than optimized around.
+
+`app/demo_runner.py` invokes trigger classification/discovery only inside the best-effort research boundary, and only reruns discovery when new derived research episodes were appended.
+
+## 10. Governed research ownership
 
 `research/candidate_registry.py` owns durable candidate identity/stage chain but does not manufacture PASS proof.
 
@@ -153,15 +164,15 @@ It imports no Risk, Gate, Intent or MT5 writer. One terminal shadow episode cann
 
 Candidate stage never directly activates runtime; production research stage still requires explicit operator approval + rollback lineage, and REAL remains separately hard-disabled.
 
-## 10. Research failure isolation
+## 11. Research failure isolation
 
-`app/demo_runner.py` records Timing/management/shadow research evidence best-effort after the governed broker cycle. A research persistence failure is surfaced as research degradation; it cannot erase/relabel a completed broker result or trigger a broker retry.
+`app/demo_runner.py` records Timing/management/shadow/discovery research evidence best-effort after the governed broker cycle. A research persistence/evaluation failure is surfaced as research degradation; it cannot erase/relabel a completed broker result or trigger a broker retry.
 
-## 11. Persistence / recovery
+## 12. Persistence / recovery
 
-StateStore records/events are checksummed. Checkpoint includes all namespaces by default, including shadow plans/terminal markers/outcomes and candidate-stage evidence. Restored state never substitutes for fresh broker truth; reconciliation remains mandatory before financial authority resumes.
+StateStore records/events are checksummed. Checkpoint includes all namespaces by default, including shadow plans/terminal markers/outcomes, discovery episodes/status/suppressions, candidate transition history and candidate-stage evidence. Restored state never substitutes for fresh broker truth; reconciliation remains mandatory before financial authority resumes.
 
-## 12. Forbidden directions
+## 13. Forbidden directions
 
 ```text
 intelligence/strategy/research/dashboard → MT5Writer       NO
@@ -169,12 +180,13 @@ caller/test flag → hard Session permission                 NO
 runtime_core → second public full guarded cycle            NO
 current equity → silent intraday Risk profile reset        NO
 shadow family → live Intent/Risk/Gate                      NO
-research evidence failure → broker retry/runtime rewrite   NO
+research/discovery failure → broker retry/runtime rewrite  NO
+fault/safety episode → candidate that weakens safety       NO
 candidate registry → self-activation                       NO
 News failure → hard News kill switch                       NO
 ambiguous broker ACK → blind retry                         NO
 ```
 
-## 13. Synchronization
+## 14. Synchronization
 
 Any authority/source/test change updates this map, `FILE_AND_TEST_CATALOG.md`, affected audit/status docs, and `scripts/verify_contract_sync.py`. Offline PASS never substitutes for connected Exness DEMO proof.

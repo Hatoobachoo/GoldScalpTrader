@@ -2,8 +2,9 @@
 
 This verifier deliberately checks architectural wiring that unit tests can miss:
 sole canonical DEMO runtime, no caller Session override, durable Risk-day sizing,
-research-only shadow lifecycle, verified stage-proof issuance, sole MT5 writer,
-and frozen policy constants. It never claims connected Exness proof.
+research-only shadow lifecycle, bounded learning-driven discovery, verified
+stage-proof issuance, sole MT5 writer, and frozen policy constants. It never
+claims connected Exness proof.
 """
 from __future__ import annotations
 
@@ -42,8 +43,9 @@ REQUIRED_SOURCE_PATHS = (
     "research/outcomes.py", "research/shadow_runtime.py", "research/candidate_registry.py",
     "research/stage_orchestrator.py", "research/replay.py", "research/management_replay.py",
     "research/session_history.py", "research/stress.py", "research/validation.py", "research/evidence.py",
-    "research/packages.py", "research/metrics.py", "research/ablation.py", "research/discovery.py",
-    "research/invention.py", "research/promotion.py", "operator/presentation.py", "operator/terminal_dashboard.py",
+    "research/packages.py", "research/metrics.py", "research/ablation.py", "research/triggers.py",
+    "research/discovery.py", "research/invention.py", "research/promotion.py",
+    "operator/presentation.py", "operator/terminal_dashboard.py",
     "app/runtime.py", "app/runtime_core.py", "app/session_authority.py", "app/opportunity_lifecycle.py",
     "app/cycle.py", "app/demo_runner.py",
 )
@@ -54,8 +56,8 @@ CRITICAL_TESTS = (
     "tests/test_guarded_demo_runtime.py", "tests/test_execution_intent.py", "tests/test_gate.py",
     "tests/test_controller.py", "tests/test_management_lifecycle.py", "tests/test_live_learning_pipeline.py",
     "tests/test_runtime_research_evidence.py", "tests/test_shadow_runtime.py",
-    "tests/test_research_runtime_isolation.py", "tests/test_candidate_registry.py",
-    "tests/test_research_integrity.py", "tests/test_full_checkpoint.py",
+    "tests/test_research_runtime_isolation.py", "tests/test_research_governance.py",
+    "tests/test_candidate_registry.py", "tests/test_research_integrity.py", "tests/test_full_checkpoint.py",
 )
 
 ANALYTICAL_NO_BROKER_DIRS = (
@@ -72,6 +74,7 @@ CATALOG_REQUIRED_FRAGMENTS = (
     "research/timing_learning.py", "tests/test_timing_learning_lineage.py",
     "research/runtime_evidence.py", "tests/test_runtime_research_evidence.py",
     "research/shadow_runtime.py", "tests/test_shadow_runtime.py",
+    "research/triggers.py", "research/discovery.py", "tests/test_research_governance.py",
     "research/stage_orchestrator.py", "research/candidate_registry.py", "tests/test_candidate_registry.py",
     "verified valid Session OPEN", "News health                 → never a hard-trading permission",
     "verified full-close queue item", "consume queue only after durable save",
@@ -218,9 +221,18 @@ def check_research_governance(errors: list[str]) -> None:
     if "runtime_activation_allowed" not in registry or "return False" not in registry:
         _fail(errors, "candidate registry can no longer prove zero runtime activation authority")
 
+    triggers = (SRC / "research" / "triggers.py").read_text(encoding="utf-8")
+    discovery = (SRC / "research" / "discovery.py").read_text(encoding="utf-8")
     runner = (SRC / "app" / "demo_runner.py").read_text(encoding="utf-8")
-    if "_record_research_best_effort" not in runner or "record_shadow_runtime" not in runner:
-        _fail(errors, "runtime research/shadow evidence is not isolated/wired")
+    for required in ("ACTUAL_ACTIVE_TRADE", "WEAK_CAPTURE", "SOURCE="):
+        if required not in triggers:
+            _fail(errors, f"learning-trigger lineage invariant missing: {required}")
+    for required in ("INSUFFICIENT_IMMUTABLE_SOURCE_LINEAGE", "HARD_SAFETY_BLOCK_IS_NOT_OPTIMIZATION_SPACE", "register_invention"):
+        if required not in discovery:
+            _fail(errors, f"bounded discovery invariant missing: {required}")
+    for required in ("_record_research_best_effort", "record_shadow_runtime", "classify_learning_episodes", "run_discovery"):
+        if required not in runner:
+            _fail(errors, f"runtime research/discovery isolation wiring missing: {required}")
 
 
 def check_no_legacy_policy_code(errors: list[str]) -> None:
@@ -257,6 +269,7 @@ def main() -> int:
     print("  PASS  Session hard / News soft authority boundaries")
     print("  PASS  sole-writer / no-broker analytical boundaries")
     print("  PASS  automatic causal SHADOW_ONLY outcome lifecycle")
+    print("  PASS  bounded verified-learning discovery; faults/safety are not strategy search space")
     print("  PASS  verified immutable stage-proof issuance; no direct runtime activation")
     print("  PASS  research evidence failures isolated from broker-cycle authority")
     print("CONTRACT SYNC: PASS")

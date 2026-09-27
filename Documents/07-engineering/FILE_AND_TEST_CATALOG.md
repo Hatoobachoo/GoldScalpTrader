@@ -33,6 +33,8 @@ normalized MT5 reads
 → ManagedTrade → verified close
 → actual timing/management learning
 → automatic causal shadow counterfactual lifecycle
+→ verified-learning research triggers
+→ bounded durable discovery / explicit suppression
 → governed invention / immutable verified stage-proof packages
 → explicit approval; runtime activation remains separate from candidate registry stage
 ```
@@ -113,7 +115,7 @@ Aggressive overlay disabled by default; 8% single / 16% aggregate-day ceiling
 one independently risk-bearing Gold position
 ```
 
-Durable Risk-day state now owns live OPEN sizing/profile stability. `app/runtime.py` is the sole public guarded DEMO composer; caller-supplied `market_open` permission is forbidden. `app/runtime_core.py` is mechanics-only and cannot expose a second full guarded execution cycle.
+Durable Risk-day state owns live OPEN sizing/profile stability. `app/runtime.py` is the sole public guarded DEMO composer; caller-supplied `market_open` permission is forbidden. `app/runtime_core.py` is mechanics-only and cannot expose a second full guarded execution cycle.
 
 Required Session semantics:
 
@@ -239,6 +241,7 @@ research/packages.py
 research/metrics.py
 research/ablation.py
 research/episode_journal.py
+research/triggers.py
 research/discovery.py
 research/invention.py
 research/promotion.py
@@ -255,13 +258,17 @@ tests/test_research_integrity.py
 scripts/run_walk_forward.py
 ```
 
-`research/candidate_registry.py` no longer exposes an arbitrary caller-hash PASS issuer. Promotion evidence must come through `research/stage_orchestrator.py` as an immutable verified evidence package bound to the exact candidate fingerprint, exact next target stage, recomputed evidence identity, package-manifest SHA-256, and target-stage-specific required checks. No profitability threshold is invented where frozen policy has not defined one.
+`research/triggers.py` derives conservative, idempotent research episodes from verified StrategyMemory only. These thresholds decide whether evidence deserves research; they do not change live strategy, Risk, Gate, management or broker authority. Ordinary broker/system faults and hard-safety blocks are not converted into strategy optimization targets.
 
-Stage progression remains sequential; final Production-stage research still requires explicit operator approval plus rollback lineage, and **runtime activation remains separate from candidate registry stage**.
+`research/discovery.py` requires repeated independent episodes and immutable source lineage before registering a candidate. Eligible clusters must produce either one durable candidate or one durable suppression reason. Automatic live-derived candidates bind their source chain to the underlying immutable StrategyMemory IDs, not merely to a descriptive episode label.
+
+`research/candidate_registry.py` does not expose an arbitrary caller-hash PASS issuer. Promotion evidence must come through `research/stage_orchestrator.py` as an immutable verified evidence package bound to the exact candidate fingerprint, exact next target stage, recomputed evidence identity, package-manifest SHA-256, and target-stage-specific required checks. No profitability threshold is invented where frozen policy has not defined one.
+
+Stage progression remains sequential and actor-attributed. Final Production-stage research still requires explicit operator approval plus rollback lineage, and **runtime activation remains separate from candidate registry stage**.
 
 ## 9. Checkpoint / persistence
 
-The full checkpoint exports all current StateStore namespaces (records and append-only events), including shadow plans/terminal markers/outcomes and candidate-stage evidence. Recovery never treats UNKNOWN broker truth as empty/zero.
+The full checkpoint exports all current StateStore namespaces (records and append-only events), including shadow plans/terminal markers/outcomes, discovery episodes/status/suppressions, candidate transition history and candidate-stage evidence. Recovery never treats UNKNOWN broker truth as empty/zero.
 
 Proof includes:
 
@@ -293,7 +300,7 @@ Local deterministic evidence never auto-proves real Exness broker behavior.
 
 ## 12. Current offline status
 
-A prior operator-run baseline passed compileall/documents/contract-sync/secrets/pytest. Since the later Session/Risk authority, automatic shadow lifecycle and verified stage-package changes, **current HEAD requires a fresh operator run of `python scripts/verify_offline_release.py` before OFFLINE PASS is inherited**.
+A prior operator-run baseline passed compileall/documents/contract-sync/secrets/pytest. Since the later Session/Risk authority, automatic shadow lifecycle, verified stage-package and bounded continuous-discovery changes, **current HEAD requires a fresh operator run of `python scripts/verify_offline_release.py` before OFFLINE PASS is inherited**.
 
 ## 13. Connected DEMO proof — still external
 
@@ -309,7 +316,7 @@ Offline code/tests cannot prove:
 - ambiguous acknowledgement/no duplicate under real broker behavior;
 - restart during real exposure;
 - fresh-machine restore/sequential handoff;
-- statistically meaningful active/shadow/timing/management learning evidence.
+- statistically meaningful active/shadow/timing/management/discovery evidence.
 
 These remain Phase-15 connected evidence requirements.
 
