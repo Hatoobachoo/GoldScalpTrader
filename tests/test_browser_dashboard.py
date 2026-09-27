@@ -41,6 +41,7 @@ def _data() -> DashboardData:
 def _candle(tf: str, minutes: int, price: float) -> SimpleNamespace:
     return SimpleNamespace(
         open_time=NOW - timedelta(minutes=minutes),
+        close_time=NOW - timedelta(minutes=max(0, minutes - 1)),
         open=price,
         high=price + 1.0,
         low=price - 0.8,
@@ -49,18 +50,34 @@ def _candle(tf: str, minutes: int, price: float) -> SimpleNamespace:
     )
 
 
-def test_browser_visual_floor_is_localhost_read_only_and_has_swing_controls() -> None:
+def test_browser_visual_floor_is_localhost_read_only_and_matches_swing_style_hierarchy() -> None:
     assert HOST == "127.0.0.1"
     assert "GoldScalpTraderAI" in HTML
+    assert "بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ" in HTML
+    assert "محفوظ عمل" in HTML
+    assert "PRIMARY" not in HTML.split("SECONDARY localhost visual floor")[0] or "SECONDARY" in HTML
     for timeframe in ("M1", "M5", "M15", "H1", "H4"):
         assert f'"{timeframe}"' in HTML
-    assert "Indicators ON" in HTML
-    assert "Drawings OFF" in HTML
-    assert "CURRENT SIGNAL / DECISION" in HTML
-    assert "TIMING INTELLIGENCE" in HTML
-    assert "no broker controls" in HTML
+    for marker in (
+        "Indicators ON",
+        "Drawings OFF",
+        "Bars 60",
+        "CURRENT SIGNAL / DECISION",
+        "TIMING INTELLIGENCE",
+        "TRADE PLAN",
+        "CURRENT BLOCKER / GATE",
+        "STRATEGY ISOLATION",
+        "RISK & ACCOUNT",
+        "OPEN / MANAGED TRADE",
+        "LEARNING",
+        "DISCOVERY",
+        "SYSTEM",
+        "no broker controls",
+    ):
+        assert marker in HTML
     assert "BUY NOW" not in HTML
     assert "SELL NOW" not in HTML
+    assert "MODIFY NOW" not in HTML
     assert 'fetch("/api/snapshot"' in HTML
 
 
@@ -78,6 +95,10 @@ def test_browser_snapshot_carries_closed_market_and_completed_chart_facts(tmp_pa
     assert payload["decision"]["action"] == "WAIT"
     assert payload["charts"]["M5"][1]["close"] == 4299.4
     assert payload["shadows"] == ["LIQUIDITY_SWEEP_REVERSAL"]
+    assert "strategy_board" in payload
+    assert "timing" in payload
+    assert "plan" in payload
+    assert "risk" in payload
 
     target = tmp_path / "dashboard_snapshot.json"
     publish_snapshot(target, payload)
