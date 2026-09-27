@@ -2,9 +2,9 @@
 
 The VS Code/terminal dashboard is the primary operator surface. When
 ``DASHBOARD_MODE=GUI`` the localhost browser floor is a secondary read-only
-projection. Research evidence is best-effort relative to broker authority: a
-research failure is surfaced as degraded research evidence but cannot erase or
-reclassify a completed broker cycle.
+projection. Research evidence/discovery is best-effort relative to broker
+authority: research failure is surfaced without erasing or reclassifying a
+completed broker cycle.
 """
 from __future__ import annotations
 
@@ -23,9 +23,11 @@ from gold_scalp_trader.operator.presentation import DashboardData
 from gold_scalp_trader.operator.terminal_dashboard import render, render_error
 from gold_scalp_trader.persistence.checkpoint import export_checkpoint
 from gold_scalp_trader.persistence.store import StateStore
+from gold_scalp_trader.research.discovery import run_discovery
 from gold_scalp_trader.research.runtime_evidence import record_runtime_research
 from gold_scalp_trader.research.shadow_runtime import record_shadow_runtime
 from gold_scalp_trader.research.timing_learning import record_runtime_timing
+from gold_scalp_trader.research.triggers import classify_learning_episodes
 
 
 def _clear_screen() -> None:
@@ -73,7 +75,7 @@ def _degraded_data(settings: Settings, title: str, exc: Exception) -> DashboardD
 
 
 def _record_research_best_effort(store: StateStore, result: RuntimeResult) -> tuple[str, ...]:
-    """Record research evidence without granting it runtime/broker authority."""
+    """Record/analyse research evidence without granting runtime authority."""
     failures: list[str] = []
     for label, recorder in (
         ("TIMING", record_runtime_timing),
@@ -84,6 +86,15 @@ def _record_research_best_effort(store: StateStore, result: RuntimeResult) -> tu
             recorder(store, result)
         except Exception as exc:
             failures.append(f"{label}:{type(exc).__name__}")
+
+    # Discovery is driven only by durable verified learning. It does not run on
+    # every quote/tick when no new classified research evidence exists.
+    try:
+        new_episodes = classify_learning_episodes(store)
+        if new_episodes:
+            run_discovery(store)
+    except Exception as exc:
+        failures.append(f"DISCOVERY:{type(exc).__name__}")
     return tuple(failures)
 
 
