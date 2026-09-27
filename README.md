@@ -88,23 +88,25 @@ SELL / Farokht
 WHY / Wajah
 Market Picture / Market Jaiza
 Trade Setup / Setup aur Route
-Risk & Account / Risk aur Account
+Risk & Account / Mehfooz Risk
 ```
 
 Urdu script is not used for operational dashboard labels/statuses. The Arabic invocation may remain as decorative masthead text in the secondary browser.
 
 `DASHBOARD_MODE=GUI` means primary terminal **plus** secondary browser. The browser binds to `127.0.0.1`, has no BUY/SELL/MODIFY/CLOSE controls and cannot own trading authority.
 
-The browser floor contains:
+The browser floor now mirrors the completed GoldSwingTrader visual composition while keeping Scalp facts and authority boundaries:
 
-- Swing-style masthead, clock and role;
+- Swing-style masthead, clock, DEMO/read-only role and institutional floor proportions;
 - Symbol / hard market state / Soft Context / live price / spread / M5 countdown;
-- Market Analysis / Trend / Session-News / Timing rail;
-- completed-candle M1/M5/M15/H1/H4 chart;
+- left rail with Market Analysis / Trend Direction / Session-News;
+- large completed-candle M1/M5/M15/H1/H4 chart in the center;
 - Indicators / Drawings / Settings / Bars presentation-only controls;
-- Current Signal / Trade Plan / Blocker-Gate / Multi-Timeframe-Setup rail;
-- Risk & Account / one Strategy-Setup Board / Open Managed Trade;
-- Execution / Activity / Learning / System / Recent Verified Closes / discipline floor.
+- right rail with Current Signal / Trade Plan / Blocker-Gate / Multi-Timeframe Setup;
+- Account & Risk / one Strategy-Setup Board / Open Managed Trade;
+- lower Execution & Controller panel carries Timing Intelligence and M1 timing facts;
+- Activity / Learning / System / Recent Verified Closes / discipline floor;
+- `M5 PRIMARY`, `M1 TIMING`, `1 Routed + 5 Shadow`, structural-routing and fail-closed/read-only cues remain visible.
 
 Hard Session and Soft Context are displayed separately so `NEW_YORK` context can never be mistaken for verified hard Session OPEN.
 
