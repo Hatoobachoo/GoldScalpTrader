@@ -1,30 +1,59 @@
 # GoldScalpTrader — Dashboard and UX Contract
 
-**Status:** APPROVED OPERATOR UX ARCHITECTURE — TERMINAL PRIMARY / GRAPHICAL SECONDARY
-**Version:** 3.0-terminal-primary-scalp-floor
-**Authority:** Operator presentation hierarchy, fail-visible behavior, read-only controls, blocker/Gate truth, and dashboard liveness.
+**Status:** IMPLEMENTED OPERATOR UX — SWING-STYLE TERMINAL PRIMARY / GRAPHICAL SECONDARY  
+**Version:** 4.0-swing-parity-scalp-floor  
+**Authority:** Operator presentation hierarchy, bilingual/emoji visual language, fail-visible behavior, read-only controls, blocker/Gate truth, and dashboard liveness.
 
 ## 1. Constitutional hierarchy
 
-GoldScalpTrader follows the completed GoldSwingTrader operator architecture:
+GoldScalpTrader follows the completed GoldSwingTrader operator model:
 
 ```text
 Authoritative runtime facts
         ↓
-immutable DashboardData / presentation projection
+immutable DashboardData / normalized presentation projection
         ↓
-PRIMARY: VS Code / terminal dashboard
+PRIMARY: VS Code / terminal trading floor
         ↓ best-effort same facts
-SECONDARY: localhost graphical/browser dashboard
+SECONDARY: localhost graphical/browser visual floor
 ```
 
-The terminal dashboard is the normal operator surface. The graphical dashboard is optional, local-only, read-only, and secondary. Closing or breaking the browser must not stop the bot or remove the primary dashboard.
+The terminal is the primary operator surface. The browser is an optional read-only secondary projection. Closing or breaking the browser cannot stop the bot or hide the primary terminal floor.
 
-Presentation has zero broker, Risk, Gate, strategy-selection, Opportunity, or REAL-enable authority.
+Presentation owns zero broker, Risk, Gate, strategy-selection, Opportunity, promotion, or REAL-enable authority.
 
-## 2. Always-visible rule
+## 2. Implemented primary renderer stack
 
-The primary dashboard remains visible when the system is:
+```text
+terminal width 96+  → Rich institutional renderer
+terminal width 64–95→ narrow stacked renderer
+Rich/render failure → compact crash-safe fallback
+```
+
+All three retain the same authority truth. The primary floor is bilingual English/Urdu and uses emojis/status emphasis when available.
+
+The normal wide hierarchy is:
+
+```text
+DOUBLE HEADER
+Market • Session • Symbol • SELL • BUY
+Spread • M5 Countdown • Action • News • Gate
+M5 thesis • M1 subordinate timing • English/Urdu safety line
+
+MARKET PICTURE                 TRADE SETUP
+CURRENT DECISION / موجودہ فیصلہ
+TRADE PLAN / تجارتی منصوبہ
+STRATEGY ISOLATION • 1 ACTIVE + 5 SHADOW
+RISK & ACCOUNT | TODAY / ACTIVITY | SYSTEM / EXECUTION
+OPEN / MANAGED TRADE when present
+LEARNING / DISCOVERY / BACKUP
+```
+
+The terminal frame is never reduced to a one-line status banner.
+
+## 3. Always-visible rule
+
+The operator floor remains meaningful when the system is:
 
 ```text
 OPEN
@@ -42,112 +71,60 @@ runtime exception
 DEMO confirmation/safety block
 ```
 
-The presentation rule is:
-
 > **UI fail-visible; trading fail-closed.**
 
-A market-closed state is a normal operator state, not a reason to hide or terminate the dashboard.
+Market CLOSED is a normal displayed state, not an application-exit instruction.
 
-If authoritative facts are unavailable, render `UNKNOWN`, `—`, `WAIT`, `NOT EVALUATED`, or `NO SAMPLE`; never fabricate zeroes, candles, Risk, plan geometry, or performance.
+Missing authoritative facts render `UNKNOWN`, `—`, `WAIT`, `NOT EVALUATED`, or `NO SAMPLE`; presentation must never invent zero, plan geometry, Risk, performance, account facts, or broker state.
 
-## 3. Primary terminal floor
+## 4. Market / setup / strategy-isolation truth
 
-The terminal renderer is width-aware:
-
-- 64–95 columns: stacked narrow frame;
-- 96+ columns: denser two-column institutional frame;
-- rendering failure must degrade to truthful text, not grant authority or terminate trading.
-
-The primary frame must show, as available:
+The dashboard reports market-first setup facts and then the current isolation policy:
 
 ```text
-GoldScalpTrader identity / bot health
-Market state / soft Session / symbol
-Bid / Ask / spread
-Detected setup
-ACTIVE_EXECUTION family
-live action / exact reason
-central Gate truth
-Opportunity / Timing / M1 refinement evidence
-TradePlan
-Risk
-ManagedTrade
-execution / Intent / management activity
-shadow-family observations
-learning/governance status
-News context (soft only)
-system/data health
+Detected Setup        actual market result
+Active Family         exactly one ACTIVE_EXECUTION family
+Shadow Board          five SHADOW_ONLY research families
+Action                governed runtime result
 ```
 
-The terminal frame is not a one-line status banner.
-
-## 4. Detected setup and strategy isolation
-
-The dashboard reports what the market actually produced. It must not force the configured active family onto every market episode.
-
-```text
-active family has valid own setup → may progress through governed pipeline
-shadow family has setup → show SHADOW ONLY; cannot originate live trade
-no valid setup → WAIT / NO VALID SETUP
-```
-
-All six families must never appear as if they are blended into one production trade.
+A shadow setup is never displayed as a live broker trade. All-six research facts are visually separated from the one family permitted to originate live execution.
 
 ## 5. M5 / M1 timing presentation
-
-Canonical Scalp roles remain:
 
 ```text
 M5  primary setup / thesis / Opportunity
 M1  subordinate entry refinement only after valid M5 Opportunity
 M15 location/path context
 H1  broad regime context
-H4  optional major context
+H4  major context
 ```
 
-M1 cannot independently create a production trade.
+Presentation may show Opportunity identity/state, Timing READY/WAIT/MISSED/INVALID, timing profile, M5 event age, M1 trigger age, chase/micro-extension evidence and exact wait reason. M1 cannot independently create a production Opportunity.
 
-Preferred timing facts:
+## 6. Trade Plan / blocker / Gate
 
-```text
-Opportunity state / ID / episode
-Timing READY / WAIT / MISSED / INVALID
-M5 event age
-M1 trigger age / profile
-entry-ready reason
-```
-
-## 6. Trade Plan / blocker / Gate truth
-
-Show only actual governed geometry:
+Only owned geometry may be shown:
 
 ```text
 direction
-approved entry reference
-current executable quote when available
+entry reference
 structural SL
 primary target
 expansion target
-Gross R
-cost/quality evidence when available
+Gross R / target R where available
+quality / invalidation source where available
 ```
 
-No real plan = `NOT AVAILABLE` / `—`.
+No real plan → `WAITING` / `NOT AVAILABLE` / `—`.
 
-Upstream blocker and central Gate are distinct:
+Upstream stop and central Gate remain distinct. A dashboard refresh never evaluates a new Gate action.
 
-```text
-Setup Detector block     → Gate NOT EVALUATED
-Entry Timing block       → Gate NOT EVALUATED
-TradePlan block          → Gate NOT EVALUATED
-Executable Quality block → Gate NOT EVALUATED
-Risk block               → Gate NOT EVALUATED
-actual central Gate block→ Gate BLOCKED
-```
+## 7. Risk / account / execution
 
-## 7. Risk and account display
+Where owned facts exist, show balance/equity/free margin, fixed risk profile, actual risk %, lot, position count/capacity, daily safety P/L, loss streak/cooldown, controller role, broker reconciliation, Intent/execution and management state.
 
-Presentation must preserve the configured Risk truth without inventing values. Reference bands remain:
+Preserved monetary policy remains outside presentation:
 
 | Profile | Normal | Elevated | Hard | Daily |
 |---|---:|---:|---:|---:|
@@ -155,67 +132,58 @@ Presentation must preserve the configured Risk truth without inventing values. R
 | MEDIUM | 2.0–3.0% | >3.0–4.5% | 5% | 9% |
 | NORMAL | 1.0–2.0% | >2.0–3.5% | 4% | 7% |
 
-Where authoritative facts exist, show balance/equity/free margin, proposed lot/risk, position capacity, daily P/L/loss budget, loss streak/cooldown, re-entry state, aggressive-mode state, and manual-reset state.
+Aggressive mode stays disabled by default. The dashboard cannot change these values.
 
-Aggressive mode remains disabled by default. If explicitly enabled, 8% is a maximum single-trade SL-risk ceiling, not a target; 16% aggregate/day limits remain governed outside presentation.
+## 8. Learning / discovery presentation
 
-## 8. ManagedTrade / execution / learning
+Show actual timing/management learning, shadow evidence, discovery status and candidate/governance status only as research facts. Candidate stage never implies runtime activation.
 
-When flat, show `NONE`. When open, show authoritative ManagedTrade lineage and current management facts only.
+Core invariant shown to the operator:
 
-Actual broker execution, shadow research, replay, counterfactual results, and candidate research must remain visually distinguishable.
+> **The bot may learn how to trade better; it may not learn how to bypass its safety system.**
 
-Learning panel may show:
+## 9. Implemented secondary graphical floor
 
-```text
-actual timing/management evidence
-shadow evidence
-counterfactual research
-candidate stage
-APPROVAL_REQUIRED
-```
+`DASHBOARD_MODE=GUI` adds the browser **in addition to** the terminal primary.
 
-It must never imply a research candidate already owns live authority.
+The secondary visual floor uses the GoldSwing institutional visual language adapted to Scalp:
 
-## 9. Secondary graphical dashboard
+- dark navy/black + cyan/gold framing;
+- robot masthead;
+- Arabic invocation plus English/Urdu operator text;
+- market/session/live-price/countdown/status strip;
+- M1/M5/M15/H1/H4 completed-candle chart tabs;
+- Indicators / Drawings / Bars local visual controls;
+- Market Analysis / Trend / Session-News / Timing panels;
+- Current Signal / Decision;
+- Trade Plan;
+- current blocker/Gate;
+- 1 ACTIVE + 5 SHADOW strategy board;
+- Risk/account;
+- Open/Managed Trade;
+- Activity/Learning/Discovery/Execution/System floor;
+- explicit stale/offline overlay.
 
-The localhost browser dashboard remains useful and is retained as a secondary visual floor.
+The browser has **no BUY/SELL/MODIFY/CLOSE controls** and no state-changing HTTP endpoint.
 
-Requirements:
+## 10. Presentation cadence and failure semantics
 
-- bind to `127.0.0.1` only;
-- consume atomic read-only snapshots;
-- no broker-mutating endpoint;
-- no BUY/SELL/CLOSE/MODIFY authority;
-- browser failure never stops trading or the primary terminal dashboard;
-- stale/missing snapshot renders truthful offline/stale state;
-- M1/M5/M15/H1/H4 chart tabs are presentation-only;
-- Indicators / Drawings / Settings are local visual controls only;
-- no-scroll institutional layout remains the graphical target.
-
-`DASHBOARD_MODE=GUI` means **enable the secondary browser in addition to the primary terminal dashboard**. It does not replace the primary operator/runtime path.
-
-## 10. Presentation cadence
-
-A fast presentation refresh may update already-owned facts such as clock, Bid/Ask/spread, quote age, countdown, and cached system/account state. It must not rerun strategies, mutate Opportunity, rebuild Risk/Gate, or create broker actions merely because the screen refreshed.
-
-## 11. Failure semantics
+A fast presentation refresh may update already-owned quote/clock/countdown/cached facts. It must not rerun strategy selection, Opportunity, Risk, Gate, or broker execution merely because the screen refreshed.
 
 ```text
 secondary browser fails
 → primary terminal remains alive
-→ trading/runtime authority unchanged
+→ trading authority unchanged
 
 runtime/MT5 cycle fails
-→ primary terminal shows DEGRADED / exact reason
+→ primary shows DEGRADED / exact reason
 → no broker action from failed cycle
-→ polling may continue for recovery
+→ safe polling may continue
 
 market CLOSED
-→ full dashboard remains visible
-→ action WAIT / blocked as owned by runtime facts
+→ full primary and secondary floors remain visible
 ```
 
-## 12. Final invariant
+## 11. Final invariant
 
-> **GoldScalpTrader always has a primary terminal trading floor. The optional graphical dashboard is a secondary read-only projection. Market closure, feed faults, MT5 faults or runtime problems must become visible dashboard states—not reasons for the operator surface to disappear.**
+> **GoldScalpTrader has one primary terminal trading floor and, when enabled, one secondary localhost read-only visual floor. Both present the same normalized authority facts with Swing-style hierarchy, emojis and English/Urdu cues. Presentation can reveal authority; it can never create it.**
