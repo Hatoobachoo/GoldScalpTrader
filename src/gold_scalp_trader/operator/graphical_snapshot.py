@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from gold_scalp_trader.app.cycle import CycleResult
+from gold_scalp_trader.domain.enums import Timeframe
 from gold_scalp_trader.operator.presentation import DashboardData
 
 if TYPE_CHECKING:
@@ -22,6 +24,27 @@ def _timing_text(result: CycleResult) -> str:
     if timing.trigger_age_seconds is not None:
         parts.append(f"M1 age {timing.trigger_age_seconds:.1f}s")
     return " • ".join(parts)
+
+
+def _m5_seconds_remaining(result: CycleResult) -> int | None:
+    when = result.intelligence.market.captured_at
+    if when.tzinfo is None or when.utcoffset() is None:
+        return None
+    minute_in_block = when.minute % 5
+    elapsed = minute_in_block * 60 + when.second
+    remaining = 300 - elapsed
+    return 0 if remaining == 300 else remaining
+
+
+def _frame(result: CycleResult, timeframe: Timeframe):
+    return result.intelligence.by_timeframe.get(timeframe)
+
+
+def _structure(result: CycleResult, timeframe: Timeframe) -> str:
+    frame = _frame(result, timeframe)
+    if frame is None:
+        return "UNKNOWN"
+    return frame.structure.state.value
 
 
 def from_cycle(result: CycleResult, market_state: str = "UNKNOWN") -> DashboardData:
@@ -60,6 +83,15 @@ def from_cycle(result: CycleResult, market_state: str = "UNKNOWN") -> DashboardD
             f"\nOpportunity: {result.opportunity.state.value} • {result.opportunity.opportunity_id}"
             f"\nEpisode: {result.opportunity.episode_id}"
         )
+
+    m5 = _frame(result, Timeframe.M5)
+    quant = None if m5 is None else m5.quant
+    board = result.board
+    account = market.account
+    risk_profile = "NOT EVALUATED" if result.risk is None else result.risk.profile.value
+    risk_pct = None if result.risk is None else result.risk.actual_risk_pct
+    risk_volume = None if result.risk is None else result.risk.volume
+
     return DashboardData(
         market.symbol_spec.symbol,
         market.quote.bid,
@@ -79,6 +111,25 @@ def from_cycle(result: CycleResult, market_state: str = "UNKNOWN") -> DashboardD
         result.system_text,
         trade_plan_text=plan,
         activity_text=activity,
+        account_balance=account.balance,
+        account_equity=account.equity,
+        free_margin=account.margin_free,
+        buy_score=board.buy.score,
+        sell_score=board.sell.score,
+        leading_score=board.leading_score,
+        evidence_coverage=board.coverage,
+        m5_seconds_remaining=_m5_seconds_remaining(result),
+        ema20=None if quant is None else quant.ema20,
+        ema50=None if quant is None else quant.ema50,
+        rsi14=None if quant is None else quant.rsi14,
+        atr14=None if quant is None else quant.atr14,
+        h4_structure=_structure(result, Timeframe.H4),
+        h1_structure=_structure(result, Timeframe.H1),
+        m15_structure=_structure(result, Timeframe.M15),
+        m5_structure=_structure(result, Timeframe.M5),
+        risk_profile=risk_profile,
+        risk_pct=risk_pct,
+        risk_volume=risk_volume,
     )
 
 

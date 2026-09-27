@@ -9,6 +9,8 @@ description = "Documentation-first XAUUSD scalping research and execution system
 requires-python = ">=3.11"
 dependencies = [
   "python-dotenv>=1.0",
+  "rich>=13.9,<15.0",
+  "wcwidth>=0.2,<1.0",
 ]
 
 [project.optional-dependencies]

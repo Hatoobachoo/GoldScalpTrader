@@ -2,4 +2,6 @@ MetaTrader5==5.0.6180
 pandas==3.0.6
 numpy==2.5.3
 python-dotenv==1.2.3
+rich>=13.9,<15.0
+wcwidth>=0.2,<1.0
 pytest==9.1.1

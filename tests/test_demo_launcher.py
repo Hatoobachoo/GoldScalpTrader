@@ -89,7 +89,7 @@ def test_configuration_failure_renders_primary_terminal_error(monkeypatch, capsy
 
     assert app_main.run() == 2
     output = capsys.readouterr().out
-    assert "GOLD SCALP TRADER" in output
+    assert "GoldScalpTraderAI" in output
     assert "CONFIGURATION ERROR" in output
     assert "bad configuration" in output
     assert "No broker write was attempted" in output
@@ -118,28 +118,50 @@ def _dashboard_data():
         execution_text="IDLE",
         activity_text="Timing: WAIT\nHard Session: CLOSED",
         learning_text="governed learning active",
+        account_balance=100.0,
+        account_equity=99.5,
+        free_margin=99.5,
+        buy_score=0.41,
+        sell_score=0.58,
+        leading_score=0.58,
+        evidence_coverage=0.75,
+        m5_seconds_remaining=239,
+        ema20=4298.123,
+        ema50=4296.456,
+        rsi14=61.2,
+        atr14=3.912,
+        h4_structure="TRANSITION",
+        h1_structure="BEARISH",
+        m15_structure="BULLISH",
+        m5_structure="TRANSITION",
+        risk_profile="SMALL",
     )
 
 
-def test_primary_terminal_dashboard_is_full_frame_and_closed_market_stays_visible():
-    frame = render(_dashboard_data(), width=90)
-    assert "GOLD SCALP TRADER" in frame
+def test_primary_terminal_dashboard_is_bilingual_emoji_full_frame_and_closed_market_visible():
+    frame = render(_dashboard_data(), width=90, color=False)
+    assert "GoldScalpTraderAI" in frame
+    assert "🪙" in frame
     assert "CURRENT DECISION" in frame
-    assert "TIMING / ACTIVITY" in frame
-    assert "TRADE PLAN" in frame
-    assert "RISK / EXECUTION" in frame
-    assert "MANAGED TRADE" in frame
-    assert "SHADOW / LEARNING / SYSTEM" in frame
+    assert "موجودہ فیصلہ" in frame
+    assert "تجارتی منصوبہ" in frame
+    assert "انتظار" in frame
     assert "Market CLOSED" in frame
-    assert "browser dashboard is secondary" in frame
-    assert len(frame.splitlines()) >= 15
+    assert "Browser SECONDARY" in frame
+    assert "EMA20" in frame
+    assert "RSI" in frame
+    assert len(frame.splitlines()) >= 18
 
 
-def test_wide_terminal_dashboard_marks_browser_as_secondary():
-    frame = render(_dashboard_data(), width=120)
-    assert "PRIMARY TERMINAL DASHBOARD" in frame
-    assert "graphical/browser dashboard = SECONDARY" in frame
-    assert max(len(line) for line in frame.splitlines()) <= 120
+def test_wide_primary_terminal_dashboard_is_rich_style_or_safe_fallback():
+    frame = render(_dashboard_data(), width=132, color=False)
+    assert "GoldScalpTraderAI" in frame
+    assert "PRIMARY" in frame
+    assert "MARKET ANALYSIS" in frame
+    assert "CURRENT DECISION" in frame
+    assert "ACCOUNT & RISK" in frame
+    assert "EXECUTION" in frame
+    assert "محفوظ عمل" in frame
 
 
 def test_primary_terminal_error_frame_is_fail_visible():
