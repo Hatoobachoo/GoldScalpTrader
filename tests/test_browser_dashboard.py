@@ -66,7 +66,7 @@ def test_browser_visual_floor_is_localhost_read_only_and_matches_swing_style_hie
         "TIMING INTELLIGENCE",
         "TRADE PLAN",
         "CURRENT BLOCKER / GATE",
-        "STRATEGY ISOLATION",
+        "STRATEGY / SETUP BOARD",
         "RISK & ACCOUNT",
         "OPEN / MANAGED TRADE",
         "LEARNING",
