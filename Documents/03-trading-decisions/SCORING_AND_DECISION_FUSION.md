@@ -1,131 +1,72 @@
-# GoldScalpTrader — Scoring, Active-Family Fusion and Red Team
+# GoldScalpTrader — Scoring, Routed-Family Fusion and Red Team
 
-**Status:** APPROVED DECISION CONTRACT — DOCUMENTATION RECONSTRUCTION / CALIBRATION PENDING
-**Version:** 2.0-active-family-buy-sell-debate
-**Authority:** Active-family BUY/SELL thesis construction, evidence weighting, Red-Team challenge, coverage, correlation, Opportunity qualification and shadow-family separation.
+**Status:** IMPLEMENTED DECISION CONTRACT — CALIBRATION REMAINS EVIDENCE-DRIVEN  
+**Version:** 3.0-routed-family-buy-sell-debate  
+**Authority:** Structurally routed-family BUY/SELL thesis construction, evidence weighting, Red-Team challenge, coverage, correlation, Opportunity qualification and shadow-family separation.
 
 ## 1. Purpose
 
-The Decision/Fusion layer turns the **currently active strategy family's** evidence into two competing theses:
+The Decision/Fusion layer receives **one production family already selected by structural routing**. It does not choose the family.
 
 ```text
-BUY thesis
-SELL thesis
+market-first setup detection
+→ structural production router
+→ one routed qualified family
+→ BUY thesis
+→ SELL thesis
+→ Red Team
+→ DecisionBoard
+→ M5 Opportunity or WAIT
 ```
 
-It then asks Red Team to challenge the stronger thesis before a production Opportunity is armed.
+All-six family scores remain explanatory/research facts. **Highest score never selects broker authority.**
 
-Unlike the earlier blended multi-family live fusion design:
+## 2. BUY and SELL remain independent
 
-> **Shadow families do not vote in live direction.**
+The routed family preserves two independent directional cases. One side is not calculated as the inverse of the other.
 
-Their reports remain available for context, counterfactual comparison and research only.
+Each case preserves family identity, direction, required evidence status, weighted support, opposition, coverage, location/room, event lineage, preferred timing profile and reasons.
 
-## 2. Decision topology
+If structural setup detection produced qualified families in opposite directions, the router fails closed **before** Fusion. Fusion never resolves cross-family structural conflict by score.
 
-```mermaid
-flowchart TB
-    ACTIVE["1 ACTIVE_EXECUTION FamilyReport"] --> BUY["Active-family BUY case"]
-    ACTIVE --> SELL["Active-family SELL case"]
-    BUY --> WEIGHT["Family-specific evidence weighting"]
-    SELL --> WEIGHT
-    WEIGHT --> RED["Red Team"]
-    SHADOW["5 SHADOW_ONLY reports"] -. "bounded challenge / research context only" .-> RED
-    RED --> BOARD["DecisionBoard"]
-    BOARD --> OPP{"Production Opportunity qualified?"}
-    OPP -->|Yes| LIFE["Persistent M5 Opportunity"]
-    OPP -->|No| WAIT["No production Opportunity / WAIT"]
-```
+## 3. Evidence weighting
 
-## 3. Why BUY and SELL stay independent
-
-The system must not compute one scalar direction and assume the other side is simply its inverse.
-
-Example:
-
-```text
-BUY = strong continuation case
-SELL = also credible failed-break reversal case
-```
-
-This is genuine conflict, not “BUY minus SELL = neutral”.
-
-Each directional case preserves:
-
-- family identity;
-- direction;
-- required evidence status;
-- weighted support;
-- opposition;
-- coverage;
-- location/room;
-- event lineage;
-- preferred timing profile;
-- reasons.
-
-## 4. Evidence weighting
-
-Weights exist to express the relative importance of evidence **inside the active family's own definition**.
+Weights express relative evidence quality **inside the routed family's own definition**.
 
 Examples:
 
-### Trend Pullback
+- Trend Pullback: directional structure, pullback location, M5 resumption, EMA flow, room.
+- Breakout Expansion: accepted break, displacement, freshness, path/room.
+- Breakout Retest: real break + retest + hold/resumption.
+- Liquidity Sweep Reversal: pre-existing pool, sweep/reclaim, reversal response.
+- Failed Breakout: attempted acceptance, failure, opposing response.
+- Compression Expansion: compression, directional release, expansion, path.
 
-Possible stronger contributions:
+Weights are not probabilities and never change monetary Risk.
 
-- directional H1/M15 structure;
-- valid pullback location;
-- M5 resumption;
-- EMA flow;
-- available room.
-
-### Sweep Reversal
-
-Possible stronger contributions:
-
-- real pre-existing pool;
-- sweep/reclaim;
-- M5 reversal response;
-- location/path.
-
-Exact weights are `CALIBRATE`.
-
-They are not probabilities and they never change monetary Risk.
-
-## 5. Optional evidence treatment
-
-Evidence states:
+## 4. Optional / required evidence
 
 ```text
-required and present
-required and absent
-supportive
-opposing
-neutral/not relevant
-unknown
+REQUIRED_FOR_FAMILY
+STRONG_SUPPORT
+OPTIONAL_SUPPORT
+OPPOSITION
+NOT_RELEVANT
+UNKNOWN
 ```
 
-Rules:
+Missing required evidence prevents qualification. Missing optional evidence does not silently become negative score zero. Opposing evidence remains visible. No score bypasses Risk, Session, Gate or broker authority.
 
-- missing family-required evidence can prevent that active family from qualifying;
-- missing optional evidence is not silently score zero;
-- important optional evidence can add meaningful support;
-- opposing evidence remains visible;
-- no optional confluence becomes a global system veto;
-- no score bypasses hard execution authority.
+## 5. Red Team
 
-## 6. Red Team
+Red Team asks:
 
-Red Team's purpose is **quality control without turning the system restrictive**.
+> What is the strongest credible reason this routed-family thesis may be wrong, late, correlated, poorly located or economically unattractive?
 
-It asks:
-
-> What is the strongest credible reason this active-family trade thesis may be wrong, late, correlated, poorly located or economically unattractive?
-
-Potential objections:
+Possible objections include:
 
 ```text
-STRONG_ACTIVE_FAMILY_OPPOSING_THESIS
+STRONG_ROUTED_FAMILY_OPPOSING_THESIS
 LOW_REQUIRED_EVIDENCE_COVERAGE
 CORRELATED_EVIDENCE
 M5_EVENT_STALE
@@ -133,257 +74,71 @@ M1_TRIGGER_WEAK
 ENTRY_EXTENDED
 LOCATION_POOR
 TARGET_ROOM_POOR
-FAMILY_CONFLICT
-SHADOW_FAMILY_STRONG_CONTRARY_CASE   # context, not live vote
 ```
 
-Red Team may:
+Red Team may lower quality or produce WAIT. It may not size lots, invent Risk blocks, call MT5, treat News as hard authority, or promote a shadow family into production.
 
-- reduce thesis quality;
-- keep Opportunity unarmed;
-- produce WAIT;
-- demand fresh timing evidence;
-- invalidate the analytical setup if its own family contract is actually broken.
+## 6. Shadow-family context
 
-It may not:
-
-- size lots;
-- invent Risk blocks;
-- call MT5;
-- treat News as hard veto;
-- allow a shadow family to originate the live trade.
-
-## 7. Shadow-family context
-
-Shadow outputs are useful in two ways:
-
-### Live challenge context
-
-If five shadow families independently disagree with the active family, the operator/research system should know. But they cannot mechanically outvote it.
-
-### Counterfactual research
-
-Record:
+Shadow families do not vote in live direction. They may preserve counterfactual cases and causal outcomes for research:
 
 ```text
-active family action/outcome
+routed production family action/outcome
 vs
-shadow family hypothetical actions/outcomes
+shadow-family hypothetical action/outcome
 ```
 
-This is essential for deciding whether a different family should become active later.
+This evidence may later support a governed research candidate, but it cannot change the current production route.
 
-## 8. Correlation control
+## 7. Correlation control
 
-Within the active family, several evidence items may describe the same event.
+Multiple evidence items derived from one causal event must not be treated as independent confirmations. Causal IDs/source lineage and calibrated caps prevent double counting.
 
-Example:
+## 8. Coverage
+
+Coverage measures how much expected evidence was available; it is separate from quality.
 
 ```text
-M5 rejection
-+ sweep reclaim
-+ failed break
-+ FVG
+high score + low coverage
+≠ high certainty
 ```
 
-If they all derive from the same causal move, weighting must avoid pretending they are independent confirmations.
+Unknown optional evidence reduces certainty/coverage where appropriate rather than becoming an automatic directional penalty.
 
-Use causal IDs/source lineage and calibrated caps.
+## 9. DecisionBoard
 
-## 9. Coverage
-
-Coverage tells how much expected evidence was available.
-
-Coverage is separate from evidence quality.
-
-Example:
+A production-facing DecisionBoard carries, where available:
 
 ```text
-high score + 45% coverage
-≠ automatically high confidence
-```
-
-Unknown optional evidence should reduce certainty/coverage where appropriate rather than become negative direction.
-
-## 10. DecisionBoard
-
-A production-facing DecisionBoard should contain:
-
-```text
-active_family
+routed_family
 policy_version
 buy_thesis
 sell_thesis
 leading_direction
-leading_quality/score
-opposing_quality/score
+leading_score
+opposing_score
 coverage
-Red-Team objections[]
-causal event IDs
-M5 setup identity/age
-preferred M1 profile
-location/room summary
-shadow_context_summary
-Opportunity recommendation
-reasons[]
+recommendation
+Red-Team objections
+reason codes
+source lineage
 ```
 
-No lot/SL broker request fields belong here.
+The board has no broker authority. It may recommend a production Opportunity only for the already-routed family.
 
-## 11. Opportunity qualification
-
-Decision Board asks:
-
-> Is there a coherent active-family M5 idea worth tracking?
-
-Entry Timing later asks:
-
-> Is the current M1/current-price moment efficient enough to act?
-
-This split avoids two errors:
-
-- deleting a good setup because the exact entry moment is not ready;
-- treating a high score as permission to chase.
-
-## 12. Score interpretation
-
-Scores are explanatory/relative analytical tools.
-
-They are not:
-
-- probability of winning;
-- permission to increase risk;
-- permission to ignore poor target economics;
-- broker authority.
-
-Calibration should optimize jointly:
+## 10. Opportunity handoff
 
 ```text
-Net expectancy
-Opportunity Recall
-trade throughput
-entry efficiency
-capture efficiency
-false blocks
-missed opportunities
-cost burden
-drawdown
+qualified routed family
+→ independent BUY/SELL cases
+→ Red Team
+→ accepted thesis
+→ persistent M5 Opportunity
+→ subordinate M1 Timing
 ```
 
-A threshold that improves historical win rate by eliminating most good opportunities is not automatically better.
+No accepted thesis means WAIT. M1 cannot create a missing M5 Opportunity.
 
-## 13. Throughput implications
+## 11. Final invariant
 
-The approved 120/day benchmark makes the Decision Board responsible for transparent opportunity accounting.
-
-Track:
-
-```text
-active-family setups discovered
-armed opportunities
-WAITs
-invalidations
-M1 misses
-quality-stage rejects
-Risk/broker blocks
-actual trades
-```
-
-Do not hide low trade count behind one generic “NO SIGNAL”.
-
-## 14. News / session handling
-
-News/Fundamentals may appear as soft context tags.
-
-Session labels may influence family performance context.
-
-Neither becomes a Red-Team hard veto unless actual market/strategy evidence justifies it under the active family definition.
-
-Actual broker CLOSED/PRE_CLOSE is downstream hard authority, not a score.
-
-## 15. Persistence and research
-
-Persist/journal enough decision evidence to reproduce why a trade was or was not pursued:
-
-- active family/version;
-- BUY/SELL cases;
-- weights/policy fingerprint;
-- coverage;
-- objections;
-- source events;
-- Opportunity ID;
-- shadow reports;
-- later timing/quality/Risk/block/outcome.
-
-This lets research distinguish:
-
-```text
-bad strategy
-bad entry timing
-bad cost economics
-hard safe block
-capacity block
-system fault
-```
-
-## 16. Dashboard
-
-```text
-DECISION BOARD
-Active Family   Trend Pullback
-BUY Thesis      84 • strong
-SELL Thesis     29 • weak
-Coverage        92%
-Red Team        M1 timing not ready
-Shadow Conflict Sweep Reversal SELL 71 • research only
-Decision        ARM BUY OPPORTUNITY
-```
-
-Shadow evidence must visibly say **research only**.
-
-## 17. Planned implementation owners
-
-```text
-strategies/floor.py
-    family BUY/SELL cases
-
-strategies/confluence.py
-    family-specific optional evidence mapping/caps
-
-decisions/fusion.py
-    active-family BUY/SELL synthesis + Red Team
-
-decisions/snapshot.py
-    orchestration / DecisionBoard
-```
-
-## 18. Planned tests
-
-- independent active BUY/SELL cases;
-- active-family isolation;
-- shadow cannot create production Opportunity;
-- strong shadow opposition remains context only;
-- required vs optional evidence;
-- UNKNOWN not silently zero;
-- causal correlation caps;
-- deterministic scoring order;
-- no score→Risk/write shortcut;
-- strategy-policy version attribution;
-- opportunity-threshold sensitivity research hooks.
-
-## 19. Calibration
-
-Open evidence dimensions:
-
-- family-specific weights;
-- qualification thresholds;
-- minimum coverage;
-- conflict penalties;
-- Red-Team thresholds;
-- correlation caps;
-- session/regime modifiers;
-- strategy evaluation/rotation policy.
-
-## 20. Final invariant
-
-> **Live decision fusion belongs to the one active strategy family, not a blended six-strategy vote. BUY and SELL remain independent, Red Team challenges rather than suffocates, shadow families remain measurable, and scores never impersonate money or broker permission.**
+> **Fusion decides whether the structurally routed family has a credible directional thesis. It does not choose the production family, it does not use all-six scores as a vote, and it never grants broker authority.**
