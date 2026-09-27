@@ -1,24 +1,34 @@
 # GoldScalpTrader — Live Dashboard Contract
 
-**Status:** APPROVED — PRIMARY TERMINAL LIVE DASHBOARD / SECONDARY GRAPHICAL PROJECTION
-**Version:** 3.0-live-presentation
-**Authority:** Live presentation cadence, dashboard liveness, failure visibility, and authority separation.
+**Status:** IMPLEMENTED — PRIMARY TERMINAL LIVE FLOOR / SECONDARY GRAPHICAL PROJECTION  
+**Version:** 4.0-live-presentation  
+**Authority:** Live presentation cadence, dashboard liveness, bilingual/emoji hierarchy, failure visibility, and authority separation.
 
 ## 1. Primary surface
 
-The terminal dashboard is the primary live operator surface. It is expected to stay present throughout the runtime lifecycle, including non-trading and degraded states.
+The VS Code/terminal dashboard is the primary live operator surface.
 
-The graphical/browser dashboard is a secondary local projection only.
+Renderer order:
+
+```text
+96+ columns  → Rich institutional floor
+64–95        → narrow stacked floor
+render fault → compact crash-safe fallback
+```
+
+All renderers remain presentation-only and preserve English/Urdu safety cues plus emoji markers when supported.
+
+The browser is secondary and localhost-only.
 
 ## 2. Liveness contract
 
-The dashboard must remain visible through:
+The dashboard remains visible through:
 
 ```text
 startup/readiness
 market OPEN
-market PRE_CLOSE
-market CLOSED
+PRE_CLOSE
+CLOSED
 Session UNKNOWN
 no valid setup
 Timing WAIT/MISSED
@@ -32,77 +42,89 @@ secondary graphical failure
 
 Market closure is not an application-exit signal.
 
-## 3. Fail-visible / fail-closed rule
+## 3. Fail-visible / fail-closed
 
 ```text
-presentation should fail visible
-trading should fail closed
+presentation → fail visible
+trading      → fail closed
 ```
 
-A failed runtime cycle must not produce an unverified broker write. The primary dashboard should show the exact problem and continue polling where safe so transient faults can recover.
+A failed runtime cycle cannot produce an unverified broker write. The terminal frame shows the exact failure and continues safe polling where allowed. Configuration/startup failure renders a complete safety frame rather than disappearing behind a traceback.
 
-If startup/configuration cannot proceed, render a complete terminal safety/error frame before exit rather than only a traceback or silent termination.
+## 4. Same-facts rule
 
-## 4. Runtime versus presentation cadence
+Both surfaces consume normalized `DashboardData`/snapshot facts. Presentation never independently creates:
 
-Dashboard refresh does not create decision authority.
+- Setup;
+- Opportunity;
+- Timing decision;
+- TradePlan;
+- monetary Risk;
+- central Gate permission;
+- Intent;
+- management action;
+- candidate production authority.
 
-A presentation refresh may update facts already owned by runtime/data sources, such as:
+Missing facts stay missing.
 
-- current clock;
-- Bid/Ask/spread;
-- quote age;
-- countdown;
-- cached account/system facts;
-- latest completed decision/plan/management state.
+## 5. Primary information hierarchy
 
-It may not independently rerun strategy selection, create Opportunity, change Risk, evaluate Gate for a new action, or call broker-write code.
-
-## 5. Primary terminal content
-
-At minimum the primary frame must expose:
+The wide primary frame exposes, where available:
 
 ```text
-bot/system health
-market state / session
-symbol / Bid / Ask / spread
-setup / active family / action / reason
-Opportunity / Timing evidence
+Market / Session / Symbol / SELL / BUY
+Spread / M5 countdown / Action / News / Gate
+H4/H1/M15/M5 structure + EMA20/EMA50/RSI/ATR
+Detected Setup + Active Family + M1 Timing
+BUY/SELL desk scores + coverage + exact reason
 TradePlan
-Risk
-Gate/blocker truth
+1 ACTIVE + 5 SHADOW Strategy Isolation board
+Risk & Account
+Today / Activity
+System / Execution
 ManagedTrade
-execution/Intent/management state
-shadow observations
-learning/governance status
-News context
+Learning / Discovery / Backup
 ```
 
-Narrow terminals use a stacked layout; wider terminals may use a denser multi-column layout.
+The narrow/fallback floors retain the same critical truths in stacked form.
 
-## 6. Secondary browser content
+## 6. Secondary browser hierarchy
 
-The browser may add richer chart and visual controls but must represent the same authority truth.
+The graphical floor adds only presentation richness:
 
-If browser publication/server fails:
+- robot/brand masthead;
+- Arabic invocation and English/Urdu wording;
+- PKT clock and DEMO/SECONDARY role;
+- market/live-price/countdown strip;
+- completed-candle chart with M1/M5/M15/H1/H4 tabs;
+- Indicators / Drawings / Bars controls;
+- Timing Intelligence;
+- Signal/Decision;
+- Trade Plan;
+- Blocker/Gate;
+- six-family strategy board;
+- Risk/Account and ManagedTrade;
+- Activity/Learning/Discovery/Execution/System;
+- stale/offline overlay.
 
-```text
-primary terminal continues
-runtime continues according to its own authorities
-browser failure is shown in System health when possible
-no trading permission changes
-```
+It explicitly has no BUY/SELL/MODIFY/CLOSE controls.
 
 ## 7. `DASHBOARD_MODE`
 
 ```text
 TERMINAL → primary terminal only
-GUI      → primary terminal + optional secondary localhost graphical dashboard
+GUI      → primary terminal + secondary localhost browser
 ```
 
-`GUI` does not replace the primary runtime or terminal surface.
+GUI never replaces the primary runtime path.
 
-## 8. Runtime fault examples
+## 8. Presentation cadence
+
+Fast visual refresh may update already-owned clock/quote/countdown/cached facts. It may not rerun strategy, Opportunity, Risk, Gate or broker execution simply because the screen refreshed.
+
+The completed M5 decision cadence remains independent from visual refresh cadence.
+
+## 9. Failure examples
 
 ### MT5 unavailable
 
@@ -110,31 +132,31 @@ GUI      → primary terminal + optional secondary localhost graphical dashboard
 Bot Status    DEGRADED
 Action        WAIT
 Market        UNKNOWN
-Reason        MT5 initialize/login/read error
+Reason        exact MT5 initialize/login/read error
 Execution     NO BROKER ACTION FROM FAILED CYCLE
 System        DASHBOARD ALIVE • TRADING FAIL-CLOSED
 ```
 
-### Market closed
+### Market CLOSED
 
 ```text
 Market        CLOSED
 Action        WAIT / runtime-owned state
-Dashboard     fully visible
+Dashboard     full terminal + browser floor remains visible
 ```
 
-### Secondary browser unavailable
+### Browser unavailable
 
 ```text
 Primary       ACTIVE
 Graphical     SECONDARY UNAVAILABLE
-Trading       unaffected by presentation failure
+Trading       unchanged
 ```
 
-## 9. No fabricated truth
+## 10. No fabricated truth
 
-Missing values must remain missing/unknown. Never convert unavailable account/Risk/plan/performance facts into zero for prettier presentation.
+Unavailable account/Risk/plan/performance/strategy facts must remain `—`, `UNKNOWN`, `WAIT`, or `NOT EVALUATED`. Presentation must never turn absence into zero just to fill a card.
 
-## 10. Final invariant
+## 11. Final invariant
 
-> **The operator should always be able to see what the bot knows, what it does not know, why it is waiting or blocked, and whether any presentation subsystem is degraded. The dashboard must never disappear merely because the market is closed or another subsystem has a problem.**
+> **The operator can always see what the bot knows, what it does not know, why it is waiting or blocked, and whether presentation is degraded. Both dashboards reveal the same authority truth; neither dashboard owns trading authority.**
