@@ -37,8 +37,9 @@ def test_browser_visual_floor_is_localhost_read_only_roman_urdu_and_swing_style(
         "Pehle nizam, phir raftaar", "Soft Context", "Indicators ON", "Drawings OFF",
         "Bars 60", "CURRENT SIGNAL / DECISION", "TIMING INTELLIGENCE", "TRADE PLAN",
         "CURRENT BLOCKER / GATE", "MULTI-TIMEFRAME / SETUP", "STRATEGY / SETUP BOARD",
-        "RISK & ACCOUNT", "OPEN / MANAGED TRADE", "LEARNING & DISCOVERY", "SYSTEM & DATA",
+        "ACCOUNT & RISK", "Mehfooz Risk", "OPEN / MANAGED TRADE", "LEARNING & DISCOVERY", "SYSTEM & DATA",
         "RECENT VERIFIED CLOSES", "Terminal = PRIMARY", "Browser = SECONDARY", "no broker controls",
+        "M5 PRIMARY", "M1 TIMING", "1 Routed + 5 Shadow",
     ):
         assert marker in HTML
     for timeframe in ("M1","M5","M15","H1","H4"):
