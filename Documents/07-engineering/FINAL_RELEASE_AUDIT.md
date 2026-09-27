@@ -1,340 +1,180 @@
 # GoldScalpTrader — Final Release Audit
 
-**Status:** FINAL AUDIT PROTOCOL — NOT RUN AGAINST IMPLEMENTED RELEASE
-**Version:** 2.0-institutional-scalp
-**Authority:** Final evidence-based release sign-off protocol for an exact revision/capability stage.
+**Status:** RUN — OFFLINE BACKEND PASS WITH EXPLICIT LIMITATIONS / FULL RELEASE BLOCKED  
+**Audited implementation revision:** `3458b97e88371be6aa665d0891b20e384384cefe`  
+**Audit record revision:** documentation-only commits after the audited implementation do not change runtime behavior.  
+**Capability stage:** OFFLINE DEMO-BACKEND / PRE-CONNECTED-CERTIFICATION  
+**Authority:** Evidence-based release verdict for the exact declared capability. This is not profitability certification.
 
-## 1. Purpose
+## 1. Evidence received
 
-This audit answers:
-
-> **Does this exact revision satisfy the documented contracts and evidence requirements for the capability it claims?**
-
-It is not a profitability certification and not a generic “looks good” review.
-
-## 2. Audit identity
-
-A completed release audit records:
+Operator-provided Windows verification against `3458b97e88371be6aa665d0891b20e384384cefe`:
 
 ```text
-repository
-commit SHA
-date/time
-auditor/operator
-capability stage: DOCS / DRY_RUN / DEMO / RECOVERY_CERTIFIED / REAL_CANDIDATE
-Python version
-MetaTrader5 version
-MT5 terminal/account/server/symbol scope
-OS/machine identity where relevant
-config/policy versions
-dataset/evidence package IDs
+Documentation manual PASS: 66 files / 01-08 topology
+documents: PASS
+CONTRACT SYNC: PASS
+contract-sync: PASS
+Secret scan PASS
+secrets: PASS
+pytest: PASS
+compileall PASS
+OFFLINE STATUS: PASS
+DOCUMENT/CODE CONTRACT SYNC: PASS
+CONNECTED DEMO / EXNESS CERTIFICATION: STILL REQUIRED
 ```
 
-No audit may be reused for a materially different revision without explicit revalidation.
-
-## 3. Evidence hierarchy
+The static contract audit additionally reported PASS for:
 
 ```text
-canonical Documents
-→ source ownership
-→ deterministic tests
-→ integration tests
-→ replay/calibration evidence
-→ connected MT5 facts
-→ controlled DEMO lifecycle
-→ recovery/handoff drills
-→ release/operator approvals
+preserved Risk / cooldown / REAL-disable policy
+sole canonical DEMO runtime; no caller Session override
+durable UTC Risk-day authority wired into live OPEN sizing
+Session hard / News soft authority boundaries
+sole-writer / no-broker analytical boundaries
+automatic causal SHADOW_ONLY outcome lifecycle
+bounded verified-learning discovery; faults/safety excluded from strategy search
+verified immutable stage-proof issuance; no direct runtime activation
+research evidence failures isolated from broker-cycle authority
 ```
 
-A lower layer cannot substitute for a missing higher layer where the release requires it.
+## 2. Architecture verdict
 
-## 4. Documentation trace
+| Area | Verdict |
+|---|---|
+| Normalized reads / chronology / intelligence | PASS offline |
+| Market-first setup / Strategy Isolation | PASS offline |
+| Independent BUY/SELL / Red Team | PASS offline |
+| M5 Opportunity / subordinate M1 timing | PASS offline |
+| Structural TradePlan / executable quality | PASS offline |
+| Durable monetary Risk-day authority | PASS offline |
+| Hard Session / soft News separation | PASS offline; broker schedule external |
+| Gate / Intent / sole MT5 writer / reconciliation | PASS offline |
+| ManagedTrade / verified close | PASS offline |
+| Persistence/checkpoint/recovery | PASS offline; real restart/handoff external |
+| Actual learning / timing / management evidence | PASS offline |
+| Automatic SHADOW_ONLY causal outcomes | PASS offline |
+| Bounded discovery / candidate registry governance | PASS offline |
+| Generic autonomous evaluation of arbitrary invented candidates | PARTIAL |
+| Dashboard operator parity with GoldSwingTrader | PARTIAL |
+| Connected Exness DEMO certification | PENDING / EXTERNAL |
+| REAL release | HARD DISABLED |
 
-Audit all canonical areas:
+## 3. Safety findings closed
 
-- Foundation;
-- Market Intelligence;
-- Trading Decisions;
-- Risk/Execution;
-- Research/Learning;
-- Operator;
-- Engineering;
-- Governance;
-- top-level policies/manuals.
+### FRA-F01 — Session caller override
 
-For each material contract identify:
+**Severity:** CRITICAL  
+**Status:** CLOSED OFFLINE.  
+The canonical guarded runtime no longer accepts caller-supplied hard Session permission.
+
+### FRA-F02 — duplicate public execution authority path
+
+**Severity:** HIGH  
+**Status:** CLOSED OFFLINE.  
+`app/runtime.py` is the sole public guarded DEMO composer. `runtime_core.py` is mechanics-only.
+
+### FRA-F03 — durable Risk state not connected to live OPEN sizing
+
+**Severity:** HIGH  
+**Status:** CLOSED OFFLINE.  
+Live OPEN sizing consumes durable RiskAuthority day-start state rather than silently re-profiling from current equity.
+
+### FRA-F04 — incomplete automatic shadow outcome lifecycle
+
+**Severity:** MEDIUM/HIGH  
+**Status:** CLOSED OFFLINE.  
+SHADOW_ONLY hypotheses now freeze contemporaneous research-only geometry and resolve against future completed M1 data without broker authority or hindsight ordering guesses.
+
+### FRA-F05 — weak stage-evidence issuance
+
+**Severity:** MEDIUM/HIGH  
+**Status:** CLOSED OFFLINE.  
+Promotion evidence is package/fingerprint/target-stage/check bound and actor-attributed transition history is durable.
+
+## 4. Open findings
+
+### FRA-O01 — dashboard parity
+
+**Severity:** MEDIUM for operator usability; not a trading-authority defect  
+**Status:** OPEN.  
+The current primary/secondary dashboards remain read-only and fail-visible, but they do not yet satisfy the operator-requested GoldSwingTrader visual/bilingual/emoji parity. Dashboard completion is intentionally deferred until backend closure.
+
+### FRA-O02 — generic autonomous candidate evaluator
+
+**Severity:** MEDIUM research capability gap; non-blocking for current live champion  
+**Status:** OPEN / PARTIAL.  
+The system can discover bounded declarative candidates and govern stage evidence, but arbitrary new candidate semantic types do not yet have a universal executable compiler/evaluator that can honestly automate every stage through replay, walk-forward, one-shot holdout, stress, shadow and DEMO. Existing walk-forward tooling builds chronological plans/identity; it is not a generic strategy compiler.
+
+This limitation does not grant unsafe authority: candidate registry activation remains false and final Production-stage promotion remains explicitly operator-gated.
+
+### FRA-O03 — connected Exness facts
+
+**Severity:** RELEASE-BLOCKING for connected certification  
+**Status:** EXTERNAL_PROOF_PENDING.  
+Actual broker behavior must still be observed.
+
+## 5. Connected DEMO evidence still required
+
+The offline audit cannot prove:
+
+- current Exness SymbolSpec, filling mode, stops/freeze and margin behavior;
+- current XAUUSDm schedule, DST, holiday and maintenance truth;
+- actual spread/slippage/deviation distributions;
+- decision→send→ACK→reconcile latency;
+- controlled OPEN/MODIFY/PROTECT/TRAIL/CLOSE lifecycle;
+- broker-side TP/SL visibility;
+- manual/foreign activity attribution under real deals;
+- ambiguous ACK/no-duplicate behavior with real broker timing;
+- active-position restart/recovery;
+- fresh-machine restore/sequential handoff;
+- statistically meaningful active/shadow/timing/management evidence.
+
+These remain connected DEMO certification requirements.
+
+## 6. Dashboard release condition
+
+Before declaring operator presentation complete, both primary and secondary dashboards must be reviewed against the approved GoldSwingTrader reference for:
 
 ```text
-canonical owner
-source owner
-test/evidence owner
-release status
-exception if any
+emoji + English/Urdu bilingual presentation
+clear institutional hierarchy
+no-scroll/one-screen target composition where applicable
+market/session/price/countdown prominence
+Detected Setup vs Active Family separation
+BUY/SELL strength / timing / blocker truth
+TradePlan / Risk / Execution / ManagedTrade
+six-family board and shadow state
+Learning / research / system / recent activity
+CLOSED / UNKNOWN / DEGRADED visibility
+zero trading-authority mutation from UI
 ```
 
-## 5. Architecture invariants to prove
+No visual PASS is claimed before that work and screenshot review are complete.
 
-- one normalized analytical MT5 read boundary;
-- immutable snapshot semantics;
-- causal completed-candle chronology;
-- market-first setup detection;
-- active family cannot force chart classification;
-- exactly one live `ACTIVE_EXECUTION` family during Strategy Isolation;
-- five `SHADOW_ONLY` families cannot write/live-originate;
-- M5 setup authority;
-- M1 subordinate refinement only;
-- TradePlan before monetary Risk;
-- Executable Quality separate from structural geometry;
-- preserved SMALL/MEDIUM/NORMAL Risk policy;
-- News soft-context-only behavior;
-- hard broker/session authority separate;
-- central Gate;
-- persist-before-send Intent;
-- sole raw writer;
-- no blind retry;
-- verified ManagedTrade lifecycle;
-- learning/research no broker authority;
-- candidate promotion stops at `APPROVAL_REQUIRED`;
-- no runtime Git publication.
+## 7. Release verdict
 
-## 6. Setup/strategy audit
-
-Use deliberately conflicting fixtures/scenarios:
-
-### Scenario A — active family setup exists
+For the exact declared capability:
 
 ```text
-active = Breakout Retest
-market = valid Breakout Retest
-→ may progress to active BUY/SELL debate
+OFFLINE CORE BACKEND / SAFETY / LEARNING     PASS
+OFFLINE CONTRACT SYNC                        PASS
+OFFLINE SECRET SCAN                          PASS
+OFFLINE TEST SUITE                           PASS
+GENERIC AUTONOMOUS CANDIDATE EVALUATION      PARTIAL
+OPERATOR DASHBOARD PARITY                     PARTIAL
+CONNECTED EXNESS DEMO CERTIFICATION           PENDING
+REAL RELEASE                                  HARD DISABLED
 ```
 
-### Scenario B — different setup exists
+### Current formal verdict
 
-```text
-active = Breakout Retest
-market = valid Liquidity Sweep only
-→ Setup Detector says Liquidity Sweep
-→ live WAIT
-→ Sweep shadow record
-→ no fabricated Breakout Retest
-```
+**PASS WITH EXPLICIT NON-BLOCKING LIMITATIONS for the OFFLINE BACKEND capability.**
 
-### Scenario C — no setup exists
+**BLOCKED for a full GoldScalpTrader release** until:
 
-```text
-→ Detected Setup NONE
-→ live WAIT
-```
+1. dashboard parity is completed and reviewed;
+2. required connected Exness DEMO certification evidence is collected;
+3. any capability claim about fully autonomous generic candidate evaluation is either implemented with exact candidate semantics/evidence or kept explicitly partial.
 
-### Scenario D — multiple candidates
-
-Preserve all causal candidates; live eligibility still follows current isolation policy.
-
-## 7. Timing / geometry audit
-
-Prove:
-
-- M1 cannot create a production Opportunity;
-- stale M5 event/M1 trigger handled causally;
-- chase/drift measured;
-- re-arm requires fresh event;
-- family-aware invalidation;
-- event-specific stop only with exact causal proof;
-- no stop tightening for min-lot affordability;
-- no hard inherited Swing 1.20R dependency;
-- original R immutable.
-
-## 8. Executable-quality audit
-
-Verify numerical units/calculations for:
-
-```text
-spread
-emergency ceiling
-spread/SL
-spread/target
-cost/reward
-slippage allowance
-broker deviation
-drift
-quote age
-decision→send latency
-```
-
-Check no double counting and prove latency revalidation path.
-
-## 9. Monetary Risk audit
-
-Regression-check exact documented values and boundary cases around $300 and $1,000.
-
-Verify:
-
-- profile fixed through risk day;
-- aggressive mode default false;
-- 8% treated as ceiling not target;
-- 16% aggregate/daily semantics;
-- manual reset default false;
-- same-episode re-entry count;
-- 3-loss/30m cooldown;
-- cash-flow/account safety accounting;
-- min-lot actual risk;
-- no score/confidence-based risk inflation.
-
-## 10. News/session audit
-
-News:
-
-- event exists → no direct hard block;
-- provider unavailable → no direct hard block;
-- no News cooldown/warmup;
-- provider health remains truthful.
-
-Session:
-
-- current broker OPEN/CLOSED/PRE_CLOSE/UNKNOWN semantics;
-- pre-close/reopen baseline behavior;
-- current Exness schedule evidence for connected release.
-
-## 11. Execution audit
-
-Inject/prove:
-
-- upstream stop → Gate NOT_EVALUATED;
-- hard authority fail → Gate BLOCKED;
-- precheck fail → zero sends;
-- SUBMITTING persisted before send;
-- one Intent one send;
-- broker rejection;
-- timeout/ambiguous acknowledgement;
-- no blind retry;
-- broker reconciliation;
-- stale controller fencing;
-- manual/foreign exposure isolation.
-
-## 12. Management audit
-
-Review:
-
-- HOLD ordinary pullback;
-- earned PROTECT;
-- structural TRAIL;
-- no widening;
-- time-efficiency EXIT;
-- Runner only with fresh objective/evidence;
-- partial management only when valid;
-- PRE_CLOSE flatten;
-- exact close recovery;
-- verified close before learning.
-
-## 13. Persistence/recovery audit
-
-Crash-window review:
-
-```text
-before Intent
-APPROVED Intent
-SUBMITTING before/after broker send
-ambiguous ack
-verified OPEN before ManagedTrade persistence
-MODIFY/CLOSE windows
-verified close before queue
-queue before receipt
-receipt before lifecycle clear
-learning save before queue consumption
-```
-
-Every crash window must recover without duplicate irreversible action or invented broker state.
-
-## 14. Research/ML audit
-
-Verify:
-
-- actual/shadow/missed/blocked/fault evidence separation;
-- no-lookahead replay;
-- one-shot holdout;
-- immutable candidate fingerprint after lock;
-- failed evidence retained;
-- autonomous invention uses bounded declarative primitives;
-- advanced ML has data/feature/model identity;
-- candidate stage transitions evidence-bound;
-- no research raw writer import;
-- `APPROVAL_REQUIRED` cannot be bypassed.
-
-## 15. Dashboard audit
-
-Against the approved operator contract verify:
-
-- single-screen desktop composition;
-- no scrollbar at target geometry;
-- chart renders current intended data;
-- M1/M5/M15/H1/H4 buttons function;
-- Indicators/Drawings/Settings function within UI authority;
-- Detected Setup separate from Active Test Family;
-- shadow status clear;
-- signal/reason exact;
-- blocker vs Gate exact;
-- TradePlan/Risk/execution/activity/learning/system/closes visible;
-- no dashboard mutation of trading authority.
-
-## 16. Performance audit
-
-Use recorded stage timings and profiles.
-
-Questions:
-
-- are shared calculations reused?
-- is strategy critical path fast enough for the documented timing semantics?
-- does M1 refinement introduce unacceptable latency?
-- does physical parallelism improve measured critical path if enabled?
-- are serial/parallel outputs semantically identical?
-- does graphical UI materially block runtime analysis?
-
-No arbitrary performance PASS without measurement.
-
-## 17. Security / Git / backup audit
-
-Verify:
-
-- secrets absent from repo/logs/packages;
-- runtime has no GitHub credential dependency;
-- runtime shutdown has no Git operation;
-- source/history backup is separate from runtime state;
-- checkpoint integrity/hash verification;
-- sequential same-scope handoff;
-- no active-active distributed writer dependency;
-- repository visibility fact reported truthfully without unauthorized change.
-
-## 18. Final findings format
-
-Every finding:
-
-```text
-ID
-severity: CRITICAL / HIGH / MEDIUM / LOW / INFO
-owner
-contract violated / evidence missing
-exact reproduction/evidence
-impact
-required remediation
-status
-```
-
-No vague “needs improvement” findings.
-
-## 19. Release verdict
-
-Only:
-
-```text
-PASS FOR DECLARED CAPABILITY
-PASS WITH EXPLICIT NON-BLOCKING LIMITATIONS
-BLOCKED
-NOT RUN
-```
-
-For future REAL release, explicit operator approval is a separate required artifact and cannot be inferred from audit PASS.
-
-## 20. Current status
-
-This protocol is documentation-complete but **NOT RUN against a final implemented GoldScalpTrader release**. Until implementation/DEMO evidence exists, no execution or profitability claim is made.
+No profitability claim is made. No REAL trading approval is implied.
