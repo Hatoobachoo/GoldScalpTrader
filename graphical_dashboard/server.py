@@ -14,6 +14,7 @@ from graphical_dashboard.ui import HTML
 HOST = "127.0.0.1"
 DEFAULT_PORT = 8765
 STALE_AFTER_SECONDS = 6.0
+SUPPORTED_SCHEMAS = {1, 2}
 
 
 def load_snapshot(path: Path, *, now_utc: datetime | None = None) -> dict[str, object]:
@@ -26,7 +27,7 @@ def load_snapshot(path: Path, *, now_utc: datetime | None = None) -> dict[str, o
         if path.stat().st_size > 2_000_000:
             raise ValueError("oversized snapshot")
         payload = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(payload, dict) or payload.get("schema_version") != 1:
+        if not isinstance(payload, dict) or payload.get("schema_version") not in SUPPORTED_SCHEMAS:
             raise ValueError("unsupported snapshot schema")
         generated = datetime.fromisoformat(str(payload["generated_at_utc"]))
         if generated.tzinfo is None or generated.utcoffset() is None:
@@ -46,7 +47,7 @@ def load_snapshot(path: Path, *, now_utc: datetime | None = None) -> dict[str, o
 
 
 class DashboardHandler(BaseHTTPRequestHandler):
-    server_version = "GoldScalpTraderAI-VisualFloor/1.0"
+    server_version = "GoldScalpTraderAI-VisualFloor/2.0"
 
     def do_GET(self) -> None:  # noqa: N802
         if self.path in {"/", "/index.html"}:
@@ -102,10 +103,10 @@ def start_background(snapshot_path: Path, *, port: int = DEFAULT_PORT,
     thread = threading.Thread(target=server.serve_forever,
                               kwargs={"poll_interval": 0.5}, daemon=True)
     thread.start()
-    print("GoldScalpTraderAI Visual Floor")
+    print("GoldScalpTraderAI Visual Floor (SECONDARY)")
     print(f"Read-only localhost: {url}")
     print(f"Snapshot: {snapshot_path}")
-    print("No browser trade controls and no browser MT5 writer authority.")
+    print("Primary operator dashboard remains the terminal. Browser has no MT5 writer authority.")
     if open_browser:
         threading.Timer(0.35, lambda: webbrowser.open(url)).start()
     return server, thread
@@ -127,4 +128,4 @@ def serve(snapshot_path: Path, *, port: int = DEFAULT_PORT, open_browser: bool =
 
 
 __all__ = ["DEFAULT_PORT", "DashboardHandler", "HOST", "STALE_AFTER_SECONDS",
-           "load_snapshot", "serve", "start_background", "stop_background"]
+           "SUPPORTED_SCHEMAS", "load_snapshot", "serve", "start_background", "stop_background"]
