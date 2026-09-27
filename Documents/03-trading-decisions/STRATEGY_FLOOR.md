@@ -1,24 +1,34 @@
 # GoldScalpTrader — Strategy Floor
 
-**Status:** FINAL STRATEGY CONTRACT — DOCUMENTATION FREEZE BASELINE / CALIBRATION PENDING
-**Version:** 2.1-market-first-setup-detection
-**Authority:** Six strategy-family definitions, market-first setup detection, Strategy Isolation Mode, live-vs-shadow attribution, family evidence semantics and analytical scheduling.
+**Status:** IMPLEMENTED PRODUCTION CONTRACT — STRUCTURAL ROUTING / SIX-FAMILY RESEARCH BOARD  
+**Version:** 3.0-structural-production-routing  
+**Authority:** Six strategy-family definitions, market-first setup detection, production family routing, shadow attribution, family evidence semantics and analytical scheduling.
 
 ## 1. Core rule
 
-> **The chart/market decides what setup exists. The currently active strategy is never forced into every trade.**
+> **The market decides what setup exists. Production routes one qualified structural family; a manual family setting and a generic score cannot manufacture or select a live trade.**
 
-The Strategy Floor has two distinct steps:
+Canonical order:
 
 ```text
-1. SETUP DETECTION
-   What family setup(s), if any, genuinely exist in the current causal market facts?
-
-2. STRATEGY ISOLATION
-   Is any detected setup eligible for live execution under the current one-family-at-a-time evaluation policy?
+one causal IntelligenceSnapshot
+→ evaluate all six family definitions independently
+→ preserve all SetupCandidate records
+→ consider QUALIFIED structural candidates only
+→ if qualified directions conflict: FAIL CLOSED / WAIT
+→ otherwise route exactly one family by structural semantic priority
+→ routed family may enter BUY/SELL + Red Team
+→ remaining families stay SHADOW_ONLY research
+→ M5 Opportunity
+→ subordinate M1 Timing
+→ TradePlan
+→ Executable Quality
+→ Risk
+→ hard authorities / Gate
+→ Intent / writer / reconciliation
 ```
 
-These steps must never be reversed.
+Scores explain candidate quality. **Scores never choose the production family.**
 
 ## 2. Six preserved families
 
@@ -31,7 +41,7 @@ FAILED_BREAKOUT_REVERSAL
 COMPRESSION_EXPANSION
 ```
 
-Every family owns a distinct causal setup definition. It may return:
+Every family owns its own causal definition and may return:
 
 ```text
 QUALIFIED_BUY
@@ -41,50 +51,61 @@ NOT_PRESENT
 UNKNOWN
 ```
 
-No family is required to produce a setup merely because it is currently active.
+No family becomes qualified because of configuration, dashboard state, score ranking or another family.
 
-## 3. Market-first topology
+## 3. Production routing
 
-```mermaid
-flowchart TB
-    INTEL["One causal IntelligenceSnapshot"] --> F1["Trend Pullback detector"]
-    INTEL --> F2["Breakout Expansion detector"]
-    INTEL --> F3["Breakout Retest detector"]
-    INTEL --> F4["Liquidity Sweep detector"]
-    INTEL --> F5["Failed Breakout detector"]
-    INTEL --> F6["Compression Expansion detector"]
+Current deterministic structural priority is:
 
-    F1 --> DET["Setup Candidate Registry"]
-    F2 --> DET
-    F3 --> DET
-    F4 --> DET
-    F5 --> DET
-    F6 --> DET
-
-    DET --> NONE["NONE if no family qualifies"]
-    DET --> ISO["Strategy Isolation Controller"]
-    ISO --> ACTIVE["1 ACTIVE_EXECUTION family"]
-    ISO --> SHADOW["5 SHADOW_ONLY families"]
-    ACTIVE --> MATCH{"Active-family setup actually detected?"}
-    MATCH -->|Yes| LIVE["Active BUY/SELL + Red Team"]
-    MATCH -->|No| WAIT["LIVE WAIT"]
-    SHADOW --> RSRCH["Shadow setup/outcome research"]
+```text
+1  FAILED_BREAKOUT_REVERSAL
+2  LIQUIDITY_SWEEP_REVERSAL
+3  BREAKOUT_RETEST_CONTINUATION
+4  COMPRESSION_EXPANSION
+5  BREAKOUT_EXPANSION
+6  TREND_PULLBACK_CONTINUATION
 ```
+
+This is **semantic priority, not profitability ranking**. More specific reversal/retest/release event semantics outrank generic continuation when the candidates agree on direction.
+
+If independently qualified candidates disagree on direction:
+
+```text
+BUY-qualified family + SELL-qualified family
+→ OPPOSING_QUALIFIED_STRUCTURAL_SETUPS
+→ no ACTIVE_EXECUTION family
+→ no live Opportunity
+→ WAIT
+```
+
+If no family qualifies:
+
+```text
+NO_QUALIFIED_STRUCTURAL_SETUP
+→ all six remain SHADOW_ONLY
+→ WAIT
+```
+
+When one direction survives routing:
+
+```text
+exactly one routed family = ACTIVE_EXECUTION
+remaining five          = SHADOW_ONLY
+```
+
+`ACTIVE_STRATEGY_FAMILY` is retained only as an optional legacy/research focus field for compatibility. The canonical production cycle does **not** consult it.
 
 ## 4. Setup Detector contract
 
-Setup detection consumes only causal, reusable market intelligence and current family definitions.
-
-Each `SetupCandidate` should preserve at least:
+Every `SetupCandidate` preserves, where available:
 
 ```text
 candidate_id
 family
 direction
-qualification state
+qualification
 required evidence status
-supporting evidence
-opposing evidence
+supporting/opposing evidence
 coverage
 M5 source event IDs / knowledge time
 location/path/room
@@ -93,91 +114,84 @@ correlation/source lineage
 reasons
 ```
 
-The detector may produce:
+Setup detection must not:
 
-- no candidate;
-- one candidate;
-- several genuinely independent/overlapping candidates.
-
-It must not:
-
-- use active-family identity to fabricate qualification;
+- use a configured family to fabricate qualification;
+- use family score to choose broker authority;
 - size money;
 - call Risk/Gate/MT5;
-- convert shadow setup into live trade;
-- count correlated labels as independent certainty.
+- convert a shadow observation into an Intent;
+- use future bars.
 
-## 5. Strategy Isolation Mode
+## 5. Routed family vs shadow families
 
-During controlled efficiency evaluation:
+### Routed ACTIVE_EXECUTION family
 
-```text
-ACTIVE_EXECUTION = exactly one family
-SHADOW_ONLY      = remaining five families
-```
+May continue only if:
 
-### Active family
+1. its own setup is genuinely `QUALIFIED_BUY` or `QUALIFIED_SELL`;
+2. structural routing has resolved it without opposite-direction ambiguity;
+3. BUY/SELL + Red Team accepts the thesis;
+4. a causal M5 Opportunity exists;
+5. subordinate M1 Timing later reaches a valid outcome;
+6. TradePlan, executable quality, Risk and all hard authorities pass.
 
-May originate a production Opportunity only if:
-
-1. its own setup is genuinely detected/qualified;
-2. active BUY/SELL + Red Team accepts the thesis;
-3. downstream M1 timing, TradePlan, Executable Quality, Risk and hard authorities later pass.
-
-### Shadow families
+### SHADOW_ONLY families
 
 May:
 
 - detect setups;
-- publish hypothetical BUY/SELL cases;
-- generate counterfactual timing/plans/outcomes;
-- challenge/contextualize research;
-- feed learning/discovery/ML.
+- preserve BUY/SELL cases;
+- freeze research-only hypothetical geometry;
+- resolve causal future outcomes;
+- feed timing/management/discovery research.
 
 May not:
 
-- create live Opportunity;
-- vote an active-family non-setup into existence;
+- create a live Opportunity;
 - create Intent;
+- call the MT5 writer;
 - consume live position capacity;
-- change production Risk.
+- override the routed family;
+- change Risk, Session or Gate.
 
 ## 6. Canonical examples
 
-### Example A — matching active setup
+### Example A — qualified breakout beats possible trend
 
 ```text
-Detected Setup      BREAKOUT_RETEST_CONTINUATION
-Active Test Family  BREAKOUT_RETEST_CONTINUATION
-→ live analytical path may continue
+Trend Pullback       POSSIBLE SELL
+Breakout Expansion  QUALIFIED SELL
+→ route BREAKOUT_EXPANSION
+→ Trend Pullback stays SHADOW_ONLY
 ```
 
-### Example B — different setup detected
+This is the screenshot case that static-family isolation previously mishandled.
+
+### Example B — multiple same-direction qualified structures
 
 ```text
-Detected Setup      LIQUIDITY_SWEEP_REVERSAL
-Active Test Family  BREAKOUT_RETEST_CONTINUATION
-→ LIVE WAIT
-→ Liquidity Sweep = SHADOW_ONLY research evidence
-→ do NOT force Breakout Retest conditions onto the chart
+Breakout Expansion          QUALIFIED SELL
+Breakout Retest Continuation QUALIFIED SELL
+→ route BREAKOUT_RETEST_CONTINUATION by structural priority
+→ score difference does not choose the route
 ```
 
-### Example C — no setup
+### Example C — opposite qualified directions
 
 ```text
-Detected Setup      NONE
-→ LIVE WAIT
-→ no family score is allowed to manufacture a trade
+Liquidity Sweep Reversal QUALIFIED BUY
+Breakout Expansion       QUALIFIED SELL
+→ WAIT
+→ no production family selected
 ```
 
-### Example D — multiple genuine candidates
+### Example D — no setup
 
 ```text
-Breakout Expansion qualified
-Compression Expansion qualified
+all families POSSIBLE / NOT_PRESENT / UNKNOWN
+→ WAIT
 ```
-
-Keep both causal candidate records. Current active-family policy determines which, if any, may enter the live path. Correlation lineage prevents one event from being counted repeatedly.
 
 ## 7. Trend Pullback Continuation
 
@@ -185,34 +199,15 @@ Question:
 
 > Is an established move resuming after an efficient pullback rather than already being chased?
 
-Potential high-value evidence:
-
-- H1/M15 directional structure;
-- M5 pullback/resumption;
-- useful location/room;
-- EMA20/50 flow;
-- RSI/momentum reset;
-- ATR/volatility;
-- optional trendline/Fib/POC context.
-
-A Trend Pullback setup is `NOT_PRESENT` if its defining pullback/resumption behavior does not exist; active status cannot override this.
+Useful evidence includes H1/M15 directional structure, M5 pullback/resumption, location/room, EMA flow, momentum reset, ATR/volatility and optional confluence. A missing pullback/resumption means the family is not qualified.
 
 ## 8. Breakout Expansion
 
 Question:
 
-> Is a meaningful structure break being accepted with enough momentum/path to expand rather than fail?
+> Is a meaningful structural break being accepted with enough displacement, freshness and path to expand rather than fail?
 
-Potential evidence:
-
-- causal break;
-- completed acceptance;
-- displacement/expansion;
-- volatility/momentum build;
-- open path/room;
-- freshness/anti-chase.
-
-It does not require a perfect retest.
+A perfect retest is not required. Break freshness, completed acceptance, volatility/momentum and target room matter.
 
 ## 9. Breakout Retest Continuation
 
@@ -220,16 +215,7 @@ Question:
 
 > Did a meaningful breakout hold on retest with credible continuation and efficient invalidation geometry?
 
-Potential evidence:
-
-- causal breakout;
-- retest of broken structure/zone;
-- M5 hold/rejection/resumption;
-- target room;
-- M1 refinement after Opportunity;
-- optional trendline/Fib/POC support.
-
-If there is no real breakout+retest sequence, the family is not present regardless of active status.
+A real breakout+retest sequence is required. M1 may refine timing only after the M5 Opportunity exists.
 
 ## 10. Liquidity Sweep Reversal
 
@@ -237,16 +223,7 @@ Question:
 
 > Did price take a pre-existing meaningful liquidity pool and reject/reclaim it sufficiently for reversal?
 
-Potential evidence:
-
-- pre-existing pool;
-- real penetration/sweep;
-- reclaim/rejection;
-- M5 transition;
-- opposing path;
-- M1 micro reclaim/refinement.
-
-A wick alone is insufficient.
+A wick alone is insufficient. Pool existence, penetration, reclaim/rejection, transition and path matter.
 
 ## 11. Failed Breakout Reversal
 
@@ -254,15 +231,7 @@ Question:
 
 > Did attempted structural acceptance fail and produce a credible opposing response?
 
-Potential evidence:
-
-- accepted-break attempt;
-- loss of acceptance / return through level;
-- M5 opposing response/MSS;
-- location/path;
-- M1 reversal refinement.
-
-It remains a separate family even where evidence overlaps a sweep episode.
+It remains a distinct semantic family even where some evidence overlaps a liquidity sweep.
 
 ## 12. Compression Expansion
 
@@ -270,21 +239,9 @@ Question:
 
 > Did meaningful compression release with actual direction, fresh expansion and enough room?
 
-Potential evidence:
+Direction is never guessed before release evidence exists.
 
-- causal compression;
-- release/break;
-- directional expansion;
-- volatility/momentum;
-- path/room;
-- no severe late chase;
-- optional M1 refinement.
-
-Do not guess direction before release evidence.
-
-## 13. Important evidence is family-specific
-
-Evidence classification:
+## 13. Evidence roles
 
 ```text
 REQUIRED_FOR_FAMILY
@@ -295,124 +252,25 @@ NOT_RELEVANT
 UNKNOWN
 ```
 
-EMA/RSI/Fib/FVG/OB/Trendline/POC can be highly important without becoming global requirements.
+A factor that is required for one family does not become globally required for every trade.
 
-Rule:
-
-```text
-required by one setup definition
-≠
-required by every setup/trade
-```
-
-## 14. Active BUY/SELL / Red Team handoff
-
-Only a **qualified active-family SetupCandidate** reaches live decision fusion.
+## 14. Production / research separation
 
 ```text
-qualified active SetupCandidate
-→ independent BUY case
-→ independent SELL case
-→ Red Team
-→ production Opportunity recommendation
+Production:
+market-first setup detection
+→ structural router
+→ exactly one relevant family
+
+Research:
+all six candidates
+→ family scores/coverage
+→ shadow timing/plans/outcomes
+→ governed learning/discovery
 ```
 
-Shadow reports remain attached for research but cannot become live votes.
+Hard authorities are never learnable and the research board never gains broker authority.
 
-## 15. Correlation control
+## 15. Final invariant
 
-A single causal episode may look like:
-
-```text
-breakout
-compression release
-FVG
-displacement
-liquidity event
-```
-
-Preserve parent event/source IDs. Do not count one event as several independent confirmations merely because multiple family detectors describe it.
-
-## 16. Session / News
-
-Session and News may tag/contextualize family performance.
-
-- session may later support evidence-backed family conditioning;
-- News remains soft context/research;
-- neither becomes a universal family setup requirement by default.
-
-## 17. Analytical scheduling
-
-All six family detectors are logically independent from the same immutable input.
-
-Physical execution may be serial or bounded-parallel depending on profiling.
-
-Required invariants:
-
-- immutable input;
-- deterministic canonical results/order;
-- no side effects;
-- one-worker parity;
-- bounded resources;
-- no broker/lifecycle calls.
-
-## 18. Throughput / efficiency research
-
-Track separately:
-
-```text
-all-family detected setups/day
-active-family detected setups/day
-shadow-family detected setups/day
-active Opportunities/day
-M1 READY/day
-actual trades/day
-Net expectancy
-false blocks
-missed opportunity cost
-entry/capture/exit efficiency
-cost burden
-position-slot suppression
-```
-
-This distinguishes “market had no setups” from “current active family was not present”.
-
-## 19. Active-family switching
-
-A switch is versioned/governed and preserves historical attribution.
-
-Current production switch requires operator approval through promotion governance.
-
-A future Dynamic Strategy Router may be researched after isolation evidence is sufficient, but it is not silently enabled by this contract.
-
-## 20. Dashboard
-
-Required presentation:
-
-```text
-DETECTED SETUP       Liquidity Sweep Reversal
-ACTIVE TEST FAMILY   Breakout Retest
-LIVE ACTION          WAIT
-REASON               Active-family setup not present
-SHADOW                Liquidity Sweep • QUALIFIED • research only
-```
-
-## 21. Planned proof
-
-Tests must prove:
-
-- all six detectors;
-- detector can return NONE;
-- active family cannot bias/force detection;
-- one/multiple candidates;
-- exactly one active + five shadow;
-- shadow cannot live-originate;
-- active-family setup required before Opportunity;
-- evidence required/supportive semantics;
-- event correlation lineage;
-- switch/restart attribution;
-- serial/parallel semantic parity if parallelism enabled.
-
-## 22. Final invariant
-
-> **The market creates setups; policy only decides which detected setup is currently allowed to become a live trade. All six strategies may observe and learn, exactly one may execute during isolation testing, and no active strategy may be forced into a chart that does not actually satisfy its definition.**
+> **GoldScalpTrader routes the setup the market actually proves. It does not force a manually selected family onto the chart, it does not use the highest score as broker authority, and it fails closed when structural candidates conflict.**
