@@ -37,11 +37,13 @@ normalized MT5 reads
 → bounded durable discovery / explicit suppression
 → governed invention / immutable verified stage-proof packages
 → explicit approval; runtime activation remains separate from candidate registry stage
+→ normalized presentation DTO
+→ Swing-style PRIMARY terminal + SECONDARY localhost visual floor
 ```
 
 ## 3. Market / intelligence / decisions
 
-Canonical owners include:
+Canonical owners:
 
 ```text
 market_data/mt5_reader.py
@@ -77,7 +79,7 @@ tests/test_timing_learning_lineage.py
 
 M5 remains thesis authority. M1 cannot independently invent a trade. Missing facts remain UNKNOWN rather than fabricated zero.
 
-## 4. Risk / hard runtime authorities
+## 4. Risk / Session / hard runtime authorities
 
 Source:
 
@@ -167,7 +169,7 @@ Gate
 → broker reconciliation
 ```
 
-No blind retry after ambiguous ACK. GoldScalp deliberately uses mutation-scoped controller leases rather than adding an unnecessary long-lived heartbeat; `execute_once()` re-verifies fencing immediately before irreversible send.
+No blind retry after ambiguous ACK. GoldScalp uses mutation-scoped controller leases; `execute_once()` re-verifies fencing immediately before irreversible send.
 
 ## 6. Actual learning / verified close
 
@@ -189,7 +191,7 @@ tests/test_timing_learning_lineage.py
 tests/test_runtime_research_evidence.py
 ```
 
-Exactly-once actual learning remains:
+Exactly-once actual learning:
 
 ```text
 verified full-close queue item
@@ -220,9 +222,7 @@ tests/test_shadow_runtime.py
 tests/test_research_runtime_isolation.py
 ```
 
-Each qualified shadow family may freeze its own contemporaneous research-only Opportunity/Timing/structural plan. It cannot copy active broker authority. Future outcome evaluation uses only completed M1 candles opening at/after the frozen hypothetical entry. Same-bar stop+target ordering remains AMBIGUOUS. Quoted spread is recorded explicitly in R; missing future slippage/commission is declared as a limitation, not fabricated. One causal shadow episode can produce at most one terminal counterfactual result.
-
-Research recording is best-effort relative to broker authority: a timing/management/shadow evidence failure is surfaced as research degradation but cannot erase or reclassify a completed broker cycle.
+Each qualified shadow family may freeze its own contemporaneous research-only Opportunity/Timing/structural plan. Future outcome evaluation uses only future completed M1 candles. Same-bar stop+target ordering remains AMBIGUOUS. Quoted spread is explicit in R; missing future slippage/commission remains a limitation rather than a fabricated value. One causal shadow episode produces at most one terminal counterfactual result.
 
 ## 8. Governed autonomous research
 
@@ -253,24 +253,27 @@ Proof:
 
 ```text
 tests/test_candidate_registry.py
+tests/test_candidate_transition_history.py
 tests/test_research_governance.py
 tests/test_research_integrity.py
 scripts/run_walk_forward.py
 ```
 
-`research/triggers.py` derives conservative, idempotent research episodes from verified StrategyMemory only. These thresholds decide whether evidence deserves research; they do not change live strategy, Risk, Gate, management or broker authority. Ordinary broker/system faults and hard-safety blocks are not converted into strategy optimization targets.
+`research/triggers.py` derives conservative idempotent research episodes from verified StrategyMemory. Faults and hard-safety blocks are not strategy optimization targets.
 
-`research/discovery.py` requires repeated independent episodes and immutable source lineage before registering a candidate. Eligible clusters must produce either one durable candidate or one durable suppression reason. Automatic live-derived candidates bind their source chain to the underlying immutable StrategyMemory IDs, not merely to a descriptive episode label.
+`research/discovery.py` requires repeated independent evidence and immutable source lineage. Eligible clusters create either a durable candidate or durable suppression reason.
 
-`research/candidate_registry.py` does not expose an arbitrary caller-hash PASS issuer. Promotion evidence must come through `research/stage_orchestrator.py` as an immutable verified evidence package bound to the exact candidate fingerprint, exact next target stage, recomputed evidence identity, package-manifest SHA-256, and target-stage-specific required checks. No profitability threshold is invented where frozen policy has not defined one.
+`research/candidate_registry.py` cannot manufacture caller-hash PASS evidence. `research/stage_orchestrator.py` verifies immutable package integrity, exact candidate fingerprint, exact target stage, evidence identity, manifest SHA and stage-specific checks.
 
-Stage progression remains sequential and actor-attributed. Final Production-stage research still requires explicit operator approval plus rollback lineage, and **runtime activation remains separate from candidate registry stage**.
+Stage progression is sequential and actor-attributed. Production-stage research still requires explicit operator approval plus rollback lineage, and **runtime activation remains separate from candidate registry stage**.
+
+A generic compiler/evaluator for arbitrary newly invented candidate semantics is not claimed. Candidate discovery/governance exists; automatic execution semantics require an explicitly defined auditable candidate policy rather than generated hidden trading code.
 
 ## 9. Checkpoint / persistence
 
-The full checkpoint exports all current StateStore namespaces (records and append-only events), including shadow plans/terminal markers/outcomes, discovery episodes/status/suppressions, candidate transition history and candidate-stage evidence. Recovery never treats UNKNOWN broker truth as empty/zero.
+The full checkpoint exports all current StateStore namespaces by default, including shadow plans/terminal markers/outcomes, discovery episodes/status/suppressions, candidate transition history and stage evidence. Recovery never treats UNKNOWN broker truth as empty/zero.
 
-Proof includes:
+Proof:
 
 ```text
 tests/test_checkpoint.py
@@ -280,13 +283,58 @@ tests/test_recovery_package.py
 
 Fresh-machine/sequential handoff remains connected proof until actually drilled.
 
-## 10. Operator/dashboard
+## 10. Operator / dashboard
 
-Dashboard implementation remains present but visual parity work is intentionally deferred until non-dashboard safety/research completion is verified. Primary terminal and secondary localhost browser remain presentation-only; they own no Risk, Gate or MT5 writer authority.
+Implemented source ownership:
+
+```text
+operator/presentation.py          → normalized presentation DTO
+operator/graphical_snapshot.py    → runtime/cycle → presentation facts
+operator/terminal_dashboard.py    → primary renderer dispatcher
+operator/rich_dashboard.py        → 96+ column Swing-style Rich floor
+operator/narrow_dashboard.py      → 64–95 column stacked floor
+operator/compact_dashboard.py     → crash-safe fallback
+graphical_dashboard/snapshot.py   → atomic read-only browser payload
+graphical_dashboard/server.py     → localhost-only read-only server
+graphical_dashboard/ui.py         → Swing-style secondary visual floor
+app/demo_runner.py                → terminal primary + optional browser secondary
+```
+
+Proof:
+
+```text
+tests/test_demo_launcher.py
+tests/test_browser_dashboard.py
+```
+
+Implemented presentation hierarchy:
+
+```text
+PRIMARY terminal
+  → Market / Session / SELL / BUY / Spread / M5 countdown
+  → Market Picture + Trade Setup
+  → Current Decision / Urdu action
+  → Trade Plan
+  → 1 ACTIVE + 5 SHADOW Strategy Isolation board
+  → Risk & Account / Today & Activity / System & Execution
+  → ManagedTrade
+  → Learning / Discovery
+
+SECONDARY localhost browser
+  → robot + Arabic/English/Urdu masthead
+  → market/live-price/countdown strip
+  → M1/M5/M15/H1/H4 completed-candle chart
+  → Indicators / Drawings / Bars presentation controls
+  → Timing / Signal / Trade Plan / Blocker-Gate
+  → six-family research board
+  → Risk / ManagedTrade / Activity / Learning / Discovery / Execution / System
+```
+
+The browser has no BUY/SELL/MODIFY/CLOSE controls. Both surfaces are presentation-only and own no Risk, Gate or MT5 writer authority. `DASHBOARD_MODE=GUI` means primary terminal **plus** browser secondary.
 
 ## 11. Connected DEMO evidence
 
-Read-only evidence tooling remains:
+Read-only evidence tooling:
 
 ```text
 src/gold_scalp_trader/diagnostics/connected_demo.py
@@ -300,7 +348,7 @@ Local deterministic evidence never auto-proves real Exness broker behavior.
 
 ## 12. Current offline status
 
-A prior operator-run baseline passed compileall/documents/contract-sync/secrets/pytest. Since the later Session/Risk authority, automatic shadow lifecycle, verified stage-package and bounded continuous-discovery changes, **current HEAD requires a fresh operator run of `python scripts/verify_offline_release.py` before OFFLINE PASS is inherited**.
+The operator previously proved full offline PASS at commit `3458b97e88371be6aa665d0891b20e384384cefe` after the backend authority/research changes. The later dashboard-parity implementation changes presentation code/tests/docs, so **current HEAD requires a fresh operator run of `python scripts/verify_offline_release.py` before that PASS is inherited**.
 
 ## 13. Connected DEMO proof — still external
 
@@ -318,8 +366,8 @@ Offline code/tests cannot prove:
 - fresh-machine restore/sequential handoff;
 - statistically meaningful active/shadow/timing/management/discovery evidence.
 
-These remain Phase-15 connected evidence requirements.
+These remain connected evidence requirements.
 
 ## 14. Synchronization rule
 
-Every material source/test/script addition, removal, rename, authority change or proof-status change must update this catalog, `MODULE_STRUCTURE.md` where ownership changes, owning behavioral contracts when behavior changes, and the static verifier. Offline PASS must never be described as connected certification.
+Every material source/test/script addition, removal, rename, authority change or proof-status change updates this catalog, `MODULE_STRUCTURE.md` where ownership changes, the owning behavioral contract and static verifier where needed. Offline PASS must never be described as connected certification.
