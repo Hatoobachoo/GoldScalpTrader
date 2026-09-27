@@ -37,6 +37,8 @@ class Settings:
     mode: RuntimeMode = RuntimeMode.DRY_RUN
     preferred_symbol: str = "XAUUSDm"
     symbol_aliases: tuple[str, ...] = ("XAUUSDm", "XAUUSD")
+    # Legacy/research focus only. Production family eligibility is routed from
+    # structural setup semantics and does not consult this field.
     active_strategy_family: StrategyFamily | None = None
     active_strategy_policy_version: str = "v1"
     bot_magic: int = 560501
@@ -172,8 +174,6 @@ def validate_settings(settings: Settings) -> None:
     for name in ("m1_history_bars", "m5_history_bars", "m15_history_bars", "h1_history_bars", "h4_history_bars"):
         if getattr(settings, name) < 50:
             raise ValueError(f"{name} is too small")
-    if settings.mode in {RuntimeMode.DEMO, RuntimeMode.REAL} and settings.active_strategy_family is None:
-        raise ValueError("ACTIVE_STRATEGY_FAMILY is required for write-capable modes")
     if settings.target_risk_percent is not None and settings.target_risk_percent <= 0:
         raise ValueError("TARGET_RISK_PERCENT must be positive")
     if settings.mode is RuntimeMode.DEMO and settings.target_risk_percent is None:
