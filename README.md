@@ -12,7 +12,7 @@ Safety-first local MetaTrader 5 gold scalping project.
 
 The connected MT5 account must explicitly report DEMO mode before any DEMO broker write. The runtime blocks on stale/incomplete required data, occupied/unknown exposure, unresolved Intents, controller conflicts, persistence failure, disabled expert trading, failed broker prechecks, or unknown/closed hard Session authority.
 
-Hard broker Session facts are now consumed from the scoped local runtime provider file `runtime/session_news.json` (beside the configured state DB). `OPEN` must be positively verified for new exposure; `PRE_CLOSE` blocks new OPENs and preserves the governed flatten thresholds; provider absence/expiry/scope mismatch fails closed. A conservative Saturday floor displays `CLOSED` but never fabricates weekday `OPEN`. News remains soft context only.
+Hard broker Session facts come from the scoped local runtime provider file `runtime/session_news.json`. `OPEN` must be positively verified for new exposure; `PRE_CLOSE` blocks new OPENs; provider absence/expiry/scope mismatch fails closed. News remains soft context only.
 
 Verified bot positions use the governed lifecycle:
 
@@ -22,107 +22,94 @@ OPEN → ManagedTrade → HOLD / PROTECT / TRAIL / RUNNER / EXIT
      → exact exit-deal proof → close receipt + learning queue
 ```
 
-A bot-magic position without durable ManagedTrade lineage is never silently adopted. A missing known position is not called closed until exit-deal volume proof is available.
+A bot-magic position without durable ManagedTrade lineage is never silently adopted. A missing known position is not called closed until exit-deal volume proof exists.
 
-## REAL / DEMO mode engineering guide
+## Production strategy routing
 
-For the detailed as-built hierarchy of runtime modes, configuration locks, DEMO account verification, Gate/precheck layers, sole MT5 writer, persistence/reconciliation, connected certification, REAL hard-disable behavior, code locations and current integration boundaries, read:
+GoldScalpTrader evaluates all six family definitions from the same causal intelligence snapshot, then production routes **one structurally qualified family**.
 
-[`REAL_AND_DEMO_MODE_ARCHITECTURE.md`](REAL_AND_DEMO_MODE_ARCHITECTURE.md)
+```text
+market-first six-family detection
+→ qualified structural candidates
+→ opposite directions? WAIT / fail closed
+→ otherwise structural semantic priority
+→ exactly one ACTIVE_EXECUTION routed family
+→ remaining families SHADOW_ONLY research
+```
+
+Production does **not** select a family by highest score and does **not** use `ACTIVE_STRATEGY_FAMILY` as broker authority. That setting is retained only as optional legacy/research focus compatibility.
+
+Current structural priority:
+
+```text
+FAILED_BREAKOUT_REVERSAL
+LIQUIDITY_SWEEP_REVERSAL
+BREAKOUT_RETEST_CONTINUATION
+COMPRESSION_EXPANSION
+BREAKOUT_EXPANSION
+TREND_PULLBACK_CONTINUATION
+```
+
+Scores remain explanatory/research facts.
 
 ## Timing Intelligence and governed learning
 
-Timing Intelligence is a first-class subsystem: M5 remains the setup/thesis authority, M1 refines entry timing, and verified timing evidence is preserved locally for governed efficiency research. Autonomous research may propose improvements, but cannot change Risk/Gate, promote itself to live execution, or gain broker authority.
+M5 remains setup/thesis authority; M1 is subordinate entry timing only after a valid M5 Opportunity. Verified timing and management evidence is preserved locally for governed efficiency research. Autonomous research may propose improvements, but cannot change Risk/Gate, promote itself into runtime authority, or gain broker-write authority.
 
-A qualified M5 Opportunity now has durable local Opportunity/Episode identity across repeated WAIT/READY cycles and restart. The same causal terminal episode cannot silently re-arm merely because an in-memory cycle generated a new random ID; only a fresh causal M5 identity may create a new episode. Once the irreversible OPEN send is consumed, the durable Opportunity becomes `TRIGGERED`.
+The live DEMO research path records actual learning evidence plus causal SHADOW_ONLY hypothetical plans/outcomes without granting shadow records Risk, Gate, position capacity or broker authority.
 
-For governed DEMO OPENs, the causal Opportunity/episode, TradePlan, M5 event lineage and TimingDecision profile/ages/chase/extension are frozen into durable OPEN context **before the irreversible broker send**. After verified OPEN reconciliation the same lineage is stored in `ManagedTrade`, then carried through exact verified close into the exactly-once learning queue/StrategyMemory.
+Candidate promotion requires immutable stage-specific evidence bound to candidate fingerprint, target stage, dataset/code/config identity, execution realism and artifact hashes. Stage skipping is forbidden. `APPROVAL_REQUIRED → PRODUCTION` still requires explicit operator approval and rollback lineage, and registry promotion still does not directly activate runtime trading.
 
-The live DEMO presentation paths also write **research-only** management-path evidence and same-market shadow-family counterfactual evidence. This records management action/open-R progression and shadow candidates without granting those research records Risk, Gate, broker-write or automatic promotion authority.
+## Dashboard hierarchy
 
-### Efficiency learning measurement
-
-Closed-trade learning distinguishes **provable causal measurements** from hindsight estimates.
-
-When durable evidence exists, the learning path can preserve:
+GoldScalpTrader follows the GoldSwing operator hierarchy:
 
 ```text
-Opportunity first-seen / armed time
-first READY timing-decision time
-M1 trigger time
-actual broker-open time
-trigger → entry delay
-READY → entry delay
-Opportunity → entry delay
-M5 event → entry delay
-approved-entry-reference drift in R
-observed management-path MFE / MAE in R
-time to first PROTECT
-time to first TRAIL
-time to observed Primary Target
-time to observed Expansion Target
-time to observed MFE
-initial monetary R from SymbolSpec economics
-after-cost realized R
-observed capture efficiency
-observed profit giveback
-management sample count
+PRIMARY   = VS Code / terminal live trading floor
+SECONDARY = localhost browser visual floor (optional, read only)
 ```
 
-Important evidence rule:
-
-> `observed_mfe_r`, `observed_mae_r` and `observed_capture_efficiency` are based on durable runtime observation samples. They are **not** silently relabelled as true intrabar MFE/MAE or an ideal hindsight path.
-
-If the necessary runtime evidence is absent, the field remains `None`/UNKNOWN rather than becoming zero or an inferred value. `entry_efficiency` and canonical full-path `capture_efficiency` remain unpopulated unless a separately approved causal definition and sufficient path evidence exist.
-
-This lets research ask useful questions such as “are entries consistently late?”, “does PROTECT happen too early?”, or “how much observed MFE is commonly given back?” without teaching the live system to weaken Risk or execution safety.
-
-### Governed autonomous strategy promotion
-
-Raw runtime observations are **source evidence**, not promotion-stage proof. A Timing event, shadow snapshot or actual learning observation cannot be reused by itself to claim that a candidate passed validation, holdout, stress, shadow, DEMO or production review.
-
-Every governed promotion step now requires typed `candidate_stage_evidence` bound to:
+Primary renderer stack:
 
 ```text
-candidate ID
-candidate fingerprint
-exact next target stage
-dataset identity
-code revision
-config fingerprint
-policy version
-execution realism
-evidence identity SHA-256
-artifact SHA-256
-recorded limitations
+96+ columns   → Rich institutional floor
+64–95 columns → narrow stacked floor
+render fault  → compact crash-safe fallback
 ```
 
-Stage skipping remains forbidden. Evidence for one candidate, fingerprint or target stage cannot promote another. `APPROVAL_REQUIRED → PRODUCTION` still requires explicit operator approval and rollback lineage. Even a candidate whose research registry reaches `PRODUCTION` receives **no direct runtime activation authority**; deployment remains a separate governed action.
-
-This keeps the intended hierarchy intact:
+Operational bilingual cues use **English + Roman Urdu**, for example:
 
 ```text
-observed evidence
-→ measured performance
-→ research hypothesis
-→ immutable stage-specific evidence
-→ replay / validation / holdout / stress / shadow / DEMO
-→ APPROVAL_REQUIRED
-→ explicit operator approval
-→ versioned deployment
+WAIT / Intazar
+BUY / Kharid
+SELL / Farokht
+WHY / Wajah
+Current Decision / Maujooda Faisla
+Trade Plan / Mansuba
 ```
 
-Implementation hierarchy, current evidence wiring, autonomous/governed promotion boundaries and remaining learning gaps are documented in:
+Urdu script is not used for operational dashboard labels/statuses. The Arabic invocation may remain as decorative masthead text.
 
-[`TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md`](TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md)
+`DASHBOARD_MODE=GUI` means primary terminal **plus** secondary browser. The browser binds to `127.0.0.1`, has no BUY/SELL/MODIFY/CLOSE controls and cannot own trading authority.
 
-## Approved graphical dashboard
+The browser floor contains:
 
-DEMO uses the approved local graphical dashboard by default. It is one-screen/no-scroll and includes a live candlestick chart, M1/M5/M15/H1/H4 buttons, Indicators, Drawings and Settings controls, Detected Setup, Active Test Family, shadow setups, Opportunity/Timing, TradePlan, Risk, hard Session/News-source state, ManagedTrade, Execution and Gate information.
+- Swing-style masthead, clock and role;
+- Symbol / hard market state / Soft Context / live price / spread / M5 countdown;
+- Market Analysis / Trend / Session-News / Timing rail;
+- completed-candle M1/M5/M15/H1/H4 chart;
+- Indicators / Drawings / Settings / Bars presentation-only controls;
+- Current Signal / Trade Plan / Blocker-Gate / Multi-Timeframe-Setup rail;
+- Risk & Account / one Strategy-Setup Board / Open Managed Trade;
+- Execution / Activity / Learning / System / Recent Verified Closes / discipline floor.
 
-The graphical shell is **fail-visible and market-state independent**. It is created before the first MT5 initialization attempt. A closed market remains visible as `CLOSED`; MT5 initialization/read failures, missing DEMO permission, stale/incomplete data, Session/Gate safety blocks and other governed runtime errors remain visible as `DEGRADED`/`SAFETY BLOCK` dashboard state instead of terminating the UI. Trading remains fail-closed, and the dashboard preserves the last healthy snapshot/candles when a later runtime poll fails.
+Hard Session and Soft Context are displayed separately so `NEW_YORK` context can never be mistaken for verified hard Session OPEN.
 
-Chart/UI controls are presentation-only. They redraw the cached dashboard snapshot and cannot trigger broker writes. The governed trading cycle advances only on its fixed runtime timer.
+The dashboard is fail-visible and market-state independent. CLOSED, UNKNOWN, stale provider data, MT5 failures and governed safety blocks remain visible; trading remains fail-closed.
+
+## REAL / DEMO mode engineering guide
+
+See [`REAL_AND_DEMO_MODE_ARCHITECTURE.md`](REAL_AND_DEMO_MODE_ARCHITECTURE.md) for the as-built mode hierarchy, DEMO account verification, Gate/precheck layers, sole MT5 writer, persistence/reconciliation and connected certification boundary.
 
 ## Live DEMO quick start
 
@@ -135,9 +122,9 @@ Copy-Item .env.demo.example .env -Force
 python bot.py
 ```
 
-The supplied DEMO profile uses the preserved one-active-family evaluation model. REAL broker execution remains hard-disabled.
+The supplied DEMO profile uses structural production routing. `ACTIVE_STRATEGY_FAMILY` is not required for production. REAL broker execution remains hard-disabled.
 
-`Ctrl+C` stops terminal mode safely; closing the graphical window writes a local runtime checkpoint. Runtime state stays under `runtime/` and is not published to GitHub.
+`Ctrl+C` stops the local runtime safely. Mutable runtime state stays under `runtime/` and is not published to GitHub.
 
 ## Non-negotiable project rules
 
@@ -148,5 +135,6 @@ The supplied DEMO profile uses the preserved one-active-family evaluation model.
 - Credentials, account numbers, passwords, tokens and `.env` files are never committed.
 - One independently risk-bearing Gold position at a time initially.
 - No martingale, uncontrolled grid or averaging-down rescue.
+- Hard Session, Risk ceilings, Gate, one-writer, persist-before-send and reconciliation safety are non-learnable.
 
 > Automated trading can lose money. Connected DEMO evidence is still required before any future REAL release is considered.
