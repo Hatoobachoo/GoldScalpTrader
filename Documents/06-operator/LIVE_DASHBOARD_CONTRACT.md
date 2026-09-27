@@ -1,14 +1,12 @@
 # GoldScalpTrader — Live Dashboard Contract
 
 **Status:** IMPLEMENTED — PRIMARY TERMINAL LIVE FLOOR / SECONDARY GRAPHICAL PROJECTION  
-**Version:** 4.0-live-presentation  
-**Authority:** Live presentation cadence, dashboard liveness, bilingual/emoji hierarchy, failure visibility, and authority separation.
+**Version:** 4.1-live-presentation-roman-urdu  
+**Authority:** Live presentation cadence, dashboard liveness, English + Roman Urdu hierarchy, failure visibility, and authority separation.
 
 ## 1. Primary surface
 
-The VS Code/terminal dashboard is the primary live operator surface.
-
-Renderer order:
+The VS Code/terminal dashboard is primary.
 
 ```text
 96+ columns  → Rich institutional floor
@@ -16,147 +14,75 @@ Renderer order:
 render fault → compact crash-safe fallback
 ```
 
-All renderers remain presentation-only and preserve English/Urdu safety cues plus emoji markers when supported.
+All renderers are presentation-only. Operational bilingual cues use English + Roman Urdu (`WAIT / Intazar`, `WHY / Wajah`, `Trade Plan / Mansuba`). The browser is secondary and localhost-only.
 
-The browser is secondary and localhost-only.
+## 2. Liveness
 
-## 2. Liveness contract
+The dashboard remains visible through startup, OPEN, PRE_CLOSE, CLOSED, Session UNKNOWN, no setup, Timing WAIT/MISSED, unavailable TradePlan, Risk/Gate block, reconciliation, MT5/provider faults, runtime exceptions and secondary browser failure.
 
-The dashboard remains visible through:
+> **Presentation fails visible; trading fails closed.**
 
-```text
-startup/readiness
-market OPEN
-PRE_CLOSE
-CLOSED
-Session UNKNOWN
-no valid setup
-Timing WAIT/MISSED
-TradePlan unavailable
-Risk/Gate block
-reconciliation wait
-MT5/data/provider fault
-runtime exception
-secondary graphical failure
-```
+## 3. Same-facts rule
 
-Market closure is not an application-exit signal.
+Both surfaces consume normalized presentation facts. Presentation never independently creates Setup, routed family, Opportunity, Timing, TradePlan, Risk, Gate, Intent, management action or candidate production authority. Missing facts remain missing.
 
-## 3. Fail-visible / fail-closed
+## 4. Primary hierarchy
 
 ```text
-presentation → fail visible
-trading      → fail closed
+IDENTITY HEADER
+M5 thesis / M1 timing / structural routing / governed execution
+MARKET STRIP: hard market state / Soft Context / prices / spread / M5 countdown / action / Gate
+MARKET PICTURE | TRADE SETUP / ROUTE
+CURRENT DECISION / Maujooda Faisla
+TRADE PLAN / Mansuba
+STRATEGY / SETUP BOARD
+RISK & ACCOUNT | TODAY / ACTIVITY | SYSTEM / EXECUTION
+OPEN / MANAGED TRADE
+LEARNING / DISCOVERY
 ```
 
-A failed runtime cycle cannot produce an unverified broker write. The terminal frame shows the exact failure and continues safe polling where allowed. Configuration/startup failure renders a complete safety frame rather than disappearing behind a traceback.
+The identity header and market strip are separate to avoid crowding.
 
-## 4. Same-facts rule
+## 5. Routing truth
 
-Both surfaces consume normalized `DashboardData`/snapshot facts. Presentation never independently creates:
+The dashboard shows the **structurally routed** production family, not a manually configured active family. Scores do not select broker authority. If qualified directions conflict, the dashboard shows WAIT/no routed family.
 
-- Setup;
-- Opportunity;
-- Timing decision;
-- TradePlan;
-- monetary Risk;
-- central Gate permission;
-- Intent;
-- management action;
-- candidate production authority.
+## 6. Session truth
 
-Missing facts stay missing.
+`Hard Session` is authority. `Soft Context` is descriptive only. A contextual `NEW_YORK` label may not be displayed as if it proves hard Session OPEN.
 
-## 5. Primary information hierarchy
+## 7. Secondary browser
 
-The wide primary frame exposes, where available:
+The graphical floor adds presentation richness only:
 
-```text
-Market / Session / Symbol / SELL / BUY
-Spread / M5 countdown / Action / News / Gate
-H4/H1/M15/M5 structure + EMA20/EMA50/RSI/ATR
-Detected Setup + Active Family + M1 Timing
-BUY/SELL desk scores + coverage + exact reason
-TradePlan
-1 ACTIVE + 5 SHADOW Strategy Isolation board
-Risk & Account
-Today / Activity
-System / Execution
-ManagedTrade
-Learning / Discovery / Backup
-```
-
-The narrow/fallback floors retain the same critical truths in stacked form.
-
-## 6. Secondary browser hierarchy
-
-The graphical floor adds only presentation richness:
-
-- robot/brand masthead;
-- Arabic invocation and English/Urdu wording;
-- PKT clock and DEMO/SECONDARY role;
+- robot/brand masthead, invocation, Roman Urdu discipline line, PKT clock;
 - market/live-price/countdown strip;
-- completed-candle chart with M1/M5/M15/H1/H4 tabs;
-- Indicators / Drawings / Bars controls;
-- Timing Intelligence;
-- Signal/Decision;
-- Trade Plan;
-- Blocker/Gate;
-- six-family strategy board;
-- Risk/Account and ManagedTrade;
-- Activity/Learning/Discovery/Execution/System;
+- completed-candle M1/M5/M15/H1/H4 chart;
+- Indicators / Drawings / Settings / Bars local controls;
+- Market Analysis / Trend / Session-News / Timing;
+- Signal/Decision / Trade Plan / Blocker-Gate / Multi-Timeframe-Setup;
+- one Strategy/Setup board;
+- Risk/Account / ManagedTrade;
+- Execution / Activity / Learning / System / Recent Verified Closes / discipline tile;
 - stale/offline overlay.
 
-It explicitly has no BUY/SELL/MODIFY/CLOSE controls.
+It has no BUY/SELL/MODIFY/CLOSE controls.
 
-## 7. `DASHBOARD_MODE`
+## 8. `DASHBOARD_MODE`
 
 ```text
 TERMINAL → primary terminal only
 GUI      → primary terminal + secondary localhost browser
 ```
 
-GUI never replaces the primary runtime path.
+## 9. Cadence
 
-## 8. Presentation cadence
-
-Fast visual refresh may update already-owned clock/quote/countdown/cached facts. It may not rerun strategy, Opportunity, Risk, Gate or broker execution simply because the screen refreshed.
-
-The completed M5 decision cadence remains independent from visual refresh cadence.
-
-## 9. Failure examples
-
-### MT5 unavailable
-
-```text
-Bot Status    DEGRADED
-Action        WAIT
-Market        UNKNOWN
-Reason        exact MT5 initialize/login/read error
-Execution     NO BROKER ACTION FROM FAILED CYCLE
-System        DASHBOARD ALIVE • TRADING FAIL-CLOSED
-```
-
-### Market CLOSED
-
-```text
-Market        CLOSED
-Action        WAIT / runtime-owned state
-Dashboard     full terminal + browser floor remains visible
-```
-
-### Browser unavailable
-
-```text
-Primary       ACTIVE
-Graphical     SECONDARY UNAVAILABLE
-Trading       unchanged
-```
+Fast visual refresh may update already-owned quote/clock/countdown/cached facts. It may not rerun strategy routing, Opportunity, Risk, Gate or broker execution. M5 decision cadence remains independent.
 
 ## 10. No fabricated truth
 
-Unavailable account/Risk/plan/performance/strategy facts must remain `—`, `UNKNOWN`, `WAIT`, or `NOT EVALUATED`. Presentation must never turn absence into zero just to fill a card.
+Unavailable account/Risk/plan/performance/strategy facts stay `—`, `UNKNOWN`, `WAIT` or `NOT EVALUATED`.
 
 ## 11. Final invariant
 
-> **The operator can always see what the bot knows, what it does not know, why it is waiting or blocked, and whether presentation is degraded. Both dashboards reveal the same authority truth; neither dashboard owns trading authority.**
+> **The operator can always see what the bot knows, what it does not know, why it is waiting/blocked and whether presentation is degraded. Both dashboards reveal the same authority truth; neither dashboard owns trading authority.**
