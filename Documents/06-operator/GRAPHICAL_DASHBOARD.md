@@ -1,144 +1,124 @@
 # GoldScalpTrader — Graphical Dashboard
 
-**Status:** APPROVED SECONDARY LOCAL VISUAL FLOOR
-**Version:** 3.0-secondary-browser-floor
-**Authority:** Secondary graphical layout, chart interaction, snapshot presentation, stale/offline visibility, and local-only read-only behavior.
+**Status:** IMPLEMENTED SECONDARY LOCAL VISUAL FLOOR — SWING-STYLE / READ ONLY  
+**Version:** 4.0-swing-parity-browser-floor  
+**Authority:** Secondary graphical composition, chart interaction, snapshot presentation, stale/offline visibility, and local-only read-only behavior.
 
-## 1. Role
-
-The graphical/browser dashboard is **secondary**. The primary operator surface is the terminal dashboard.
+## 1. Role and authority
 
 ```text
-runtime facts → primary terminal dashboard
-             ↘ atomic read-only snapshot → secondary localhost browser
+runtime facts → PRIMARY terminal dashboard
+             ↘ atomic read-only snapshot → SECONDARY localhost browser
 ```
 
-The browser may look richer, but it never becomes a second trading engine and never replaces the terminal runtime path.
+The browser may be visually richer, but it is not a second trading engine. It owns no Risk, Gate, Opportunity, strategy-selection, promotion or broker-write authority.
 
-## 2. Isolation
+It binds to `127.0.0.1`, serves read-only GET/HEAD presentation, rejects state-changing HTTP methods, and may be closed/crashed without affecting the bot or primary terminal floor.
 
-The graphical dashboard:
+## 2. Implemented visual composition
 
-- binds to localhost only;
-- consumes presentation snapshots only;
-- has no MetaTrader5 dependency;
-- cannot call MT5Writer;
-- cannot alter Risk/Gate/Opportunity/strategy policy;
-- cannot enable REAL;
-- cannot place, modify, or close positions;
-- may be closed or crash without affecting the bot or primary dashboard.
+The visual floor deliberately follows the completed GoldSwingTrader institutional layout family while adapting content to Scalp:
 
-## 3. Visual target
+```text
+ROBOT / GoldScalpTraderAI        Arabic invocation        Motto / PKT / DEMO role
+SYMBOL | MARKET | LIVE PRICE / BID / ASK / SPREAD | M5 COUNTDOWN | BOT STATUS
 
-Retain the GoldSwingTrader institutional visual family adapted for Scalp:
+MARKET ANALYSIS   |                 COMPLETED-CANDLE CHART                 | CURRENT SIGNAL
+TREND DIRECTION   |       M1 M5 M15 H1 H4 / Indicators / Drawings / Bars | TRADE PLAN
+SESSION / NEWS    |                                                        | BLOCKER / GATE
+TIMING INTELLIGENCE                                                       | 1 ACTIVE + 5 SHADOW
+
+RISK & ACCOUNT | STRATEGY RESEARCH BOARD | OPEN / MANAGED TRADE
+TODAY / ACTIVITY | LEARNING | DISCOVERY | EXECUTION | SYSTEM | MOTIVATION
+```
+
+Visual language:
 
 - dark navy/black background;
-- cyan/teal framing and status accents;
-- gold emphasis for Gold-specific labels and plan highlights;
-- dense one-screen hierarchy;
-- no page/panel scroll bars in normal supported desktop layouts;
-- truthful unknown/stale/degraded states;
-- no decorative element may obscure trading facts.
+- cyan/teal structure and live-data accents;
+- gold identity/plan emphasis;
+- green/red directional state;
+- emojis plus English/Urdu operator cues;
+- Arabic invocation retained as presentation-only masthead text;
+- dense one-screen desktop floor.
 
-Target layouts:
+## 3. Chart
 
-```text
-1920×1080 full floor
-1600×900 compact floor
-smaller screens → density reduction, never hidden critical safety state
-```
-
-## 4. Panels
-
-The secondary floor should project the same authoritative facts shown by the primary terminal dashboard:
-
-```text
-masthead / clock / mode
-market state / session / Bid / Ask / spread / countdown
-market analysis and MTF context
-central XAU chart
-Detected Setup / Active Family / Signal
-Opportunity / Timing / M1 refinement
-Trade Plan / executable quality / blocker
-Risk/account
-shadow strategy board
-ManagedTrade
-execution/controller/reconciliation
-activity
-learning/discovery
-data/system health
-recent verified closes when available
-```
-
-## 5. Chart controls
-
-Functional local controls:
+Presentation-only chart controls:
 
 ```text
 M1 | M5 | M15 | H1 | H4
-Indicators
-Drawings
-Settings
-zoom / pan / reset
+Indicators ON/OFF
+Drawings ON/OFF
+Bars 30 / 60 / 120
 ```
 
-They affect presentation only.
+The chart renders completed candles from the atomic snapshot. No forming candle is invented. Selecting a tab or visual control cannot alter strategy cadence or create a trade.
 
-Production authority remains:
+Trading roles remain:
 
 ```text
-M5  primary setup/thesis
-M1  subordinate entry refinement
+M5  primary setup/thesis/Opportunity
+M1  subordinate timing refinement
 M15 path/location
-H1  broad context
-H4  optional major context
+H1  broad regime
+H4  major context
 ```
 
-Selecting another chart timeframe cannot change strategy cadence or create a trade.
+## 4. Strategy isolation
 
-## 6. Stale / offline / degraded behavior
-
-The browser remains meaningful when its snapshot is missing or stale:
+The browser carries the six-family research board but keeps live authority explicit:
 
 ```text
-fresh snapshot → normal visual floor
-stale snapshot → BOT OFFLINE / SNAPSHOT STALE
-missing snapshot → waiting/unavailable state
-runtime failure snapshot → DEGRADED / WAIT / exact reason
-market CLOSED → full floor visible with CLOSED state
+1 family  ACTIVE_EXECUTION
+5 families SHADOW_ONLY
 ```
 
-A previous snapshot may remain visible only if clearly marked stale/degraded. It must never be presented as fresh broker truth.
+Each row may show qualification, direction, score and coverage where those facts exist. Missing values remain unknown/blank rather than fabricated. Shadow results are research facts, never broker-realized P/L.
 
-## 7. Detected setup / shadow truth
+## 5. Trade / Risk / blocker truth
 
-The graphical dashboard must not blend all six strategy families into one production vote.
+Trade Plan, Risk, Gate, ManagedTrade and execution fields come from normalized runtime facts. The browser does not recompute them.
 
-- active family + genuine own setup → live-eligible progression may be shown;
-- shadow family setup → `SHADOW ONLY`;
-- no valid setup → `WAIT / NO VALID SETUP`;
-- shadow results never appear as broker-realized P/L.
+No actual plan → `WAITING` / `—`.
+No open trade → explicit flat-state card.
+Missing account/Risk fact → `—` / `UNKNOWN` / `NOT EVALUATED`.
 
-## 8. Trade and Risk truth
+Current blocker and central Gate remain visually distinct.
 
-No fabricated plan, Risk, performance, or account values.
+## 6. Liveness
 
-Missing authoritative value → `—`, `UNKNOWN`, `NOT EVALUATED`, or `NO SAMPLE`.
+```text
+fresh snapshot  → normal floor
+stale snapshot  → BOT OFFLINE / SNAPSHOT STALE + dimmed retained facts
+missing snapshot→ visible waiting state
+runtime failure → DEGRADED/WAIT snapshot when available
+market CLOSED   → full floor remains visible
+```
 
-Current blocker and central Gate must remain separate concepts.
+Snapshot staleness never changes the underlying market state to fake OPEN/CLOSED.
 
-## 9. Security
+## 7. Security
 
-No credentials or financial secrets in snapshots. No public bind. No state-changing HTTP endpoints. No paid/cloud dashboard dependency.
+Hard requirements:
 
-## 10. Launch semantics
+- localhost only;
+- atomic snapshot publication;
+- secret scan before publication;
+- no credentials in browser state;
+- no public/cloud dashboard dependency;
+- no broker-mutating endpoint;
+- **no BUY/SELL/MODIFY/CLOSE controls**;
+- browser availability never determines trading authority.
+
+## 8. Launch semantics
 
 `DASHBOARD_MODE=GUI` means:
 
-> **run the normal primary terminal dashboard and additionally publish/start this secondary browser floor.**
+> **Run the normal primary terminal trading floor and additionally start this secondary localhost visual floor.**
 
-It does not mean browser-primary runtime.
+It never means browser-primary runtime.
 
-## 11. Final invariant
+## 9. Final invariant
 
-> **The graphical dashboard is a rich secondary projection of the same trading facts. It may improve visibility, but it owns no trading authority and its availability can never determine whether the bot or primary terminal dashboard remains alive.**
+> **The browser is a Swing-style secondary projection of the same Scalp runtime facts. It improves visibility only; it cannot create, change, retry, approve or execute a trade.**
