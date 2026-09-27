@@ -169,7 +169,7 @@ def test_governed_promotion_requires_verified_stage_packages_and_cannot_self_act
         assert runtime_activation_allowed(record) is False
 
     _issue(tmp_path, store, record, PromotionStage.PRODUCTION, "STAGE-PROD")
-    with pytest.raises(PermissionError, match="explicit operator approval"):
+    with pytest.raises(PermissionError, match="explicitly approved operator"):
         advance_governed(
             store,
             cid,
