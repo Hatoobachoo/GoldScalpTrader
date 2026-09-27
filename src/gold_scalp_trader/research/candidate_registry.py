@@ -2,8 +2,8 @@
 
 Registration and promotion are research/governance operations only. Reaching a
 stage never edits runtime Settings, Risk, Gate, active strategy selection or
-broker authority. Production-stage evidence still requires explicit operator
-approval plus rollback lineage and a separate governed deployment action.
+broker authority. Stage evidence can only be issued by the verified immutable
+stage-package protocol; arbitrary caller hashes cannot manufacture PASS proof.
 """
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ from .timing_learning import NS as TIMING_NS
 
 NS = "governed_strategy_candidates"
 STAGE_EVIDENCE_NS = "candidate_stage_evidence"
+VERIFIED_STAGE_ISSUER = "VERIFIED_STAGE_PACKAGE_V1"
 KNOWN_SOURCE_NAMESPACES = (
     TIMING_NS,
     MANAGEMENT_NS,
@@ -45,6 +46,8 @@ class StageEvidence:
     evidence_identity_sha256: str
     artifact_sha256: str
     limitations: tuple[str, ...] = ()
+    issuer: str = VERIFIED_STAGE_ISSUER
+    package_manifest_sha256: str | None = None
 
 
 def _payload(record: CandidateRecord) -> dict:
@@ -64,7 +67,6 @@ def _payload(record: CandidateRecord) -> dict:
 
 
 def _restore_semantics(value):
-    """Restore invention tuple semantics lost by JSON serialization."""
     if not isinstance(value, dict):
         raise StateIntegrityError("candidate semantics must be an object")
     restored = dict(value)
@@ -136,7 +138,7 @@ def _expected_next_stage(candidate: Candidate) -> PromotionStage:
     return automated[index + 1]
 
 
-def record_stage_evidence(
+def _record_verified_stage_evidence(
     store: StateStore,
     candidate_id: str,
     target_stage: PromotionStage,
@@ -144,9 +146,13 @@ def record_stage_evidence(
     evidence_id: str,
     identity: EvidenceIdentity,
     artifact_sha256: str,
+    package_manifest_sha256: str,
     limitations: Iterable[str] = (),
+    issuer: str,
 ) -> StageEvidence:
-    """Bind immutable research evidence to exactly one candidate and next stage."""
+    """Low-level sink reserved for the verified stage-package issuer."""
+    if issuer != VERIFIED_STAGE_ISSUER:
+        raise PermissionError("candidate stage evidence requires verified package issuer")
     current = load(store, candidate_id)
     if current is None:
         raise StateIntegrityError(f"unknown candidate {candidate_id}")
@@ -160,8 +166,8 @@ def record_stage_evidence(
         raise StateIntegrityError("stage evidence candidate fingerprint mismatch")
     if not verify_evidence_identity(identity):
         raise StateIntegrityError("stage evidence identity integrity check failed")
-    if not _valid_sha256(artifact_sha256):
-        raise ValueError("stage evidence artifact_sha256 must be a valid SHA-256")
+    if not _valid_sha256(artifact_sha256) or not _valid_sha256(package_manifest_sha256):
+        raise ValueError("stage evidence package/artifact hashes must be valid SHA-256")
 
     payload = {
         "evidence_id": evidence_id,
@@ -171,8 +177,10 @@ def record_stage_evidence(
         "evidence_identity": identity_payload(identity),
         "evidence_identity_sha256": identity.sha256,
         "artifact_sha256": artifact_sha256.lower(),
+        "package_manifest_sha256": package_manifest_sha256.lower(),
         "limitations": [str(item) for item in limitations],
         "result": "PASS",
+        "issuer": issuer,
         "runtime_authority": "NONE",
         "broker_authority": "NONE",
     }
@@ -185,6 +193,8 @@ def record_stage_evidence(
         identity.sha256,
         artifact_sha256.lower(),
         tuple(str(item) for item in limitations),
+        issuer,
+        package_manifest_sha256.lower(),
     )
 
 
@@ -195,6 +205,11 @@ def load_stage_evidence(store: StateStore, evidence_id: str) -> StageEvidence | 
     payload = row.payload
     if payload.get("runtime_authority") != "NONE" or payload.get("broker_authority") != "NONE":
         raise StateIntegrityError("stage evidence authority corruption")
+    if payload.get("issuer") != VERIFIED_STAGE_ISSUER:
+        raise StateIntegrityError("stage evidence issuer is not verified")
+    package_hash = str(payload.get("package_manifest_sha256", ""))
+    if not _valid_sha256(package_hash):
+        raise StateIntegrityError("stage evidence package manifest hash invalid")
     identity_payload_raw = payload.get("evidence_identity")
     if not isinstance(identity_payload_raw, dict):
         raise StateIntegrityError("stage evidence identity missing")
@@ -227,6 +242,8 @@ def load_stage_evidence(store: StateStore, evidence_id: str) -> StageEvidence | 
         identity.sha256,
         artifact_sha256,
         tuple(str(item) for item in payload.get("limitations", ())),
+        VERIFIED_STAGE_ISSUER,
+        package_hash,
     )
 
 
@@ -257,7 +274,7 @@ def advance_governed(
         raise StateIntegrityError(f"unknown candidate {candidate_id}")
     evidence = load_stage_evidence(store, evidence_id)
     if evidence is None:
-        raise StateIntegrityError("promotion requires typed candidate-stage evidence")
+        raise StateIntegrityError("promotion requires verified typed candidate-stage evidence")
     if evidence.candidate_id != candidate_id:
         raise StateIntegrityError("promotion evidence belongs to a different candidate")
     if evidence.candidate_fingerprint != current.candidate.fingerprint:
@@ -281,5 +298,18 @@ def advance_governed(
 
 
 def runtime_activation_allowed(record: CandidateRecord) -> bool:
-    """Registry stage alone can never activate a strategy in live runtime."""
     return False
+
+
+__all__ = [
+    "KNOWN_SOURCE_NAMESPACES",
+    "NS",
+    "STAGE_EVIDENCE_NS",
+    "CandidateRecord",
+    "StageEvidence",
+    "advance_governed",
+    "load",
+    "load_stage_evidence",
+    "register_invention",
+    "runtime_activation_allowed",
+]
