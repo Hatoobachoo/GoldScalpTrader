@@ -10,13 +10,13 @@ from gold_scalp_trader.domain.enums import RiskDecision,TimingOutcome
 from gold_scalp_trader.domain.market import MarketSnapshot
 from gold_scalp_trader.intelligence.snapshot import IntelligenceSnapshot,build as build_intelligence
 from gold_scalp_trader.risk.engine import RiskEvaluation,evaluate as risk_eval
-from gold_scalp_trader.strategies.isolation import IsolationResult,apply as isolate
+from gold_scalp_trader.strategies.isolation import IsolationResult,route
 from gold_scalp_trader.strategies.setup_detector import SetupRegistry,detect
 @dataclass(frozen=True,slots=True)
 class CycleResult:
     intelligence:IntelligenceSnapshot; registry:SetupRegistry; isolation:IsolationResult; board:DecisionBoard; opportunity:Opportunity|None; timing:TimingDecision|None; trade_plan:TradePlan|None; quality:ExecutableQuality|None; risk:RiskEvaluation|None; live_action:str; status:str; reason:str; gate_text:str="NOT EVALUATED"; system_text:str="ANALYTICS READY"
 def run_cycle(market:MarketSnapshot,settings:Settings,*,quality_policy:QualityPolicy|None=None,target_risk_pct:float|None=None)->CycleResult:
-    intel=build_intelligence(market); registry=detect(intel); isolation=isolate(registry,settings.active_strategy_family); board=fuse(isolation.live_candidate); opp=create_opportunity(board,market.captured_at)
+    intel=build_intelligence(market); registry=detect(intel); isolation=route(registry); board=fuse(isolation.live_candidate); opp=create_opportunity(board,market.captured_at)
     if opp is None:return CycleResult(intel,registry,isolation,board,None,None,None,None,None,"WAIT","SCANNING",isolation.reason)
     timing=timing_eval(opp,intel)
     if timing.outcome in {TimingOutcome.WAIT,TimingOutcome.MISSED,TimingOutcome.INVALID}:return CycleResult(intel,registry,isolation,board,opp,timing,None,None,None,"WAIT","TIMING",timing.reason)
