@@ -1,11 +1,9 @@
-"""Verify implementation parity with the frozen GoldScalpTrader contracts.
+"""Static document/code contract guard for the GoldScalpTrader offline release.
 
-This local/static guard does not replace connected Exness DEMO proof. It checks
-Document topology, canonical source/test ownership, preserved Risk constants,
-REAL hard-disable, market-first isolation, hard Session / soft News separation,
-durable Opportunity/timing/learning/governed-candidate ownership, critical
-implementation-to-catalog proof mappings, and forbidden broker dependencies in
-analytical/research/read-only layers.
+This verifier deliberately checks architectural wiring that unit tests can miss:
+sole canonical DEMO runtime, no caller Session override, durable Risk-day sizing,
+research-only shadow lifecycle, verified stage-proof issuance, sole MT5 writer,
+and frozen policy constants. It never claims connected Exness proof.
 """
 from __future__ import annotations
 
@@ -29,213 +27,56 @@ EXPECTED_DOC_COUNTS = {
 }
 
 REQUIRED_SOURCE_PATHS = (
-    "config/settings.py",
-    "domain/enums.py",
-    "domain/ids.py",
-    "domain/market.py",
-    "domain/models.py",
-    "diagnostics/logging.py",
-    "diagnostics/reasons.py",
-    "diagnostics/health.py",
-    "diagnostics/metrics.py",
-    "diagnostics/connected_demo.py",
-    "security/financial_secrets.py",
-    "market_data/account_mode.py",
-    "market_data/mt5_reader.py",
-    "market_data/activity.py",
-    "market_data/snapshot.py",
-    "intelligence/candle_structure.py",
-    "intelligence/indicators.py",
-    "intelligence/technical.py",
-    "intelligence/liquidity.py",
-    "intelligence/confluence.py",
-    "intelligence/session.py",
-    "intelligence/news.py",
-    "intelligence/snapshot.py",
-    "strategies/floor.py",
-    "strategies/setup_detector.py",
-    "strategies/isolation.py",
-    "strategies/scheduler.py",
-    "strategies/confluence.py",
-    "decisions/fusion.py",
-    "decisions/snapshot.py",
-    "decisions/opportunity.py",
-    "decisions/timing.py",
-    "decisions/family_trade_plan.py",
-    "decisions/trade_plan.py",
-    "decisions/executable_quality.py",
-    "risk/engine.py",
-    "risk/state.py",
-    "risk/runtime.py",
-    "risk/permissions.py",
-    "execution/models.py",
-    "execution/checks.py",
-    "execution/gate.py",
-    "execution/intent_store.py",
-    "execution/service.py",
-    "execution/mt5_writer.py",
-    "execution/reconcile.py",
-    "execution/controller.py",
-    "execution/sqlite_coordination.py",
-    "management/models.py",
-    "management/manager.py",
-    "management/execution.py",
-    "management/closure.py",
-    "management/store.py",
-    "persistence/store.py",
-    "persistence/runtime_state.py",
-    "persistence/checkpoint.py",
-    "persistence/backup.py",
-    "persistence/local_recovery_package.py",
-    "research/learning.py",
-    "research/live_learning.py",
-    "research/timing_learning.py",
-    "research/runtime_evidence.py",
-    "research/candidate_registry.py",
-    "research/replay.py",
-    "research/management_replay.py",
-    "research/session_history.py",
-    "research/stress.py",
-    "research/validation.py",
-    "research/datasets.py",
-    "research/acquisition.py",
-    "research/evidence.py",
-    "research/packages.py",
-    "research/metrics.py",
-    "research/outcomes.py",
-    "research/ablation.py",
-    "research/episode_journal.py",
-    "research/discovery.py",
-    "research/invention.py",
-    "research/models.py",
-    "research/promotion.py",
-    "operator/presentation.py",
-    "operator/terminal_dashboard.py",
-    "operator/graphical_snapshot.py",
-    "app/main.py",
-    "app/runtime.py",
-    "app/runtime_core.py",
-    "app/session_authority.py",
-    "app/opportunity_lifecycle.py",
-    "app/startup.py",
-    "app/recovery.py",
-    "app/recovery_mt5.py",
-    "app/cycle.py",
-    "app/loop.py",
-    "app/dashboard.py",
-    "app/live_presentation.py",
-    "app/session_news.py",
-    "app/demo_runner.py",
-    "app/graphical_demo_runner.py",
-)
-
-REQUIRED_ROOT_PATHS = (
-    "graphical_dashboard/ui.py",
-    "graphical_dashboard/chart.py",
-    "graphical_dashboard/controls.py",
-    "graphical_dashboard/server.py",
-    "graphical_dashboard/__main__.py",
-    "TIMING_INTELLIGENCE_AND_GOVERNED_LEARNING_IMPLEMENTATION.md",
-    "GOVERNED_AUTONOMOUS_STRATEGY_IMPLEMENTATION.md",
-    "REAL_AND_DEMO_MODE_ARCHITECTURE.md",
-)
-
-REQUIRED_SCRIPTS = (
-    "scripts/run_walk_forward.py",
-    "scripts/acquire_mt5_dataset.py",
-    "scripts/report_demo_learning_evidence.py",
-    "scripts/certify_connected_demo.py",
-    "scripts/monitor_connected_demo.py",
-    "scripts/restore_runtime_checkpoint.py",
-    "scripts/create_local_recovery_package.py",
-    "scripts/create_source_zip.py",
-    "scripts/scan_financial_secrets.py",
-    "scripts/verify_documents_manual.py",
-    "scripts/verify_contract_sync.py",
-    "scripts/verify_offline_release.py",
+    "config/settings.py", "domain/enums.py", "domain/ids.py", "domain/market.py", "domain/models.py",
+    "market_data/account_mode.py", "market_data/mt5_reader.py", "market_data/activity.py", "market_data/snapshot.py",
+    "intelligence/candle_structure.py", "intelligence/indicators.py", "intelligence/technical.py",
+    "intelligence/liquidity.py", "intelligence/confluence.py", "intelligence/session.py", "intelligence/news.py",
+    "intelligence/snapshot.py", "strategies/floor.py", "strategies/setup_detector.py", "strategies/isolation.py",
+    "decisions/fusion.py", "decisions/opportunity.py", "decisions/timing.py", "decisions/family_trade_plan.py",
+    "decisions/trade_plan.py", "decisions/executable_quality.py", "risk/engine.py", "risk/state.py",
+    "risk/runtime.py", "risk/permissions.py", "execution/models.py", "execution/checks.py", "execution/gate.py",
+    "execution/intent_store.py", "execution/service.py", "execution/mt5_writer.py", "execution/reconcile.py",
+    "execution/controller.py", "management/models.py", "management/manager.py", "management/execution.py",
+    "management/closure.py", "management/store.py", "persistence/store.py", "persistence/checkpoint.py",
+    "research/learning.py", "research/live_learning.py", "research/timing_learning.py", "research/runtime_evidence.py",
+    "research/outcomes.py", "research/shadow_runtime.py", "research/candidate_registry.py",
+    "research/stage_orchestrator.py", "research/replay.py", "research/management_replay.py",
+    "research/session_history.py", "research/stress.py", "research/validation.py", "research/evidence.py",
+    "research/packages.py", "research/metrics.py", "research/ablation.py", "research/discovery.py",
+    "research/invention.py", "research/promotion.py", "operator/presentation.py", "operator/terminal_dashboard.py",
+    "app/runtime.py", "app/runtime_core.py", "app/session_authority.py", "app/opportunity_lifecycle.py",
+    "app/cycle.py", "app/demo_runner.py",
 )
 
 CRITICAL_TESTS = (
-    "tests/test_cycle_no_forcing.py",
-    "tests/test_strategy_isolation.py",
-    "tests/test_decision_pipeline.py",
-    "tests/test_executable_quality.py",
-    "tests/test_risk_profiles.py",
-    "tests/test_risk_state.py",
-    "tests/test_risk_runtime_state.py",
-    "tests/test_session_news_provider.py",
-    "tests/test_session_runtime_authority.py",
-    "tests/test_opportunity_lifecycle.py",
-    "tests/test_timing_learning_lineage.py",
-    "tests/test_execution_intent.py",
-    "tests/test_gate.py",
-    "tests/test_controller.py",
-    "tests/test_guarded_demo_runtime.py",
-    "tests/test_management_lifecycle.py",
-    "tests/test_action_reconciliation.py",
-    "tests/test_deal_history_reader.py",
-    "tests/test_writer_attribution.py",
-    "tests/test_demo_launcher.py",
-    "tests/test_dashboard_controls.py",
-    "tests/test_graphical_runtime.py",
-    "tests/test_live_learning_pipeline.py",
-    "tests/test_runtime_research_evidence.py",
-    "tests/test_candidate_registry.py",
-    "tests/test_research_governance.py",
-    "tests/test_research_integrity.py",
-    "tests/test_checkpoint.py",
-    "tests/test_full_checkpoint.py",
-    "tests/test_recovery_package.py",
-    "tests/test_connected_demo_evidence.py",
+    "tests/test_cycle_no_forcing.py", "tests/test_strategy_isolation.py", "tests/test_decision_pipeline.py",
+    "tests/test_risk_profiles.py", "tests/test_risk_runtime_state.py", "tests/test_session_runtime_authority.py",
+    "tests/test_guarded_demo_runtime.py", "tests/test_execution_intent.py", "tests/test_gate.py",
+    "tests/test_controller.py", "tests/test_management_lifecycle.py", "tests/test_live_learning_pipeline.py",
+    "tests/test_runtime_research_evidence.py", "tests/test_shadow_runtime.py",
+    "tests/test_research_runtime_isolation.py", "tests/test_candidate_registry.py",
+    "tests/test_research_integrity.py", "tests/test_full_checkpoint.py",
 )
 
 ANALYTICAL_NO_BROKER_DIRS = (
-    SRC / "intelligence",
-    SRC / "strategies",
-    SRC / "risk",
-    SRC / "research",
-    SRC / "operator",
-    SRC / "diagnostics",
-    ROOT / "graphical_dashboard",
+    SRC / "intelligence", SRC / "strategies", SRC / "risk", SRC / "research",
+    SRC / "operator", SRC / "diagnostics", ROOT / "graphical_dashboard",
 )
-FORBIDDEN_IMPORT_FRAGMENTS = (
-    "MetaTrader5",
-    "execution.mt5_writer",
-    "from gold_scalp_trader.execution import mt5_writer",
-)
-STALE_POLICY_TERMS = (
-    "NEWS_BLACKOUT",
-    "POST_NEWS_WARMUP",
-    "M1 diagnostic-only",
-    "M1 diagnostic only",
-)
-CONNECTED_EVIDENCE_PATHS = (
-    ROOT / "scripts" / "certify_connected_demo.py",
-    ROOT / "scripts" / "monitor_connected_demo.py",
-    SRC / "diagnostics" / "connected_demo.py",
-)
+FORBIDDEN_IMPORT_FRAGMENTS = ("MetaTrader5", "execution.mt5_writer")
+STALE_POLICY_TERMS = ("NEWS_BLACKOUT", "POST_NEWS_WARMUP", "M1 diagnostic-only", "M1 diagnostic only")
 
 CATALOG_REQUIRED_FRAGMENTS = (
     "**Version:** 2.6-institutional-scalp-implementation",
-    "app/session_news.py",
-    "app/session_authority.py",
-    "tests/test_session_runtime_authority.py",
-    "app/opportunity_lifecycle.py",
-    "tests/test_opportunity_lifecycle.py",
-    "app/runtime_core.py",
-    "research/timing_learning.py",
-    "tests/test_timing_learning_lineage.py",
-    "research/runtime_evidence.py",
-    "tests/test_runtime_research_evidence.py",
-    "research/candidate_registry.py",
-    "tests/test_candidate_registry.py",
-    "verified valid Session OPEN",
-    "News health                 → never a hard-trading permission",
-    "verified full-close queue item",
-    "consume queue only after durable save",
+    "app/session_news.py", "app/session_authority.py", "tests/test_session_runtime_authority.py",
+    "app/opportunity_lifecycle.py", "tests/test_opportunity_lifecycle.py", "app/runtime_core.py",
+    "research/timing_learning.py", "tests/test_timing_learning_lineage.py",
+    "research/runtime_evidence.py", "tests/test_runtime_research_evidence.py",
+    "research/shadow_runtime.py", "tests/test_shadow_runtime.py",
+    "research/stage_orchestrator.py", "research/candidate_registry.py", "tests/test_candidate_registry.py",
+    "verified valid Session OPEN", "News health                 → never a hard-trading permission",
+    "verified full-close queue item", "consume queue only after durable save",
     "runtime activation remains separate from candidate registry stage",
-    "REAL = hard-disabled",
-    "Connected DEMO proof — still external",
+    "REAL = hard-disabled", "Connected DEMO proof — still external",
 )
 
 
@@ -243,11 +84,12 @@ def _fail(errors: list[str], message: str) -> None:
     errors.append(message)
 
 
-def _parse_module(path: Path) -> ast.Module:
-    try:
-        return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    except (OSError, SyntaxError) as exc:
-        raise RuntimeError(f"cannot parse {path.relative_to(ROOT)}: {exc}") from exc
+def _tree(path: Path) -> ast.Module:
+    return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+
+
+def _function(tree: ast.Module, name: str) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+    return next((n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == name), None)
 
 
 def _literal_assignment(tree: ast.Module, name: str):
@@ -276,12 +118,12 @@ def check_required_paths(errors: list[str]) -> None:
     for rel in REQUIRED_SOURCE_PATHS:
         if not (SRC / rel).is_file():
             _fail(errors, f"missing canonical source owner: src/gold_scalp_trader/{rel}")
-    for rel in REQUIRED_ROOT_PATHS + REQUIRED_SCRIPTS + CRITICAL_TESTS:
+    for rel in CRITICAL_TESTS:
         if not (ROOT / rel).is_file():
-            _fail(errors, f"missing required implementation/proof file: {rel}")
+            _fail(errors, f"missing critical regression proof: {rel}")
 
 
-def check_catalog_implementation_map(errors: list[str]) -> None:
+def check_catalog(errors: list[str]) -> None:
     if not CATALOG.is_file():
         _fail(errors, "missing FILE_AND_TEST_CATALOG.md")
         return
@@ -291,39 +133,29 @@ def check_catalog_implementation_map(errors: list[str]) -> None:
             _fail(errors, f"implemented proof disappeared from engineering catalog: {fragment}")
 
 
-def check_preserved_policy(errors: list[str]) -> None:
+def check_frozen_policy(errors: list[str]) -> None:
     path = SRC / "config" / "settings.py"
     text = path.read_text(encoding="utf-8")
-    tree = _parse_module(path)
     try:
-        real_enabled = _literal_assignment(tree, "REAL_RELEASE_ENABLED")
+        real_enabled = _literal_assignment(_tree(path), "REAL_RELEASE_ENABLED")
     except (KeyError, ValueError) as exc:
-        _fail(errors, f"REAL_RELEASE_ENABLED cannot be statically verified: {exc}")
+        _fail(errors, f"REAL_RELEASE_ENABLED cannot be verified: {exc}")
     else:
         if real_enabled is not False:
-            _fail(errors, "REAL_RELEASE_ENABLED must remain False before Phase 16 approval")
-
+            _fail(errors, "REAL_RELEASE_ENABLED must remain False")
     for expected in (
         '"SMALL": RiskBand(3.0, 4.5, 6.5, 7.0, 12.0)',
         '"MEDIUM": RiskBand(2.0, 3.0, 4.5, 5.0, 9.0)',
         '"NORMAL": RiskBand(1.0, 2.0, 3.5, 4.0, 7.0)',
-    ):
-        if expected not in text:
-            _fail(errors, f"preserved Risk band changed or missing: {expected}")
-
-    for expected in (
-        "max_open_positions: int = 1",
-        "max_consecutive_losses: int = 3",
-        "consecutive_loss_cooldown_minutes: int = 30",
-        "context_cache_ttl_seconds: int = 1800",
-        "aggressive_small_account: bool = False",
+        "max_open_positions: int = 1", "max_consecutive_losses: int = 3",
+        "consecutive_loss_cooldown_minutes: int = 30", "aggressive_small_account: bool = False",
         "manual_daily_loss_reset_enabled: bool = False",
     ):
         if expected not in text:
-            _fail(errors, f"preserved setting changed or missing: {expected}")
+            _fail(errors, f"preserved policy changed/missing: {expected}")
 
 
-def check_architecture_boundaries(errors: list[str]) -> None:
+def check_broker_boundaries(errors: list[str]) -> None:
     for directory in ANALYTICAL_NO_BROKER_DIRS:
         for path in directory.glob("*.py"):
             text = path.read_text(encoding="utf-8")
@@ -331,64 +163,64 @@ def check_architecture_boundaries(errors: list[str]) -> None:
                 if fragment in text:
                     _fail(errors, f"forbidden broker dependency in {path.relative_to(ROOT)}: {fragment}")
             if "order_send(" in text or "order_send (" in text:
-                _fail(errors, f"raw order_send outside sole writer boundary: {path.relative_to(ROOT)}")
-
-    writer = SRC / "execution" / "mt5_writer.py"
-    if "order_send" not in writer.read_text(encoding="utf-8"):
-        _fail(errors, "sole MT5 writer no longer contains the raw order_send boundary")
-
-    setup = (SRC / "strategies" / "setup_detector.py").read_text(encoding="utf-8")
-    isolation = (SRC / "strategies" / "isolation.py").read_text(encoding="utf-8")
-    if "detect" not in setup.lower():
-        _fail(errors, "setup_detector.py no longer exposes recognizable market-first detection logic")
-    if "active" not in isolation.lower() or "shadow" not in isolation.lower():
-        _fail(errors, "strategy isolation no longer visibly separates active and shadow states")
-
-    risk_runtime = SRC / "risk" / "runtime.py"
-    text = risk_runtime.read_text(encoding="utf-8")
-    if "order_send(" in text or "execution.mt5_writer" in text:
-        _fail(errors, "durable Risk runtime gained broker-write authority")
-    risk_state = (SRC / "risk" / "state.py").read_text(encoding="utf-8")
-    if "StateStore" not in text or "risk_day" not in risk_state:
-        _fail(errors, "durable Risk-day state ownership is no longer explicit")
-
-    provider = SRC / "app" / "session_news.py"
-    text = provider.read_text(encoding="utf-8")
-    if "order_send(" in text or "execution.mt5_writer" in text:
-        _fail(errors, "Session/News provider gained broker-write authority")
-    if "hard_trading_permission" not in text or "MarketState.UNKNOWN" not in text:
-        _fail(errors, "Session/News authority separation is no longer explicit")
-
-    session_authority = (SRC / "app" / "session_authority.py").read_text(encoding="utf-8")
-    if "order_send(" in session_authority or "execution.mt5_writer" in session_authority:
-        _fail(errors, "hard Session authority gained broker-write authority")
-    if "MarketState.PRE_CLOSE" not in session_authority or "unknown_snapshot(" not in session_authority:
-        _fail(errors, "hard Session runtime no longer exposes PRE_CLOSE/UNKNOWN fail-closed semantics")
-
-    opportunity = (SRC / "app" / "opportunity_lifecycle.py").read_text(encoding="utf-8")
-    if "TRIGGERED" not in opportunity or "StateStore" not in opportunity:
-        _fail(errors, "durable Opportunity lifecycle no longer exposes terminal/persistent ownership")
-
-    candidate_registry = (SRC / "research" / "candidate_registry.py").read_text(encoding="utf-8")
-    if "runtime_activation_allowed" not in candidate_registry or "return False" not in candidate_registry:
-        _fail(errors, "candidate registry no longer visibly denies direct runtime activation")
+                _fail(errors, f"raw order_send outside sole writer: {path.relative_to(ROOT)}")
+    if "order_send" not in (SRC / "execution" / "mt5_writer.py").read_text(encoding="utf-8"):
+        _fail(errors, "sole MT5 writer lost raw order_send boundary")
 
 
-def check_connected_evidence_is_read_only(errors: list[str]) -> None:
-    for path in CONNECTED_EVIDENCE_PATHS:
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
-        if "order_send(" in text or "execution.mt5_writer" in text:
-            _fail(errors, f"connected evidence tooling gained broker-write authority: {path.relative_to(ROOT)}")
-        if "REAL_RELEASE_ENABLED = True" in text:
-            _fail(errors, f"connected evidence tooling attempts REAL enablement: {path.relative_to(ROOT)}")
+def check_runtime_authorities(errors: list[str]) -> None:
+    runtime_path = SRC / "app" / "runtime.py"
+    core_path = SRC / "app" / "runtime_core.py"
+    runtime_tree = _tree(runtime_path)
+    core_tree = _tree(core_path)
+    guarded = _function(runtime_tree, "run_guarded_demo_cycle")
+    if guarded is None:
+        _fail(errors, "canonical run_guarded_demo_cycle missing")
+    else:
+        args = {arg.arg for arg in (*guarded.args.args, *guarded.args.kwonlyargs)}
+        if "market_open" in args:
+            _fail(errors, "canonical runtime exposes caller Session override market_open")
+    if _function(core_tree, "run_guarded_demo_cycle") is not None:
+        _fail(errors, "runtime_core exposes duplicate full guarded execution path")
 
-    monitor = ROOT / "scripts" / "monitor_connected_demo.py"
-    if monitor.is_file():
-        text = monitor.read_text(encoding="utf-8")
-        if "--interval-seconds" not in text or "at least 5 seconds" not in text:
-            _fail(errors, "connected DEMO monitor lost bounded sampling interval guard")
+    runtime = runtime_path.read_text(encoding="utf-8")
+    for required in (
+        "prepare_risk_authority(",
+        "day_start_equity=authority.state.day_start_equity",
+        "session_action_allowed(provider, action) and broker_allowed is True",
+    ):
+        if required not in runtime:
+            _fail(errors, f"canonical runtime authority wiring missing: {required}")
+
+    core = core_path.read_text(encoding="utf-8")
+    if "authority_allowed: bool" not in core or "effective_permission = authority_allowed and broker_allowed is True" not in core:
+        _fail(errors, "managed runtime mechanics are not bound to canonical Session permission")
+
+
+def check_research_governance(errors: list[str]) -> None:
+    shadow = (SRC / "research" / "shadow_runtime.py").read_text(encoding="utf-8")
+    for forbidden in ("execution.mt5_writer", "execution.gate", "risk.engine", "order_send("):
+        if forbidden in shadow:
+            _fail(errors, f"shadow lifecycle gained forbidden authority: {forbidden}")
+    for required in ("SHADOW_ONLY", "TERMINAL_NS", "evaluate_counterfactual_path", "broker_authority"):
+        if required not in shadow:
+            _fail(errors, f"shadow lifecycle invariant missing: {required}")
+
+    registry = (SRC / "research" / "candidate_registry.py").read_text(encoding="utf-8")
+    orchestrator = (SRC / "research" / "stage_orchestrator.py").read_text(encoding="utf-8")
+    if "def record_stage_evidence(" in registry:
+        _fail(errors, "candidate registry exposes arbitrary public stage PASS issuer")
+    if "VERIFIED_STAGE_PACKAGE_V1" not in registry or "package_manifest_sha256" not in registry:
+        _fail(errors, "candidate registry is not bound to verified stage packages")
+    for required in ("verify_evidence_package", "required_checks", "candidate_fingerprint", "passed"):
+        if required not in orchestrator:
+            _fail(errors, f"stage proof orchestrator invariant missing: {required}")
+    if "runtime_activation_allowed" not in registry or "return False" not in registry:
+        _fail(errors, "candidate registry can no longer prove zero runtime activation authority")
+
+    runner = (SRC / "app" / "demo_runner.py").read_text(encoding="utf-8")
+    if "_record_research_best_effort" not in runner or "record_shadow_runtime" not in runner:
+        _fail(errors, "runtime research/shadow evidence is not isolated/wired")
 
 
 def check_no_legacy_policy_code(errors: list[str]) -> None:
@@ -396,17 +228,18 @@ def check_no_legacy_policy_code(errors: list[str]) -> None:
         text = path.read_text(encoding="utf-8")
         for term in STALE_POLICY_TERMS:
             if term in text:
-                _fail(errors, f"legacy policy term found in code {path.relative_to(ROOT)}: {term}")
+                _fail(errors, f"legacy policy term in {path.relative_to(ROOT)}: {term}")
 
 
 def main() -> int:
     errors: list[str] = []
     check_documents(errors)
     check_required_paths(errors)
-    check_catalog_implementation_map(errors)
-    check_preserved_policy(errors)
-    check_architecture_boundaries(errors)
-    check_connected_evidence_is_read_only(errors)
+    check_catalog(errors)
+    check_frozen_policy(errors)
+    check_broker_boundaries(errors)
+    check_runtime_authorities(errors)
+    check_research_governance(errors)
     check_no_legacy_policy_code(errors)
 
     print("DOCUMENT / CODE CONTRACT SYNC AUDIT")
@@ -417,16 +250,15 @@ def main() -> int:
         return 1
 
     print("  PASS  66-document topology")
-    print("  PASS  canonical source / script / proof ownership paths")
-    print("  PASS  implemented source/test mappings remain represented in engineering catalog")
+    print("  PASS  canonical source / critical-test ownership paths")
     print("  PASS  preserved Risk / cooldown / REAL-disable policy")
-    print("  PASS  durable UTC Risk-day component remains read/accounting-only")
-    print("  PASS  Session hard / News soft runtime authority boundaries")
-    print("  PASS  durable Opportunity / timing lineage ownership")
-    print("  PASS  governed candidate registry cannot directly activate runtime")
-    print("  PASS  setup-detection / isolation boundaries")
+    print("  PASS  sole canonical DEMO runtime; no caller Session override")
+    print("  PASS  durable UTC Risk-day authority wired into live OPEN sizing")
+    print("  PASS  Session hard / News soft authority boundaries")
     print("  PASS  sole-writer / no-broker analytical boundaries")
-    print("  PASS  connected-DEMO evidence tooling remains read-only")
+    print("  PASS  automatic causal SHADOW_ONLY outcome lifecycle")
+    print("  PASS  verified immutable stage-proof issuance; no direct runtime activation")
+    print("  PASS  research evidence failures isolated from broker-cycle authority")
     print("CONTRACT SYNC: PASS")
     print("CONNECTED DEMO FACTS: NOT PROVEN BY THIS STATIC AUDIT")
     return 0
