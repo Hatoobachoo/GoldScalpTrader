@@ -122,8 +122,8 @@ def render_dashboard(
             ),
             _rule(f"{e('📈')} TODAY / ACTIVITY · Aaj", width),
             _fit(
-                f"Today {_money(today)} | Entries {data.entries_today if data.entries_today is not None else '—'} | "
-                f"Trades {data.trades_total if data.trades_total is not None else '—'} | Cooldown {data.cooldown_state}",
+                f"Today {_money(today)} | Entries {data.bot_entries_today if data.bot_entries_today is not None else '—'} | "
+                f"Trades {data.bot_total_trades if data.bot_total_trades is not None else '—'} | Cooldown {data.cooldown}",
                 width,
             ),
             _fit(f"Hard Session {data.market_state} | Soft Context {data.soft_session}", width),
