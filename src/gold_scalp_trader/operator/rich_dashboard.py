@@ -227,9 +227,7 @@ def _strategy_lines(data: DashboardData, m: dict[str, str], color: bool, width: 
 
 def _markers(emoji: bool) -> dict[str, str]:
     if not emoji:
-        return {k: "" for k in (
-            "gold market sell buy spread candle decision news execution money plug shield crown plan strategy risk wallet lot position activity system trade learning brain discovery message health target trophy clock coverage indicator rsi atr compass entry stop rocket"
-        )}
+        return {k: "" for k in "gold market sell buy spread candle decision news execution money plug shield crown plan strategy risk wallet lot position activity system trade learning brain discovery message health target trophy clock coverage indicator rsi atr compass entry stop rocket".split()}
     return {
         "gold":"🪙","market":"🌍","sell":"🔻","buy":"🔺","spread":"↔","candle":"🕯","decision":"🎯",
         "news":"📰","execution":"🚦","money":"💰","plug":"🔌","shield":"🛡️","crown":"👑","plan":"📋",
