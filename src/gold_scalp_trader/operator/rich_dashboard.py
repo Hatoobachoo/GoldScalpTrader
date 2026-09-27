@@ -117,22 +117,32 @@ def _render(data: DashboardData, *, emoji: bool, width: int, color: bool | None)
     m = _m(emoji)
     items: list[Any] = [_identity_header(data, m), _market_strip(data, m)]
 
-    pair = Table.grid(expand=True, padding=(0, 1)); pair.add_column(ratio=1); pair.add_column(ratio=1)
-    pair.add_row(_market_panel(data, m), _setup_panel(data, m)); items.append(pair)
+    pair = Table.grid(expand=True, padding=(0, 1))
+    pair.add_column(ratio=1)
+    pair.add_column(ratio=1)
+    pair.add_row(_market_panel(data, m), _setup_panel(data, m))
+    items.append(pair)
     items += [_decision_panel(data, m), _trade_plan_panel(data, m), _strategy_panel(data, m)]
 
-    lower = Table.grid(expand=True, padding=(0, 1)); lower.add_column(ratio=1); lower.add_column(ratio=1); lower.add_column(ratio=1)
-    lower.add_row(_risk_panel(data, m), _activity_panel(data, m), _system_panel(data, m)); items.append(lower)
+    lower = Table.grid(expand=True, padding=(0, 1))
+    lower.add_column(ratio=1)
+    lower.add_column(ratio=1)
+    lower.add_column(ratio=1)
+    lower.add_row(_risk_panel(data, m), _activity_panel(data, m), _system_panel(data, m))
+    items.append(lower)
 
     if data.managed_trade_text and data.managed_trade_text.upper() != "NONE":
         items.append(Panel(Text(data.managed_trade_text), title=f"{m['trade']} OPEN / MANAGED TRADE · Khula Trade",
                            border_style="bright_green", box=box.ROUNDED))
     items.append(_learning_panel(data, m))
-    console.print(Group(*items)); return stream.getvalue().rstrip("\n")
+    console.print(Group(*items))
+    return stream.getvalue().rstrip("\n")
 
 
 def _identity_header(data: DashboardData, m: dict[str, str]) -> Any:
-    body = Table.grid(expand=True); body.add_column(ratio=2); body.add_column(ratio=1, justify="right")
+    body = Table.grid(expand=True)
+    body.add_column(ratio=2)
+    body.add_column(ratio=1, justify="right")
     body.add_row(
         _line((f"{m['gold']} GoldScalpTraderAI", "bold bright_yellow"),
               ("  •  PRIMARY LIVE SCALPING FLOOR", "bold bright_cyan")),
@@ -147,7 +157,8 @@ def _identity_header(data: DashboardData, m: dict[str, str]) -> Any:
 
 def _market_strip(data: DashboardData, m: dict[str, str]) -> Any:
     grid = Table.grid(expand=True, padding=(0, 1))
-    grid.add_column(ratio=1); grid.add_column(ratio=1); grid.add_column(ratio=1); grid.add_column(ratio=1)
+    for _ in range(4):
+        grid.add_column(ratio=1)
     grid.add_row(
         _line((f"{m['market']} Market ", None), (data.market_state, _status_style(data.market_state)),
               ("  · Soft Context ", None), (data.soft_session, "bright_cyan")),
@@ -162,8 +173,9 @@ def _market_strip(data: DashboardData, m: dict[str, str]) -> Any:
 
 
 def _market_panel(data: DashboardData, m: dict[str, str]) -> Any:
-    g = Table.grid(expand=True); g.add_column()
-    for tf, value in (("H4",data.h4_structure),("H1",data.h1_structure),("M15",data.m15_structure),("M5",data.m5_structure)):
+    g = Table.grid(expand=True)
+    g.add_column()
+    for tf, value in (("H4", data.h4_structure), ("H1", data.h1_structure), ("M15", data.m15_structure), ("M5", data.m5_structure)):
         g.add_row(Text(f"{tf:<3} {_trend_icon(value)} {value}"))
     g.add_row(Text(f"EMA20 {_num(data.ema20)}  |  EMA50 {_num(data.ema50)}"))
     g.add_row(Text(f"RSI {_num(data.rsi14,1)}  |  ATR {_num(data.atr14)}  |  Spread {_num(data.spread)}"))
@@ -171,57 +183,101 @@ def _market_panel(data: DashboardData, m: dict[str, str]) -> Any:
 
 
 def _setup_panel(data: DashboardData, m: dict[str, str]) -> Any:
-    g=Table.grid(expand=True); g.add_column()
+    g = Table.grid(expand=True)
+    g.add_column()
     g.add_row(Text(f"Detected Setup    {_family(data.detected_setup)}"))
     g.add_row(Text(f"Routed Family     {_family(data.active_family)}"))
     g.add_row(Text(f"Shadow Qualified  {', '.join(_family(x) for x in data.shadow_setups) if data.shadow_setups else 'NONE'}"))
-    g.add_row(Text(f"Timing            {data.activity_text.replace(chr(10),' • ')}"))
-    g.add_row(_line(("Plan State        ",None),(data.plan_state or "WAITING",_status_style(data.plan_state or "WAITING"))))
-    return Panel(g,title=f"{m['shadow']} TRADE SETUP · Setup aur Route",border_style="bright_magenta",box=box.ROUNDED)
+    g.add_row(Text(f"Timing            {data.activity_text.replace(chr(10), ' • ')}"))
+    g.add_row(_line(("Plan State        ", None), (data.plan_state or "WAITING", _status_style(data.plan_state or "WAITING"))))
+    return Panel(g, title=f"{m['shadow']} TRADE SETUP · Setup aur Route", border_style="bright_magenta", box=box.ROUNDED)
 
 
-def _decision_panel(data: DashboardData, m: dict[str,str]) -> Any:
-    g=Table.grid(expand=True);g.add_column()
+def _decision_panel(data: DashboardData, m: dict[str, str]) -> Any:
+    g = Table.grid(expand=True)
+    g.add_column()
     g.add_row(Text(f"{m['buy']} BUY {_score(data.buy_score)}  |  {m['sell']} SELL {_score(data.sell_score)}  |  Lead {_score(data.leading_score)}  |  Coverage {_score(data.evidence_coverage)}%"))
     g.add_row(Text(f"Setup {_family(data.detected_setup)}  |  Routed {_family(data.active_family)}"))
     g.add_row(Text(f"WHY / Wajah: {data.reason}"))
-    return Panel(g,title=_line((f"{m['decision']} CURRENT DECISION  |  ",None),(data.live_action,_status_style(data.live_action)),(f"  |  {_roman_action(data.live_action)}","bright_yellow")),border_style=_status_style(data.live_action),box=box.ROUNDED)
+    return Panel(g, title=_line((f"{m['decision']} CURRENT DECISION  |  ", None),
+                                (data.live_action, _status_style(data.live_action)),
+                                (f"  |  {_roman_action(data.live_action)}", "bright_yellow")),
+                 border_style=_status_style(data.live_action), box=box.ROUNDED)
 
 
-def _trade_plan_panel(data: DashboardData,m:dict[str,str])->Any:
+def _trade_plan_panel(data: DashboardData, m: dict[str, str]) -> Any:
     if data.plan_state is None:
-        return Panel(Text(f"{m['entry']} Entry —  |  {m['stop']} SL —  |  {m['target']} TP1 —  |  {m['rocket']} TP2 —\nSahi M5 opportunity ka intazar"),title=f"{m['plan']} TRADE PLAN · Mansuba | WAITING",border_style="yellow",box=box.ROUNDED)
-    body=Text(f"{m['entry']} Entry {_num(data.plan_entry)} | {m['stop']} SL {_num(data.plan_stop)} | {m['target']} TP1 {_num(data.plan_primary)} ({_num(data.plan_primary_rr,2)}R) | {m['rocket']} TP2 {_num(data.plan_expansion)} ({_num(data.plan_expansion_rr,2)}R)\nDirection {data.plan_direction or '—'} | Invalidation {data.plan_invalidation_source or 'STRUCTURAL'} | Quality {_num(data.plan_quality,1)}")
-    return Panel(body,title=f"{m['plan']} TRADE PLAN · Mansuba | {data.plan_state}",border_style="bright_yellow",box=box.ROUNDED)
+        return Panel(Text(f"{m['entry']} Entry —  |  {m['stop']} SL —  |  {m['target']} TP1 —  |  {m['rocket']} TP2 —\nSahi M5 opportunity ka intazar"),
+                     title=f"{m['plan']} TRADE PLAN · Mansuba | WAITING", border_style="yellow", box=box.ROUNDED)
+    body = Text(
+        f"{m['entry']} Entry {_num(data.plan_entry)} | {m['stop']} SL {_num(data.plan_stop)} | "
+        f"{m['target']} TP1 {_num(data.plan_primary)} ({_num(data.plan_primary_rr,2)}R) | "
+        f"{m['rocket']} TP2 {_num(data.plan_expansion)} ({_num(data.plan_expansion_rr,2)}R)\n"
+        f"Direction {data.plan_direction or '—'} | Invalidation {data.plan_invalidation_source or 'STRUCTURAL'} | Quality {_num(data.plan_quality,1)}"
+    )
+    return Panel(body, title=f"{m['plan']} TRADE PLAN · Mansuba | {data.plan_state}", border_style="bright_yellow", box=box.ROUNDED)
 
 
-def _strategy_panel(data:DashboardData,m:dict[str,str])->Any:
+def _strategy_panel(data: DashboardData, m: dict[str, str]) -> Any:
     if not data.strategy_board_rows:
-        return Panel(Text("Strategy facts unavailable — koi score invent nahi hoga."),title=f"{m['shadow']} STRATEGY / SETUP BOARD",border_style="bright_magenta",box=box.ROUNDED)
-    t=Table(box=box.SIMPLE_HEAD,expand=True,pad_edge=False);t.add_column("Strategy",ratio=3);t.add_column("Mode",ratio=2);t.add_column("Qual",ratio=2);t.add_column("Dir",ratio=1);t.add_column("Score",justify="right");t.add_column("Cov",justify="right")
-    for family,mode,qualification,direction,score,coverage in data.strategy_board_rows:
-        t.add_row(_family(family),mode.replace("_"," "),qualification.replace("_"," "),direction,_score(score),_score(coverage)+("%" if coverage is not None else ""))
-    return Panel(t,title=f"{m['shadow']} STRATEGY / SETUP BOARD · 1 Routed + 5 Shadow",border_style="bright_magenta",box=box.ROUNDED)
+        return Panel(Text("Strategy facts unavailable — koi score invent nahi hoga."),
+                     title=f"{m['shadow']} STRATEGY / SETUP BOARD", border_style="bright_magenta", box=box.ROUNDED)
+    t = Table(box=box.SIMPLE_HEAD, expand=True, pad_edge=False)
+    t.add_column("Strategy", ratio=3)
+    t.add_column("Mode", ratio=2)
+    t.add_column("Qual", ratio=2)
+    t.add_column("Dir", ratio=1)
+    t.add_column("Score", justify="right")
+    t.add_column("Cov", justify="right")
+    for family, mode, qualification, direction, score, coverage in data.strategy_board_rows:
+        t.add_row(_family(family), mode.replace("_", " "), qualification.replace("_", " "), direction,
+                  _score(score), _score(coverage) + ("%" if coverage is not None else ""))
+    return Panel(t, title=f"{m['shadow']} STRATEGY / SETUP BOARD · 1 Routed + 5 Shadow", border_style="bright_magenta", box=box.ROUNDED)
 
 
-def _risk_panel(data:DashboardData,m:dict[str,str])->Any:
-    g=Table.grid(expand=True);g.add_column();g.add_row(Text(f"{m['wallet']} Balance {_money(data.account_balance)} | Equity {_money(data.account_equity)}"));g.add_row(Text(f"Free Margin {_money(data.free_margin)}"));g.add_row(Text(f"Profile {data.risk_profile} | Risk {'—' if data.risk_pct is None else f'{data.risk_pct:.2f}%'} | Lot {_num(data.risk_volume,2)}"));g.add_row(Text(f"Position {data.position_count if data.position_count is not None else '—'}/{data.position_capacity} | Loss Streak {data.loss_streak if data.loss_streak is not None else '—'}"));g.add_row(_line(("Risk State ",None),(data.risk_state,_status_style(data.risk_state))))
-    return Panel(g,title=f"{m['risk']} RISK & ACCOUNT · Risk aur Account",border_style="bright_blue",box=box.ROUNDED)
+def _risk_panel(data: DashboardData, m: dict[str, str]) -> Any:
+    g = Table.grid(expand=True)
+    g.add_column()
+    g.add_row(Text(f"{m['wallet']} Balance {_money(data.account_balance)} | Equity {_money(data.account_equity)}"))
+    g.add_row(Text(f"Free Margin {_money(data.free_margin)}"))
+    g.add_row(Text(f"Profile {data.risk_profile} | Risk {'—' if data.risk_pct is None else f'{data.risk_pct:.2f}%'} | Lot {_num(data.risk_volume,2)}"))
+    g.add_row(Text(f"Position {data.position_count if data.position_count is not None else '—'}/{data.position_capacity} | Loss Streak {data.loss_streak if data.loss_streak is not None else '—'}"))
+    g.add_row(_line(("Risk State ", None), (data.risk_text, _status_style(data.risk_text))))
+    return Panel(g, title=f"{m['risk']} RISK & ACCOUNT · Risk aur Account", border_style="bright_blue", box=box.ROUNDED)
 
 
-def _activity_panel(data:DashboardData,m:dict[str,str])->Any:
-    today=data.day_safety_pl if data.day_safety_pl is not None else data.bot_realized_pl_today;g=Table.grid(expand=True);g.add_column();g.add_row(Text(f"Entries Today {data.entries_today if data.entries_today is not None else '—'}"));g.add_row(Text(f"Today P/L {_money(today)}"));g.add_row(Text(f"Total Trades {data.trades_total if data.trades_total is not None else '—'}"));g.add_row(Text(f"Cooldown {data.cooldown_state}"));g.add_row(Text(f"Hard Session {data.market_state} | Soft {data.soft_session}"))
-    return Panel(g,title=f"{m['activity']} TODAY / ACTIVITY · Aaj",border_style="bright_green",box=box.ROUNDED)
+def _activity_panel(data: DashboardData, m: dict[str, str]) -> Any:
+    today = data.day_safety_pl if data.day_safety_pl is not None else data.bot_realized_pl_today
+    g = Table.grid(expand=True)
+    g.add_column()
+    g.add_row(Text(f"Entries Today {data.bot_entries_today if data.bot_entries_today is not None else '—'}"))
+    g.add_row(Text(f"Today P/L {_money(today)}"))
+    g.add_row(Text(f"Total Trades {data.bot_total_trades if data.bot_total_trades is not None else '—'}"))
+    g.add_row(Text(f"Cooldown {data.cooldown}"))
+    g.add_row(Text(f"Hard Session {data.market_state} | Soft {data.soft_session}"))
+    return Panel(g, title=f"{m['activity']} TODAY / ACTIVITY · Aaj", border_style="bright_green", box=box.ROUNDED)
 
 
-def _system_panel(data:DashboardData,m:dict[str,str])->Any:
-    g=Table.grid(expand=True);g.add_column();g.add_row(_line(("Feed ",None),(data.live_feed_state,_status_style(data.live_feed_state))));g.add_row(_line(("Gate ",None),(data.gate_text,_status_style(data.gate_text))));g.add_row(Text(f"Controller {data.controller_role}"));g.add_row(Text(f"Broker Sync {data.broker_reconcile}"));g.add_row(Text(f"Exec {data.execution_text.replace(chr(10),' • ')}"))
-    return Panel(g,title=f"{m['system']} SYSTEM / EXECUTION · Nizam",border_style="bright_cyan",box=box.ROUNDED)
+def _system_panel(data: DashboardData, m: dict[str, str]) -> Any:
+    g = Table.grid(expand=True)
+    g.add_column()
+    g.add_row(_line(("Feed ", None), (data.live_feed_state, _status_style(data.live_feed_state))))
+    g.add_row(_line(("Gate ", None), (data.gate_text, _status_style(data.gate_text))))
+    g.add_row(Text(f"Controller {data.controller_role}"))
+    g.add_row(Text(f"Broker Sync {data.broker_reconcile}"))
+    g.add_row(Text(f"Exec {data.execution_text.replace(chr(10), ' • ')}"))
+    return Panel(g, title=f"{m['system']} SYSTEM / EXECUTION · Nizam", border_style="bright_cyan", box=box.ROUNDED)
 
 
-def _learning_panel(data:DashboardData,m:dict[str,str])->Any:
-    g=Table.grid(expand=True);g.add_column();g.add_row(Text(f"{m['learn']} Learning {data.learning_state}  |  Discovery {data.discovery_state}  |  Candidate {data.candidate_state}"));g.add_row(Text(data.learning_text or "Verified evidence ka intazar"));g.add_row(Text(f"System: {data.system_text}"));g.add_row(Text("Browser = SECONDARY read-only · no BUY/SELL/MODIFY/CLOSE controls",style="dim"));g.add_row(Text("Sahi mauqa, sahi risk, phir hi trade.",style="bright_yellow"))
-    return Panel(g,title=f"{m['learn']} LEARNING / DISCOVERY · Seekhna aur Daryaft",border_style="bright_magenta",box=box.ROUNDED)
+def _learning_panel(data: DashboardData, m: dict[str, str]) -> Any:
+    g = Table.grid(expand=True)
+    g.add_column()
+    g.add_row(Text(f"{m['learn']} Learning {data.learning_state}  |  Discovery {data.discovery_state}  |  Candidate {data.candidate or 'NONE'}"))
+    g.add_row(Text(data.learning_text or "Verified evidence ka intazar"))
+    g.add_row(Text(f"System: {data.system_text}"))
+    g.add_row(Text("Browser = SECONDARY read-only · no BUY/SELL/MODIFY/CLOSE controls", style="dim"))
+    g.add_row(Text("Sahi mauqa, sahi risk, phir hi trade. · Mehfooz risk", style="bright_yellow"))
+    return Panel(g, title=f"{m['learn']} LEARNING / DISCOVERY · Seekhna aur Daryaft", border_style="bright_magenta", box=box.ROUNDED)
 
 
-__all__=["render_dashboard"]
+__all__ = ["render_dashboard"]
