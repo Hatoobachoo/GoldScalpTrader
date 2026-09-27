@@ -1,9 +1,10 @@
 """Continuous guarded DEMO runtime with terminal-first presentation.
 
-The VS Code/terminal dashboard is the primary operator surface.  When
-``DASHBOARD_MODE=GUI`` the localhost browser floor is started best-effort as a
-secondary read-only projection of the same runtime result; it never owns the
-trading loop or broker authority.
+The VS Code/terminal dashboard is the primary operator surface. When
+``DASHBOARD_MODE=GUI`` the localhost browser floor is a secondary read-only
+projection. Research evidence is best-effort relative to broker authority: a
+research failure is surfaced as degraded research evidence but cannot erase or
+reclassify a completed broker cycle.
 """
 from __future__ import annotations
 
@@ -23,6 +24,7 @@ from gold_scalp_trader.operator.terminal_dashboard import render, render_error
 from gold_scalp_trader.persistence.checkpoint import export_checkpoint
 from gold_scalp_trader.persistence.store import StateStore
 from gold_scalp_trader.research.runtime_evidence import record_runtime_research
+from gold_scalp_trader.research.shadow_runtime import record_shadow_runtime
 from gold_scalp_trader.research.timing_learning import record_runtime_timing
 
 
@@ -68,6 +70,21 @@ def _degraded_data(settings: Settings, title: str, exc: Exception) -> DashboardD
         activity_text="Runtime facts unavailable; polling will continue",
         learning_text="PAUSED until runtime health recovers",
     )
+
+
+def _record_research_best_effort(store: StateStore, result: RuntimeResult) -> tuple[str, ...]:
+    """Record research evidence without granting it runtime/broker authority."""
+    failures: list[str] = []
+    for label, recorder in (
+        ("TIMING", record_runtime_timing),
+        ("MANAGEMENT_SHADOW", record_runtime_research),
+        ("SHADOW_OUTCOME", record_shadow_runtime),
+    ):
+        try:
+            recorder(store, result)
+        except Exception as exc:
+            failures.append(f"{label}:{type(exc).__name__}")
+    return tuple(failures)
 
 
 def _print_data(data: DashboardData, state_path: Path, *, wrote_broker: bool | None = None) -> None:
@@ -129,13 +146,7 @@ def run_live_demo(
     max_cycles: int | None = None,
     sleep_fn: Callable[[float], None] = time.sleep,
 ) -> int:
-    """Run DEMO with an always-visible primary terminal dashboard.
-
-    CLOSED/PRE_CLOSE/WAIT states render normally. Runtime/read/permission/
-    presentation faults render a degraded frame and trading remains fail-closed;
-    polling continues so a transient problem does not make the dashboard vanish.
-    """
-
+    """Run DEMO with fail-visible presentation and isolated research evidence."""
     if settings.mode is not RuntimeMode.DEMO:
         raise PermissionError("DEMO runtime requires DEMO mode")
 
@@ -150,9 +161,15 @@ def run_live_demo(
         while max_cycles is None or completed < max_cycles:
             try:
                 result = run_guarded_demo_cycle(settings, api, store)
-                record_runtime_timing(store, result)
-                record_runtime_research(store, result)
+                research_failures = _record_research_best_effort(store, result)
                 data = from_runtime(result, market_state="DEMO")
+                if research_failures:
+                    warning = "RESEARCH DEGRADED • " + " • ".join(research_failures)
+                    data = replace(
+                        data,
+                        learning_text=f"{data.learning_text} • {warning}",
+                        system_text=f"{data.system_text} • {warning}",
+                    )
                 data = secondary.publish(data, result)
                 _print_data(data, state_path, wrote_broker=result.wrote_broker)
             except Exception as exc:
@@ -178,5 +195,4 @@ def run_live_demo(
 
 
 def render_startup_error(title: str, exc: Exception) -> str:
-    """Public presentation helper used by the launcher before Settings/runtime exist."""
     return render_error(title, exc)
