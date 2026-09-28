@@ -1,8 +1,8 @@
 """Subordinate M1 entry refinement after a valid persistent M5 Opportunity.
 
 Timing is deliberately recoverable: a weak micro entry returns WAIT while the
-M5 thesis survives.  MISSED/INVALID are reserved for explicit configured
-freshness/chase limits or fresh opposing structural evidence.  Timing never
+M5 thesis survives. MISSED/INVALID are reserved for explicit configured
+freshness/chase limits or fresh opposing structural evidence. Timing never
 creates monetary/broker permission.
 """
 from __future__ import annotations
@@ -54,6 +54,12 @@ class TimingDecision:
     chase_atr: float | None = None
     profile: str | None = None
     policy_version: str = "TIMING_BASELINE_UNCALIBRATED_V2"
+    directional_progress: bool | None = None
+    prior_opposite_candle: bool | None = None
+    liquidity_turn: bool | None = None
+    structure_turn: bool | None = None
+    ema_flow_ok: bool | None = None
+    profile_ready: bool | None = None
 
 
 def _event_reference_close(opportunity: Opportunity, snapshot: IntelligenceSnapshot) -> float | None:
@@ -97,27 +103,15 @@ def _directional_progress(direction: Direction, latest, previous) -> bool:
     return latest.close < latest.open and latest.close < previous.close
 
 
-def _continuation_refinement(opportunity: Opportunity, snapshot: IntelligenceSnapshot, latest, previous) -> bool:
+def _refinement_checks(
+    opportunity: Opportunity,
+    snapshot: IntelligenceSnapshot,
+    latest,
+    previous,
+) -> dict[str, bool | None]:
+    """Return presentation diagnostics without changing timing authority."""
     m1 = snapshot.by_timeframe[Timeframe.M1]
     progress = _directional_progress(opportunity.direction, latest, previous)
-    if not progress:
-        return False
-    flow_ok = m1.quant.ema_flow in {opportunity.direction.value, "UNKNOWN", "NONE"}
-    if opportunity.direction is Direction.BUY:
-        counter_then_resume = previous.close <= previous.open
-    else:
-        counter_then_resume = previous.close >= previous.open
-    # Keep opportunity recall high: either a micro pullback/resumption or a
-    # non-opposing micro flow is enough.  Exact profile thresholds remain
-    # calibration variables.
-    return flow_ok or counter_then_resume
-
-
-def _reversal_refinement(opportunity: Opportunity, snapshot: IntelligenceSnapshot, latest, previous) -> bool:
-    m1 = snapshot.by_timeframe[Timeframe.M1]
-    progress = _directional_progress(opportunity.direction, latest, previous)
-    if not progress:
-        return False
     prior_opposite = (
         previous.close <= previous.open
         if opportunity.direction is Direction.BUY
@@ -125,17 +119,28 @@ def _reversal_refinement(opportunity: Opportunity, snapshot: IntelligenceSnapsho
     )
     liquidity_turn = m1.liquidity.event_direction is opportunity.direction
     structure_turn = m1.structure.break_direction is opportunity.direction
-    return prior_opposite or liquidity_turn or structure_turn
-
-
-def _profile_ready(opportunity: Opportunity, snapshot: IntelligenceSnapshot, latest, previous) -> bool:
-    reversal_families = {
+    flow_ok = m1.quant.ema_flow in {opportunity.direction.value, "UNKNOWN", "NONE"}
+    reversal = opportunity.family in {
         StrategyFamily.LIQUIDITY_SWEEP_REVERSAL,
         StrategyFamily.FAILED_BREAKOUT_REVERSAL,
     }
-    if opportunity.family in reversal_families:
-        return _reversal_refinement(opportunity, snapshot, latest, previous)
-    return _continuation_refinement(opportunity, snapshot, latest, previous)
+    ready = progress and (
+        (prior_opposite or liquidity_turn or structure_turn)
+        if reversal
+        else (flow_ok or prior_opposite)
+    )
+    return {
+        "directional_progress": progress,
+        "prior_opposite_candle": prior_opposite,
+        "liquidity_turn": liquidity_turn if reversal else None,
+        "structure_turn": structure_turn if reversal else None,
+        "ema_flow_ok": None if reversal else flow_ok,
+        "profile_ready": ready,
+    }
+
+
+def _profile_ready(opportunity: Opportunity, snapshot: IntelligenceSnapshot, latest, previous) -> bool:
+    return bool(_refinement_checks(opportunity, snapshot, latest, previous)["profile_ready"])
 
 
 def evaluate(
@@ -214,6 +219,8 @@ def evaluate(
         )
         chase = max(0.0, directional_move / atr)
 
+    checks = _refinement_checks(opportunity, snapshot, latest, previous)
+
     if extension is not None and extension > p.max_micro_extension_atr:
         return TimingDecision(
             TimingOutcome.MISSED,
@@ -226,6 +233,7 @@ def evaluate(
             chase,
             profile,
             p.version,
+            **checks,
         )
     if p.max_m1_trigger_age_seconds is not None and trigger_age > p.max_m1_trigger_age_seconds:
         return TimingDecision(
@@ -239,6 +247,7 @@ def evaluate(
             chase,
             profile,
             p.version,
+            **checks,
         )
     if p.max_chase_atr is not None and chase is not None and chase > p.max_chase_atr:
         return TimingDecision(
@@ -252,9 +261,10 @@ def evaluate(
             chase,
             profile,
             p.version,
+            **checks,
         )
 
-    ready = _profile_ready(opportunity, snapshot, latest, previous)
+    ready = bool(checks["profile_ready"])
     if opportunity.direction is Direction.BUY:
         outcome = TimingOutcome.READY_BUY if ready else TimingOutcome.WAIT
     else:
@@ -275,4 +285,5 @@ def evaluate(
         chase,
         profile,
         p.version,
+        **checks,
     )
