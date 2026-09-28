@@ -288,10 +288,15 @@ def from_runtime(result: "RuntimeResult", market_state: str = "DEMO") -> Dashboa
         schedule_verified = bool(getattr(provider.session, "schedule_verified", False))
         news_health = provider.news.health.value
 
+    detailed_reason = data.reason
+    if data.timing_diagnostics_text != "Timing: NOT EVALUATED":
+        detailed_reason = f"{data.reason} | {data.timing_diagnostics_text}"
+
     return replace(
         data,
         account_mode="DEMO",
         runtime_role="PRIMARY",
+        reason=detailed_reason,
         hard_session_source=session_source,
         hard_session_reason=session_reason,
         schedule_verified=schedule_verified,
