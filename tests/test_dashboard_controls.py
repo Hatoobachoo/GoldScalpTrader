@@ -67,7 +67,9 @@ def test_visual_floor_keeps_swing_style_information_hierarchy_without_trade_cont
         "Browser = SECONDARY",
     ):
         assert label in HTML
-    assert 'id="tabs"' in HTML
+    assert 'class="tabs"' in HTML
+    for timeframe in ("M1", "M5", "M15", "H1", "H4"):
+        assert f'data-tf="{timeframe}"' in HTML
     assert 'id="indBtn"' in HTML
     assert 'id="drawBtn"' in HTML
     assert 'id="settingsBtn"' in HTML
