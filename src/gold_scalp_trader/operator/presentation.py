@@ -3,7 +3,7 @@
 The presentation DTO is intentionally richer than the trading decision object so
 both the primary terminal floor and the secondary localhost browser can render
 the same authoritative facts without recomputing strategy, Risk, Gate or broker
-authority.  Missing evidence stays ``None``/UNKNOWN rather than becoming fake 0.
+authority. Missing evidence stays ``None``/UNKNOWN rather than becoming fake 0.
 """
 from __future__ import annotations
 
@@ -38,6 +38,7 @@ class DashboardData:
     execution_text: str = "IDLE"
     activity_text: str = ""
     learning_text: str = ""
+    timing_diagnostics_text: str = "Timing: NOT EVALUATED"
     account_balance: float | None = None
     account_equity: float | None = None
     free_margin: float | None = None
@@ -58,7 +59,7 @@ class DashboardData:
     risk_pct: float | None = None
     risk_volume: float | None = None
 
-    # GoldSwing-style operator facts.  Presentation only; no authority is created.
+    # GoldSwing-style operator facts. Presentation only; no authority is created.
     account_mode: str = "DEMO"
     runtime_role: str = "PRIMARY"
     quote_time_utc: str | None = None
