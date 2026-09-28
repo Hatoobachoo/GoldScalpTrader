@@ -23,6 +23,10 @@ def _iso(value) -> str | None:
     return value.isoformat() if hasattr(value, "isoformat") else None
 
 
+def _check(value: bool | None) -> str:
+    return "PASS" if value is True else "FAIL" if value is False else "—"
+
+
 def _timing_text(result: CycleResult) -> str:
     if result.timing is None:
         return "Timing: NOT EVALUATED"
@@ -30,6 +34,14 @@ def _timing_text(result: CycleResult) -> str:
     parts = [f"Timing: {timing.outcome.value}"]
     if timing.profile:
         parts.append(timing.profile)
+    parts.append(f"Progress {_check(getattr(timing, 'directional_progress', None))}")
+    parts.append(f"PriorOpp {_check(getattr(timing, 'prior_opposite_candle', None))}")
+    if getattr(timing, "liquidity_turn", None) is not None:
+        parts.append(f"LiqTurn {_check(timing.liquidity_turn)}")
+    if getattr(timing, "structure_turn", None) is not None:
+        parts.append(f"StructTurn {_check(timing.structure_turn)}")
+    if getattr(timing, "ema_flow_ok", None) is not None:
+        parts.append(f"Flow {_check(timing.ema_flow_ok)}")
     if timing.m5_event_age_bars is not None:
         parts.append(f"M5 age {timing.m5_event_age_bars} bars")
     if timing.trigger_age_seconds is not None:
@@ -158,10 +170,11 @@ def from_cycle(result: CycleResult, market_state: str = "UNKNOWN") -> DashboardD
             lines.append(f"Gross R {p.gross_r:.2f}")
         plan = "\n".join(lines)
 
+    timing_text = _timing_text(result)
     positions = market.positions
     position_count = None if positions is None else len(positions)
     positions_text = "UNKNOWN" if position_count is None else str(position_count)
-    activity = f"Open Gold positions: {positions_text}\n{_timing_text(result)}"
+    activity = f"Open Gold positions: {positions_text}\n{timing_text}"
     if result.opportunity is not None:
         activity += (
             f"\nOpportunity: {result.opportunity.state.value} • {result.opportunity.opportunity_id}"
@@ -197,6 +210,7 @@ def from_cycle(result: CycleResult, market_state: str = "UNKNOWN") -> DashboardD
         system_text=result.system_text,
         trade_plan_text=plan,
         activity_text=activity,
+        timing_diagnostics_text=timing_text,
         account_balance=account.balance,
         account_equity=account.equity,
         free_margin=account.margin_free,
