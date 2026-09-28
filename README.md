@@ -12,7 +12,7 @@ Safety-first local MetaTrader 5 gold scalping project.
 
 The connected MT5 account must explicitly report DEMO mode before any DEMO broker write. The runtime blocks on stale/incomplete required data, occupied/unknown exposure, unresolved Intents, controller conflicts, persistence failure, disabled expert trading, failed broker prechecks, or unknown/closed hard Session authority.
 
-Hard broker Session facts come from the scoped local runtime provider file `runtime/session_news.json`. `OPEN` must be positively verified for new exposure; `PRE_CLOSE` blocks new OPENs; provider absence/expiry/scope mismatch fails closed. News remains soft context only.
+Hard broker Session authority prefers the scoped local runtime provider file `runtime/session_news.json` when present and valid. If that optional file is absent, the runtime may prove only the **current cycle** from live MT5 broker evidence: a fresh quote plus an explicit symbol trade mode can classify current tradeability as `OPEN`, `PRE_CLOSE`/close-only, or `CLOSED`. Stale quotes, unknown trade mode, provider contract errors, or other ambiguous broker facts remain `UNKNOWN` and fail closed. News remains soft context only and never grants hard trading permission.
 
 Verified bot positions use the governed lifecycle:
 
